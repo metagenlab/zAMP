@@ -1,0 +1,6 @@
+
+* General use
+
+#+BEGIN_SRC sh
+snakemake --dag --notemp --snakefile $pipeline_folder/workflows/preanalytic.rules  --use-conda --conda-prefix $HOME/miniconda2/ --cores 6 --configfile config_local.yaml
+#+END_SRC
