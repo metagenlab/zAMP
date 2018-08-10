@@ -1,7 +1,7 @@
 rule prepare_manifest:
     input:
-        R1_reads = expand("0_importing_data/raw_reads/{sample}_R1.fastq.gz", sample=list(read_naming.keys())),
-        R2_reads = expand("0_importing_data/raw_reads/{sample}_R2.fastq.gz", sample=list(read_naming.keys())),
+        R1_reads = expand("raw_reads/{sample}_R1.fastq.gz", sample=list(read_naming.keys())),
+        R2_reads = expand("raw_reads/{sample}_R2.fastq.gz", sample=list(read_naming.keys())),
     output:
         "{tool}/0_importing_data/manifest.csv",
     params:
@@ -11,9 +11,9 @@ rule prepare_manifest:
         """
         echo "sample-id,absolute-filepath,direction" >> {output[0]}
         for i in {params.samples}; do
-            echo $i,$PWD/0_importing_data/raw_reads/$i\_R1.fastq.gz,"forward" >> {output[0]}
+            echo $i,$PWD/raw_reads/$i\_R1.fastq.gz,"forward" >> {output[0]}
         done
         for i in {params.samples}; do
-            echo $i,$PWD/0_importing_data/raw_reads/$i\_R2.fastq.gz,"reverse" >> {output[0]}
+            echo $i,$PWD/raw_reads/$i\_R2.fastq.gz,"reverse" >> {output[0]}
         done        
         """
