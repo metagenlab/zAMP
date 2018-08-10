@@ -1,6 +1,7 @@
 channels:
  - bioconda
  - conda-forge
+ - hcc
 dependencies:
  - qiime = 1.9.1=np112py27_1
  - rdp-classifier = 2.2
