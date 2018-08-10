@@ -3,3 +3,4 @@ channels:
  - conda-forge
 dependencies:
  - qiime = 1.9.1=np112py27_1
+ - rdp-classifier = 2.2
