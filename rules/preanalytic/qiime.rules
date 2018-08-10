@@ -302,6 +302,7 @@ rule qiime1_assign_taxonomy:
         logging_folder + "qiime/assign_taxonomy_{db_taxonomy}.txt"
     shell:
         '''
+        export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
         assign_taxonomy.py \
           -i {input[0]} \
           -r {input[1]}
