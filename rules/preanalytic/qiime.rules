@@ -3,11 +3,11 @@ rule qiime_import:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "0_importing_data/manifest.csv",
+        "{tool}/0_importing_data/manifest.csv",
     output:
-        "0_importing_data/imported_data.qza",
+        "{tool}/0_importing_data/imported_data.qza",
     log:
-        logging_folder + "qiime/import.txt"
+        logging_folder + "{tool}/import.txt"
     shell:
         """
         qiime tools import \
@@ -17,19 +17,18 @@ rule qiime_import:
         --source-format PairedEndFastqManifestPhred33 >> {log[0]}          
         """
 
-
 # raw or trimmed sequences?
 rule qiime_cutadapt_trim_paired:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "0_importing_data/imported_data.qza",
+        "{tool}/0_importing_data/imported_data.qza",
     output:
-        "1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
     threads:
         4
     log:
-        logging_folder + "qiime/cutadapt_trim-paired.txt"
+        logging_folder + "{tool}/cutadapt_trim-paired.txt"
     shell:
         """
         qiime cutadapt trim-paired \
@@ -48,30 +47,27 @@ rule qiime_demux_summarize:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
     output:
-        "1a_cutadapt_primers_trimming/visualization.qzv",
+        "{tool}/1a_cutadapt_primers_trimming/visualization.qzv",
     log:
-        logging_folder + "qiime/demux summarize.txt"
+        logging_folder + "{tool}/demux_summarize.txt"
     shell:
         """
         qiime demux summarize \
           --i-data {input[0]} \
-          --o-visualization output[0] >> {log[0]}          
+          --o-visualization {output[0]} >> {log[0]}          
         """
-
-
-
 
 rule qiime_vsearch_join_pairs:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
     output:
-        "1b_vsearch_joining/joined_sequences.qza",
+        "{tool}/1b_vsearch_joining/joined_sequences.qza",
     log:
-        logging_folder + "qiime/evsearch_join_pairs.txt"
+        logging_folder + "{tool}/evsearch_join_pairs.txt"
     shell:
         '''
         qiime vsearch join-pairs \
@@ -95,12 +91,13 @@ rule qiime_quality_filter_q_score_joined:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "1b_vsearch_joining/joined_sequences.qza",
+        "{tool}/1b_vsearch_joining/joined_sequences.qza",
     output:
-        "1c_q_score_filtering/quality_filtered_sequences.qza",
-        "1c_q_score_filtering/quality_filtered_stats.qza"
+        "{tool}/1c_q_score_filtering/quality_filtered_sequences.qza",
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qza"
+        # qiime2/1c_q_score_filtering/quality_filtered_sequences.qza
     log:
-        logging_folder + "qiime/evsearch_join_pairs.txt"
+        logging_folder + "{tool}/evsearch_join_pairs.txt"
     shell:
         '''
          qiime quality-filter q-score-joined \
@@ -110,7 +107,7 @@ rule qiime_quality_filter_q_score_joined:
             --p-min-length-fraction 0.75 \
             --p-max-ambiguous 0 \
             --o-filtered-sequences {output[0]} \
-            --o-filter-stats {output[0]} \
+            --o-filter-stats {output[1]} \
             --verbose >> {log[0]}       
         '''
 
@@ -122,23 +119,27 @@ rule qiime_deblur_denoise_16S:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "1c_q_score_filtering/quality_filtered_sequences.qza",
+        "{tool}/1c_q_score_filtering/quality_filtered_sequences.qza",
     output:
-        "2_deblur_denoised/table_deblur_390.qza",
-        "2_deblur_denoised/seqs_deblur_390.qza",
-        "2_deblur_denoised/stats_deblur_390.qza",
+        "{tool}/2_denoised/{denoiser}/table.qza",
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+        "{tool}/2_denoised/{denoiser}/stats.qza",
     log:
         logging_folder + "qiime/vsearch_join_pairs.txt"
+    threads:
+        2
+    params:
+        trim_length = config["deblur_p_trim_length"],
     shell:
         '''
         qiime deblur denoise-16S \
             --i-demultiplexed-seqs {input[0]} \
-            --p-trim-length 390 \
+            --p-trim-length {params[0]} \
             --p-sample-stats \
             --p-min-reads 2 \
             --p-min-size 2 \
             --p-hashed-feature-ids \
-            --p-jobs-to-start 2 \
+            --p-jobs-to-start {threads} \
             --o-table {output[0]} \
             --o-representative-sequences {output[1]} \
             --o-stats {output[2]} \
@@ -149,9 +150,9 @@ rule deblur_visualize_stats:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "2_deblur_denoised/stats_deblur_390.qza",
+        "{tool}/2_denoised/{denoiser}/stats.qza",
     output:
-        "2_deblur_denoised/stats_deblur_390.qzv",
+        "{tool}/2_denoised/{denoiser}/stats.qzv",
     log:
         logging_folder + "qiime/deblur_visualize-stats.txt"
     shell:
@@ -166,9 +167,9 @@ rule qiime_feature_table_summarize:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "2_deblur_denoised/table_deblur_390.qza",
+        "{tool}/2_denoised/{denoiser}/table.qza",
     output:
-        "2_deblur_denoised/table_deblur_390.qzv",
+        "{tool}/2_denoised/{denoiser}/table.qzv",
     log:
         logging_folder + "qiime/deblur_visualize-stats.txt"
     shell:
@@ -183,9 +184,9 @@ rule qiime_feature_table_tabulate_seqs:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "2_deblur_denoised/seqs_deblur_390.qza",
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
     output:
-        "2_deblur_denoised/seqs_deblur_390.qzv",
+        "{tool}/2_denoised/{denoiser}/seqs.qzv",
     log:
         logging_folder + "qiime/feature-table_tabulate-seqs.txt"
     shell:
@@ -199,9 +200,9 @@ rule qiime_metadata_tabulate:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "1c_q_score_filtering/quality_filtered_stats.qza",
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qza",
     output:
-        "1c_q_score_filtering/quality_filtered_stats.qzv",
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qzv",
     log:
         logging_folder + "qiime/metadata_tabulate-seqs.txt"
     shell:
@@ -215,9 +216,9 @@ rule qiime_alignment_mafft:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "2_deblur_denoised/seqs_deblur_390.qza",
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
     output:
-        "4_tree/aligned-rep-seqs.qza",
+        "{tool}/4_tree/aligned-rep-seqs.qza",
     log:
         logging_folder + "qiime/mafft.txt"
     shell:
@@ -231,9 +232,9 @@ rule qiime_alignment_mask:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "4_tree/aligned-rep-seqs.qza",
+        "{tool}/4_tree/aligned-rep-seqs.qza",
     output:
-        "4_tree/masked-aligned-rep-seqs.qza",
+        "{tool}/4_tree/masked-aligned-rep-seqs.qza",
     log:
         logging_folder + "qiime/mafft_align_mask.txt"
     shell:
@@ -247,9 +248,9 @@ rule qiime_phylogeny_fasttree:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "4_tree/masked-aligned-rep-seqs.qza",
+        "{tool}/4_tree/masked-aligned-rep-seqs.qza",
     output:
-        "4_tree/unrooted-tree.qza",
+        "{tool}/4_tree/unrooted-tree.qza",
     log:
         logging_folder + "qiime/tree.txt"
     shell:
@@ -263,9 +264,9 @@ rule qiime_phylogeny_midpoint_root:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
     input:
-        "4_tree/unrooted-tree.qza",
+        "{tool}/4_tree/unrooted-tree.qza",
     output:
-        "4_tree/rooted-tree.qza",
+        "{tool}/4_tree/rooted-tree.qza",
     log:
         logging_folder + "qiime/tree_midpoint_rooted.txt"
     shell:
@@ -276,10 +277,58 @@ rule qiime_phylogeny_midpoint_root:
         '''
 
 
+rule qiime_export_sequences:
+    conda:
+        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/dna-sequences.fasta",
+    log:
+        logging_folder + "qiime/export_seq.txt"
+    shell:
+        '''
+        qiime tools export  {input[0]} --output-dir $( dirname {output[0]}) >> {log[0]}
+        '''
+
+'''
+# ajouter
+# output: 
+
+
+
+
+
+'''
+
+rule qiime1_assign_taxonomy:
+    conda:
+        pipeline_path + "envs/qiime1.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/dna-sequences.fasta",
+        pipeline_path + "data/{db_taxonomy}/EzBioCloud_V3V4.fasta",
+        pipeline_path + "data/{db_taxonomy}/EzBioCloud_V3V4_taxonomy.txt",
+    output:
+        "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
+        "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.log",
+    log:
+        logging_folder + "qiime/assign_taxonomy_{db_taxonomy}.txt"
+    shell:
+        '''
+        assign_taxonomy.py \
+          -i {input[0]} \
+          -r {input[1]}
+          -t {input[2]}\
+          -m rdp \
+          -o $(dirname {output[0]})  \
+          -c 0.5 \
+          --rdp_max_memory 30000          
+           >> {log[0]}
+        '''
 
 
 '''         
 qiime tools export ./1a_cutadapt_primers_trimming/trimmed_sequences.qza --output-dir ./1a_cutadapt_primers_trimming/exported/
-qiime tools export ./2_deblur_denoised/table_deblur_390.qza --output-dir ./2_deblur_denoised
-qiime tools export  ./2_deblur_denoised/seqs_deblur_390.qza --output-dir ./2_deblur_denoised
+qiime tools export ./2_deblur_denoised/table_deblur.qza --output-dir ./2_deblur_denoised
+qiime tools export  ./2_deblur_denoised/seqs_deblur.qza --output-dir ./2_deblur_denoised
 '''

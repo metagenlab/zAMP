@@ -3,7 +3,7 @@ rule prepare_manifest:
         R1_reads = expand("0_importing_data/raw_reads/{sample}_R1.fastq.gz", sample=list(read_naming.keys())),
         R2_reads = expand("0_importing_data/raw_reads/{sample}_R2.fastq.gz", sample=list(read_naming.keys())),
     output:
-        "0_importing_data/manifest.csv",
+        "{tool}/0_importing_data/manifest.csv",
     params:
         samples = list(read_naming.keys()),
         path = pipeline_path,

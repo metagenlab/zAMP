@@ -48,6 +48,7 @@ if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
 
 if "local_samples" in config.keys():
+    print(config.keys())
     local_data = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
     local_data.index = [str(x) for x in local_data.index]
     all_local_sample_names =  "".join(list(local_data.index))
