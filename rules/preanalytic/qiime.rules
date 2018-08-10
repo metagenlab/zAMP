@@ -111,10 +111,6 @@ rule qiime_quality_filter_q_score_joined:
             --verbose >> {log[0]}       
         '''
 
-
-
-
-
 rule qiime_deblur_denoise_16S:
     conda:
         pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
@@ -159,7 +155,7 @@ rule deblur_visualize_stats:
         '''
         qiime deblur visualize-stats \
             --i-deblur-stats {input[0]} \
-            --o-visualization ./ \
+            --o-visualization {output[0]} \
             --verbose     
         '''
 
@@ -291,15 +287,6 @@ rule qiime_export_sequences:
         qiime tools export  {input[0]} --output-dir $( dirname {output[0]}) >> {log[0]}
         '''
 
-'''
-# ajouter
-# output: 
-
-
-
-
-
-'''
 
 rule qiime1_assign_taxonomy:
     conda:
