@@ -49,7 +49,7 @@ rule qiime_demux_summarize:
     input:
         "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
     output:
-        "{tool}/1a_cutadapt_primers_trimming/visualization.qzv",
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qzv",
     log:
         logging_folder + "{tool}/demux_summarize.txt"
     shell:
@@ -67,7 +67,7 @@ rule qiime_vsearch_join_pairs:
     output:
         "{tool}/1b_vsearch_joining/joined_sequences.qza",
     log:
-        logging_folder + "{tool}/evsearch_join_pairs.txt"
+        logging_folder + "{tool}/vsearch_join_pairs.txt"
     shell:
         '''
         qiime vsearch join-pairs \
@@ -97,7 +97,7 @@ rule qiime_quality_filter_q_score_joined:
         "{tool}/1c_q_score_filtering/quality_filtered_stats.qza"
         # qiime2/1c_q_score_filtering/quality_filtered_sequences.qza
     log:
-        logging_folder + "{tool}/evsearch_join_pairs.txt"
+        logging_folder + "{tool}/vsearch_join_pairs.txt"
     shell:
         '''
          qiime quality-filter q-score-joined \
@@ -121,7 +121,7 @@ rule qiime_deblur_denoise_16S:
         "{tool}/2_denoised/{denoiser}/seqs.qza",
         "{tool}/2_denoised/{denoiser}/stats.qza",
     log:
-        logging_folder + "qiime/vsearch_join_pairs.txt"
+        logging_folder + "{tool}/{denoiser}_denoise.txt"
     threads:
         2
     params:
@@ -150,7 +150,7 @@ rule deblur_visualize_stats:
     output:
         "{tool}/2_denoised/{denoiser}/stats.qzv",
     log:
-        logging_folder + "qiime/deblur_visualize-stats.txt"
+        logging_folder + "{tool}/{denoiser}_visualize-stats.txt"
     shell:
         '''
         qiime deblur visualize-stats \
@@ -167,7 +167,7 @@ rule qiime_feature_table_summarize:
     output:
         "{tool}/2_denoised/{denoiser}/table.qzv",
     log:
-        logging_folder + "qiime/deblur_visualize-stats.txt"
+        logging_folder + "{tool}/{denoiser}_visualize-stats.txt"
     shell:
         '''
         qiime feature-table summarize \
@@ -184,7 +184,7 @@ rule qiime_feature_table_tabulate_seqs:
     output:
         "{tool}/2_denoised/{denoiser}/seqs.qzv",
     log:
-        logging_folder + "qiime/feature-table_tabulate-seqs.txt"
+        logging_folder + "{tool}/{denoiser}_feature-table_tabulate-seqs.txt"
     shell:
         '''
         qiime feature-table tabulate-seqs \
@@ -200,7 +200,7 @@ rule qiime_metadata_tabulate:
     output:
         "{tool}/1c_q_score_filtering/quality_filtered_stats.qzv",
     log:
-        logging_folder + "qiime/metadata_tabulate-seqs.txt"
+        logging_folder + "{tool}/metadata_tabulate-seqs.txt"
     shell:
         '''
         qiime metadata tabulate \
@@ -216,7 +216,7 @@ rule qiime_alignment_mafft:
     output:
         "{tool}/4_tree/aligned-rep-seqs.qza",
     log:
-        logging_folder + "qiime/mafft.txt"
+        logging_folder + "{tool}/mafft.txt"
     shell:
         '''
             qiime alignment mafft \
@@ -232,7 +232,7 @@ rule qiime_alignment_mask:
     output:
         "{tool}/4_tree/masked-aligned-rep-seqs.qza",
     log:
-        logging_folder + "qiime/mafft_align_mask.txt"
+        logging_folder + "{tool}/mafft_align_mask.txt"
     shell:
         '''
         qiime alignment mask \
@@ -248,7 +248,7 @@ rule qiime_phylogeny_fasttree:
     output:
         "{tool}/4_tree/unrooted-tree.qza",
     log:
-        logging_folder + "qiime/tree.txt"
+        logging_folder + "{tool}/tree.txt"
     shell:
         '''
         qiime phylogeny fasttree \
@@ -264,7 +264,7 @@ rule qiime_phylogeny_midpoint_root:
     output:
         "{tool}/4_tree/rooted-tree.qza",
     log:
-        logging_folder + "qiime/tree_midpoint_rooted.txt"
+        logging_folder + "{tool}/tree_midpoint_rooted.txt"
     shell:
         '''
         qiime phylogeny midpoint-root \
@@ -281,7 +281,7 @@ rule qiime_export_sequences:
     output:
         "{tool}/2_denoised/{denoiser}/dna-sequences.fasta",
     log:
-        logging_folder + "qiime/export_seq.txt"
+        logging_folder + "{tool}/{denoiser}_export_seq.txt"
     shell:
         '''
         qiime tools export  {input[0]} --output-dir $( dirname {output[0]}) >> {log[0]}
@@ -299,7 +299,7 @@ rule qiime1_assign_taxonomy:
         "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
         "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.log",
     log:
-        logging_folder + "qiime/assign_taxonomy_{db_taxonomy}.txt"
+        logging_folder + "{tool}/{denoiser}_assign_taxonomy_{classifier}_{db_taxonomy}.txt"
     shell:
         '''
         export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;

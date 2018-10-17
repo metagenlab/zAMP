@@ -18,7 +18,7 @@ rule all:
         "qiime2/2_denoised/deblur/seqs.qzv",
         "qiime2/2_denoised/deblur/table.qzv",
         "qiime2/2_denoised/deblur/stats.qzv",
-        "qiime2/1a_cutadapt_primers_trimming/visualization.qzv",
+        "qiime2/1a_cutadapt_primers_trimming/trimmed_sequences.qzv",
         "qiime2/1c_q_score_filtering/quality_filtered_stats.qzv",
         "qiime2/3_classified/deblur/RDP/ezbiocloud_valentin/dna-sequences_tax_assignments.txt",
         #"qiime2/4_tree/rooted-tree.qza",
