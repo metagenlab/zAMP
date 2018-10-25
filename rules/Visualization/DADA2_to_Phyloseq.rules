@@ -1,0 +1,17 @@
+rule DADA2_q_filtering_R:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        count_table = "DADA2/2_denoised/count_table.txt"
+        Metadata_table = "./Metadata.tsv"
+        taxonomy_table = "DADA2/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+        tax_tree = "DADA2/4_tree/tree.nwk"
+    output:
+        phyloseq_object = "DADA2/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object"
+    log:
+        logging_folder + "DADA2/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object.txt"
+    params:
+        viz_replace_empty_tax = config["viz_replace_empty_tax]
+
+    script:
+        "scripts/DADA2_to_phyloseq.R"

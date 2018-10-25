@@ -1,6 +1,7 @@
 #mandatory, one of them or both
 sra_samples: example_sra_samples.tsv
 local_samples: example_local_samples.tsv
+metadata: Metadata.tsv
 
 # Trimming
 forward_primer: CCTACGGGNGGCWGCAG
@@ -14,3 +15,6 @@ merged_max_length: 500
 
 #filtering
 deblur_p_trim_length: 390
+
+# Visualization
+viz_replace_empty_tax: TRUE

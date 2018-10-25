@@ -15,7 +15,8 @@ rule all:
          "DADA2/2_denoised/count-table.qzv",
          "QC/multiqc_filtered_reads_report.html",
          "QC/multiqc_raw_reads_report.html",
-         "DADA2/4_tree/tree.nwk"
+         "DADA2/4_tree/tree.nwk",
+         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_object"
 
 
 
