@@ -1,0 +1,33 @@
+rule cutadapt_trim_for_DADA2:
+    conda:
+        "../../envs/cutadapt.yml"
+    input:
+        R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
+        R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
+    output:
+        R1_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz",
+        R2_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz" ,
+        cutadapt_logs = "{tool}/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt"
+    log:
+        "{tool}/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt"
+    params:
+        forward_primer = config["forward_primer"],
+        reverse_primer = config["reverse_primer"]
+    threads:
+        1
+    shell:
+        '''
+        cutadapt \
+        --cores {threads} \
+        --error-rate 0.1 \
+        --times 1 \
+        --overlap 3 \
+        -o {output[R1_trimmed_reads]} \
+        -p {output[R2_trimmed_reads]} \
+        -g '{params[forward_primer]}' \
+        -G '{params[reverse_primer]}' \
+        --match-read-wildcards \
+        {input[R1_raw_reads]} \
+        {input[R2_raw_reads]} >> {output[cutadapt_logs]} \
+        --info-file
+        '''

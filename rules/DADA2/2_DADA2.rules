@@ -1,0 +1,41 @@
+rule DADA2_q_filtering_R:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        R1_list = expand("DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", sample=list(read_naming.keys())),
+        R2_list = expand("DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz", sample=list(read_naming.keys()))
+    output:
+        q_score_filtered_Fs = expand("DADA2/1b_q_score_filtered/{sample}_filtered_R1.fastq.gz", sample=list(read_naming.keys())),
+        q_score_filtered_Rs = expand("DADA2/1b_q_score_filtered/{sample}_filtered_R2.fastq.gz", sample=list(read_naming.keys())),
+        filtering_stats = "DADA2/1b_q_score_filtered/DADA2_q_score_filtering_stats.tsv"
+    log:
+        logging_folder + "DADA2/1b_q_score_filtered/DADA2_1b_q_score_filtering.txt"
+    params:
+        F_reads_length_trim = config["DADA2_F_reads_length_trim"],
+        R_reads_length_trim = config["DADA2_R_reads_length_trim"]
+    threads:
+        4
+    script:
+        "scripts/1_DADA2_q_filtering.R"
+
+rule DADA2_denoising_R:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        q_score_filtered_Fs = expand("DADA2/1b_q_score_filtered/{sample}_filtered_R1.fastq.gz", sample=list(read_naming.keys())),
+        q_score_filtered_Rs = expand("DADA2/1b_q_score_filtered/{sample}_filtered_R2.fastq.gz", sample=list(read_naming.keys())),
+        q_score_filtering_stats = "DADA2/1b_q_score_filtered/DADA2_q_score_filtering_stats.tsv"
+    output:
+        filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
+        dna_sequences = "DADA2/2_denoised/dna-sequences.fasta",
+        count_table = "DADA2/2_denoised/count_table.txt",
+        otu_biom = "DADA2/2_denoised/otu_biom.biom"
+    log:
+        logging_folder + "DADA2/2_denoised/DADA2_2_denoising.txt"
+    params:
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
+    threads:
+        4
+    script:
+        "scripts/2_DADA2_denoising.R"

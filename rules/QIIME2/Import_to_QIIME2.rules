@@ -1,0 +1,68 @@
+rule import_count_table_to_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/2_denoised/otu_biom.biom"
+    output:
+        "{tool}/2_denoised/count-table.qza"
+    log:
+        logging_folder + "{tool}/2_denoised/count-table.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --type 'FeatureTable[Frequency]' \
+        --input-format BIOMV100Format \
+        --output-path {output[0]}
+        '''
+
+rule create_visualize_count_table_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/2_denoised/count-table.qza"
+    output:
+        "{tool}/2_denoised/count-table.qzv"
+    log:
+        logging_folder + "{tool}/2_denoised/count-table_qzv.txt"
+    shell:
+        '''
+        qiime feature-table summarize \
+        --i-table {input[0]} \
+        --o-visualization {output[0]} \
+        '''
+
+
+rule import_rep_seq_to_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/2_denoised/dna-sequences.fasta"
+    output:
+        "{tool}/2_denoised/rep-seqs.qza"
+    log:
+        logging_folder + "{tool}/2_denoised/rep-seqs.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --output-path {output[0]} \
+        --type 'FeatureData[Sequence]'
+        '''
+
+
+rule create_visualize_rep_seq_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/2_denoised/rep-seqs.qza"
+    output:
+        "{tool}/2_denoised/rep-seqs.qzv"
+    log:
+        logging_folder + "{tool}/2_denoised/rep-seqs_qzv.txt"
+    shell:
+        '''
+        qiime feature-table tabulate-seqs \
+        --i-data {input[0]} \
+        --o-visualization {output[0]}
+        '''

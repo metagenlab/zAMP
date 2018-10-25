@@ -1,0 +1,28 @@
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - r-base = 3.5.1
+ - r-ggplot2 = 3.0.0
+ - r-vegan = 2.5.2
+ - r-dplyr = 0.7.7
+ - r-scales = 1.0.0
+ - r-grid = 3.5.0
+ - r-reshape2 = 1.4.3
+ - r-phyloseq = 1.24.2
+ - r-RColorBrewer = 1.1.2
+ - r-randomcoloR = 1.1.0
+ - r-tidyverse = 1.2.1
+ - r-qiime2R = 0.99.1
+library(biom)
+library(data.table)
+library(forcats)
+library(ggpubr)
+library(psadd)
+library(taxa)
+library(metacoder)
+library(rlang)
+library("DESeq2")
+library("gtools")
+library(grid)
+library("decontam")

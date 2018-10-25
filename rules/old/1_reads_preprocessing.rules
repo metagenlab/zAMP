@@ -1,0 +1,172 @@
+# raw or trimmed sequences?
+rule qiime_cutadapt_trim_paired:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/0_importing_data/imported_data.qza",
+    output:
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+    threads:
+        4
+    log:
+        logging_folder + "{tool}/cutadapt_trim-paired.txt"
+    shell:
+        """
+        qiime cutadapt trim-paired \
+        --i-demultiplexed-sequences {input[0]} \
+        --p-cores {threads} \
+        --p-front-f CCTACGGGNGGCWGCAG \
+        --p-front-r GACTACHVGGGTATCTAATCC \
+        --p-match-read-wildcards \
+        --p-match-adapter-wildcards \
+        --o-trimmed-sequences  {output[0]} \
+        --verbose
+        >> {log[0]}          
+        """
+
+rule qiime_demux_summarize:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+    output:
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qzv",
+    log:
+        logging_folder + "{tool}/demux_summarize.txt"
+    shell:
+        """
+        qiime demux summarize \
+          --i-data {input[0]} \
+          --o-visualization {output[0]} >> {log[0]}          
+        """
+
+
+rule qiime_feature_table_summarize:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/table.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/table.qzv",
+    log:
+        logging_folder + "{tool}/{denoiser}_visualize-stats.txt"
+    shell:
+        '''
+        qiime feature-table summarize \
+          --i-table {input[0]} \
+          --o-visualization {output[0]} >> {log[0]}
+        '''
+
+
+rule qiime_feature_table_tabulate_seqs:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/seqs.qzv",
+    log:
+        logging_folder + "{tool}/{denoiser}_feature-table_tabulate-seqs.txt"
+    shell:
+        '''
+        qiime feature-table tabulate-seqs \
+          --i-data {input[0]} \
+          --o-visualization {output[0]} >> {log[0]}
+        '''
+
+rule qiime_metadata_tabulate:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qza",
+    output:
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qzv",
+    log:
+        logging_folder + "{tool}/metadata_tabulate-seqs.txt"
+    shell:
+        '''
+        qiime metadata tabulate \
+          --m-input-file {input[0]} \
+          --o-visualization {output[0]} >> {log[0]}
+        '''
+
+rule qiime_alignment_mafft:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+    output:
+        "{tool}/4_tree/aligned-rep-seqs.qza",
+    log:
+        logging_folder + "{tool}/mafft.txt"
+    shell:
+        '''
+            qiime alignment mafft \
+              --i-sequences {input[0]} \
+              --o-alignment {output[0]} >> {log[0]}
+        '''
+
+rule qiime_alignment_mask:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/4_tree/aligned-rep-seqs.qza",
+    output:
+        "{tool}/4_tree/masked-aligned-rep-seqs.qza",
+    log:
+        logging_folder + "{tool}/mafft_align_mask.txt"
+    shell:
+        '''
+        qiime alignment mask \
+          --i-alignment {input[0]} \
+          --o-masked-alignment {output[0]}>> {log[0]}
+        '''
+
+rule qiime_phylogeny_fasttree:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/4_tree/masked-aligned-rep-seqs.qza",
+    output:
+        "{tool}/4_tree/unrooted-tree.qza",
+    log:
+        logging_folder + "{tool}/tree.txt"
+    shell:
+        '''
+        qiime phylogeny fasttree \
+          --i-alignment input[0] \
+          --o-tree {output[0]}>> {log[0]}
+        '''
+
+rule qiime_phylogeny_midpoint_root:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/4_tree/unrooted-tree.qza",
+    output:
+        "{tool}/4_tree/rooted-tree.qza",
+    log:
+        logging_folder + "{tool}/tree_midpoint_rooted.txt"
+    shell:
+        '''
+        qiime phylogeny midpoint-root \
+          --i-tree {input[0]} \
+          --o-rooted-tree {output[0]}>> {log[0]}
+        '''
+
+
+rule qiime_export_sequences:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/dna-sequences.fasta",
+    log:
+        logging_folder + "{tool}/{denoiser}_export_seq.txt"
+    shell:
+        '''
+        qiime tools export  {input[0]} --output-dir $( dirname {output[0]}) >> {log[0]}
+        '''
+
+

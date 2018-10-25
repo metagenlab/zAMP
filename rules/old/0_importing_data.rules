@@ -17,3 +17,21 @@ rule prepare_manifest:
             echo $i,$PWD/raw_reads/$i\_R2.fastq.gz,"reverse" >> {output[0]}
         done        
         """
+
+rule qiime_import:
+    conda:
+        "../envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/0_importing_data/manifest.csv",
+    output:
+        "{tool}/0_importing_data/imported_data.qza",
+    log:
+        logging_folder + "{tool}/import.txt"
+    shell:
+        """
+        qiime tools import \
+        --type 'SampleData[PairedEndSequencesWithQuality]' \
+        --input-path {input[0]} \
+        --output-path {output[0]} \
+        --source-format PairedEndFastqManifestPhred33 >> {log[0]}          
+        """

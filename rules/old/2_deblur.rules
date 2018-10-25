@@ -1,0 +1,98 @@
+rule qiime_vsearch_join_pairs:
+    conda:
+        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/1a_cutadapt_primers_trimming/trimmed_sequences.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/1b_vsearch_joining/joined_sequences.qza",
+    log:
+        logging_folder + "{tool}/vsearch_join_pairs.txt"
+    shell:
+        '''
+        qiime vsearch join-pairs \
+          --i-demultiplexed-seqs {input[0]} \
+          --o-joined-sequences {output[0]} \
+          --p-minovlen 20 \
+          --p-maxdiffs 3 \
+          --p-minmergelen 350 \
+          --p-maxmergelen 600 \
+          --verbose >> {log[0]}       
+        '''
+
+
+'''
+qiime demux summarize \
+  --i-data ./1b_vsearch_joining/joined_sequences.qza \
+  --o-visualization ./1b_vsearch_joining/joined_sequences.qzv
+'''
+
+rule qiime_quality_filter_q_score_joined:
+    conda:
+        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/1b_vsearch_joining/joined_sequences.qza",
+    output:
+        "{tool}/1c_q_score_filtering/quality_filtered_sequences.qza",
+        "{tool}/1c_q_score_filtering/quality_filtered_stats.qza"
+    log:
+        logging_folder + "{tool}/vsearch_join_pairs.txt"
+    shell:
+        '''
+         qiime quality-filter q-score-joined \
+            --i-demux {input[0]} \
+            --p-min-quality 20 \
+            --p-quality-window 3 \
+            --p-min-length-fraction 0.75 \
+            --p-max-ambiguous 0 \
+            --o-filtered-sequences {output[0]} \
+            --o-filter-stats {output[1]} \
+            --verbose >> {log[0]}       
+        '''
+
+rule qiime_deblur_denoise_16S:
+    conda:
+        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/1c_q_score_filtering/quality_filtered_sequences.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/table.qza",
+        "{tool}/2_denoised/{denoiser}/seqs.qza",
+        "{tool}/2_denoised/{denoiser}/stats.qza",
+    log:
+        logging_folder + "{tool}/{denoiser}_denoise.txt"
+    threads:
+        2
+    params:
+        trim_length = config["deblur_p_trim_length"],
+    shell:
+        '''
+        qiime deblur denoise-16S \
+            --i-demultiplexed-seqs {input[0]} \
+            --p-trim-length {params[0]} \
+            --p-sample-stats \
+            --p-min-reads 2 \
+            --p-min-size 2 \
+            --p-hashed-feature-ids \
+            --p-jobs-to-start {threads} \
+            --o-table {output[0]} \
+            --o-representative-sequences {output[1]} \
+            --o-stats {output[2]} \
+            --verbose >> {log[0]}       
+        '''
+
+rule deblur_visualize_stats:
+    conda:
+        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
+    input:
+        "{tool}/2_denoised/{denoiser}/stats.qza",
+    output:
+        "{tool}/2_denoised/{denoiser}/stats.qzv",
+    log:
+        logging_folder + "{tool}/{denoiser}_visualize-stats.txt"
+    shell:
+        '''
+        qiime deblur visualize-stats \
+            --i-deblur-stats {input[0]} \
+            --o-visualization {output[0]} \
+            --verbose     
+        '''

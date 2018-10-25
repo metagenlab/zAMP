@@ -1,0 +1,40 @@
+rule create_tree_in_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/2_denoised/rep-seqs.qza"
+    output:
+        aligned = "{tool}/4_tree/aligned-rep-seqs.qza" ,
+        masked = "{tool}/4_tree/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/4_tree/unrooted-tree.qza" ,
+        rooted = "{tool}/4_tree/rooted-tree.qza"
+    log:
+        logging_folder + "{tool}/4_tree/tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-fasttree \
+          --p-n-threads {threads} \
+          --i-sequences {input[0]} \
+          --o-alignment {output[aligned]} \
+          --o-masked-alignment {output[masked]} \
+          --o-tree {output[unrooted]} \
+          --o-rooted-tree {output[rooted]}
+        '''
+
+rule export_QIIME2_tree:
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/4_tree/rooted-tree.qza"
+    output:
+        "{tool}/4_tree/tree.nwk"
+    log:
+        logging_folder + "{tool}/4_tree/tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime tools export --input-path {input} --output-path $(dirname {output[0]})
+        '''

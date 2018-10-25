@@ -1,21 +1,4 @@
 
-rule qiime_import:
-    conda:
-        pipeline_path + "envs/qiime2-2018.6-py35-linux-conda.yml"
-    input:
-        "{tool}/0_importing_data/manifest.csv",
-    output:
-        "{tool}/0_importing_data/imported_data.qza",
-    log:
-        logging_folder + "{tool}/import.txt"
-    shell:
-        """
-        qiime tools import \
-        --type 'SampleData[PairedEndSequencesWithQuality]' \
-        --input-path {input[0]} \
-        --output-path {output[0]} \
-        --source-format PairedEndFastqManifestPhred33 >> {log[0]}          
-        """
 
 # raw or trimmed sequences?
 rule qiime_cutadapt_trim_paired:
@@ -296,7 +279,6 @@ rule qiime1_assign_taxonomy:
         pipeline_path + "data/{db_taxonomy}/EzBioCloud_V3V4.fasta",
         pipeline_path + "data/{db_taxonomy}/EzBioCloud_V3V4_taxonomy.txt",
     output:
-        "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
         "{tool}/3_classified/{denoiser}/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.log",
     log:
         logging_folder + "{tool}/{denoiser}_assign_taxonomy_{classifier}_{db_taxonomy}.txt"
