@@ -1,7 +1,6 @@
 #mandatory, one of them or both
 sra_samples: example_sra_samples.tsv
-local_samples: example_local_samples.tsv
-metadata: Metadata.tsv
+local_samples: Metadata.tsv
 
 # Trimming
 forward_primer: CCTACGGGNGGCWGCAG
@@ -18,3 +17,4 @@ deblur_p_trim_length: 390
 
 # Visualization
 viz_replace_empty_tax: TRUE
+grouping_column: PatientID

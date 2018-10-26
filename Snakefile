@@ -15,8 +15,9 @@ rule all:
          "DADA2/2_denoised/count-table.qzv",
          "QC/multiqc_filtered_reads_report.html",
          "QC/multiqc_raw_reads_report.html",
-         "DADA2/4_tree/tree.nwk",
-         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_object"
+         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_object",
+         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
+         expand("{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA/{sample}", sample=list(read_naming.keys()))
 
 
 
@@ -31,3 +32,5 @@ include: "rules/QIIME/3_assign_taxonomy.rules"
 include: "rules/QIIME2/4_tree.rules"
 include: "rules/QIIME2/Import_to_QIIME2.rules"
 # include: "rules/qiime.rules"
+include: "rules/Visualization/DADA2_to_Phyloseq.rules"
+include: "rules/Visualization/General_plotting.rules"

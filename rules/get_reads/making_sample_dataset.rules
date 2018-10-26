@@ -97,7 +97,7 @@ if "sra_samples" in config.keys():
             sras_ext[sample_name] = ["fastq.gz"]
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
-        all_samples.loc[sample_name, "Replicate"]=sra_data.loc[i, "Replicate"]
+        # all_samples.loc[sample_name, "Replicate"]=sra_data.loc[i, "Replicate"]
 
 read_naming = {**reads_local, **sras_ext}
 original_names = {**original_names, **reads_sra}

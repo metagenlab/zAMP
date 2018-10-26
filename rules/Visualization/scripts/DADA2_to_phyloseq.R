@@ -44,7 +44,7 @@ load_objects_fct <- function(features_counts_table, Metadata_table, taxonomy_tab
     # Read taxonomy table
 
         ### Load into R a table with all Features ID and their taxonomic assignemnt.
-        taxonomy_table<-read.table(paste0(taxonomy_table), header = FALSE, sep = "\t")
+        taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 
         ### Convert the table into a tabular split version
         taxonomy_table<-taxonomy_table %>% as.tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
@@ -88,7 +88,7 @@ load_objects_fct <- function(features_counts_table, Metadata_table, taxonomy_tab
 
 
 ## Run the function to load all elements in R
-load_objects_fct(features_counts_table = features_counts_table, Metadata_table = Metadata_table, taxonomy_table = taxonomy_table, replace_empty_tax = replace_empty_tax, tax_tree = tax_tree)
+load_objects_fct(features_counts_table = features_counts_table, Metadata_table = Metadata_table, taxonomy_table = taxonomy_table, replace_empty_tax = TRUE, tax_tree = tax_tree)
 
 
 # Import all as phyloseq objects
@@ -96,18 +96,22 @@ OTU <- otu_table(count_table, taxa_are_rows = TRUE)
 TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
 META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
 
+
 # Sanity checks for consistent OTU names
 taxa_names(TAX)
 taxa_names(OTU)
-taxa_names(phylo_tree)
+taxa_names(PHY)
+
 
 # Same sample names
 sample_names(OTU)
 sample_names(META)
 
+
+
 # Finally merge!
-phyloseq_obj <- phyloseq(OTU, TAX, META, phylo_tree)
+phyloseq_obj <- phyloseq(OTU, TAX, META, PHY)
 
 # Write the phyloseq object
-save(phyloseq_obj, file = phyloseq_object)
+save(matrix   phyloseq_obj, file = phyloseq_object)
 

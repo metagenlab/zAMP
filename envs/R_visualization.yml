@@ -1,27 +1,28 @@
 channels:
+ - r
  - bioconda
  - conda-forge
+ - defaults
+ - bioconda
+ - biocore
 dependencies:
  - r-base = 3.5.1
  - r-ggplot2 = 3.0.0
  - r-vegan = 2.5.2
- - r-dplyr = 0.7.7
+ - r-dplyr = 0.7.6
  - r-scales = 1.0.0
- - r-grid = 3.5.0
+# - r-grid = 3.5.0
  - r-reshape2 = 1.4.3
- - r-phyloseq = 1.24.2
+ - bioconductor-phyloseq = 1.24.2
  - r-RColorBrewer = 1.1.2
- - r-randomcoloR = 1.1.0
+# - r-randomcoloR = 1.1.0
  - r-tidyverse = 1.2.1
- - r-biom = 0.4.0
  - r-data.table = 1.11.4
  - r-forcats = 0.3.0
  - r-ggpubr = 0.1.8
- - r-psadd = 0.1.2
- - r-taxa = 0.3.1
- - r-metacoder = 0.3.0
+# - bioconductor-psadd = 0.1.2
+# - r-taxa = 0.2.1
  - r-rlang = 0.2.2
- - r-DESeq2 = 1.20.0
+ - bioconductor-deseq2 = 1.20.0
  - r-gtools = 3.8.1
- - r-grid = 3.5.0
- - r-decontam = 1.1.0
+# - r-decontam = 1.1.0
