@@ -1,0 +1,62 @@
+rule PANDAseq_trim_pair_reads:
+    conda:
+        "../../envs/PANDAseq.yml"
+    input:
+        R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
+        R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
+    output:
+        paired_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_paired_trimmed.fasta",
+    log:
+        "{tool}/1a_trimmed_primers/logs/{sample}_export_PANDAseq_trim-paired.txt"
+    params:
+        forward_primer = config["forward_primer"],
+        reverse_primer = config["reverse_primer"]
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
+
+    threads:
+        1
+    shell:
+        '''
+        pandaseq \
+        -f {input[R1_raw_reads]} \
+        -r {input[R2_raw_reads]} \
+        -p {params[forward_primer]} \
+        -q {params[reverse_primer]} \
+        -A simple_bayesian \
+        -l {params[merged_min_length]} \
+        -L {params[merged_max_length]} \
+        -g {log} \
+        -w {output[paired_trimmed_reads]} \
+        no_tags_param output_type_param ambigous_param \
+        -B \
+        -N
+        '''
+
+
+rule vsearch_dereplicate_samples:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "{tool}/1a_trimmed_primers/{sample}_paired_trimmed.fasta"
+    output:
+        "{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.fasta"
+    log:
+        "{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.txt"
+    threads:
+        1
+    shell:
+        '''
+        vsearch --derep_fulllength {input} --sizeout --output {output}
+        '''
+
+
+rule cat_fasta_sequences:
+    input:
+        expand("{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.fasta", sample=list(read_naming.keys()))
+    output:
+        "{tool}/1a_trimmed_primers/merged_all.fasta"
+    shell:
+        '''
+        cat
+        '''
