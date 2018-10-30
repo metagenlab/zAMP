@@ -37,8 +37,8 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
         "../../envs/FastQC.yml"
     input:
-        "{tool}/1b_q_score_filtered/{sample}_filtered_R1.fastq.gz",
-        "{tool}/1b_q_score_filtered/{sample}_filtered_R2.fastq.gz",
+        "{tool}/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
+        "{tool}/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
     output:
         "QC/FastQC/filtered/{tool}/{sample}_filtered_R1_fastqc.zip",
         "QC/FastQC/filtered/{tool}/{sample}_filtered_R2_fastqc.zip",

@@ -17,4 +17,5 @@ deblur_p_trim_length: 390
 
 # Visualization
 viz_replace_empty_tax: TRUE
-grouping_column: PatientID
+grouping_column: "PatientID"
+x_axis_column: "Sample"

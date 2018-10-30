@@ -5,12 +5,12 @@ rule PANDAseq_trim_pair_reads:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
         R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
     output:
-        paired_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_paired_trimmed.fasta",
+        paired_trimmed_reads = "Marta/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta",
     log:
-        "{tool}/1a_trimmed_primers/logs/{sample}_export_PANDAseq_trim-paired.txt"
+        logging_folder + "Marta/1b_q_score_filtered_paired/logs/{sample}_trimmed_paired.fasta.txt"
     params:
         forward_primer = config["forward_primer"],
-        reverse_primer = config["reverse_primer"]
+        reverse_primer = config["reverse_primer"],
         merged_min_length = config["merged_min_length"],
         merged_max_length = config["merged_max_length"]
 
@@ -28,35 +28,190 @@ rule PANDAseq_trim_pair_reads:
         -L {params[merged_max_length]} \
         -g {log} \
         -w {output[paired_trimmed_reads]} \
-        no_tags_param output_type_param ambigous_param \
         -B \
         -N
         '''
-
 
 rule vsearch_dereplicate_samples:
     conda:
         "../../envs/QIIME1.yml"
     input:
-        "{tool}/1a_trimmed_primers/{sample}_paired_trimmed.fasta"
+        "Marta/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
     output:
-        "{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.fasta"
+        "Marta/1c_derep/{sample}_derep.fasta"
     log:
-        "{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.txt"
+         logging_folder + "Marta/1b_derep/{sample}_derep.txt"
     threads:
         1
     shell:
         '''
-        vsearch --derep_fulllength {input} --sizeout --output {output}
+        vsearch --derep_fulllength {input} \
+                --sizeout \
+                --output {output} \
+                2> {log}
         '''
 
 
 rule cat_fasta_sequences:
     input:
-        expand("{tool}/1a_trimmed_primers/{sample}_derep_paired_trimmed.fasta", sample=list(read_naming.keys()))
+        expand("Marta/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta", sample=list(read_naming.keys())),
     output:
-        "{tool}/1a_trimmed_primers/merged_all.fasta"
+        "Marta/1c_derep/merged_all.fasta"
     shell:
         '''
-        cat
+        cat {input} >> {output}
+        '''
+
+rule vsearch_derepicate_all:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "Marta/1c_derep/merged_all.fasta"
+    output:
+        "Marta/1c_derep/derep_merged_all.fasta"
+    log:
+         logging_folder + "Marta/1c_all_merged_sequences/dereplicate_all.txt"
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+                --sizeout \
+                --minuniquesize 2 \
+                --output {output} \
+                2> {log}
+        '''
+
+rule vsearch_cluster:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "Marta/1c_derep/derep_merged_all.fasta"
+    output:
+        centroid = "Marta/2_denoised/clustering/centroid_min2.fasta",
+        consout = "Marta/2_denoised/clustering/consout_min2.fasta",
+        profile = "Marta/2_denoised/clustering/profile_min2.fasta"
+    log:
+         logging_folder + "Marta/2_denoised/clustering.txt"
+    shell:
+        '''
+        vsearch --cluster_size {input} \
+                --sizein \
+                --id 0.97 \
+                --centroids {output[centroid]} \
+                --consout {output[consout]} \
+                --profile {output[profile]} \
+                2> {log}
+        '''
+
+
+rule vsearch_chimera_detection:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "Marta/2_denoised/clustering/consout_min2.fasta"
+    output:
+        non_chimeras = "Marta/2_denoised/chimera_filtering/nochimeras_min2.fasta",
+        borderline = "Marta/2_denoised/chimera_filtering/borderline_min2.fasta",
+        chimera_out = "Marta/2_denoised/chimera_filtering/uchimeout_min2.txt"
+    log:
+         logging_folder + "Marta/2_denoised/chimera_filtering.txt"
+    shell:
+        '''
+        vsearch --uchime_denovo {input} \
+        --abskew 2 \
+        --sizein \
+        --nonchimeras {output[non_chimeras]} \
+        --borderline {output[borderline]} \
+        --uchimeout {output[chimera_out]} \
+        2> {log}
+        '''
+
+rule vsearch_derep_consensus :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "Marta/2_denoised/chimera_filtering/nochimeras_min2.fasta"
+    output:
+        "Marta/2_denoised/dna-sequences.fasta",
+    log:
+         logging_folder + "Marta/2_denoised/chimera_filtering.txt"
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+        --sizein \
+        --relabel OTU_ \
+        --xsize \
+        --output {output} \
+        2> {log}
+        '''
+
+rule vsearch_count_occurences :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "Marta/1c_derep/{sample}_derep.fasta",
+        rep_seq = "Marta/2_denoised/dna-sequences.fasta"
+    output:
+        "Marta/2_denoised/countOTUs/{sample}_count_table.txt",
+    log:
+         logging_folder + "Marta/2_denoised/countOTUs/{sample}_count_table.txt"
+    shell:
+        '''
+        vsearch --usearch_global {input[0]} \
+        -otutabout {output} \
+        -id 0.97 \
+        -strand plus \
+        --db {input[rep_seq]} \
+        2> {log}
+        '''
+
+rule reformat_tax_table :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        tax_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    output:
+        full_taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments_reformatted.txt"
+    log:
+        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments_reformatted.txt"
+    script:
+        "scripts/reformat_tax_table.R"
+
+
+rule create_count_table :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        full_taxonomy_table = "Marta/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments_reformatted.txt",
+        count_table_samples = expand("Marta/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
+    output:
+        count_table = "Marta/2_denoised/count_table.txt"
+    log:
+        logging_folder +  "Marta/2_denoised/count_table.txt"
+    script:
+        "scripts/create_counts_table.R"
+
+
+rule read_counts_per_sample :
+    input:
+        "Marta/1c_derep/{sample}_derep.fasta"
+    output:
+        "Marta/2_denoised/reads_counts/{sample}_reads_count.txt"
+    log:
+        logging_folder +  "Marta/2_denoised/reads_counts/{sample}_reads_count.txt"
+    shell:
+        '''
+        grep ">" {input} | wc -l >> {output}
+        '''
+
+
+rule read_counts_merge :
+    input:
+        expand("Marta/2_denoised/reads_counts/{sample}_reads_count.txt",sample=list(read_naming.keys())),
+    output:
+        "Marta/2_denoised/all_samples_reads_count.txt"
+    log:
+        logging_folder +  "Marta/2_denoised/all_samples_reads_count.txt"
+    shell:
+        '''
+        cat {input} >> {output}
         '''

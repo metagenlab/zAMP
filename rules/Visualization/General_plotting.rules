@@ -2,12 +2,12 @@ rule KRONA_plots:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_melted_table.tsv"
+        phyloseq_melted_table = "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv"
     output:
-        expand("{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA/{sample}", sample=list(read_naming.keys()))
+        output = expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys()))
     params:
         grouping_column = config["grouping_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA/{sample}.txt"
+        logging_folder + "DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA.txt"
     script:
         "scripts/KRONA_plots.R"
