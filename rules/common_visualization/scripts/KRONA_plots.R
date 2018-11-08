@@ -5,9 +5,9 @@
 
 ## Inspired from https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32
 ## Redirect R output
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
