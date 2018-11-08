@@ -5,8 +5,8 @@ rule KRONA_plots:
         phyloseq_melted_table = "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv"
     output:
         output = expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys()))
-    params:
-        grouping_column = config["grouping_column"]
+    # params:
+    #    grouping_column = config["grouping_column"]
     log:
         logging_folder + "DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA.txt"
     script:

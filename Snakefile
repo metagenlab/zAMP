@@ -12,6 +12,7 @@ rule all:
         "QC/multiqc_raw_reads_report.html",
         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_object",
         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
         expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys())),
         "Marta/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments.txt",
         "Marta/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments_reformatted.txt",
