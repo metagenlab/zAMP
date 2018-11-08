@@ -19,7 +19,7 @@ count_table_samples <- snakemake@input[["count_table_samples"]]
 print(full_taxonomy_table)
 
 ## Output
-count_table <- snakemake@output[["count_table"]]
+count_table <- snakemake@output[["otus_tax_table"]]
 
 ## Read full_full_taxonomy_table
 
@@ -40,6 +40,9 @@ for (xx in count_table_samples){
 otus_table <- otus_table[-1,]
 colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
 
+
 # Add the taxonomy and save it for downstream analyses & plotting
 otus_tax_table <- left_join(otus_table, tax_table)
-write.table(otus_tax_table, file.path(count_table), row.names=F, col.names=T, sep="\t")
+
+
+write.table(x = otus_tax_table,  file = file.path(count_table), row.names=F, col.names=T, sep="\t")

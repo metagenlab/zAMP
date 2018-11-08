@@ -31,6 +31,9 @@ for (xx in 1:nrow(rdp_table)){
 
 colnames(tax_table)<-c("kingdom","phylum","class","order","family","genus","species")
 tax_table <- as.data.frame(cbind("OTU_ID"=rdp_table$V1, tax_table))
+
+print(tax_table)
+
 # and now save the resulting table for further use
-write.table(tax_table, file.path(full_taxonomy_table), append = F, quote = F, sep = "\t", eol = "\n", row.names = F, col.names = T)
-####
+write.table(file = tax_table, file.path(full_taxonomy_table), append = F, quote = F, sep = "\t", eol = "\n", row.names = F, col.names = T)
+

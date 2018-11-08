@@ -1,4 +1,4 @@
-rule qiime1_assign_taxonomy:
+rule QIIME1_assign_taxonomy:
     conda:
         "../../envs/QIIME1.yml"
     input:

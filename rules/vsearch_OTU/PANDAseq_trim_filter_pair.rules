@@ -1,0 +1,33 @@
+rule PANDAseq_trim_pair_reads:
+    conda:
+        "../../envs/PANDAseq.yml"
+    input:
+        R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
+        R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
+    output:
+        paired_trimmed_reads = "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta",
+    log:
+        logging_folder + "vsearch/1b_q_score_filtered_paired/logs/{sample}_trimmed_paired.fasta.txt"
+    params:
+        forward_primer = config["forward_primer"],
+        reverse_primer = config["reverse_primer"],
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
+
+    threads:
+        1
+    shell:
+        '''
+        pandaseq \
+        -f {input[R1_raw_reads]} \
+        -r {input[R2_raw_reads]} \
+        -p {params[forward_primer]} \
+        -q {params[reverse_primer]} \
+        -A simple_bayesian \
+        -l {params[merged_min_length]} \
+        -L {params[merged_max_length]} \
+        -g {log} \
+        -w {output[paired_trimmed_reads]} \
+        -B \
+        -N
+        '''

@@ -1,0 +1,131 @@
+rule vsearch_dereplicate_samples:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
+    output:
+        "vsearch/1c_derep/{sample}_derep.fasta"
+    log:
+         logging_folder + "vsearch/1b_derep/{sample}_derep.txt"
+    threads:
+        1
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+                --sizeout \
+                --output {output} \
+                2> {log}
+        '''
+
+
+rule merge_all_in_one_fasta:
+    input:
+        expand("vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta", sample=list(read_naming.keys())),
+    output:
+        "vsearch/1c_derep/merged_all.fasta"
+    shell:
+        '''
+        cat {input} >> {output}
+        '''
+
+rule vsearch_derepicate_all:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/1c_derep/merged_all.fasta"
+    output:
+        "vsearch/1c_derep/derep_merged_all.fasta"
+    log:
+         logging_folder + "vsearch/1c_all_merged_sequences/dereplicate_all.txt"
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+                --sizeout \
+                --minuniquesize 2 \
+                --output {output} \
+                2> {log}
+        '''
+
+rule vsearch_cluster:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/1c_derep/derep_merged_all.fasta"
+    output:
+        centroid = "vsearch/2_denoised/clustering/centroid_min2.fasta",
+        consout = "vsearch/2_denoised/clustering/consout_min2.fasta",
+        profile = "vsearch/2_denoised/clustering/profile_min2.fasta"
+    log:
+         logging_folder + "vsearch/2_denoised/clustering.txt"
+    shell:
+        '''
+        vsearch --cluster_size {input} \
+                --sizein \
+                --id 0.97 \
+                --centroids {output[centroid]} \
+                --consout {output[consout]} \
+                --profile {output[profile]} \
+                2> {log}
+        '''
+
+
+rule vsearch_chimera_detection:
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/2_denoised/clustering/consout_min2.fasta"
+    output:
+        non_chimeras = "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta",
+        borderline = "vsearch/2_denoised/chimera_filtering/borderline_min2.fasta",
+        chimera_out = "vsearch/2_denoised/chimera_filtering/uchimeout_min2.txt"
+    log:
+         logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
+    shell:
+        '''
+        vsearch --uchime_denovo {input} \
+        --abskew 2 \
+        --sizein \
+        --nonchimeras {output[non_chimeras]} \
+        --borderline {output[borderline]} \
+        --uchimeout {output[chimera_out]} \
+        2> {log}
+        '''
+
+rule vsearch_derep_to_consesus_sequences :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta"
+    output:
+        "vsearch/2_denoised/dna-sequences.fasta",
+    log:
+         logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+        --sizein \
+        --relabel OTU_ \
+        --xsize \
+        --output {output} \
+        2> {log}
+        '''
+
+rule vsearch_count_occurences :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        "vsearch/1c_derep/{sample}_derep.fasta",
+        rep_seq = "vsearch/2_denoised/dna-sequences.fasta"
+    output:
+        "vsearch/2_denoised/countOTUs/{sample}_count_table.txt",
+    log:
+         logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
+    shell:
+        '''
+        vsearch --usearch_global {input[0]} \
+        -otutabout {output} \
+        -id 0.97 \
+        -strand plus \
+        --db {input[rep_seq]} \
+        2> {log}
+        '''

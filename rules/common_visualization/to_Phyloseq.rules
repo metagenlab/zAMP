@@ -1,18 +1,18 @@
-rule DADA2_to_Phyloseq:
+
+rule to_Phyloseq:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        count_table = "DADA2/2_denoised/count_table.txt",
+        count_table = "{tool}/2_denoised/count_table.txt",
         Metadata_table = config["local_samples"],
-        taxonomy_table = "DADA2/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
-        tax_tree = "DADA2/4_tree/tree.nwk"
+        taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
+        tax_tree = "{tool}/4_tree/tree.nwk"
     output:
-        phyloseq_object = "DADA2/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object"
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object"
     log:
-        logging_folder + "DADA2/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object.txt"
     script:
-        "scripts/DADA2_to_phyloseq.R"
-
+        "scripts/to_phyloseq.R"
 
 
 rule melt_Phyloseq_object:

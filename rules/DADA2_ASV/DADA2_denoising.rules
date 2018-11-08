@@ -28,8 +28,7 @@ rule DADA2_denoising_R:
     output:
         filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
         dna_sequences = "DADA2/2_denoised/dna-sequences.fasta",
-        count_table = "DADA2/2_denoised/count_table.txt",
-        otu_biom = "DADA2/2_denoised/otu_biom.biom"
+        count_table = "DADA2/2_denoised/count_table.txt"
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_denoising.txt"
     params:

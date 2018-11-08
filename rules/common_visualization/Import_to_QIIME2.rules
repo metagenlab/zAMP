@@ -1,3 +1,16 @@
+rule create_biom_from_count_table :
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        count_table = "{tool}/2_denoised/count_table.txt"
+    output:
+        biom_count = "{tool}/2_denoised/otu_biom.biom"
+    log:
+        logging_folder + "{tool}/2_denoised/otu_biom.txt"
+    script:
+        "scripts/create_biom_from_count_table.R"
+
+
 rule import_count_table_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"

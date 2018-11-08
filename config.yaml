@@ -8,12 +8,9 @@ reverse_primer: GACTACHVGGGTATCTAATCC
 DADA2_F_reads_length_trim: 280
 DADA2_R_reads_length_trim: 255
 
-# Fitering
+# Filtering
 merged_min_length: 390
 merged_max_length: 500
-
-#filtering
-deblur_p_trim_length: 390
 
 # Visualization
 viz_replace_empty_tax: TRUE

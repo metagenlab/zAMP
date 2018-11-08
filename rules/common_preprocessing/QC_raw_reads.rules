@@ -1,0 +1,32 @@
+
+rule assess_quality_paired_raw_reads_with_fastqc:
+    conda:
+        "../../envs/FastQC.yml"
+    input:
+        "raw_reads/{sample}_R1.fastq.gz",
+        "raw_reads/{sample}_R2.fastq.gz",
+    output:
+        "QC/FastQC/raw_reads/{sample}_R1_fastqc.zip",
+        "QC/FastQC/raw_reads/{sample}_R2_fastqc.zip",
+    log:
+        logging_folder + "QC/FastQC/raw_reads/{sample}_fastqc.txt"
+    shell:
+        """
+        fastqc {input} -o $(dirname {output[0]}) &> {log}
+        """
+
+
+rule create_raw_reads_multiqc_report:
+    conda:
+        "../../envs/MultiQC.yml"
+    input:
+       expand("QC/FastQC/raw_reads/{sample}_R1_fastqc.zip", sample = list(read_naming.keys())),
+       expand("QC/FastQC/raw_reads/{sample}_R2_fastqc.zip", sample = list(read_naming.keys())),
+    output:
+        "QC/multiqc_raw_reads_report.html"
+    log:
+        logging_folder + "QC/multiqc_raw_reads_report.txt"
+    shell:
+        """
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") &> {log[0]}
+        """

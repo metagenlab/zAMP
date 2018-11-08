@@ -12,7 +12,6 @@ q_score_filtering_stats <- snakemake@input[["q_score_filtering_stats"]]
 filtering_stats <- snakemake@output[["filtering_stats"]]
 dna_sequences.fasta <- snakemake@output[["dna_sequences"]]
 count_table.txt <- snakemake@output[["count_table"]]
-otu_biom.biom <- snakemake@output["otu_biom"]
 
 ## Parameters
 merged_min_length <- snakemake@params[["merged_min_length"]]
@@ -22,7 +21,6 @@ merged_max_length  <- snakemake@params[["merged_max_length"]]
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
 library(dada2);packageVersion("dada2")
-library(biomformat);packageVersion("biomformat")
 library(phyloseq);packageVersion("phyloseq")
 
 
@@ -114,23 +112,5 @@ write(asv_fasta, dna_sequences.fasta)
 asv_tab <- t(seqtab.nochim)
 row.names(asv_tab) <- sub(">", "", asv_headers)
 write.table(asv_tab, count_table.txt , sep="\t", quote=F)
-
-
-## Import to Qiime2 or phyoseq
-
-# That's again a little trick.. Sorry... But the idea is now to have the files in a format that we can load back in Qiime2 to benefit of its abilities.
-
-# https://forum.qiime2.org/t/importing-dada2-and-phyloseq-objects-to-qiime-2/4683
-
-## Export features/OTU table
-
-
-### As a biom file
-
-#otu<-t(as(otu_table(asv_tab),"matrix")) # 't' to transform if taxa_are_rows=FALSE
-#if taxa_are_rows=TRUE
-otu<-as(otu_table(asv_tab, taxa_are_rows = TRUE),"matrix")
-otu_biom<-make_biom(data=otu)
-write_biom(x = otu_biom, biom_file = file.path(otu_biom.biom))
 
 

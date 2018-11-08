@@ -1,0 +1,12 @@
+
+rule KRONA_plots:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_melted_table.tsv"
+    output:
+        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/KRONA/{sample}.html", sample=list(read_naming.keys()))
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA.txt"
+    script:
+        "scripts/KRONA_plots.R"

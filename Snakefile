@@ -1,33 +1,39 @@
-include: "rules/get_reads/making_sample_dataset.rules"
+include: "rules/common_preprocessing/making_sample_dataset.rules"
 
 rule all:
     input:
+        # QC
+        "QC/multiqc_raw_reads_report.html",
+        "QC/multiqc_DADA2_filtered_reads_report.html",
+
+        # DADA2
         "DADA2/2_denoised/dna-sequences.fasta",
         "DADA2/2_denoised/DADA2_denoising_stats.tsv",
-        "DADA2/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments.txt",
-        "DADA2/4_tree/rooted-tree.qza",
-        "DADA2/2_denoised/rep-seqs.qzv",
         "DADA2/2_denoised/count-table.qzv",
-        "QC/multiqc_filtered_reads_report.html",
-        "QC/multiqc_raw_reads_report.html",
-        "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_object",
+        "DADA2/2_denoised/rep-seqs.qzv",
         "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
         expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys())),
-        "Marta/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments.txt",
-        "Marta/3_classified/rdp/ezbiocloud_marta/dna-sequences_tax_assignments_reformatted.txt",
-        "Marta/2_denoised/count_table.txt",
-        "Marta/2_denoised/all_samples_reads_count.txt"
 
-include: "rules/get_reads/get_reads.rules"
-include: "rules/get_reads/get_sras.rules"
-include: "rules/QC/QC.rules"
-include: "rules/DADA2/1_trim_for_DADA2.rules"
-include: "rules/DADA2/2_DADA2.rules"
-include: "rules/QIIME/3_assign_taxonomy.rules"
-include: "rules/QIIME2/4_tree.rules"
-include: "rules/QIIME2/Import_to_QIIME2.rules"
-include: "rules/Visualization/DADA2_to_Phyloseq.rules"
-include: "rules/Visualization/General_plotting.rules"
-include: "rules/Martapipeline/1_reads_processing.rules"
+        # vsearch
+        "vsearch/2_denoised/all_samples_reads_count.txt",
+        "vsearch/2_denoised/count-table.qzv",
+        "vsearch/2_denoised/rep-seqs.qzv",
+        "vsearch/3_classified/rdp/ezbiocloud_marta/otus_tax_table.txt",
+        "vsearch/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
+         expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys()))
+
+include: "rules/common_preprocessing/get_reads.rules"
+include: "rules/common_preprocessing/get_sras.rules"
+include: "rules/common_preprocessing/QC_raw_reads.rules"
+include: "rules/DADA2_ASV/cutadapt_trim.rules"
+include: "rules/DADA2_ASV/DADA2_denoising.rules"
+include: "rules/DADA2_ASV/QC_DADA2.rules"
+include: "rules/vsearch_OTU/PANDAseq_trim_filter_pair.rules"
+include: "rules/vsearch_OTU/vsearch_derep_and_clustering.rules"
+include: "rules/vsearch_OTU/vsearch_count_tables_and_reformat.rules"
+include: "rules/common_tax_assignment/RDP_in_QIIME.rules"
+include: "rules/common_tax_tree/tree.rules"
+include: "rules/common_visualization/Import_to_QIIME2.rules"
+include: "rules/common_visualization/to_Phyloseq.rules"
+include: "rules/common_visualization/General_plotting.rules"
 
