@@ -42,15 +42,27 @@ rule create_visualize_count_table_QIIME2 :
         '''
         qiime feature-table summarize \
         --i-table {input[0]} \
-        --o-visualization {output[0]} \
+        --o-visualization {output[0]}
         '''
 
+
+rule force_all_upper_case_rep_seq :
+    input:
+        "{tool}/2_denoised/dna-sequences.fasta"
+    output:
+        "{tool}/2_denoised/dna-sequences_all_UPPER.fasta"
+    log:
+        logging_folder + "{tool}/dna-sequences_all_UPPER.txt"
+    shell:
+        '''
+        awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
+        '''
 
 rule import_rep_seq_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/2_denoised/dna-sequences.fasta"
+        "{tool}/2_denoised/dna-sequences_all_UPPER.fasta"
     output:
         "{tool}/2_denoised/rep-seqs.qza"
     log:
