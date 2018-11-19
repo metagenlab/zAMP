@@ -12,7 +12,9 @@ rule DADA2_q_filtering_R:
         logging_folder + "DADA2/1b_q_score_filtered/DADA2_1b_q_score_filtering.txt"
     params:
         F_reads_length_trim = config["DADA2_F_reads_length_trim"],
-        R_reads_length_trim = config["DADA2_R_reads_length_trim"]
+        R_reads_length_trim = config["DADA2_R_reads_length_trim"],
+        F_extected_error = config["F_extected_error"],
+        R_extected_error = config["R_extected_error"]
     threads:
         4
     script:

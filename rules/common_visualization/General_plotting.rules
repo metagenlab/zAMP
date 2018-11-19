@@ -5,8 +5,27 @@ rule KRONA_plots:
     input:
         phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_melted_table.tsv"
     output:
-        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/KRONA/{sample}.html", sample=list(read_naming.keys()))
+        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]])))
+    params:
+        grouping_column = config["grouping_column"],
+        x_axis_column = config["x_axis_column"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA.txt"
     script:
         "scripts/KRONA_plots.R"
+
+
+rule alpha_diversity:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object"
+    output:
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.tiff"
+    params:
+        grouping_column = config["grouping_column"],
+        x_axis_column = config["x_axis_column"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.txt"
+    script:
+        "scripts/alpha_diversity.R"

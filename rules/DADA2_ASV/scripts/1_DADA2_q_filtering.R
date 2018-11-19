@@ -15,6 +15,9 @@ q_score_filtered_R_object <- snakemake@output[["filtering_stats"]]
 ## Parameters
 F_length <- snakemake@params[["F_reads_length_trim"]]
 R_length <- snakemake@params[["R_reads_length_trim"]]
+F_extected_error <- snakemake@params[["F_extected_error"]]
+R_extected_error <- snakemake@params[["R_extected_error"]]
+
 
 ## Load needed libraries
 library(dada2);packageVersion("dada2")
@@ -25,7 +28,7 @@ library(dada2);packageVersion("dada2")
 # quality_plot <- plotQualityProfile(fnFs[1:2])
 
 # Filter and trim
-filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_Fs, rev = fnRs, filt.rev = q_score_filtered_Rs, truncLen=c(F_length,R_length), maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=TRUE)
+filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_Fs, rev = fnRs, filt.rev = q_score_filtered_Rs, truncLen=c(F_length,R_length), maxN=0, maxEE=c(F_extected_error,R_extected_error), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=TRUE)
 
 # Rename the rownames of filtering_stats by a sample name without suffix
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)

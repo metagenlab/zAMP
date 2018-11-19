@@ -11,6 +11,8 @@ DADA2_R_reads_length_trim: 255
 # Filtering
 merged_min_length: 390
 merged_max_length: 500
+F_extected_error: 2
+R_extected_error: 2
 
 # Visualization
 viz_replace_empty_tax: TRUE

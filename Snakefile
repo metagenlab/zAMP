@@ -7,20 +7,22 @@ rule all:
         "QC/multiqc_DADA2_filtered_reads_report.html",
 
         # DADA2
-        "DADA2/2_denoised/dna-sequences.fasta",
-        "DADA2/2_denoised/DADA2_denoising_stats.tsv",
-        "DADA2/2_denoised/count-table.qzv",
-        "DADA2/2_denoised/rep-seqs.qzv",
-        "DADA2/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
-        expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys())),
+        #"DADA2/2_denoised/dna-sequences.fasta",
+        #"DADA2/2_denoised/DADA2_denoising_stats.tsv",
+        #"DADA2/2_denoised/count-table.qzv",
+        #"DADA2/2_denoised/rep-seqs.qzv",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
 
         # vsearch
-        "vsearch/2_denoised/all_samples_reads_count.txt",
-        "vsearch/2_denoised/count-table.qzv",
-        "vsearch/2_denoised/rep-seqs.qzv",
-        "vsearch/3_classified/rdp/ezbiocloud_marta/otus_tax_table.txt",
-        "vsearch/5_visualization/rdp/ezbiocloud_marta/phyloseq_melted_table.tsv",
-         expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{sample}.html", sample=list(read_naming.keys()))
+        #"vsearch/2_denoised/all_samples_reads_count.txt",
+        #"vsearch/2_denoised/count-table.qzv",
+        #"vsearch/2_denoised/rep-seqs.qzv",
+        #"vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
+        #"vsearch/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
+        expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
 
 include: "rules/common_preprocessing/get_reads.rules"
 include: "rules/common_preprocessing/get_sras.rules"

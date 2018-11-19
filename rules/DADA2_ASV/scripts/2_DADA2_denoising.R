@@ -17,7 +17,6 @@ count_table.txt <- snakemake@output[["count_table"]]
 merged_min_length <- snakemake@params[["merged_min_length"]]
 merged_max_length  <- snakemake@params[["merged_max_length"]]
 
-
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
 library(dada2);packageVersion("dada2")
