@@ -19,7 +19,8 @@ rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object"
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
+        Metadata_table = config["local_samples"]
     output:
         alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.tiff"
     params:
