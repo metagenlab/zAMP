@@ -15,6 +15,7 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
 
         # vsearch
         #"vsearch/2_denoised/all_samples_reads_count.txt",

@@ -30,3 +30,26 @@ rule alpha_diversity:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.txt"
     script:
         "scripts/alpha_diversity.R"
+
+
+rule ordination:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
+        Metadata_table = config["local_samples"]
+    output:
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/unifrac.tiff",
+        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/wunifrac.tiff",
+        output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/dpcoa.tiff",
+        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jsd.tiff",
+        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/bray.tiff",
+        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jaccard.tiff",
+        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/chao.tiff"
+    params:
+        grouping_column = config["grouping_column"],
+        x_axis_column = config["x_axis_column"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/logs.txt"
+    script:
+        "scripts/ordination.R"

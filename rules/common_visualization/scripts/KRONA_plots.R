@@ -16,13 +16,15 @@ phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 output_folder <- snakemake@output[["output"]]
 output_folder <- (dirname(output_folder)[1])
 
+# Create output_folder
+print(output_folder)
+dir.create(output_folder)
+
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 
-# Create output_folder
-print(output_folder)
-dir.create(output_folder)
+
 
 ## Load needed library
 
