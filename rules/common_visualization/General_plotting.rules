@@ -16,24 +16,6 @@ rule KRONA_plots:
 
 
 
-rule rarefaction_curve:
-    conda:
-        "../../envs/R_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
-        Metadata_table = config["local_samples"]
-    output:
-        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction/rarefaction_curve.tiff"
-    params:
-        grouping_column = config["grouping_column"],
-        x_axis_column = config["x_axis_column"]
-    log:
-        logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction/rarefaction_curve.txt"
-    script:
-        "scripts/rarefaction_curve.R"
-
-
-
 rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"

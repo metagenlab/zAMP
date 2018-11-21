@@ -40,7 +40,6 @@ scale_fill_discrete <-  function(palname=pal, ...){
   scale_fill_brewer(palette=palname, ...)
 }
 
-
 ## Order the x axis as in the metadata_table
 sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
 
@@ -48,13 +47,6 @@ sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x
 p <- plot_richness(phyloseq_obj, x = x_axis_column, color = grouping_column)
 p <- p + theme(axis.text.x = element_text(size=5))
 
-
-
-# Oh no, the table wasn't ordered
-# library("data.table")
-# newtab = data.table(p$data)
-# setorder(newtab, samples)
-# p$data <- newtab
 
 ## Save plot
 p.width <- 7 + 0.4*nsamples(phyloseq_obj)

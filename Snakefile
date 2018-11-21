@@ -41,5 +41,6 @@ include: "rules/common_tax_assignment/RDP_in_QIIME.rules"
 include: "rules/common_tax_tree/tree.rules"
 include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/to_Phyloseq.rules"
+include: "rules/common_visualization/rarefy.rules"
 include: "rules/common_visualization/General_plotting.rules"
 

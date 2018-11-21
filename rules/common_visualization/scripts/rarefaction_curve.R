@@ -159,8 +159,8 @@ p <- ggplot(
     y = Alpha_diversity_mean,
     ymin = Alpha_diversity_mean - Alpha_diversity_sd,
     ymax = Alpha_diversity_mean + Alpha_diversity_sd,
-    colour = SampleType,
-    group = Sample
+    colour = get(grouping_column),
+    group = get(x_axis_column)
   )
 ) + geom_line(
 ) + geom_pointrange(
