@@ -15,8 +15,6 @@
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
 load(file =  file.path(phyloseq_object))
-Metadata_table <- snakemake@input[["Metadata_table"]]
-metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Ouput
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
@@ -137,7 +135,7 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
   rarefaction_curve_data
 }
 
-rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c('Observed', 'Shannon'), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
+rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
 summary(rarefaction_curve_data)
 
 
@@ -170,4 +168,4 @@ p <- ggplot(
 )
 
 
-ggsave(filename = rarefaction_curve,  plot = p)
+ggsave(filename = rarefaction_curve,  plot = p, width = 10)

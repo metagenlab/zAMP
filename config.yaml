@@ -18,3 +18,6 @@ R_extected_error: 2
 viz_replace_empty_tax: TRUE
 grouping_column: "PatientID"
 x_axis_column: "Sample"
+
+# Rare
+rarefaction_value : 10000

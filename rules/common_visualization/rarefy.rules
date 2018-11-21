@@ -21,11 +21,10 @@ rule rarefy:
     input:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
     output:
-        rarefied_phyloseq = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction/rarefied/phyloseq_object"
+        rarefied_phyloseq = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction/rarefied_phyloseq_object"
     params:
-        grouping_column = config["grouping_column"],
-        x_axis_column = config["x_axis_column"]
+        rarefaction_value = config["rarefaction_value"]
     log:
         logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction/rarefaction_curve.txt"
     script:
-        "scripts/rarefaction_curve.R"
+        "scripts/rarefy.R"
