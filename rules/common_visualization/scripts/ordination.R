@@ -27,7 +27,6 @@ output_folder <- (dirname(output_folder)[1])
 
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
-
 grouping_column <- snakemake@params[["grouping_column"]]
 
 
@@ -46,15 +45,15 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 
 #### BrewerColors
- getPalette = colorRampPalette(brewer.pal(n=11, "Accent"))
- ColList = unique(metadata[[grouping_column]])
+ getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+ ColList = unique(metadata[[x_axis_column]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
 
 
   ### Create a list of all ordination methods
-  dist_methods <- c("unifrac" , "wunifrac", "dpcoa", "jsd", "bray", "jaccard", "chao")
+  dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard", "chao")
 
     ### Run a loop to save in a list all plots
       ### Create a liste
@@ -70,9 +69,9 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
           iMDS  <- ordinate(physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
           ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, color= grouping_column) +
+            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = x_axis_column) +
               scale_color_manual(values = colors_palette) +
-              geom_point(size=4) + stat_ellipse(aes(color = get(grouping_column), group = get(grouping_column)),linetype = 2, type = "t")
+              geom_point(size=4) + stat_ellipse(aes(group = get(x_axis_column), color = get(x_axis_column)),linetype = 2, type = "t")
             # Add title to each plot
             p <- p + ggtitle(paste("MDS using distance method ", i, sep=" "))
             # Save the individual graph in a folder
@@ -81,3 +80,6 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
       }
 
 
+
+
+#"dpcoa"

@@ -57,7 +57,7 @@ p <- p + theme(axis.text.x = element_text(size=5))
 # p$data <- newtab
 
 ## Save plot
-p.width <- 7 + 0.3*nsamples(phyloseq_obj)
+p.width <- 7 + 0.4*nsamples(phyloseq_obj)
 ggsave(filename = alpha_plot,  plot = p, width = p.width, height = 4)
 
 

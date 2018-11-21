@@ -2,30 +2,31 @@ include: "rules/common_preprocessing/making_sample_dataset.rules"
 
 rule all:
     input:
-        # QC
-        "QC/multiqc_raw_reads_report.html",
-        "QC/multiqc_DADA2_filtered_reads_report.html",
-
-        # DADA2
+        #QC
+        #"QC/multiqc_raw_reads_report.html",
+        #"QC/multiqc_DADA2_filtered_reads_report.html",
+        #DADA2
         #"DADA2/2_denoised/dna-sequences.fasta",
         #"DADA2/2_denoised/DADA2_denoising_stats.tsv",
         #"DADA2/2_denoised/count-table.qzv",
         #"DADA2/2_denoised/rep-seqs.qzv",
         #"DADA2/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
+         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+         expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+         "DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
+         "DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
+         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff"
 
-        # vsearch
+        #vsearch
         #"vsearch/2_denoised/all_samples_reads_count.txt",
         #"vsearch/2_denoised/count-table.qzv",
         #"vsearch/2_denoised/rep-seqs.qzv",
         #"vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
         #"vsearch/5_visualization/rdp/ezbiocloud_valentin/phyloseq_melted_table.tsv",
-        expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff"
+        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        #expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        #"vsearch/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff"
+
 
 include: "rules/common_preprocessing/get_reads.rules"
 include: "rules/common_preprocessing/get_sras.rules"
