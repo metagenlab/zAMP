@@ -16,7 +16,7 @@ rule DADA2_q_filtering_R:
         F_extected_error = config["F_extected_error"],
         R_extected_error = config["R_extected_error"]
     threads:
-        4
+        8
     script:
         "scripts/1_DADA2_q_filtering.R"
 
@@ -37,6 +37,6 @@ rule DADA2_denoising_R:
         merged_min_length = config["merged_min_length"],
         merged_max_length = config["merged_max_length"]
     threads:
-        4
+        8
     script:
         "scripts/2_DADA2_denoising.R"
