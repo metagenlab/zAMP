@@ -5,7 +5,6 @@ rule all:
         #QC
         #"QC/multiqc_raw_reads_report.html",
         #"QC/multiqc_DADA2_filtered_reads_report.html",
-
         #DADA2
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
@@ -15,7 +14,6 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefied_phyloseq_object",
-
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
         "vsearch/2_denoised/count-table.qzv",
