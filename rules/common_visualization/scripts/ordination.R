@@ -50,7 +50,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
   ### Order the x axis as in the metadata_table
     sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
-    sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]], levels = metadata[[grouping_column]], ordered = TRUE)
+    sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
   ### Create a list of all ordination methods
   dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard", "chao")
