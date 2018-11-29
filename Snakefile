@@ -16,20 +16,29 @@ rule all:
         #"DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/reads_plot_with_filtered.tiff",
         #"DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
         #"DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff",
-        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefied_phyloseq_object",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/phyloseq_object",
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
         "vsearch/2_denoised/count-table.qzv",
         "vsearch/2_denoised/rep-seqs.qzv",
         "vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/reads/reads_plot_with_filtered.tiff",
-        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff",
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefied_phyloseq_object"
+        #rarefied
+        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/alpha_divesity.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/unifrac.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
+        #notrarefied
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/reads/reads_plot_with_filtered.tiff",
+        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/alpha_diversity/alpha_divesity.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/unifrac.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.tiff",
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
 
 include: "rules/common_preprocessing/get_reads.rules"
