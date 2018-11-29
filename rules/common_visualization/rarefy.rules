@@ -21,7 +21,7 @@ rule rarefaction_curve:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.tiff"
+        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"]
