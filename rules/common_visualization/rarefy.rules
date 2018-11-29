@@ -9,7 +9,7 @@ rule rarefy:
     params:
         rarefaction_value = "{rarefaction_value}" #lambda wildcards: wildcards.rarefaction_value
     log:
-        logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_{rarefaction_value}/rarefaction_curve.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_{rarefaction_value}/rarefy_phyloseq_object.txt"
     script:
         "scripts/rarefy.R"
 
