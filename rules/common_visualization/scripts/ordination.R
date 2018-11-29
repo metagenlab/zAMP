@@ -20,10 +20,6 @@ output_folder <- snakemake@output[["output1"]]
 output_folder
 output_folder <- (dirname(output_folder)[1])
 
-# Create output_folder
-#print(output_folder)
-#dir.create(output_folder)
-
 
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
@@ -39,7 +35,7 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 
 ## Ordination
 
-### Remove sequences not assigned at the phylum level, keeping only spiked samples and removing one outlier with insufficiant number of reads in the MZ kizz
+### Remove sequences not assigned at the phylum level
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
@@ -51,6 +47,10 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
  names(ColPalette) = ColList
  colors_palette <- ColPalette
 
+
+  ### Order the x axis as in the metadata_table
+    sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
+    sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]], levels = metadata[[grouping_column]], ordered = TRUE)
 
   ### Create a list of all ordination methods
   dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard", "chao")
@@ -75,7 +75,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
             # Add title to each plot
             p <- p + ggtitle(paste("MDS using distance method ", i, sep=" "))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = paste0(output_folder,"/",i,".tiff"))
+            ggsave(plot = p, filename = paste0(output_folder,"/",i,".png"))
 
       }
 

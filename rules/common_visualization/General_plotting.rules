@@ -20,7 +20,7 @@ rule reads_plot_with_filtered:
         raw_to_filtered_reads_stats_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.tsv",
         Metadata_table = config["local_samples"]
     output:
-        reads_plot_with_filtered = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/reads_plot_with_filtered.tiff"
+        reads_plot_with_filtered = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/reads_plot_with_filtered.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"]
@@ -55,7 +55,7 @@ rule alpha_diversity:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.tiff"
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"]
@@ -72,13 +72,13 @@ rule ordination:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/unifrac.tiff",
-        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/wunifrac.tiff",
-        # output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/dpcoa.tiff",
-        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jsd.tiff",
-        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/bray.tiff",
-        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jaccard.tiff",
-        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/chao.tiff"
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/unifrac.png",
+        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/wunifrac.png",
+        # output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/dpcoa.png",
+        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jsd.png",
+        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/bray.png",
+        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jaccard.png",
+        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/chao.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"]
