@@ -3,6 +3,7 @@ channels:
  - conda-forge
 dependencies:
  - r-base=3.5.1
+ - r-devtools = 1.13.6
  - bioconductor-DADA2=1.8.0
  - r-dplyr=0.7.6
  - bioconductor-phyloseq=1.24.2
