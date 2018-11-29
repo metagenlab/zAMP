@@ -33,7 +33,7 @@ typeof(rarefy_value)
 
 if (is.numeric(rarefy_value)){
     print(rarefy_value)
-    phyloseq_obj <- rarefy_even_depth(physeq = phyloseq_obj, sample.size = rarefy_value, rngseed = TRUE, replace = FALSE, trimOTUs = TRUE, verbose = TRUE)
+    phyloseq_obj <- rarefy_even_depth(physeq = phyloseq_obj, sample.size = get(rarefy_value), rngseed = TRUE, replace = FALSE, trimOTUs = TRUE, verbose = TRUE)
 }else{
     print("No numerical rarefaction value given, using the depth of the sample with the lowest number of reads as default")
     rarefy_value <- min(sample_sums(phyloseq_obj))
