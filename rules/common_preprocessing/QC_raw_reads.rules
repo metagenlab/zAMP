@@ -23,7 +23,8 @@ rule create_raw_reads_multiqc_report:
        expand("QC/FastQC/raw_reads/{sample}_R1_fastqc.zip", sample = list(read_naming.keys())),
        expand("QC/FastQC/raw_reads/{sample}_R2_fastqc.zip", sample = list(read_naming.keys())),
     output:
-        "QC/multiqc_raw_reads_report.html"
+        "QC/multiqc_raw_reads_report.html",
+        "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     log:
         logging_folder + "QC/multiqc_raw_reads_report.txt"
     shell:

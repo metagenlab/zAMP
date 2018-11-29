@@ -4,24 +4,27 @@ rule all:
     input:
         #QC
         "QC/multiqc_raw_reads_report.html",
-        "QC/multiqc_DADA2_filtered_reads_report.html",
+        #"QC/multiqc_DADA2_filtered_reads_report.html",
 
         #DADA2
-        "DADA2/2_denoised/count-table.qzv",
-        "DADA2/2_denoised/rep-seqs.qzv",
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefied_phyloseq_object",
+        #"DADA2/2_denoised/count-table.qzv",
+        #"DADA2/2_denoised/rep-seqs.qzv",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/reads/reads_plot_with_filtered.tiff",
+        #{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_filtered.tiff
+        #expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        #expand("DADA2/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/reads_plot_with_filtered.tiff",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefaction_curve.tiff",
+        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction/rarefied_phyloseq_object",
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
         "vsearch/2_denoised/count-table.qzv",
         "vsearch/2_denoised/rep-seqs.qzv",
         "vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
-        expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        "vsearch/5_visualization/rdp/ezbiocloud_valentin/reads/reads_plot_with_filtered.tiff",
+        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/alpha_diversity/alpha_divesity.tiff",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/ordination/unifrac.tiff",
