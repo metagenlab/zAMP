@@ -1,60 +1,68 @@
 
 ### Create a function
 barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+
+    #Transform values in  dplyr format
+    g_column <- rlang::sym(grouping_column)
+    x_column<- rlang::sym(x_axis_column)
+
+
+      ### In option, filter for a given grouping_columns.
   
-  ### In option, filter for a given grouping_columns. In both cases keep only lines with Abundance not equal to 0 to reduce the dataframe size
-  
-  ### No filter for the grouping column
-  if (isFALSE(grouping_column_filtering)){
-    melted_dataframe_filtered <- melted_dataframe
-    grouping_column_filtering_value <- "no_group_column_filtering"
-    
-    print("No filtering of the grouping_column")
-  }
-  
-  ### Filter for the grouping column
-  else if (isTRUE(grouping_column_filtering)){
-    melted_dataframe_filtered <- melted_dataframe %>%
-      filter(get(grouping_column) == grouping_column_filtering_value)
-    
-    print(paste("Data filtered for", grouping_column, "is", grouping_column_filtering_value))
-    
-  }else{ stop("grouping_column_filtering must be TRUE or FALSE")}
-  
+        ### No filter for the grouping column
+        if (isFALSE(grouping_column_filtering)){
+            melted_dataframe_filtered <- melted_dataframe
+
+            grouping_column_filtering_value <- "no_group_column_filtering"
+            print("No filtering of the grouping_column")
+            }
+
+      ### Filter for the grouping column
+      else if (isTRUE(grouping_column_filtering)){
+        melted_dataframe_filtered <- melted_dataframe %>%
+          filter(get(grouping_column) == grouping_column_filtering_value)
+
+        print(paste("Data filtered for", grouping_column, "is", grouping_column_filtering_value))
+
+      }else{ stop("grouping_column_filtering must be TRUE or FALSE")}
+
   
   ### In option, filter at a given taxonomic rank and for a given taxonomic identifier
   
-  ### No filter
-  if (isFALSE(taxonomic_filtering)) {
-    physeq_subset_df <- melted_dataframe_filtered
-    physeq_subet_norm_df <- physeq_subset_df  %>% 
-      ungroup %>%
-      dplyr::group_by(Sample) %>% 
-      dplyr::mutate(per=as.numeric(100*Abundance/sum(Abundance))) %>% 
-      dplyr::ungroup() %>%
-      dplyr::select(-Abundance)  %>%
-      dplyr::rename(Abundance = per)
-    taxonomic_filtering_value <- "no_tax_rank_filtering"
-    
-    print("No filtering of any taxonomic rank")
-  }
+      ### No filter
+      if (isFALSE(taxonomic_filtering)) {
+          physeq_subset_df <- melted_dataframe_filtered
+
+          # calculate % normalized Abundance
+          physeq_subet_norm_df <- physeq_subset_df  %>%
+          ungroup %>%
+          dplyr::group_by(Sample) %>%
+          dplyr::mutate(per=as.numeric(100*Abundance/sum(Abundance))) %>%
+          dplyr::ungroup() %>%
+          dplyr::select(-Abundance)  %>%
+          dplyr::rename(Abundance = per)
+
+          taxonomic_filtering_value <- "no_tax_rank_filtering"
+          print("No filtering of any taxonomic rank")
+      }
   
-  ### A specific filter
-  else if (isTRUE(taxonomic_filtering)){
-    physeq_subset_df <- melted_dataframe_filtered %>%
-      filter(get(taxonomic_filtering_rank) == taxonomic_filtering_value)
-    physeq_subet_norm_df <- physeq_subset_df  %>% 
-      group_by(Sample) %>%  
-      mutate(per=paste0((100*Abundance/sum(Abundance)))) %>% 
-      ungroup %>%
-      select(-Abundance)  %>%
-      dplyr::rename(Abundance = per)
-    physeq_subet_norm_df$Abundance <- as.numeric(physeq_subet_norm_df$Abundance)
-    
-    print(paste("Data filtered for", taxonomic_filtering_rank, "is", taxonomic_filtering_value))
-    
-  }else{ stop('"taxonomic_filtering" must be TRUE or FALSE')
-  }
+      ### A specific filter
+      else if (isTRUE(taxonomic_filtering)){
+
+        physeq_subset_df <- melted_dataframe_filtered %>%
+          filter(get(taxonomic_filtering_rank) == taxonomic_filtering_value)
+        physeq_subet_norm_df <- physeq_subset_df  %>%
+          group_by(Sample) %>%
+          mutate(per=paste0((100*Abundance/sum(Abundance)))) %>%
+          ungroup %>%
+          select(-Abundance)  %>%
+          dplyr::rename(Abundance = per)
+        physeq_subet_norm_df$Abundance <- as.numeric(physeq_subet_norm_df$Abundance)
+
+        print(paste("Data filtered for", taxonomic_filtering_rank, "is", taxonomic_filtering_value))
+
+      }else{ stop('"taxonomic_filtering" must be TRUE or FALSE')
+      }
   
   
   ### Choose between relative value or absolute value dataframe for plotting value
@@ -87,7 +95,12 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
   }
   
   for (t in tax_ranks){
-    
+
+
+      t_column <- rlang::sym(t)
+      print(t_column)
+
+
   ### Filter values at a relative or absolute quantity threshold or at a given rank in a group ( x highest OTU in the group)
   
   ### No filtering 
@@ -105,13 +118,11 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
     quantity_filtering_value <- relative_quantity_filtering_value
     print("Relative value based filtering")
     ### Define the variables as dplyr wants them
-    g_column <- rlang::sym(grouping_column)
-    x_column<- rlang::sym(x_axis_column)
-    physeq_subset_df_filtered <- physeq_subset_df  %>% 
+    physeq_subset_df_filtered <- physeq_subset_df  %>%
       group_by(!! g_column) %>%  ## group the dataframe by the grouping column
       mutate(per=as.numeric(paste0((100*Abundance/sum(Abundance))))) %>% ## calculate a relative abundance of the taxa in the group
       ungroup %>% 
-      group_by((!! g_column), get(t))  %>% ## now group the tax_ranks in each grouping columns
+      group_by(!! g_column, !! t_column)  %>% ## now group the tax_ranks in each grouping columns
       mutate(sumper = as.numeric(paste0(sum(per)))) %>% ## Sum the relative abundance of each tax_ranks in each group
       filter(sumper > quantity_filtering_value) %>%
       ungroup 
@@ -131,9 +142,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
     print("Rank based filtering")
     quantity_filtering_value <- rank_quantity_filtering_value
     ### Define the variables as dplyr wants them
-    g_column <- rlang::sym(grouping_column)
-    x_column<- rlang::sym(x_axis_column)
-    ### Generate the filtered dataframe 
+    ### Generate the filtered dataframe
     physeq_subset_df_filtered <- physeq_subset_df  %>% 
       group_by(!! g_column) %>%  ## group the dataframe by the grouping column
       mutate(per=as.numeric(paste0((100*Abundance/sum(Abundance))))) %>% ## calculate a relative abundance of the taxa in the group
@@ -295,7 +304,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
   ### Create a loop for all taxonomic ranks to be plotted
   
 
-    ### Set colors palette 
+    ### Set colors palette
     ### Brewer colors
     if (distinct_colors == FALSE) {
       getPalette <- colorRampPalette(brewer.pal(n=9, "Set1"))
@@ -304,18 +313,18 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
       names(ColPalette) = ColList
       colors_palette <- ColPalette
     }
-    
-    ### Distinct colors 
+
+    ### Distinct colors
     else if (distinct_colors == TRUE) {
       set.seed(1)
       ColList <- unique(threshod_filtered_abs_no_zero[[t]])
       ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(threshod_filtered_abs_no_zero[[t]])))
       names(ColPalette) = ColList
       colors_palette <- ColPalette
-      
+
     }else{ print("distinct_colors must be TRUE or FALSE")
     }
-    
+
     
     ### Loop for unique value in grouping_column
     for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
@@ -343,7 +352,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
       ### Reorder by abundance
       if (isTRUE(order_by_abundance)){
         print("Ordered by abundance")
-        filtered_df_abs_i[[t]] <- reorder(filtered_df_abs_i[[t]], filtered_df_abs_i$Abundance)
+        # filtered_df_abs_i[[t]] <- reorder(filtered_df_abs_i[[t]], filtered_df_abs_i$Abundance)
       }
       else if (isFALSE(order_by_abundance)){
         print("NOT ordered by abundance")
@@ -352,28 +361,39 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
         stop('"order_by_abundance" must be TRUE or FALSE')
       }
       
-      
-      ### Write this table in a external file
-      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
-      
-      ### Reset the order of filtered taxa as the last to have it on top of graphs
+
+        filtered_df_abs_i <- filtered_df_abs_i %>%
+            group_by(!! t_column) %>%
+            mutate(tot = sum(Abundance)) %>%
+            ungroup() %>%
+            mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
+            arrange(desc(tot))
+
+
+        ### Reset the order of filtered taxa as the last to have it on top of graphs
       filtered_df_abs_i[[t]] <- fct_relevel(filtered_df_abs_i[[t]], filtering_tag, after = 0)
+
+
+      ### Write this table in a external file
+      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      
 
 
       ### Renames the values of the vector used for labeling
       x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
       names(x_labels) <- filtered_df_abs_i[["Sample"]]
-      
+
       ### Create the barplot
-      taxrank_barplot <- filtered_df_abs_i %>% 
-        ggplot(aes(x = Sample, y = Abundance, fill = get(t))) + 
-        theme_bw() +
-        geom_col() +
-        scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-        theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 1)) + # axis and title settings
-        guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-        labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
-        scale_fill_manual(values = colors_palette) # colors as set previously
+      taxrank_barplot <- filtered_df_abs_i %>%
+          # mutate(Genus = fct_reorder(Genus, tot)) %>%
+          ggplot(aes(x = Sample, y = Abundance, fill = get(t))) +
+          theme_bw() +
+          geom_col() +
+          scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
+          theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 1)) + # axis and title settings
+          guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
+          labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
+          scale_fill_manual(values = colors_palette) # colors as set previously
       
       
       ### Turn barplot horizontally
