@@ -132,14 +132,11 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                         quantity_filtering_value <- rank_quantity_filtering_value
                         print("Rank based filtering")
                             physeq_subset_df_filtered <- physeq_subset_df  %>%
-                            dplyr::group_by(!! g_column) %>%  ## group the dataframe by the grouping column
-                            dplyr::mutate(per=as.numeric(paste0((100*Abundance/sum(Abundance))))) %>% ## calculate a relative abundance of the taxa in the group
-                            ungroup %>%
                             dplyr::group_by(!! g_column, !! t_column)  %>% # now group the tax_ranks in each grouping columns
-                            dplyr::mutate(sumper = as.numeric(paste0(sum(per)))) %>% ## Sum the relative abundance of each tax_ranks in each group
+                            dplyr::mutate(sumper = as.numeric(sum(Abundance))) %>% ## Sum the relative abundance of each tax_ranks in each group
                             ungroup %>%
-                            dplyr::group_by(!!! list(g_column, x_column)) %>%  ## Group the dataframe for each by group and filling column
-                            top_n(n = quantity_filtering_value*n_distinct(x_axis_column), wt = sumper) %>% ## Keep the x number of rows for each
+                            dplyr::group_by(!!! list(g_column, x_column)) %>%  ## Group the dataframe for each by group and x_axis_column
+                            top_n(n = quantity_filtering_value, wt = sumper) %>% ## Keep the x number of rows for each
                             ungroup
                   }
 
@@ -187,23 +184,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                  write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
-  ### Convert taxonomic all levels as character (needed for the next steps)
-  #above_threshold_df$Kingdom<-as.character(above_threshold_df$Kingdom)
-  #above_threshold_df$Phylum<-as.character(above_threshold_df$Phylum)
-  #above_threshold_df$Class<-as.character(above_threshold_df$Class)
-  #above_threshold_df$Order<-as.character(above_threshold_df$Order)
-  #above_threshold_df$Family<-as.character(above_threshold_df$Family)
-  #above_threshold_df$Genus<-as.character(above_threshold_df$Genus)
-  #above_threshold_df$Species<-as.character(above_threshold_df$Species)
-  
-  #under_threshold_df$Kingdom<-as.character(under_threshold_df$Kingdom)
-  #under_threshold_df$Phylum<-as.character(under_threshold_df$Phylum)
-  #under_threshold_df$Class<-as.character(under_threshold_df$Class)
-  #under_threshold_df$Order<-as.character(under_threshold_df$Order)
-  #under_threshold_df$Family<-as.character(under_threshold_df$Family)
-  #under_threshold_df$Genus<-as.character(under_threshold_df$Genus)
-  #under_threshold_df$Species<-as.character(under_threshold_df$Species)
-  
+
                   ### Rename taxa with < percent/reads abundance, defending of the filtering applied
                   ### Define the filtering tag depending of the applied filtering
                   if (quantity_filtering_type == "relative"){
@@ -215,11 +196,11 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                   }
                   ### Abundance rank of the taxa in the group filtering
                   else if (quantity_filtering_type == "rank"){
-                    filtering_tag <-paste("<_", quantity_filtering_value,"reads")
+                    filtering_tag <-paste("<_", quantity_filtering_value,"rank")
                   }
                   ### Absolute abundance  AND rank of the taxa in the group filtering
                   else if (quantity_filtering_type == "absolute_and_rank"){
-                    filtering_tag <-paste("<_", quantity_filtering_value)
+                    ffiltering_tag <-paste("<_", quantity_filtering_value,"reads")
                   }
 
                   ### Apply the filtering tag
@@ -235,15 +216,6 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                   ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
                   threshod_filtered_abs <- full_join(under_threshold_df,above_threshold_df)
 
-                  ### Convert taxonomic levels back as factor (needed?)
-                  #threshod_filtered_abs$Kingdom<-as.factor(threshod_filtered_abs$Kingdom)
-                  #threshod_filtered_abs$Phylum<-as.factor(threshod_filtered_abs$Phylum)
-                  #threshod_filtered_abs$Class<-as.factor(threshod_filtered_abs$Class)
-                  #threshod_filtered_abs$Order<-as.factor(threshod_filtered_abs$Order)
-                  #threshod_filtered_abs$Family<-as.factor(threshod_filtered_abs$Family)
-                  #threshod_filtered_abs$Genus<-as.factor(threshod_filtered_abs$Genus)
-                  #threshod_filtered_abs$Species<-as.factor(threshod_filtered_abs$Species)
-  
   
                   ### Remove the (now but needed before) Abundance = 0 rows
                   threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0)
@@ -317,82 +289,82 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                   else{ stop('"t_neg_PCR_sample_on_plots" must be TRUE or FALSE')
                   }
       
-      ### Reorder by abundance
-      if (isTRUE(order_by_abundance)){
-        print("Ordered by abundance")
-        filtered_df_abs_i <- filtered_df_abs_i %>%
-            group_by(!! t_column) %>%
-            mutate(tot = sum(Abundance)) %>%
-            ungroup() %>%
-            mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
-            arrange(desc(tot))
-      }
-      else if (isFALSE(order_by_abundance)){
-        print("NOT ordered by abundance")
-      }
-      else {
-        stop('"order_by_abundance" must be TRUE or FALSE')
-      }
-      
-      ### Reset the order of filtered taxa as the last to have it on top of graphs
-      filtered_df_abs_i[[t]] <- fct_relevel(filtered_df_abs_i[[t]], filtering_tag, after = 0)
+                  ### Reorder by abundance
+                  if (isTRUE(order_by_abundance)){
+                    print("Ordered by abundance")
+                    filtered_df_abs_i <- filtered_df_abs_i %>%
+                        group_by(!! t_column) %>%
+                        mutate(tot = sum(Abundance)) %>%
+                        ungroup() %>%
+                        mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
+                        arrange(desc(tot))
+                  }
+                  else if (isFALSE(order_by_abundance)){
+                    print("NOT ordered by abundance")
+                  }
+                  else {
+                    stop('"order_by_abundance" must be TRUE or FALSE')
+                  }
+
+                  ### Reset the order of filtered taxa as the last to have it on top of graphs
+                  filtered_df_abs_i[[t]] <- fct_relevel(filtered_df_abs_i[[t]], filtering_tag, after = 0)
 
 
-      ### Write this table in a external file
-      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+                  ### Write this table in a external file
+                  write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
-      ### Renames the values of the vector used for labeling
-      x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
-      names(x_labels) <- filtered_df_abs_i[["Sample"]]
+                  ### Renames the values of the vector used for labeling
+                  x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
+                  names(x_labels) <- filtered_df_abs_i[["Sample"]]
 
-      ### Create the barplot
-      taxrank_barplot <- filtered_df_abs_i %>%
-          ggplot(aes(x = Sample, y = Abundance, fill = get(t))) +
-          theme_bw() +
-          geom_col() +
-          scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-          theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 1)) + # axis and title settings
-          guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-          labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
-          scale_fill_manual(values = colors_palette) # colors as set previously
-      
-      
-      ### Turn barplot horizontally
-      if (isTRUE(horizontal_barplot)){
-        ### Reverse the order of the samples
-        taxrank_barplot <- taxrank_barplot + coord_flip()
-      }
-      
-      ### Create facet view
-      if (isTRUE(facet_plot)){
-        taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
-      }
-      
-      if (isTRUE(separated_legend)){
-        ### Keep the barplot without the legend
-      taxrank_barplot_no_leg <- (taxrank_barplot + guides(fill = FALSE))
-      }
-      else {
-        taxrank_barplot_no_leg <- taxrank_barplot 
-      }
-      
-      ### Save it
-      ### Set the filename
-      filename_base <- (paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",facetting_column,"_" ,t))
-      ### Print the filename to follow progress
-      print(filename_base)
-      ###Save the figure
-      ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
-      
-      
-      ### Extract the legend and save it
-      ### Extract the legend
-      leg <- get_legend(taxrank_barplot)
-      
-      ## Save the legend
-      ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
-      
+                  ### Create the barplot
+                  taxrank_barplot <- filtered_df_abs_i %>%
+                      ggplot(aes(x = Sample, y = Abundance, fill = get(t))) +
+                      theme_bw() +
+                      geom_col() +
+                      scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
+                      theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 1)) + # axis and title settings
+                      guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
+                      labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
+                      scale_fill_manual(values = colors_palette) # colors as set previously
+
+
+                  ### Turn barplot horizontally
+                  if (isTRUE(horizontal_barplot)){
+                    ### Reverse the order of the samples
+                    taxrank_barplot <- taxrank_barplot + coord_flip()
+                  }
+
+                  ### Create facet view
+                  if (isTRUE(facet_plot)){
+                    taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
+                  }
+
+                  if (isTRUE(separated_legend)){
+                    ### Keep the barplot without the legend
+                  taxrank_barplot_no_leg <- (taxrank_barplot + guides(fill = FALSE))
+                  }
+                  else {
+                    taxrank_barplot_no_leg <- taxrank_barplot
+                  }
+
+                  ### Save it
+                  ### Set the filename
+                  filename_base <- (paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",facetting_column,"_" ,t))
+                  ### Print the filename to follow progress
+                  print(filename_base)
+                  ###Save the figure
+                  ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
+
+
+                  ### Extract the legend and save it
+                  ### Extract the legend
+                  leg <- get_legend(taxrank_barplot)
+
+                  ## Save the legend
+                  ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
+
       
       
     }}}
