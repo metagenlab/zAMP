@@ -225,54 +225,37 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
   under_threshold_df$Species<-as.character(under_threshold_df$Species)
   
   ### Rename taxa with < percent/reads abundance, defending of the filtering applied
-  ### Relative filtering
+  ### Define the filtering tag depending of the applied filtering
   if (quantity_filtering_type == "relative"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"%_abund")
+    filtering_tag <-paste("<_", quantity_filtering_value,"%_abund")
   }
-  
   ### Absolute filtering
   else if (quantity_filtering_type == "absolute"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"reads")
+    filtering_tag <-paste("<_", quantity_filtering_value,"reads")
   }
-  
   ### Abundance rank of the taxa in the group filtering
   else if (quantity_filtering_type == "rank"){
-    # under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"rank")
-  }  
-  
+    filtering_tag <-paste("<_", quantity_filtering_value,"reads")
+  }
   ### Absolute abundance  AND rank of the taxa in the group filtering
   else if (quantity_filtering_type == "absolute_and_rank"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value)            }
+    filtering_tag <-paste("<_", quantity_filtering_value)
+}
+
+  ### Applied the filtering tag
+    under_threshold_df$Kingdom <-filtering_tag
+    under_threshold_df$Phylum <-filtering_tag
+    under_threshold_df$Class <-filtering_tag
+    under_threshold_df$Order <-filtering_tag
+    under_threshold_df$Family <-filtering_tag
+    under_threshold_df$Genus <-filtering_tag
+    under_threshold_df$Species <-filtering_tag
   
   
   ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
   threshod_filtered_abs <- full_join(under_threshold_df,above_threshold_df)
   
-  ### convert taxonomic levels back as factor (needed?)
+  ### Convert taxonomic levels back as factor (needed?)
   threshod_filtered_abs$Kingdom<-as.factor(threshod_filtered_abs$Kingdom)
   threshod_filtered_abs$Phylum<-as.factor(threshod_filtered_abs$Phylum)
   threshod_filtered_abs$Class<-as.factor(threshod_filtered_abs$Class)
@@ -285,8 +268,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
   ### Remove the (now but needed before) Abundance = 0 rows
   threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0) 
   
-  
-  
+
   ### Reorder the facet factor if later used for plotting
   if (isTRUE(facet_plot)){
     threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
@@ -374,8 +356,10 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
       ### Write this table in a external file
       write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
       
-      
-      
+      ### Reset the order of filtered taxa as the last to have it on top of graphs
+      filtered_df_abs_i[[t]] <- fct_relevel(filtered_df_abs_i[[t]], filtering_tag, after = 0)
+
+
       ### Renames the values of the vector used for labeling
       x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
       names(x_labels) <- filtered_df_abs_i[["Sample"]]
