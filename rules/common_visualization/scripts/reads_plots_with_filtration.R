@@ -15,6 +15,8 @@ raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stat
 raw_to_filtered_reads_stats <- read.table(file = raw_to_filtered_reads_stats_path, sep = "\t", header = TRUE)
 metadata_path <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = metadata_path, sep = "\t", header = TRUE)
+multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
+multi_QC_report <- read.table(multi_QC_report_path, header = T)
 
 ## Ouput
 reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
@@ -37,11 +39,11 @@ theme_set(theme_bw())
 
 
   ### Record data on the distribution of number of reads (useful later to scale plots axis)
-    smin <- min(raw_to_filtered_reads_stats$Count)
+    smin <- min(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
     print(smin)
-    smean <- mean(raw_to_filtered_reads_stats$Count)
+    smean <- mean(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
     print(smean)
-    smax <- max(raw_to_filtered_reads_stats$Count)
+    smax <- max(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
     print(smax)
 
   ### Order the x axis as in the metadata_table

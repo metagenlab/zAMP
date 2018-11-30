@@ -8,15 +8,14 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
 load(file =  file.path(phyloseq_object)) # loads an object names phyloseq_obj
 multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
 multi_QC_report <- read.table(multi_QC_report_path, header = T)
+
 ## Ouput
 raw_to_filtered_reads_stats <- snakemake@output[["raw_to_filtered_reads_stats"]]
-
 
 ## Load needed libaries
 library("phyloseq");packageVersion("phyloseq")
