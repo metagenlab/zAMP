@@ -2,5 +2,5 @@
 * General use
 
 #+BEGIN_SRC sh
-snakemake --snakefile $pipeline_folder/workflows/preanalytic.rules  --use-conda --conda-prefix $HOME/miniconda2/ --cores 6 --configfile config_local.yaml
+snakemake --snakefile $pipeline_folder/Snakefile  --use-conda --conda-prefix $HOME/miniconda3/ --cores 8 --configfile config.yaml
 #+END_SRC
