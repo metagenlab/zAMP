@@ -40,13 +40,17 @@ scale_fill_discrete <-  function(palname=pal, ...){
   scale_fill_brewer(palette=palname, ...)
 }
 
-## Order the x axis as in the metadata_table
-sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
 
-## Plot
-p <- plot_richness(phyloseq_obj, x = x_axis_column, color = grouping_column)
-p <- p + theme(axis.text.x = element_text(size=5))
-
+if(x_axis_column == "Sample"){
+  ## Order the x axis as in the metadata_table
+  p <- plot_richness(phyloseq_obj, x = "sample", color = grouping_column)
+  p <- p + theme(axis.text.x = element_text(size=5))
+}else{
+  sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
+  ## Plot
+  p <- plot_richness(phyloseq_obj, x = x_axis_column, color = grouping_column)
+  p <- p + theme(axis.text.x = element_text(size=5))
+}
 
 ## Save plot
 p.width <- 7 + 0.4*nsamples(phyloseq_obj)
