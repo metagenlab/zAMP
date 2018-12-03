@@ -102,10 +102,10 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     quantity_filtering_value <- relative_quantity_filtering_value
                     print("Relative value based filtering")
                     physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
-                        dplyr::group_by(!!g_column, !!t_column) %>% # group the rows by grouping column and taxa
-                        dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the group
+                        dplyr::group_by(!!x_column, !!t_column) %>% # group the rows by grouping column and taxa
+                        dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                         ungroup %>%
-                        dplyr::group_by(!! g_column)  %>% # group by groupin_column
+                        dplyr::group_by(!! x_column)  %>% # group by sample
                         dplyr::mutate(totper = as.numeric(paste0(sum(Abundance)))) %>% # calculate the total abundance in the group
                         ungroup %>%
                         dplyr::mutate(ponper = as.numeric(100*sumper/totper)) %>% # divide the sum of the taxa by the sum of the group

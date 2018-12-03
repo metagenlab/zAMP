@@ -281,16 +281,16 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
   threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero
   
   ### Loop for unique value in grouping_column
-  for (i in c("1", "2","3","4","5")) {
+  for (i in c("6", "7","8")) {
     print(paste("Start plotting", grouping_column, i))
     
     ### filter the table for this value of the grouping columns. Depending of the used arguments, the t_neg_PCR values are kept or not on the barplots
     ### Keep t_neg_PCR rows
     if (isTRUE(t_neg_PCR_sample_on_plots) & !is_null(t_neg_PCR_sample_grp_column_value)){
-      filtered_df_abs_i <- filter(threshod_filtered_abs_no_zero, get(grouping_column) == i 
-                                  | get(grouping_column) == t_neg_PCR_sample_grp_column_value)
+      filtered_df_abs_i <- threshod_filtered_abs_no_zero %>% filter(grepl(i, .[[grouping_column]]) | grepl(t_neg_PCR_sample_grp_column_value, .[[grouping_column]]))
       print('Keeping t_neg_PCR values for the graphs. The "t_neg_PCR_sample_grp_column_value" must match the one in the grouping_column for this sample')
-    }
+     
+      }
     else if (isTRUE(t_neg_PCR_sample_on_plots) & is_null(t_neg_PCR_sample_grp_column_value)){
       stop('If "t_neg_PCR_sample_on_plots" is "TRUE, a "t_neg_PCR_sample_grp_column_value" indicating the value of the T neg PCR sample in the grouping column must be indicated')
     }
@@ -334,7 +334,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       compare_df_i <- dcast(merged_filtered_OTU,  OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
       selected_by_comparison_df_i <- compare_df_i %>%
         filter(spleen > 5 & spleen > 5*TEQ & spleen > 5* t_neg_PCR | liver > 5 & liver > 5*TEQ & liver > 5* t_neg_PCR ) %>%
-        filter(water > 5 & water > 5*TES & water > 5* t_neg_PCR | lungs > 5 & lungs > 5*TEQ & lungs > 5 * t_neg_PCR)
+        filter(water_Q > 5 & water_Q > 5*TEQ & water_Q > 5* t_neg_PCR | water_S > 5 & water_S > 5*TES & water_S > 5* t_neg_PCR | lungs > 5 & lungs > 5*TEQ & lungs > 5 * t_neg_PCR)
     }
     
     else if(comparison == "0Rule"){
@@ -381,7 +381,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     }
     
     
-    sample_source_order = c("spleen","liver","lungs","TEQ","TES","water","t_neg_PCR")
+    sample_source_order = c("spleen","liver","lungs","TEQ","TES","water_Q", "water_S", "t_neg_PCR")
     
     select_filtered_df_abs_i$sample_source <- factor(select_filtered_df_abs_i$sample_source , levels = sample_source_order, ordered = TRUE)
 
@@ -435,7 +435,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 5, height = 5)
+      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 5, height = 12)
       
       
       
