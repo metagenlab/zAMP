@@ -40,14 +40,6 @@ physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
 
-#### BrewerColors
- getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
- ColList = unique(metadata[[grouping_column]])
- ColPalette = getPalette(length(ColList))
- names(ColPalette) = ColList
- colors_palette <- ColPalette
-
-
   ### Order the x axis as in the metadata_table
     if(x_axis_column != "Sample"){
     sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
@@ -71,6 +63,13 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
           iMDS  <- ordinate(physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
 
             if(x_axis_column == "Sample" || is.null(x_axis_column)){
+            #### BrewerColors
+             getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+             ColList = unique(metadata[[grouping_column]])
+             ColPalette = getPalette(length(ColList))
+             names(ColPalette) = ColList
+             colors_palette <- ColPalette
+
             ## Make plot
             # Create plot, store as temp variable, p
             p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, color = grouping_column) +
@@ -79,7 +78,13 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
             stat_ellipse(aes(group = get(grouping_column), color = get(grouping_column)),linetype = 2, type = "t")
             }
 
-            if(x_axis_column != "Sample"){
+            if(x_axis_column != "Sample")
+              #### BrewerColors
+             getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+             ColList = unique(metadata[[x_axis_column]])
+             ColPalette = getPalette(length(ColList))
+             names(ColPalette) = ColList
+             colors_palette <- ColPalette
             ## Make plot
             # Create plot, store as temp variable, p
             p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = x_axis_column) +
