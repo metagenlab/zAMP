@@ -70,7 +70,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
           # Calculate ordination
           iMDS  <- ordinate(physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
 
-            if(x_axis_column == "Sample" || is.NULL(x_axis_column)){
+            if(x_axis_column == "Sample" || is.null(x_axis_column)){
             ## Make plot
             # Create plot, store as temp variable, p
             p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, color = grouping_column) +
