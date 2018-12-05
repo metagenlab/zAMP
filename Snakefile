@@ -10,8 +10,6 @@ rule all:
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
         #rarefied
-        #expand("DADA2/5_visualization/rdp/ezbiocloud_marta/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/alpha_divesity.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/unifrac.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
@@ -34,8 +32,6 @@ rule all:
         "vsearch/2_denoised/rep-seqs.qzv",
         "vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
         #rarefied
-        #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/alpha_divesity.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/unifrac.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
