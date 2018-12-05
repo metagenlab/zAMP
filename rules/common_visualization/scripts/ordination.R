@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 
 ## Input
@@ -24,6 +24,8 @@ output_folder <- (dirname(output_folder)[1])
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
+color_column <- snakemake@params[["color_column"]]
+
 
 
 ## Load needed libraries
@@ -40,10 +42,16 @@ physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
 
+#### BrewerColors
+ getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+ ColList = unique(metadata[[color_column]])
+ ColPalette = getPalette(length(ColList))
+ names(ColPalette) = ColList
+ colors_palette <- ColPalette
+
+
   ### Order the x axis as in the metadata_table
-    if(x_axis_column != "Sample"){
     sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
-    }
     sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
   ### Create a list of all ordination methods
@@ -61,39 +69,11 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
           iDist <- phyloseq::distance(physeq_no_unassigned_phylum_bact_only, method=i)
           # Calculate ordination
           iMDS  <- ordinate(physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
-
-            if(x_axis_column == "Sample" || is.null(x_axis_column)){
-            #### BrewerColors
-             getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
-             ColList = unique(metadata[[grouping_column]])
-             ColPalette = getPalette(length(ColList))
-             names(ColPalette) = ColList
-             colors_palette <- ColPalette
-
-            ## Make plot
+          ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, color = grouping_column) +
-            scale_color_manual(values = colors_palette) +
-            geom_point(size=4) +
-            stat_ellipse(aes(group = get(grouping_column), color = get(grouping_column)),linetype = 2, type = "t")
-            }
-
-            if(x_axis_column != "Sample"){
-            #### BrewerColors
-             getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
-             ColList = unique(metadata[[x_axis_column]])
-             ColPalette = getPalette(length(ColList))
-             names(ColPalette) = ColList
-             colors_palette <- ColPalette
-            ## Make plot
-            # Create plot, store as temp variable, p
-            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = x_axis_column) +
+            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = color_column) +
               scale_color_manual(values = colors_palette) +
-              geom_point(size=4) 
-              # stat_ellipse(aes(group = get(grouping_column), color = get(grouping_column)),linetype = 2, type = "t")
-            }
-
-
+              geom_point(size=4) + stat_ellipse(aes(group = get(color_column), color = get(color_column)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
             p <- p + ggtitle(paste("MDS using distance method ", i, sep=" "))
             # Save the individual graph in a folder
@@ -101,7 +81,3 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
       }
 
-
-
-
-#"dpcoa"

@@ -23,6 +23,7 @@ alpha_plot <- snakemake@output[["alpha_plot"]]
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
+color_column <- snakemake@params[["color_column"]]
 
 
 ## Load needed libraries
@@ -40,22 +41,17 @@ scale_fill_discrete <-  function(palname=pal, ...){
   scale_fill_brewer(palette=palname, ...)
 }
 
+## Order the x axis as in the metadata_table
+sample_data(phyloseq_obj)[[grouping_column]] = factor(sample_data(phyloseq_obj)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
-if(x_axis_column == "Sample"){
-  ## Order the x axis as in the metadata_table
-  p <- plot_richness(phyloseq_obj, x = "sample", color = grouping_column)
-  p <- p + theme(axis.text.x = element_text(size=5))
-}else{
-  sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
-  ## Plot
-  p <- plot_richness(phyloseq_obj, x = x_axis_column, color = grouping_column)
-  p <- p + theme(axis.text.x = element_text(size=5))
-}
+## Plot
+p <- plot_richness(phyloseq_obj, x = grouping_column, color = color_column)
+p <- p + theme(axis.text.x = element_text(size=5))
+
 
 ## Save plot
 p.width <- 7 + 0.4*nsamples(phyloseq_obj)
 ggsave(filename = alpha_plot,  plot = p, width = p.width, height = 4)
-
 
 
 
