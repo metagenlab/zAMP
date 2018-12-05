@@ -16,9 +16,9 @@ R_extected_error: 2
 
 # Visualization
 viz_replace_empty_tax: TRUE
-grouping_column: "PatientID"
-x_axis_column: "Sample"
-color_column: "sample_source"
+grouping_column: PatientID
+x_axis_column: Sample
+color_column: sample_source
 
-# Rare
+# Rarefaction
 rarefaction_value : 10000
