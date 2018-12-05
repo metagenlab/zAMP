@@ -36,14 +36,14 @@ rule KRONA_plots:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_melted_table.tsv"
+        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_melted_table.tsv"
     output:
-        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]])))
+        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]])))
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA.txt"
     script:
         "scripts/KRONA_plots.R"
 
@@ -53,16 +53,16 @@ rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.png"
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/alpha_divesity.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
         color_column = config["color_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/alpha_diversity/alpha_divesity.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/alpha_divesity.txt"
     script:
         "scripts/alpha_diversity.R"
 
@@ -71,21 +71,21 @@ rule ordination:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/phyloseq_object",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/unifrac.png",
-        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/wunifrac.png",
-        # output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/dpcoa.png",
-        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jsd.png",
-        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/bray.png",
-        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/jaccard.png",
-        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/chao.png"
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/unifrac.png",
+        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/wunifrac.png",
+        # output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/dpcoa.png",
+        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/jsd.png",
+        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/bray.png",
+        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/jaccard.png",
+        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/chao.png"
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
         color_column = config["color_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/ordination/logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/logs.txt"
     script:
         "scripts/ordination.R"
