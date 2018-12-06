@@ -21,7 +21,7 @@ rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
 
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
-grouping_column <- snakemake@params[["grouping_column"]]
+sample_type <- snakemake@params[["sample_type"]]
 
 ## Load libraries
 library('phyloseq')
@@ -157,15 +157,12 @@ p <- ggplot(
     y = Alpha_diversity_mean,
     ymin = Alpha_diversity_mean - Alpha_diversity_sd,
     ymax = Alpha_diversity_mean + Alpha_diversity_sd,
-    colour = get(grouping_column),
-    group = get(x_axis_column)
-  )
-) + geom_line(
-) + geom_pointrange(
-) + facet_wrap(
-  facets = ~ Measure,
-  scales = 'free_y'
-)
+    colour = get(sample_type),
+    group = get("Sample"))) +
+      labs(col = "Sample type") +
+      geom_line() +
+      geom_pointrange() +
+      facet_wrap(facets = ~ Measure, scales = 'free_y')
 
 
 ggsave(filename = rarefaction_curve,  plot = p, width = 10)

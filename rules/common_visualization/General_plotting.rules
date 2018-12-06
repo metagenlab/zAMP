@@ -60,7 +60,7 @@ rule alpha_diversity:
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
-        color_column = config["color_column"]
+        sample_type = config["sample_type"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/alpha_divesity.txt"
     script:
@@ -84,7 +84,7 @@ rule ordination:
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
-        color_column = config["color_column"]
+        sample_type = config["sample_type"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/logs.txt"
     script:

@@ -24,7 +24,7 @@ output_folder <- (dirname(output_folder)[1])
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-color_column <- snakemake@params[["color_column"]]
+sample_type <- snakemake@params[["sample_type"]]
 
 
 
@@ -44,10 +44,14 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
- ColList = unique(metadata[[color_column]])
+ ColList = unique(metadata[[sample_type]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
+
+
+
+
 
 
   ### Order the x axis as in the metadata_table
@@ -70,7 +74,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
           iMDS  <- ordinate(physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
           ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = color_column) +
+            p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = sample_type) +
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(grouping_column), color = get(grouping_column)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
