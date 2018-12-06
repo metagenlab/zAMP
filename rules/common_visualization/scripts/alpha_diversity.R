@@ -47,7 +47,8 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 
 for (g in unique(metadata[[grouping_column]])){
     remove_idx = as.character(get_variable(phyloseq_obj, grouping_column)) == g
-    g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
+    g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj) +
+    geom_boxplot()
 
  if (x_axis_column == "Sample"){
  ## Plot
@@ -55,7 +56,8 @@ for (g in unique(metadata[[grouping_column]])){
   scale_color_manual(values = colors_palette)
  }else{
  p <- plot_richness(g_phyloseq_obj, x = x_axis_column, color = sample_type) +
-  scale_color_manual(values = colors_palette)
+  scale_color_manual(values = colors_palette) +
+  geom_boxplot()
  }
 
 
