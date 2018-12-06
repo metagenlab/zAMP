@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 
 ## Input
@@ -56,7 +56,7 @@ for (g in unique(metadata[[grouping_column]])){
     print(g)
 
   ### Create a list of all ordination methods
-  dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard", "chao")
+  dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
 
     ### Run a loop to save in a list all plots
       ### Create a liste
@@ -76,7 +76,7 @@ for (g in unique(metadata[[grouping_column]])){
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
-            p <- p + ggtitle(paste("MDS using distance method ", i, sep=" "))
+            p <- p + ggtitle(paste("MDS using distance method", i, sep=" "))
             # Save the individual graph in a folder
             ggsave(plot = p, filename = paste0(output_folder,"/",g,"_",i,".png"))
 
