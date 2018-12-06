@@ -47,7 +47,7 @@ theme_set(theme_bw())
     print(smax)
 
   ### Order the x axis as in the metadata_table
-    raw_to_filtered_reads_stats[[x_axis_column]] = factor(raw_to_filtered_reads_stats[[x_axis_column]], levels = metadata[[x_axis_column]], ordered = TRUE)
+    raw_to_filtered_reads_stats[[x_axis_column]] = factor(raw_to_filtered_reads_stats[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
     raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
 
