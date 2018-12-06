@@ -36,7 +36,7 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 theme_set(theme_bw())
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
- ColList = unique(metadata[[grouping_column]])
+ ColList = unique(metadata[[color_column]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
