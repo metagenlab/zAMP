@@ -11,7 +11,7 @@ rule all:
         "DADA2/2_denoised/rep-seqs.qzv",
         #rarefied
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/{grouping_column}_ordination/unifrac.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/{grouping_column}_unifrac.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
         #notrarefied
@@ -33,7 +33,7 @@ rule all:
         "vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
         #rarefied
         expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/{grouping_column}_ordination/unifrac.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/{grouping_column}_unifrac.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
         #notrarefied
