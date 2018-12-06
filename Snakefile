@@ -10,7 +10,7 @@ rule all:
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
         #rarefied
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/alpha_divesity.png",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/unifrac.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
@@ -19,8 +19,8 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/reads/reads_plot_with_filtered.png",
         #expand("DADA2/5_visualization/rdp/ezbiocloud_marta/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/alpha_diversity/alpha_divesity.png",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/unifrac.png",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/{grouping_column}_unifrac.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
@@ -32,7 +32,7 @@ rule all:
         "vsearch/2_denoised/rep-seqs.qzv",
         "vsearch/3_classified/rdp/ezbiocloud_valentin/otus_tax_table.txt",
         #rarefied
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/alpha_divesity.png",
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/unifrac.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
@@ -41,8 +41,8 @@ rule all:
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/reads/reads_plot_with_filtered.png",
         #expand("vsearch/5_visualization/rdp/ezbiocloud_marta/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/alpha_diversity/alpha_divesity.png",
-        "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/unifrac.png",
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/{grouping_column}_unifrac.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
@@ -62,4 +62,3 @@ include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/to_Phyloseq.rules"
 include: "rules/common_visualization/rarefy.rules"
 include: "rules/common_visualization/General_plotting.rules"
-

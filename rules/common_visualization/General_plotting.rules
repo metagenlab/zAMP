@@ -56,7 +56,7 @@ rule alpha_diversity:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/alpha_divesity.png"
+        alpha_plot = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/alpha_diversity/{grouping_column}_alpha_divesity.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
@@ -74,13 +74,12 @@ rule ordination:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/unifrac.png",
-        output2 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/wunifrac.png",
-        # output3 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/dpcoa.png",
-        output4 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/jsd.png",
-        output5 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/bray.png",
-        output6 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/jaccard.png",
-        output7 ="{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/chao.png"
+        output1 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_unifrac.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output2 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_wunifrac.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        # output3 =expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_dpcoa.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output4 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jsd.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output5 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_bray.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output6 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jaccard.png", grouping_column=list(set(all_samples[config["grouping_column"]])))
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
@@ -89,3 +88,4 @@ rule ordination:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/logs.txt"
     script:
         "scripts/ordination.R"
+
