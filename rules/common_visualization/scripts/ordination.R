@@ -50,7 +50,8 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
  ### Order the x axis as in the metadata_table
     sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
-for (g in unique(metadata[[grouping_column]])){
+
+for (g in get_variable(phyloseq_obj, grouping_column)){
     remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == g
     g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
     print(g)

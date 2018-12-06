@@ -45,7 +45,7 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
  colors_palette <- ColPalette
 
 
-for (g in unique(metadata[[grouping_column]])){
+for (g in get_variable(phyloseq_obj, grouping_column)){
     remove_idx = as.character(get_variable(phyloseq_obj, grouping_column)) == g
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
