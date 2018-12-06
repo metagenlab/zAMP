@@ -44,7 +44,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
- ColList = unique(metadata[[sample_type]])
+ ColList = unique(metadata[[grouping_column]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
