@@ -45,10 +45,10 @@ theme_set(theme_bw())
 sample_data(phyloseq_obj)[[grouping_column]] = factor(sample_data(phyloseq_obj)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
 ## Plot
-p <- plot_richness(phyloseq_obj, x = grouping_column, color = color_column)+
-  scale_color_manual(values = colors_palette) +
+p <- plot_richness(phyloseq_obj, x = grouping_column, color = color_column) +
+  scale_color_manual(values = colors_palette)
 
-  p <- p + theme(axis.text.x = element_text(size=5))
+p <- p + theme(axis.text.x = element_text(size=5))
 
 
 ## Save plot
