@@ -72,7 +72,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
             # Create plot, store as temp variable, p
             p <- plot_ordination(physeq_no_unassigned_phylum_bact_only, iMDS, shape = grouping_column, color = color_column) +
               scale_color_manual(values = colors_palette) +
-              geom_point(size=4) + stat_ellipse(aes(group = get(color_column), color = get(color_column)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
+              geom_point(size=4) + stat_ellipse(aes(group = get(grouping_column), color = get(grouping_column)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
             p <- p + ggtitle(paste("MDS using distance method ", i, sep=" "))
             # Save the individual graph in a folder
