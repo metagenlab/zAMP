@@ -30,27 +30,29 @@ color_column <- snakemake@params[["color_column"]]
 library("ggplot2"); packageVersion("ggplot2")
 library("phyloseq"); packageVersion("phyloseq")
 library("data.table"); packageVersion("data.table")
+library("RColorBrewer"); packageVersion("RColorBrewer")
 
 ## Set theme
 theme_set(theme_bw())
-pal = "Set1"
-scale_colour_discrete <-  function(palname=pal, ...){
-  scale_colour_brewer(palette=palname, ...)
-}
-scale_fill_discrete <-  function(palname=pal, ...){
-  scale_fill_brewer(palette=palname, ...)
-}
+#### BrewerColors
+ getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+ ColList = unique(metadata[[grouping_column]])
+ ColPalette = getPalette(length(ColList))
+ names(ColPalette) = ColList
+ colors_palette <- ColPalette
 
 ## Order the x axis as in the metadata_table
 sample_data(phyloseq_obj)[[grouping_column]] = factor(sample_data(phyloseq_obj)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
 ## Plot
-p <- plot_richness(phyloseq_obj, x = grouping_column, color = color_column)
-p <- p + theme(axis.text.x = element_text(size=5))
+p <- plot_richness(phyloseq_obj, x = grouping_column, color = color_column)+
+  scale_color_manual(values = colors_palette) +
+
+  p <- p + theme(axis.text.x = element_text(size=5))
 
 
 ## Save plot
-p.width <- 7 + 0.4*nsamples(phyloseq_obj)
+p.width <- 7 + 0.4*length(unique(metadata[[grouping_column]]))
 ggsave(filename = alpha_plot,  plot = p, width = p.width, height = 4)
 
 
