@@ -51,12 +51,12 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
     sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 
-for (g in get_variable(phyloseq_obj, grouping_column)){
+for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
     remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == g
-    nsamples(GlobalPatterns) = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
+    g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
     print(g)
 
-    if(nsamples(nsamples(GlobalPatterns))>2){
+    if(nsamples(nsamples(g_physeq_no_unassigned_phylum_bact_only))>3){
     ### Create a list of all ordination methods
     dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     }
