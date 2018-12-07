@@ -48,7 +48,6 @@ rule KRONA_plots:
         "scripts/KRONA_plots.R"
 
 
-
 rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"

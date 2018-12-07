@@ -61,7 +61,7 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
     dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     }
     else{
-    dist_methods <- c("wunifrac", "jsd", "bray", "jaccard") # , "chao" ,"unifrac" removed because causing errors
+    dist_methods <- c("jsd", "bray", "jaccard") # , "chao" ,"unifrac" removed because causing errors
     }
     ### Run a loop to save in a list all plots
       ### Create a liste
