@@ -56,7 +56,7 @@ for (g in get_variable(phyloseq_obj, grouping_column)){
     nsamples(GlobalPatterns) = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
     print(g)
 
-    if(nsamples(nsamples(GlobalPatterns))>3){
+    if(nsamples(nsamples(GlobalPatterns))>2){
     ### Create a list of all ordination methods
     dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     }
