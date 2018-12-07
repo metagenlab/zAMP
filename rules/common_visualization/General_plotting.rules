@@ -74,7 +74,7 @@ rule ordination:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_observed.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output1 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_bray.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         output2 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_wunifrac.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         # output3 =expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_dpcoa.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         output4 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jsd.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
