@@ -53,12 +53,16 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 for (g in get_variable(phyloseq_obj, grouping_column)){
     remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == g
-    g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
+    nsamples(GlobalPatterns) = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
     print(g)
 
-  ### Create a list of all ordination methods
-  dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
-
+    if(nsamples(nsamples(GlobalPatterns))>3){
+    ### Create a list of all ordination methods
+    dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
+    }
+    else{
+    dist_methods <- c("wunifrac", "jsd", "bray", "jaccard") # , "chao" ,"unifrac" removed because causing errors
+    }
     ### Run a loop to save in a list all plots
       ### Create a liste
       plist <- vector("list", length(dist_methods))
