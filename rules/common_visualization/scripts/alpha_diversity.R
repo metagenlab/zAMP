@@ -67,7 +67,7 @@ p <- p + theme(axis.text.x = element_text(size=5))
 
 
 ## Save plot
-p.width <- 7 + 0.4*length(unique(metadata[[sample_type]]))
+p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
 ggsave(filename = paste0(output_folder,"/",g,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
 
 }
