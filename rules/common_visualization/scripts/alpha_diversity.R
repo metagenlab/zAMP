@@ -6,9 +6,9 @@
 # https://joey711.github.io/phyloseq/plot_richness-examples.html
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 
 ## Input
