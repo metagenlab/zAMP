@@ -60,9 +60,6 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
     ### Create a list of all ordination methods
     dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     }
-    else{
-    dist_methods <- c("jsd", "bray", "jaccard") # , "chao" ,"unifrac" removed because causing errors
-    }
     ### Run a loop to save in a list all plots
       ### Create a liste
       plist <- vector("list", length(dist_methods))
@@ -86,5 +83,7 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
             ggsave(plot = p, filename = paste0(output_folder,"/",g,"_",i,".png"))
 
       }
-
+    else{
+    file.create(paste0(output_folder,"/",g,"_bray.png"))
+    }
 }
