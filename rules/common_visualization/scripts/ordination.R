@@ -56,7 +56,7 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
     g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
     print(g)
 
-    if(nsamples(nsamples(g_physeq_no_unassigned_phylum_bact_only))>3){
+    if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){
     ### Create a list of all ordination methods
     dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     }
