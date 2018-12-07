@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 
 ## Input
@@ -83,6 +83,7 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
 
       }}
 else{
-    file.create(paste0('"',output_folder,'/',g,'_bray.png','"'))
+    filename <- paste0(output_folder,"/",g,"_bray.png")
+    file.create(filepath(filename))
     }
     }
