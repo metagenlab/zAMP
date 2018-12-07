@@ -49,6 +49,7 @@ for (g in get_variable(phyloseq_obj, grouping_column)){
     remove_idx = as.character(get_variable(phyloseq_obj, grouping_column)) == g
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
+ if(nsamples(g_phyloseq_obj)>0){
  if (x_axis_column == "Sample"){
  ## Plot
  p <- plot_richness(g_phyloseq_obj, color = sample_type) +
@@ -60,9 +61,6 @@ for (g in get_variable(phyloseq_obj, grouping_column)){
   geom_boxplot()
  }
 
-
-
-
 p <- p + theme(axis.text.x = element_text(size=5))
 
 
@@ -70,5 +68,7 @@ p <- p + theme(axis.text.x = element_text(size=5))
 p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
 ggsave(filename = paste0(output_folder,"/",g,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
 
-}
-
+}else{
+    filename <- paste0(output_folder,"/",g,"_alpha_divesity.png")
+    file.create(file.path(filename))
+}}
