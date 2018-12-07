@@ -78,8 +78,7 @@ rule ordination:
         output2 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_wunifrac.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         # output3 =expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_dpcoa.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         output4 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jsd.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        output5 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_bray.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
-        output6 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jaccard.png", grouping_column=list(set(all_samples[config["grouping_column"]])))
+        output5 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_jaccard.png", grouping_column=list(set(all_samples[config["grouping_column"]])))
     params:
         grouping_column = config["grouping_column"],
         x_axis_column = config["x_axis_column"],
