@@ -70,6 +70,6 @@ ggsave(filename = paste0(output_folder,"/",g,"_alpha_divesity.png"),  plot = p, 
 
 }else{
     filename <- paste0(output_folder,"/",g,"_alpha_divesity.png")
-    print(paste("Create empty file", filename)
+    print(paste("Create empty file", filename))
     file.create(file.path(filename))
 }}
