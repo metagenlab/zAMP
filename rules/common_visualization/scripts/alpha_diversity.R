@@ -34,8 +34,8 @@ library("data.table"); packageVersion("data.table")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 
 ## Order the x axis as in the metadata_table
-#sample_data(phyloseq_obj)[[grouping_column]] = factor(sample_data(phyloseq_obj)[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
-
+sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
