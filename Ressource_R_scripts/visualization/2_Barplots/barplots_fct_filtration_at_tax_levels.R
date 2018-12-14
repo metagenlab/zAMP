@@ -148,11 +148,11 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
             #### Define the filtering tag depending of the applied filtering
                 ##### Relative
                 if (quantity_filtering_type == "relative"){
-                    filtering_tag <-paste("Relative cumulated abund. <", quantity_filtering_value , "%")
+                    filtering_tag <-paste("Relative abund. <", quantity_filtering_value , "%")
                 }
                 ##### Absolute filtering
                 else if (quantity_filtering_type == "absolute"){
-                    filtering_tag <-paste("Absolute cumulated abund. <", quantity_filtering_value, "reads")
+                    filtering_tag <-paste("Absolute abund. <", quantity_filtering_value, "reads")
                 }
 
             #### Apply the filtering tag
@@ -205,7 +205,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
             #### Distinct colors
                 else if (distinct_colors == TRUE) {
-                    set.seed(2)
+                    set.seed(4)
                     ColList <- unique(threshod_filtered_abs_no_zero[[t]])
                     ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(threshod_filtered_abs_no_zero[[t]])))
                     names(ColPalette) = ColList
@@ -273,7 +273,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     theme_bw() +
                     geom_col() +
                     scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 1)) + # axis and title settings
+                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = -0.5)) + # axis and title settings
                     guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
                     labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
                     scale_fill_manual(values = colors_palette) # colors as set previously

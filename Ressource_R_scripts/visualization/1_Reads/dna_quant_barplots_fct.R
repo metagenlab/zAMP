@@ -37,6 +37,7 @@ dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_co
   ### Create the barplot for DNA
   overall_dna_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = get(dna_quant_column), fill = get(filling_column))) + 
     geom_col() +
+    theme_bw() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Quantification [nM]") +
     ggtitle(paste("DNA quantity")) +
@@ -69,7 +70,8 @@ dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_co
   
   
   ### Create the barplot for reads
-  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) + 
+  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) +
+    theme_bw() +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Reads") +

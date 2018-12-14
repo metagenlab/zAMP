@@ -14,6 +14,8 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/{grouping_column}_bray.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+
         #notrarefied
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/reads/reads_plot_with_filtered.png",
@@ -23,7 +25,6 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ordination/{grouping_column}_bray.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
-
 
 
         #vsearch
@@ -36,6 +37,7 @@ rule all:
         expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/ordination/{grouping_column}_bray.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/rarefaction_curve.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/phyloseq_object",
+        expand("vsearch/5_visualization/rdp/ezbiocloud_valentin/rarefaction_" + str(config["rarefaction_value"]) + "/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]]))),
         #notrarefied
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "vsearch/5_visualization/rdp/ezbiocloud_valentin/norarefaction/reads/reads_plot_with_filtered.png",

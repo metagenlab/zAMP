@@ -183,9 +183,9 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
   merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
     filter(Abundance>0)
   write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
-  
-  
-  
+
+
+
   ### Convert taxonomic all levels as character (needed for the next steps)
   above_threshold_df$Kingdom<-as.character(above_threshold_df$Kingdom)
   above_threshold_df$Phylum<-as.character(above_threshold_df$Phylum)
@@ -195,7 +195,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
   above_threshold_df$Genus<-as.character(above_threshold_df$Genus)
   above_threshold_df$Species<-as.character(above_threshold_df$Species)
   above_threshold_df$OTU<-as.character(above_threshold_df$OTU)
-  
+
   under_threshold_df$Kingdom<-as.character(under_threshold_df$Kingdom)
   under_threshold_df$Phylum<-as.character(under_threshold_df$Phylum)
   under_threshold_df$Class<-as.character(under_threshold_df$Class)
@@ -204,7 +204,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
   under_threshold_df$Genus<-as.character(under_threshold_df$Genus)
   under_threshold_df$Species<-as.character(under_threshold_df$Species)
   under_threshold_df$OTU<-as.character(under_threshold_df$OTU)
-  
+
   ### Rename taxa with < percent/reads abundance, defending of the filtering applied
   ### Relative filtering
   if (quantity_filtering_type == "relative"){
@@ -216,7 +216,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"%_abund")
     under_threshold_df$Species <-paste("<_", quantity_filtering_value,"%_abund")
   }
-  
+
   ### Absolute filtering
   else if (quantity_filtering_type == "absolute"){
     under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"reads")
@@ -227,7 +227,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"reads")
     under_threshold_df$Species <-paste("<_", quantity_filtering_value,"reads")
   }
-  
+
   ### Abundance rank of the taxa in the group filtering
   else if (quantity_filtering_type == "rank"){
     under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"rank")
@@ -237,8 +237,8 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     under_threshold_df$Family <-paste("<_", quantity_filtering_value,"rank")
     under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"rank")
     under_threshold_df$Species <-paste("<_", quantity_filtering_value,"rank")
-  }  
-  
+  }
+
   ### Absolute abundance  AND rank of the taxa in the group filtering
   else if (quantity_filtering_type == "absolute_and_rank"){
     under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value)
@@ -248,8 +248,8 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     under_threshold_df$Family <-paste("<_", quantity_filtering_value)
     under_threshold_df$Genus <-paste("<_", quantity_filtering_value)
     under_threshold_df$Species <-paste("<_", quantity_filtering_value)            }
-  
-  
+
+
   ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
   threshod_filtered_abs <- full_join(under_threshold_df,above_threshold_df)
   
@@ -305,7 +305,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     
     
     filtered_df_abs_i<-filtered_df_abs_i
-    
+
     ### Write this table in a external file
     write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
     
@@ -324,7 +324,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     if (comparison == "1Rule"){
       compare_df_i <- dcast(merged_filtered_OTU, OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
       selected_by_comparison_df_i <- compare_df_i %>%
-        subset(spleen > 5 & spleen > 5*TEQ & spleen > 5* t_neg_PCR | liver > 5 & liver > 5*TEQ & liver > 5* t_neg_PCR ) 
+        subset(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*TEQ & liver > 5* PCR_neg )
       
       selected_by_comparison_df_i <-  selected_by_comparison_df_i[order(selected_by_comparison_df_i$spleen),]
       
@@ -333,8 +333,8 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     else if (comparison == "2Rules") {
       compare_df_i <- dcast(merged_filtered_OTU,  OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
       selected_by_comparison_df_i <- compare_df_i %>%
-        filter(spleen > 5 & spleen > 5*TEQ & spleen > 5* t_neg_PCR | liver > 5 & liver > 5*TEQ & liver > 5* t_neg_PCR ) %>%
-        filter(water_Q > 5 & water_Q > 5*TEQ & water_Q > 5* t_neg_PCR | water_S > 5 & water_S > 5*TES & water_S > 5* t_neg_PCR | lungs > 5 & lungs > 5*TEQ & lungs > 5 * t_neg_PCR)
+        filter(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*EC_Q & liver > 5* PCR_neg ) %>%
+        filter(water_Q > 5 & water_Q > 5*EC_Q & water_Q > 5* PCR_neg | water_MN > 5 & water_MN > 5*EC_MN & water_MN > 5* PCR_neg | lungs > 5 & lungs > 5*EC_Q & lungs > 5 * PCR_neg)
     }
     
     else if(comparison == "0Rule"){
@@ -379,9 +379,9 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       select_filtered_df_abs_i$OTU <- fct_rev(fct_relevel(select_filtered_df_abs_i$OTU, "Filtered", after = 0))
       
     }
-    
-    
-    sample_source_order = c("spleen","liver","lungs","TEQ","TES","water_Q", "water_S", "t_neg_PCR")
+
+
+    sample_source_order = c("MOCK_ATCC_Q", "EC_Q", "liver", "spleen", "lungs", "water_Q", "water_MN", "EC_MN",  "MOCK_ATCC_MN", "PCR_neg")
     
     select_filtered_df_abs_i$sample_source <- factor(select_filtered_df_abs_i$sample_source , levels = sample_source_order, ordered = TRUE)
 

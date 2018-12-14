@@ -35,7 +35,8 @@ reads_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column
   }
   
   ### Create the barplot
-  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) + 
+  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) +
+    theme_bw() +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Reads") +
@@ -45,8 +46,7 @@ reads_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     guides(fill=guide_legend(title=filling_column))
   
-  overall_reads_barplot <<- overall_reads_barplot
-  
+
   ### Save it
   ggsave(overall_reads_barplot, filename = paste(figures_save_dir, "/reads/barplot/overall", filling_column, "_", grouping_column,  "_reads_barplot.png",sep=""), width = 10, height = 5) 
   
@@ -70,18 +70,28 @@ reads_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column
   for (i in unique(reads_counts_df[[grouping_column]])) {
     
     filtered_count_table_df <- filter(count_table_df, count_table_df[[grouping_column]] == i )
-    
+
+      smax_g <- max(filtered_count_table_df$TotalReads)
+      print(smax_g)
     
     ### Create the barplot
-    reads_barplot <- ggplot(filtered_count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) + 
+    reads_barplot <- ggplot(filtered_count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) +
+      theme_bw() +
       geom_col() +
       scale_fill_manual(values = colors_palette) + 
       labs(x= grouping_column,  y ="Reads") +
       ggtitle(paste("Reads counts",grouping_column, i)) +
       scale_x_discrete(drop = TRUE) + # Keep all groups, included the ones with values. Alternative : (drop = FALSE)
-      scale_y_continuous(labels = comma, limits = c(0,smax)) +
+      scale_y_continuous(labels = comma, limits = c(0,smax_g)) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       guides(fill=guide_legend(title=filling_column))
+
+
+    ### Create facet view
+    if (isTRUE(facet_plot)){
+      reads_barplot <- reads_barplot + facet_grid(.~get(facetting_column), scales = "free", space = "free")
+
+    }
     
     ### Save it
     ggsave(reads_barplot, filename = paste(figures_save_dir, "/reads/barplot/", filling_column, "_", grouping_column, i, "_reads_barplot.png",sep=""), width = 10, height = 5) 
