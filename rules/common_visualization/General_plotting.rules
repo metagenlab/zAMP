@@ -31,19 +31,19 @@ rule reads_plot_with_filtered:
         "scripts/reads_plots_with_filtration.R"
 
 
-
 rule KRONA_plots:
     conda:
         "../../envs/R_visualization.yml"
     input:
         phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_melted_table.tsv"
     output:
-        output = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/KRONA/{grouping_column}.html", grouping_column=list(set(all_samples[config["grouping_column"]])))
+        output = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA/{grouping_column}.html"
     params:
         grouping_column = config["grouping_column"],
+        grouping_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_KRONA.txt"
     script:
         "scripts/KRONA_plots.R"
 
@@ -55,13 +55,14 @@ rule alpha_diversity:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/alpha_diversity/{grouping_column}_alpha_divesity.png",grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{grouping_column}_alpha_divesity.png",
     params:
         grouping_column = config["grouping_column"],
+        grouping_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/alpha_divesity.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{grouping_column}_alpha_divesity.txt"
     script:
         "scripts/alpha_diversity.R"
 
@@ -73,13 +74,14 @@ rule ordination:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = expand("{{tool}}/5_visualization/{{classifier}}/{{db_taxonomy}}/{{raref_or_not}}/ordination/{grouping_column}_bray.png", grouping_column=list(set(all_samples[config["grouping_column"]]))),
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{grouping_column}_bray.png",
     params:
         grouping_column = config["grouping_column"],
+        grouping_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_ordination/logs.txt"
     script:
         "scripts/ordination.R"
 

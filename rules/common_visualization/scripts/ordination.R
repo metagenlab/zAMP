@@ -24,6 +24,7 @@ output_folder <- (dirname(output_folder)[1])
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
+grouping_column_value <- snakemake@params[["grouping_column_value"]]
 sample_type <- snakemake@params[["sample_type"]]
 
 
@@ -39,7 +40,6 @@ library("rlang"); packageVersion("rlang")
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
-
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
  ColList = unique(metadata[[sample_type]])
@@ -51,10 +51,9 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
     sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 
-for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
-    remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == g
+#for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
+    remove_idx <- as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_column_value
     g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
-    print(g)
 
     if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){
     ### Create a list of all ordination methods
@@ -79,11 +78,11 @@ for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
             # Add title to each plot
             p <- p + ggtitle(paste("MDS using distance method", i, sep=" "))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = paste0(output_folder,"/",g,"_",i,".png"))
+            ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",i,".png"))
 
-      }}
-else{
-    filename <- paste0(output_folder,"/",g,"_bray.png")
-    file.create(file.path(filename))
+      }
+    }else{
+        filename <- paste0(output_folder,"/",grouping_column_value,"_bray.png")
+        file.create(file.path(filename))
     }
-    }
+
