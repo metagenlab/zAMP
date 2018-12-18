@@ -1,6 +1,6 @@
 
 ### Create a function
-barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "nofiltering"), absolute_quantity_filtering_value, relative_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
 # Transform values in  dplyr format
     g_column <- rlang::sym(grouping_column)
@@ -94,7 +94,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     quantity_filtering_value <- "0"
                     print("No filtering based on quantity")
                     physeq_subset_df_filtered <- physeq_subset_norm_df
-                }
+                    }
 
             #### Relative value filtering
                 else if (quantity_filtering_type == "relative"){
@@ -102,15 +102,13 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     quantity_filtering_value <- relative_quantity_filtering_value
                     print("Relative value based filtering")
                     physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
-                        dplyr::group_by(!!x_column, !!t_column) %>% # group the rows by grouping column and taxa
+                        dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                         ungroup %>%
-                        dplyr::group_by(!! x_column)  %>% # group by sample
-                        dplyr::mutate(totper = as.numeric(paste0(sum(Abundance)))) %>% # calculate the total abundance in the group
-                        ungroup %>%
-                        dplyr::mutate(ponper = as.numeric(100*sumper/totper)) %>% # divide the sum of the taxa by the sum of the group
-                        dplyr::filter(ponper >= quantity_filtering_value) # keep only the taxa above threshold in the group
-                }
+                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
+                        ungroup
+                    }
 
             #### Absolute value filtering
                 else if (quantity_filtering_type == "absolute"){
@@ -118,31 +116,35 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     quantity_filtering_value <- absolute_quantity_filtering_value
                     print("Absolute value based filtering")
                     physeq_subset_df_filtered <- physeq_subset_df  %>%
-                        dplyr::group_by(!! g_column, !!t_column) %>%  # group the dataframe by the grouping column
-                        dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% ## calculate a absolute abundance of the taxa in the group
-                        dplyr::filter(sumper >= quantity_filtering_value) %>% # keep only the taxa above threshold
+                        dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
+                        dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
+                        ungroup %>%
+                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
                         ungroup
-                }
+                    }
 
             #### Write the table after table choice for relative of absolute value plotting , without Abundance = 0 rows to reduce its size.
                 plotted_df %>%
                     filter(Abundance>0) %>%
                     write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
+
             #### Write the table with values that passed the quantity filtering.
                 physeq_subset_df_filtered %>%  ### To follow and control the process, write external .tsv tables
                     filter(Abundance>0) %>%
                     write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
+
         ### Now we have a dataframe ("plotted_df") containing all values, with Abundance expressed in absolute reads number or relative quanity in %, and a dataframe containing the rows that have to be kept while the rest will be merged by tagging them with the same name
             above_threshold_df <- semi_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In a dataframe, keep only the rows matching the filtered rowmanes
             under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by =c ("OTU", "Sample")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
+
 
         ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
             merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
                 filter(Abundance>0)
             write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
-
 
         ### Rename taxa with < percent/reads abundance, defending of the filtering applied
             #### Define the filtering tag depending of the applied filtering
@@ -155,6 +157,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     filtering_tag <-paste("Absolute abund. <", quantity_filtering_value, "reads")
                 }
 
+                if (quantity_filtering_type != "nofiltering"){
             #### Apply the filtering tag
                 under_threshold_df$Kingdom <-filtering_tag
                 under_threshold_df$Phylum <-filtering_tag
@@ -164,6 +167,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                 under_threshold_df$Genus <-filtering_tag
                 under_threshold_df$Species <-filtering_tag
                 under_threshold_df$OTU <-filtering_tag
+            }
   
   
         ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
@@ -215,7 +219,6 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                 }else{ print("distinct_colors must be TRUE or FALSE")
                 }
 
-    
         ### Loop for unique value in grouping_column
             for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
                 print(paste("Start plotting", grouping_column, i))
