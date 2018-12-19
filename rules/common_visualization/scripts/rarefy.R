@@ -27,21 +27,27 @@ replace_empty_tax <- snakemake@params[["viz_replace_empty_tax"]]
 
 ## Load libraries
 library(vegan);packageVersion("vegan")
-library(phyloseq);packageVersion("phyloseq")
 library(dplyr);packageVersion("dplyr")
 library(data.table);packageVersion("data.table")
 library(tibble);packageVersion("tibble")
 library(tidyr);packageVersion("tidyr")
 library(readr);packageVersion("readr")
+library(phyloseq);packageVersion("phyloseq")
 
 ## Rarefy
 rarefy_value <- as.numeric(rarefy_value)
 
+## Set seed for reproducibility
 set.seed(1)
 
+
 if (is.numeric(rarefy_value)){
-    print(rarefy_value)
-    rarefied_OTU_table <- as.data.frame(rrarefy(phyloseq_obj@otu_table, sample = rarefy_value))
+
+    # Rarefy with vegan
+    rarefied_OTU_table <- t(as.data.frame(rrarefy(t(phyloseq_obj@otu_table), sample = rarefy_value)))
+
+    # Set the phyloseq_obj to NULL since the new one will have the same name.
+    phyloseq_obj <- NULL
 
     ## Create a function
     load_objects_fct <- function(Metadata_table, taxonomy_table, replace_empty_tax = TRUE, tax_tree) {
@@ -58,7 +64,7 @@ if (is.numeric(rarefy_value)){
         # Read taxonomy table
 
             ### Load into R a table with all Features ID and their taxonomic assignemnt.
-            taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
+            taxonomy_table <-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 
             ### Convert the table into a tabular split version
             taxonomy_table<-taxonomy_table %>% as.tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
@@ -95,7 +101,6 @@ if (is.numeric(rarefy_value)){
 
             taxonomy_table <<- taxonomy_table
             metadata <<- metadata
-            # count_table <<- count_table
             PHY <<- PHY
 
             }
@@ -115,8 +120,6 @@ if (is.numeric(rarefy_value)){
     taxa_names(TAX)
     taxa_names(OTU)
     taxa_names(PHY)
-
-
     # Same sample names
     sample_names(OTU)
     sample_names(META)
@@ -129,15 +132,12 @@ if (is.numeric(rarefy_value)){
     save(x = phyloseq_obj, file = rarefied_phyloseq_path)
 
 
-
 }else{
     print("No numerical rarefaction value given, using the depth of the sample with the lowest number of reads as default")
-    rarefy_value <- min(sample_sums(phyloseq_obj))
-    print(rarefy_value)
-    phyloseq_obj <- rarefy_even_depth(physeq = phyloseq_obj, sample.size = rarefy_value, rngseed = TRUE, replace = FALSE, trimOTUs = TRUE, verbose = TRUE)
+    #rarefy_value <- min(sample_sums(phyloseq_obj))
+    #print(rarefy_value)
+    #phyloseq_obj <- rarefy_even_depth(physeq = phyloseq_obj, sample.size = rarefy_value, rngseed = TRUE, replace = FALSE, trimOTUs = TRUE, verbose = TRUE)
+
+    # Write the phyloseq object
+    #save(x = phyloseq_obj, file = rarefied_phyloseq_path)
 }
-
-
-
-# Write the phyloseq object
-save(x = phyloseq_obj, file = rarefied_phyloseq_path)
