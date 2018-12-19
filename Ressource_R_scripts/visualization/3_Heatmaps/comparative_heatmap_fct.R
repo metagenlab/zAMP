@@ -316,7 +316,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
 
 
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
-      taxalabel <- as(select_filtered_df_abs_i[[t]], "character")
+      taxalabel <- as.character(paste0(toupper(substr(select_filtered_df_abs_i[["Class"]],1 ,9)) , ";",  select_filtered_df_abs_i[[t]]))
       names(taxalabel) <- select_filtered_df_abs_i[["OTU"]]
 
 
@@ -344,14 +344,14 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       }
 
 
-
       ### Save it
       ### Set the filename
       filename_base <- (paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",comparison,"_",facetting_column,"_" ,t))
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 5, height = 12)
+      height_value <- 1 + 0.15*n_distinct(df_molten_dat[["OTU"]])
+      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 6, height = height_value)
 
 
 

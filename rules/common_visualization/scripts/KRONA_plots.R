@@ -32,6 +32,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 
     df <- filter(melted_dataframe, melted_dataframe[[grouping_column]] == grouping_column_value)
+    df <- filter(df, df[["Abundance"]] != 0)
 
     df <- df[, c("Abundance", x_axis_column, "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU")]
     df <- as.data.frame(unclass(df))
