@@ -21,4 +21,4 @@ x_axis_column: Sample
 sample_type: sample_source
 
 # Rarefaction
-rarefaction_value : 10000
+rarefaction_value: [10000,20000,50000,100000,200000,300000]
