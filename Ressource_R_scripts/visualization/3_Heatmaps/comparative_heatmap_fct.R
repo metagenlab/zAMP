@@ -1,6 +1,6 @@
 
 ### Create a function
-comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE, comparison, patient_ID){
+comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by = TRUE, comparison, patient_ID){
 
   # Transform values in  dplyr format
   g_column <- rlang::sym(grouping_column)
@@ -176,7 +176,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     threshod_filtered_abs <- full_join(under_threshold_df,above_threshold_df)
 
     ### Remove the (now but needed before) Abundance = 0 rows
-    threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0)
+    threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance!=0)
 
 
     ### Reorder the facet factor if later used for plotting
@@ -227,31 +227,26 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       ### Write this table in a external file
       write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
-
-      merged_filtered_OTU <- filtered_df_abs_i
-
       ### Filter the table for specific conditions comparing for presence of absence of taxa in given samples
       ### Simple filtering, comparing samples of interest (e.g spleen and liver) with related controls
       ### Filter the table for specific conditions comparing for presence of absence of taxa in given samples
       ### Simple filtering, comparing samples of interest (e.g spleen and liver) with related controls
       if (comparison == "1Rule"){
-        compare_df_i <- dcast(merged_filtered_OTU, OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
+        compare_df_i <- dcast(filtered_df_abs_i, OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
         selected_by_comparison_df_i <- compare_df_i %>%
-          subset(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*TEQ & liver > 5* PCR_neg )
-
-        selected_by_comparison_df_i <-  selected_by_comparison_df_i[order(selected_by_comparison_df_i$spleen),]
+          subset(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*EC_Q & liver > 5* PCR_neg )
 
       }
       ### Composite comparison, with two rules
       else if (comparison == "2Rules") {
-        compare_df_i <- dcast(merged_filtered_OTU,  OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
+        compare_df_i <- dcast(filtered_df_abs_i,  OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
         selected_by_comparison_df_i <- compare_df_i %>%
           filter(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*EC_Q & liver > 5* PCR_neg ) %>%
           filter(water_Q > 5 & water_Q > 5*EC_Q & water_Q > 5* PCR_neg | water_MN > 5 & water_MN > 5*EC_MN & water_MN > 5* PCR_neg | lungs > 5 & lungs > 5*EC_Q & lungs > 5 * PCR_neg)
       }
 
       else if(comparison == "0Rule"){
-        selected_by_comparison_df_i <- merged_filtered_OTU
+        selected_by_comparison_df_i <- filtered_df_abs_i
       }
 
       else {
@@ -260,75 +255,72 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
 
       write.table(selected_by_comparison_df_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_Rules_filtered_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
-      select_filtered_df_abs_i <- semi_join(merged_filtered_OTU, selected_by_comparison_df_i, by ="OTU")
+      ### Keep only the OTU which passed filters
+      select_filtered_df_abs_i <- semi_join(filtered_df_abs_i, selected_by_comparison_df_i, by ="OTU")
 
-       ############################################################################ Unmodified
+      ############################################################################ Modified for clustering based on OTU abundance
 
-      #### Reorder by abundance
-      if (isTRUE(order_by_abundance)){
+      #### Reorder by abundancy
+      if (order_by == "abundancy"){
         print("Ordered by abundance")
-        filtered_df_abs_i <- filtered_df_abs_i %>%
+        select_filtered_df_abs_i_reord <- select_filtered_df_abs_i %>%
           group_by(!! t_column) %>%
-          mutate(tot = sum(Abundance)) %>%
+          mutate(tot = sum(Abundance))%>%
           ungroup() %>%
-          mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
-          arrange(desc(tot))
-      }
-      else if (isFALSE(order_by_abundance)){ print("NOT ordered by abundance")
-      }
-      else { stop('"order_by_abundance" must be TRUE or FALSE')
+          arrange(desc(tot)) %>%
+          mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
+          order_by_ <- "abund"
+
+      }else if (order_by =="alphabet_class"){
+        print("Ordered alphabetically considering the Class")
+          select_filtered_df_abs_i_reord <- select_filtered_df_abs_i %>%
+            arrange(desc(Class)) %>%
+            mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
+            order_by_ <- "alphclass"
+
+      }else if (order_by =="cluster"){
+        selected_col <- select_filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
+        selected_col_wide <- reshape2::dcast(selected_col, sample_source ~ OTU)
+        selected_col_wide[is.na(selected_col_wide)] <- 0
+        rownames(selected_col_wide) <- selected_col_wide[,1]
+        selected_col_wide[[x_axis_column]] <- NULL
+        # sample_source_order = c("EC_Q", "liver", "spleen", "lungs", "water_Q", "EC_MN", "PCR_neg")
+        row.order <- hclust(dist(selected_col_wide))$order # clustering
+        col.order <- hclust(dist(t(selected_col_wide)))$order
+        dat_new <- selected_col_wide[row.order , col.order] # re-order matrix accoring to clustering
+        df_molten_dat <- melt(as.matrix(dat_new))
+        names(df_molten_dat)[c(1:3)] <- c("sample_source", "OTU","Abundance")
+        select_filtered_df_abs_i_reord <- df_molten_dat %>% filter(Abundance != 0)
+        select_filtered_df_abs_i_reord$OTU <- fct_rev(select_filtered_df_abs_i_reord$OTU)
+        order_by_ <- "clu"
+      }else{
+        stop('order_by_abundance must be "abundancy", "alphabet_class" or "cluster"')
       }
 
 
       if (quantity_filtering_type != "nofiltering"){
-      #### Set the filtering_tabl at the top of the plot
-      filtered_df_abs_i[[t]] <- fct_relevel(filtered_df_abs_i[[t]], filtering_tag, after = 0)
+        #### Set the filtering_tabl at the top of the plot
+        select_filtered_df_abs_i_reord[[t]] <- fct_relevel(select_filtered_df_abs_i_reord[[t]], filtering_tag, after = 0)
       }
 
       #### Write the content of the plot table in a external file
-      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
-
-      #### Renames the values of the vector used for labeling
-      x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
-      names(x_labels) <- filtered_df_abs_i[["Sample"]]
-
-
-
-      ############################################################################ Modified for clustering based on OTU abundance
-
-      selected_col <- select_filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
-
-      selected_col_wide <- dcast(selected_col, sample_source ~ OTU)
-
-      selected_col_wide[is.na(selected_col_wide)] <- 0
-
-      rownames(selected_col_wide) <- selected_col_wide[,1]
-      selected_col_wide[[x_axis_column]] <- NULL
-      # sample_source_order = c("EC_Q", "liver", "spleen", "lungs", "water_Q", "EC_MN", "PCR_neg")
-      col.order <- hclust(dist(t(selected_col_wide)))$order
-      dat_new <- selected_col_wide[, col.order] # re-order matrix accoring to clustering
-
-
-      df_molten_dat <- melt(as.matrix(dat_new))
-      names(df_molten_dat)[c(1:3)] <- c("sample_source", "OTU","Abundance")
-      df_molten_dat <- df_molten_dat %>% filter(Abundance != 0)
-
+      write.table(select_filtered_df_abs_i_reord, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
       taxalabel <- as.character(paste0(toupper(substr(select_filtered_df_abs_i[["Class"]],1 ,9)) , ";",  select_filtered_df_abs_i[[t]]))
       names(taxalabel) <- select_filtered_df_abs_i[["OTU"]]
 
-
       ### Generate heatmap
-      heatmap <- ggplot(df_molten_dat, aes(x = get(x_axis_column), y = OTU, fill = Abundance)) +
+      heatmap <- ggplot(select_filtered_df_abs_i_reord, aes(x = get(x_axis_column), y = OTU, fill = Abundance)) +
         theme_bw() +
         geom_tile(aes(fill=Abundance), show.legend=TRUE) +
         scale_fill_gradient(na.value = "white", low="#000033", high="#CCFF66") +
         geom_text(aes(label = round(Abundance, digits = 1), color = Abundance > max(Abundance)/2), size = 2 ) +
         scale_color_manual(guide = FALSE, values = c("white", "black")) +
         theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
-        scale_y_discrete(labels = taxalabel, drop = FALSE) +
+        scale_y_discrete(labels = taxalabel, drop = TRUE) +
+        scale_x_discrete(drop = FALSE) +
         labs(x= x_axis_column,  y = t)
 
 
@@ -346,12 +338,12 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
 
       ### Save it
       ### Set the filename
-      filename_base <- (paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",comparison,"_",facetting_column,"_" ,t))
+      filename_base <- (paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",comparison,"_",facetting_column,"_" ,t, "_",order_by_))
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure
-      height_value <- 1 + 0.15*n_distinct(df_molten_dat[["OTU"]])
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 6, height = height_value)
+      height_value <- 2 + 0.15*n_distinct(select_filtered_df_abs_i_reord[["OTU"]])
+      ggsave(heatmap, filename = paste0(filename_base, "_heat.png"), width = 7, height = height_value)
 
 
 
