@@ -232,14 +232,14 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       ### Filter the table for specific conditions comparing for presence of absence of taxa in given samples
       ### Simple filtering, comparing samples of interest (e.g spleen and liver) with related controls
       if (comparison == "1Rule"){
-        compare_df_i <- dcast(filtered_df_abs_i, OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
+        compare_df_i <- dcast(filtered_df_abs_i, OTU + Class + Genus + Species ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
         selected_by_comparison_df_i <- compare_df_i %>%
           subset(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*EC_Q & liver > 5* PCR_neg )
 
       }
       ### Composite comparison, with two rules
       else if (comparison == "2Rules") {
-        compare_df_i <- dcast(filtered_df_abs_i,  OTU ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
+        compare_df_i <- dcast(filtered_df_abs_i,  OTU + Class + Genus + Species ~ sample_source, value.var = "Abundance",fun.aggregate = sum)
         selected_by_comparison_df_i <- compare_df_i %>%
           filter(spleen > 5 & spleen > 5*EC_Q & spleen > 5* PCR_neg | liver > 5 & liver > 5*EC_Q & liver > 5* PCR_neg ) %>%
           filter(water_Q > 5 & water_Q > 5*EC_Q & water_Q > 5* PCR_neg | water_MN > 5 & water_MN > 5*EC_MN & water_MN > 5* PCR_neg | lungs > 5 & lungs > 5*EC_Q & lungs > 5 * PCR_neg)
@@ -274,9 +274,10 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       }else if (order_by =="alphabet_class"){
         print("Ordered alphabetically considering the Class")
           select_filtered_df_abs_i_reord <- select_filtered_df_abs_i %>%
-            arrange(desc(Class)) %>%
+            arrange(desc(Class, Genus, Species)) %>%
             mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
             order_by_ <- "alphclass"
+
 
       }else if (order_by =="cluster"){
         selected_col <- select_filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
