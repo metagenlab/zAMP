@@ -10,7 +10,7 @@ fnRs <- snakemake@input[["R2_list"]]
 ## Output
 q_score_filtered_Fs <- snakemake@output[["q_score_filtered_Fs"]]
 q_score_filtered_Rs <- snakemake@output[["q_score_filtered_Rs"]]
-q_score_filtered_R_object <- snakemake@output[["filtering_stats"]]
+# q_score_filtered_R_object <- snakemake@output[["filtering_stats"]]
 
 ## Parameters
 F_length <- snakemake@params[["F_reads_length_trim"]]
@@ -28,12 +28,12 @@ library(dada2);packageVersion("dada2")
 # quality_plot <- plotQualityProfile(fnFs[1:2])
 
 # Filter and trim
-filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_Fs, rev = fnRs, filt.rev = q_score_filtered_Rs, truncLen=c(F_length,R_length), maxN=0, maxEE=c(F_extected_error,R_extected_error), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=TRUE)
+filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_Fs, rev = fnRs, filt.rev = q_score_filtered_Rs, truncLen=c(F_length,R_length), maxN=0, maxEE=c(F_extected_error,R_extected_error), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=FALSE)
 
 # Rename the rownames of filtering_stats by a sample name without suffix
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
 
 rownames(filtering_stats) <- sample.names
 
-write.table(x = filtering_stats, file = file.path(q_score_filtered_R_object), sep = "\t", col.names = NA, row.names = TRUE)
+#write.table(x = filtering_stats, file = file.path(q_score_filtered_R_object), sep = "\t", col.names = NA, row.names = TRUE)
 

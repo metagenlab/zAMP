@@ -1,42 +1,66 @@
-rule DADA2_q_filtering_R:
+rule DADA2_q_filtering:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        R1_list = expand("DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", sample=list(read_naming.keys())),
-        R2_list = expand("DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz", sample=list(read_naming.keys()))
+        R1_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz",
+        R2_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz",
     output:
-        q_score_filtered_Fs = expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample=list(read_naming.keys())),
-        q_score_filtered_Rs = expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample=list(read_naming.keys())),
-        filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        q_score_filtered_Fs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
+        q_score_filtered_Rs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
+        #filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
     log:
-        logging_folder + "DADA2/1b_q_score_filtered/DADA2_1b_q_score_filtering.txt"
+        logging_folder + "DADA2/1b_q_score_filtered/{sample}_DADA2_1b_q_score_filtering.txt"
     params:
         F_reads_length_trim = config["DADA2_F_reads_length_trim"],
         R_reads_length_trim = config["DADA2_R_reads_length_trim"],
         F_extected_error = config["F_extected_error"],
         R_extected_error = config["R_extected_error"]
     threads:
-        8
+        1
     script:
         "scripts/1_DADA2_q_filtering.R"
 
-rule DADA2_denoising_R:
+
+rule DADA2_infer_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        q_score_filtered_Fs = expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample=list(read_naming.keys())),
-        q_score_filtered_Rs = expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample=list(read_naming.keys())),
-        q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        q_score_filtered_Fs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        q_score_filtered_Rs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
     output:
-        filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
-        dna_sequences = "DADA2/2_denoised/dna-sequences.fasta",
-        count_table = "DADA2/2_denoised/count_table.txt"
+        seq_tab = "DADA2/2_denoised/{RUN}/seq_tab.Rds",
+        #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
+    log:
+        logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_denoising.txt"
+    params:
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
+    threads:
+        1
+    script:
+        "scripts/2a_big_data_DADA2_infer_ASV.R"
+
+
+rule DADA2_merge_filter_chim:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        seq_tab = expand("DADA2/2_denoised/{RUN}/seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]])))
+    output:
+        with_chim = "DADA2/2_denoised/dna-sequences_with_chim.fasta",
+        no_chim = "DADA2/2_denoised/dna-sequences_no_chim.fasta",
+        length_filtered = "DADA2/2_denoised/dna-sequences_long_names.fasta",
+        renamed = "DADA2/2_denoised/dna-sequences.fasta",
+        count_table = "DADA2/2_denoised/count_table.txt",
+        #filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv"
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_denoising.txt"
     params:
         merged_min_length = config["merged_min_length"],
         merged_max_length = config["merged_max_length"]
     threads:
-        8
+        1
     script:
-        "scripts/2_DADA2_denoising.R"
+        "scripts/2b_big_data_DADA2_merge_chimera.R"
+
