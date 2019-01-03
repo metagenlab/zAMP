@@ -21,7 +21,7 @@ rule DADA2_q_filtering:
         "scripts/1_DADA2_q_filtering.R"
 
 
-rule DADA2_infer_ASV:
+rule DADA2_learn_errors:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
@@ -29,17 +29,35 @@ rule DADA2_infer_ASV:
         q_score_filtered_Rs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
         #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
     output:
+        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.Rds",
+        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.Rds",
+        #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
+    log:
+        logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_error_profile.txt"
+    threads:
+        1
+    script:
+        "scripts/2a_big_data_DADA2_learn_errors.R"
+
+
+rule DADA2_infer_ASV:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        q_score_filtered_Fs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        q_score_filtered_Rs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.Rds",
+        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.Rds",
+        #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+    output:
         seq_tab = "DADA2/2_denoised/{RUN}/seq_tab.Rds",
         #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_denoising.txt"
-    params:
-        merged_min_length = config["merged_min_length"],
-        merged_max_length = config["merged_max_length"]
     threads:
         1
     script:
-        "scripts/2a_big_data_DADA2_infer_ASV.R"
+        "scripts/2b_big_data_DADA2_infer_ASV.R"
 
 
 rule DADA2_merge_filter_chim:
@@ -62,5 +80,5 @@ rule DADA2_merge_filter_chim:
     threads:
         1
     script:
-        "scripts/2b_big_data_DADA2_merge_chimera.R"
+        "scripts/2c_big_data_DADA2_merge_chimera.R"
 
