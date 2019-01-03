@@ -7,12 +7,10 @@ rule all:
         #"QC/multiqc_DADA2_filtered_reads_report.html",
 
         #DADA2
-        #expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values),
-        #lambda wildcards: expand("DADA2/2_denoised/{RUN}/{sample}_seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]])), sample = all_samples.index.values[all_samples.RUN==list(set(all_samples[config["run_column"]]))]),
-        #expand("DADA2/2_denoised/{RUN}/seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]]))),
         "DADA2/2_denoised/dna-sequences.fasta",
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
+        "DADA2/2_denoised/DADA2_denoising_stats.tsv",
         #rarefied
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/ordination/{grouping_column}_bray.png",grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"]),

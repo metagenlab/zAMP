@@ -14,7 +14,6 @@ q_score_filtered_Fs <- snakemake@input[["q_score_filtered_Fs"]]
 q_score_filtered_Rs <- snakemake@input[["q_score_filtered_Rs"]]
 
 ## Output
-#filtering_stats <- snakemake@output[["filtering_stats"]]
 error_profile_F <- snakemake@output[["error_profile_F"]]
 error_profile_R <- snakemake@output[["error_profile_R"]]
 

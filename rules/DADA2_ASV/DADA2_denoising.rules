@@ -7,14 +7,15 @@ rule DADA2_q_filtering:
     output:
         q_score_filtered_Fs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         q_score_filtered_Rs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
-        #filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        filtering_stats = "DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds"
     log:
         logging_folder + "DADA2/1b_q_score_filtered/{sample}_DADA2_1b_q_score_filtering.txt"
     params:
         F_reads_length_trim = config["DADA2_F_reads_length_trim"],
         R_reads_length_trim = config["DADA2_R_reads_length_trim"],
         F_extected_error = config["F_extected_error"],
-        R_extected_error = config["R_extected_error"]
+        R_extected_error = config["R_extected_error"],
+        sample_name = lambda wildcards: wildcards.sample
     threads:
         1
     script:
@@ -26,12 +27,10 @@ rule DADA2_learn_errors:
         "../../envs/DADA2_in_R.yml"
     input:
         q_score_filtered_Fs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        q_score_filtered_Rs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        q_score_filtered_Rs = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN])
     output:
-        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.Rds",
-        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.Rds",
-        #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
+        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
+        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_error_profile.txt"
     threads:
@@ -46,12 +45,12 @@ rule DADA2_infer_ASV:
     input:
         q_score_filtered_Fs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         q_score_filtered_Rs = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
-        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.Rds",
-        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.Rds",
-        #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
+        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
     output:
-        sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_seq_tab.Rds",
-        #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
+        forward_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_F_seq_tab.rds",
+        reverse_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_R_seq_tab.rds",
+        merged_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_merged_pairs_seq_tab.rds",
     params:
         sample_name = lambda wildcards: wildcards.sample,
     log:
@@ -66,11 +65,9 @@ rule DADA2_merge_sample_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        sample_seq_table = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_seq_tab.Rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        #q_score_filtering_stats = "DADA2/1b_q_score_filtered_paired/DADA2_q_score_filtering_stats.tsv"
+        sample_seq_table = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_merged_pairs_seq_tab.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
     output:
-        merged_seq_table = "DADA2/2_denoised/{RUN}/seq_tab.Rds",
-        #filtering_stats = "DADA2/2_denoised/{RUN}/DADA2_denoising_stats.tsv"
+        merged_seq_table = "DADA2/2_denoised/{RUN}/seq_tab.rds",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_merge_sample_ASV.txt"
     threads:
@@ -83,14 +80,13 @@ rule DADA2_merge_filter_chim:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        seq_tab = expand("DADA2/2_denoised/{RUN}/seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]])))
+        seq_tab = expand("DADA2/2_denoised/{RUN}/seq_tab.rds", RUN=list(set(all_samples[config["run_column"]])))
     output:
-        with_chim = "DADA2/2_denoised/dna-sequences_with_chim.fasta",
-        no_chim = "DADA2/2_denoised/dna-sequences_no_chim.fasta",
-        length_filtered = "DADA2/2_denoised/dna-sequences_long_names.fasta",
+        with_chim = "DADA2/2_denoised/dna-sequences_with_chim.rds",
+        no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
+        length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
         renamed = "DADA2/2_denoised/dna-sequences.fasta",
         count_table = "DADA2/2_denoised/count_table.txt",
-        #filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv"
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"
     params:
@@ -101,3 +97,23 @@ rule DADA2_merge_filter_chim:
     script:
         "scripts/2d_big_data_DADA2_merge_chimera.R"
 
+
+rule DADA2_filter_stats:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        q_score = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds",sample = all_samples.index.values)
+        #forward_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_F_seq_tab.rds",
+        #reverse_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_R_seq_tab.rds",
+        #merged = "DADA2/2_denoised/{RUN}/{sample}_seq_tab.rds",
+        #with_chim = "DADA2/2_denoised/dna-sequences_with_chim.rds",
+        #no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
+        #length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
+    output:
+        filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
+    log:
+        logging_folder + "DADA2/2_denoised/DADA2_denoising_stats.txt"
+    threads:
+        1
+    script:
+        "scripts/3_big_data_DADA2_filtering_stats.R"

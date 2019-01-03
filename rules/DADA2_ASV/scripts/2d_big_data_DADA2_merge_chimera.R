@@ -18,7 +18,6 @@ no_chim <- snakemake@output[["no_chim"]]
 length_filtered <- snakemake@output[["length_filtered"]]
 renamed <- snakemake@output[["renamed"]]
 count_table.txt <- snakemake@output[["count_table"]]
-#filtering_stats <- snakemake@output[["filtering_stats"]]
 
 ## Parameters
 merged_min_length <- snakemake@params[["merged_min_length"]]
@@ -27,15 +26,15 @@ merged_max_length  <- snakemake@params[["merged_max_length"]]
 ## Load needed libraries
 library(dada2); packageVersion("dada2")
 
-# Merge multiple runs (if necessary)
+# Merge data from multiple runs (if necessary)
 files <- seq_tab
 st.all <- do.call("mergeSequenceTables", lapply(files, readRDS))
-write(st.all, with_chim)
+saveRDS(st.all, with_chim)
 
 # Remove chimeras
 seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE, verbose=TRUE)
-write(seqtab, no_chim)
-
+## Write them
+saveRDS(seqtab, no_chim)
 
 # Sequences length inspection and filtration
 ## Inspect distribution of sequence lengths
@@ -45,7 +44,7 @@ seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% seq(merged_min_length, merged_ma
 table(nchar(getSequences(seqtab2)))
 
 ## Before renaming
-write(seqtab2, length_filtered)
+saveRDS(seqtab2, length_filtered)
 
 # Export reads and count
 #### We are writing in files the product of this DADA2 process. These are one .fasta file contanining the dereplicated, errors corrected, paired-end merged representative sequences and one .txt file indicating the prevalence of sequencne in each sample (this is the result of dereplication).
