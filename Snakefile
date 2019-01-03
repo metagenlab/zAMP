@@ -7,8 +7,9 @@ rule all:
         #"QC/multiqc_DADA2_filtered_reads_report.html",
 
         #DADA2
-        expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values),
-        expand("DADA2/2_denoised/{RUN}/seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]]))),
+        #expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values),
+        #lambda wildcards: expand("DADA2/2_denoised/{RUN}/{sample}_seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]])), sample = all_samples.index.values[all_samples.RUN==list(set(all_samples[config["run_column"]]))]),
+        #expand("DADA2/2_denoised/{RUN}/seq_tab.Rds", RUN=list(set(all_samples[config["run_column"]]))),
         "DADA2/2_denoised/dna-sequences.fasta",
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
