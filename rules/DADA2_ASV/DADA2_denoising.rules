@@ -73,8 +73,8 @@ rule DADA2_merge_sample_ASV:
     output:
         run_seq_table = "DADA2/2_denoised/{RUN}/run_seq_tab.rds",
         run_forward_stats = "DADA2/2_denoised/{RUN}/run_forward_stats.rds",
-        run_reverse_stats = "DADA2/2_denoised/{RUN}/run_reverse_stat.rds",
-        run_merged_stats = "DADA2/2_denoised/{RUN}/run_merged_stats.rds",
+        run_reverse_stats = "DADA2/2_denoised/{RUN}/run_reverse_stats.rds",
+        run_merged_stats = "DADA2/2_denoised/{RUN}/merged_run_stats.rds",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_merge_sample_ASV.txt"
     threads:
@@ -111,8 +111,8 @@ rule DADA2_filter_stats:
     input:
         q_score = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds",sample = all_samples.index.values),
         run_merged_F_correct = expand("DADA2/2_denoised/{RUN}/run_forward_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
-        run_merged_R_correct = expand("DADA2/2_denoised/{RUN}/run_reverse_stat.rds", RUN=list(set(all_samples[config["run_column"]]))),
-        merged = expand("DADA2/2_denoised/{RUN}/run_merged_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
+        run_merged_R_correct = expand("DADA2/2_denoised/{RUN}/run_reverse_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
+        run_merged_stats = expand("DADA2/2_denoised/{RUN}/merged_run_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
         #with_chim = "DADA2/2_denoised/dna-sequences_with_chim.rds",
         #no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         #length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
