@@ -48,8 +48,9 @@ rule DADA2_infer_ASV:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
     output:
-        forward_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_F_seq_tab.rds",
-        reverse_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_R_seq_tab.rds",
+        forward_stats = "DADA2/2_denoised/{RUN}/{sample}_F_stats.rds",
+        reverse_stats = "DADA2/2_denoised/{RUN}/{sample}_R_stats.rds",
+        merged_stats = "DADA2/2_denoised/{RUN}/{sample}_merged_stats.rds",
         merged_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_merged_pairs_seq_tab.rds",
     params:
         sample_name = lambda wildcards: wildcards.sample,
@@ -66,8 +67,14 @@ rule DADA2_merge_sample_ASV:
         "../../envs/DADA2_in_R.yml"
     input:
         sample_seq_table = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_merged_pairs_seq_tab.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        forward_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_F_stats.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        reverse_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_R_stats.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        merged_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_merged_stats.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
     output:
-        merged_seq_table = "DADA2/2_denoised/{RUN}/seq_tab.rds",
+        run_seq_table = "DADA2/2_denoised/{RUN}/run_seq_tab.rds",
+        run_forward_stats = "DADA2/2_denoised/{RUN}/run_forward_stats.rds",
+        run_reverse_stats = "DADA2/2_denoised/{RUN}/run_reverse_stat.rds",
+        run_merged_stats = "DADA2/2_denoised/{RUN}/run_merged_stats.rds",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_merge_sample_ASV.txt"
     threads:
@@ -80,7 +87,7 @@ rule DADA2_merge_filter_chim:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        seq_tab = expand("DADA2/2_denoised/{RUN}/seq_tab.rds", RUN=list(set(all_samples[config["run_column"]])))
+        seq_tab = expand("DADA2/2_denoised/{RUN}/run_seq_tab.rds", RUN=list(set(all_samples[config["run_column"]])))
     output:
         with_chim = "DADA2/2_denoised/dna-sequences_with_chim.rds",
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
@@ -102,10 +109,10 @@ rule DADA2_filter_stats:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        q_score = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds",sample = all_samples.index.values)
-        #forward_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_F_seq_tab.rds",
-        #reverse_correct_seq = "DADA2/2_denoised/{RUN}/{sample}_R_seq_tab.rds",
-        #merged = "DADA2/2_denoised/{RUN}/{sample}_seq_tab.rds",
+        q_score = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds",sample = all_samples.index.values),
+        run_merged_F_correct = expand("DADA2/2_denoised/{RUN}/run_forward_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
+        run_merged_R_correct = expand("DADA2/2_denoised/{RUN}/run_reverse_stat.rds", RUN=list(set(all_samples[config["run_column"]]))),
+        merged = expand("DADA2/2_denoised/{RUN}/run_merged_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
         #with_chim = "DADA2/2_denoised/dna-sequences_with_chim.rds",
         #no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         #length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",

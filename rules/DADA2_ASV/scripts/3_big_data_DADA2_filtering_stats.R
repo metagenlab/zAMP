@@ -11,8 +11,8 @@
 
 ## Input
     q_score <- snakemake@input[["q_score"]]
-    forward_correct_seq <- snakemake@input[["forward_correct_seq"]]
-    reverse_correct_seq <- snakemake@input[["reverse_correct_seq"]]
+    run_merged_F_correct <- snakemake@input[["run_merged_F_correct"]]
+    run_merged_R_correct <- snakemake@input[["run_merged_R_correct"]]
     merged <- snakemake@input[["merged"]]
     with_chim <- snakemake@input[["with_chim"]]
     no_chim <- snakemake@input[["no_chim"]]
@@ -31,9 +31,14 @@
     filtration <- do.call(rbind, lapply(q_score, readRDS))
 
 ## Load the forward and reverse reads correction stats
-    dadaFs <- do.call(rbind, lapply(forward_correct_seq, readRDS))
-    dadaFs <- getN(dadaFs)
+    dadaFs <- do.call("rbind", sapply(run_merged_F_correct, readRDS, simplify = TRUE, USE.NAMES = FALSE))
+    dadaRs <- do.call("rbind", sapply(run_merged_R_correct, readRDS, simplify = TRUE, USE.NAMES = FALSE))
 
-    filtration <- cbind(filtration, dadaFs)
+## Load the merge reads correction stats
+    dadamerged <- do.call("rbind", sapply(merged, readRDS, simplify = TRUE, USE.NAMES = FALSE))
+    dadamerged
+
+    filtration <- cbind(filtration, dadaFs, dadaRs, dadamerged)
 
 write.table(x = filtration, file = filtering_stats, sep = "\t", col.names = NA, row.names = TRUE)
+

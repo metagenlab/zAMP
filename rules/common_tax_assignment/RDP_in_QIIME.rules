@@ -11,7 +11,7 @@ rule QIIME1_assign_taxonomy:
     log:
         logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments_log.txt"
     threads:
-        3
+        8
     shell:
         '''
         export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
