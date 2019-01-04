@@ -31,6 +31,8 @@ rule DADA2_learn_errors:
     output:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
+        error_profile_F_plot = "DADA2/2_denoised/{RUN}/error_profile_F_plot.png",
+        error_profile_R_plot = "DADA2/2_denoised/{RUN}/error_profile_R_plot.png",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_error_profile.txt"
     threads:
