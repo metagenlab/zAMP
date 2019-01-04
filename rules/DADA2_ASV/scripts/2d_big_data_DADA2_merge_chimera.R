@@ -13,7 +13,6 @@ sink(log, type="message")
 seq_tab <- snakemake@input[["seq_tab"]]
 
 ## Output
-with_chim <- snakemake@output[["with_chim"]]
 no_chim <- snakemake@output[["no_chim"]]
 length_filtered <- snakemake@output[["length_filtered"]]
 renamed <- snakemake@output[["renamed"]]
@@ -29,12 +28,9 @@ library(dada2); packageVersion("dada2")
 # Merge data from multiple runs (if necessary)
 files <- seq_tab
 st.all <- do.call("mergeSequenceTables", lapply(files, readRDS))
-saveRDS(st.all, with_chim)
 
 # Remove chimeras
 seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE, verbose=TRUE)
-## Write them
-saveRDS(seqtab, no_chim)
 
 # Sequences length inspection and filtration
 ## Inspect distribution of sequence lengths
@@ -43,12 +39,8 @@ table(nchar(getSequences(seqtab)))
 seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% seq(merged_min_length, merged_max_length)]
 table(nchar(getSequences(seqtab2)))
 
-## Before renaming
-saveRDS(seqtab2, length_filtered)
-
 # Export reads and count
 #### We are writing in files the product of this DADA2 process. These are one .fasta file contanining the dereplicated, errors corrected, paired-end merged representative sequences and one .txt file indicating the prevalence of sequencne in each sample (this is the result of dereplication).
-
 ## giving our seq headers more manageable names (ASV_1, ASV_2...)
 asv_seqs <- colnames(seqtab2)
 asv_headers <- vector(dim(seqtab2)[2], mode="character")
@@ -66,4 +58,7 @@ asv_tab <- t(seqtab2)
 row.names(asv_tab) <- sub(">", "", asv_headers)
 write.table(asv_tab, count_table.txt , sep="\t", quote=F)
 
-
+## Write sequences objects in .rds for use in statistics
+saveRDS(seqtab, no_chim)
+## Before renaming
+saveRDS(seqtab2, length_filtered)

@@ -5,40 +5,49 @@
 # Modified from :https://benjjneb.github.io/dada2/bigdata_paired.html
 
 ## Redirect R output
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
-    q_score <- snakemake@input[["q_score"]]
-    run_merged_F_correct <- snakemake@input[["run_merged_F_correct"]]
-    run_merged_R_correct <- snakemake@input[["run_merged_R_correct"]]
-    merged <- snakemake@input[["merged"]]
-    with_chim <- snakemake@input[["with_chim"]]
+    q_filtering_stats <- snakemake@input[["q_filtering_stats"]]
+    run_stats <- snakemake@input[["run_stats"]]
     no_chim <- snakemake@input[["no_chim"]]
-    length_filtered <- snakemake@input[["length_filtered"]]
+    l_filtered <- snakemake@input[["length_filtered"]]
 
 ## Output
     filtering_stats <- snakemake@output[["filtering_stats"]]
 
 ## Load needed libraries
     library(dada2); packageVersion("dada2")
+    library(dplyr); packageVersion("dplyr")
 
 ## Create a useful function
     getN <- function(x) sum(getUniques(x))
 
 ## Load the q score filtration R stats
-    filtration <- do.call(rbind, lapply(q_score, readRDS))
+    filtration <- do.call("rbind", lapply(q_filtering_stats, readRDS))
 
-## Load the forward and reverse reads correction stats
-    dadaFs <- do.call("rbind", sapply(run_merged_F_correct, readRDS, simplify = TRUE, USE.NAMES = FALSE))
-    dadaRs <- do.call("rbind", sapply(run_merged_R_correct, readRDS, simplify = TRUE, USE.NAMES = FALSE))
+## Load the forward, reverse and paired reads correction stats
+    dada_infer <- do.call("rbind", lapply(run_stats, readRDS))
 
-## Load the merge reads correction stats
-    dadamerged <- do.call("rbind", sapply(merged, readRDS, simplify = TRUE, USE.NAMES = FALSE))
-    dadamerged
+## Load no_chim
+    no_chimera <- do.call("rowSums", lapply(no_chim, readRDS))
+    no_chimera <- as.data.frame(no_chimera)
+    no_chimera$Sample <- row.names(no_chimera)
 
-    filtration <- cbind(filtration, dadaFs, dadaRs, dadamerged)
+## Load length_filtered
+    length_filtered <- do.call("rowSums", lapply(l_filtered, readRDS))
+    length_filtered <- as.data.frame(length_filtered)
+    length_filtered$Sample <- row.names(length_filtered)
 
-write.table(x = filtration, file = filtering_stats, sep = "\t", col.names = NA, row.names = TRUE)
+## Merge all dataframe together
+    all_stats <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = "Sample", all.x = TRUE),
+       list(filtration, dada_infer, no_chimera, length_filtered))
+    all_stats <- all_stats%>%select(-RUN,everything()) ## set RUN at the very end of the table
+
+
+write.table(x = all_stats, file = filtering_stats, sep = "\t", row.names = FALSE)
+
+
 

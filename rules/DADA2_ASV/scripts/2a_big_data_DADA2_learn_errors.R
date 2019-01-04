@@ -10,8 +10,8 @@ sink(log)
 sink(log, type="message")
 
 ## Input
-q_score_filtered_Fs <- snakemake@input[["q_score_filtered_Fs"]]
-q_score_filtered_Rs <- snakemake@input[["q_score_filtered_Rs"]]
+q_score_filtered_F <- snakemake@input[["q_score_filtered_F"]]
+q_score_filtered_R <- snakemake@input[["q_score_filtered_R"]]
 
 ## Output
 error_profile_F <- snakemake@output[["error_profile_F"]]
@@ -23,8 +23,8 @@ library(dada2); packageVersion("dada2")
 set.seed(100)
 
 # Learn error rates
-errF <- learnErrors(q_score_filtered_Fs, nbases=1e8, multithread=TRUE, verbose = 1)
-errR <- learnErrors(q_score_filtered_Rs, nbases=1e8, multithread=TRUE, verbose = 1)
+errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=TRUE, verbose = 1)
+errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread=TRUE, verbose = 1)
 
 # Write this error profile
 saveRDS(object = errF, file = error_profile_F)
