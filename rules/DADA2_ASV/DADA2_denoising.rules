@@ -15,7 +15,7 @@ rule DADA2_q_filtering:
         R_reads_length_trim = config["DADA2_R_reads_length_trim"],
         F_reads_extected_error = config["F_extected_error"],
         R_reads_extected_error = config["R_extected_error"],
-        sample_name = lambda wildcards: wildcards.sample
+        sample_name = lambda wildcards: wildcards.sample,
     threads:
         1
     script:
@@ -26,8 +26,8 @@ rule DADA2_learn_errors:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        q_score_filtered_F = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        q_score_filtered_R = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN])
+        q_score_filtered_F = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
+        q_score_filtered_R = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
     output:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
@@ -49,12 +49,11 @@ rule DADA2_infer_ASV:
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
     output:
         infer_stats = "DADA2/2_denoised/{RUN}/{sample}_infer_stats.rds",
-        #infer_stats_R = "DADA2/2_denoised/{RUN}/{sample}_infer_stats_R.rds",
-        #infer_stats_paired = "DADA2/2_denoised/{RUN}/{sample}_infer_stats_paired.rds",
         sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_infer_seq_tab.rds",
     params:
         sample_name = lambda wildcards: wildcards.sample,
-        run = lambda wildcards: wildcards.RUN
+        run = lambda wildcards: wildcards.RUN,
+        x_axis_column_value = lambda wildcards: all_samples[config["x_axis_column"]][wildcards.sample]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
     threads:
@@ -67,14 +66,10 @@ rule DADA2_merge_sample_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        infer_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        #infer_stats_R = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats_R.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        #infer_stats_paired = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats_paired.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
-        sample_seq_tab = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_seq_tab.rds", sample = all_samples.index.values[all_samples.RUN==wildcards.RUN]),
+        infer_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
+        sample_seq_tab = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_seq_tab.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
     output:
         run_stats = "DADA2/2_denoised/{RUN}/run_stats.rds",
-        #run_stats_R = "DADA2/2_denoised/{RUN}/run_stats_R.rds",
-        #run_stats_paired = "DADA2/2_denoised/{RUN}/run_stats_paired.rds",
         run_seq_table = "DADA2/2_denoised/{RUN}/run_seq_tab.rds",
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_merge_sample_ASV.txt"
@@ -111,8 +106,6 @@ rule DADA2_filter_stats:
     input:
         q_filtering_stats = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds", sample = all_samples.index.values),
         run_stats = expand("DADA2/2_denoised/{RUN}/run_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
-        #run_stats_R = expand("DADA2/2_denoised/{RUN}/run_stats_R.rds", RUN=list(set(all_samples[config["run_column"]]))),
-        #run_stats_paired = expand("DADA2/2_denoised/{RUN}/run_stats_paired.rds", RUN=list(set(all_samples[config["run_column"]]))),
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
     output:

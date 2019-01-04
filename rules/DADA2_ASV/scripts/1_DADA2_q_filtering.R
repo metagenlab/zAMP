@@ -30,6 +30,7 @@ library(dada2);packageVersion("dada2")
 
 # Filter and trim
 filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_F, rev = fnRs, filt.rev = q_score_filtered_R, truncLen=c(F_length,R_length), maxN=0, maxEE=c(F_extected_error,R_extected_error), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=FALSE)
+filtering_stats ## print for logs
 filtering_stats <- as.data.frame(filtering_stats)
 filtering_stats$Sample <- sample_name
 

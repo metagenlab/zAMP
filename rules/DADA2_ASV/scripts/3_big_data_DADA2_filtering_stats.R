@@ -43,7 +43,7 @@
        list(filtration, dada_infer, no_chimera, length_filtered))
 
 # set RUN at the very end of the table
-    all_stats <- all_stats%>%select(-RUN,everything())
+    all_stats <- all_stats%>%select(Sample, label, RUN,everything())
 
 # Write the  stat table
 write.table(x = all_stats, file = filtering_stats, sep = "\t", row.names = FALSE)
