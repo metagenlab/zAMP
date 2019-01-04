@@ -15,12 +15,11 @@ rule QIIME1_assign_taxonomy:
     shell:
         '''
         export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
-        assign_path=$(which assign_taxonomy.py)
+        assign_path=$(which parallel_assign_taxonomy_rdp.py)
         python $assign_path \
           -i {input[0]} \
           -r {input[1]} \
           -t {input[2]} \
-          -m {wildcards.classifier} \
           -o $(dirname {output[0]}) \
           -c 0.5 \
           --rdp_max_memory 30000
