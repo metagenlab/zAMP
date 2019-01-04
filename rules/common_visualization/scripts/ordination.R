@@ -80,6 +80,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
             # Save the individual graph in a folder
             ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",i,".png"))
 
+
       }
     }else{
         filename <- paste0(output_folder,"/",grouping_column_value,"_bray.png")

@@ -165,4 +165,4 @@ p <- ggplot(
       facet_wrap(facets = ~ Measure, scales = 'free_y')
 
 
-ggsave(filename = rarefaction_curve,  plot = p, width = 10)
+ggsave(filename = rarefaction_curve,  plot = p, width = 10, height = 7)
