@@ -26,10 +26,18 @@
   library(dada2); packageVersion("dada2")
 
 # Merge data from multiple runs (if necessary)
-  st.all <- do.call("mergeSequenceTables", lapply(seq_tab, readRDS))
+   if (length(seq_tab) == 1){
+	print("Unique RUN, no merging of seq_tabl")
+	st.all <- readRDS(seq_tab)
+   }else{
+	print("Multiple RUN, merging")
+	st.all <- do.call("mergeSequenceTables", lapply(seq_tab, readRDS))
+   }
 
 # Remove chimeras
+  print("Filter chimera")
   seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE, verbose=TRUE)
+  print("Chimera filtered")
 
 # Sequences length inspection and filtration
 #### That's the little added trick, the reason why we are using this script and not the one in Qiime2. Indeed we typically are here keeping only sequences between 390 and 500 bp of length after merging. This tcorresponds to the expected length of the V3V4 region of the 16S rRNA gene.
@@ -54,6 +62,7 @@
     write(asv_fasta, renamed)
 
   ## count table:
+    print("Create count table")
     asv_tab <- t(seqtab2)
     row.names(asv_tab) <- sub(">", "", asv_headers)
     write.table(asv_tab, count_table.txt , sep="\t", quote=F)
