@@ -40,6 +40,9 @@ library("rlang"); packageVersion("rlang")
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
+### Remove sample with abundance = 0
+physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_unassigned_phylum_bact_only)!=0, physeq_no_unassigned_phylum_bact_only)
+
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
  ColList = unique(metadata[[sample_type]])
