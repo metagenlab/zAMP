@@ -19,6 +19,7 @@ viz_replace_empty_tax: TRUE
 grouping_column: PatientID
 x_axis_column: Sample
 sample_type: sample_source
+ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
 
 # Rarefaction
 rarefaction_value: [10000,20000,50000,100000,200000,300000]
