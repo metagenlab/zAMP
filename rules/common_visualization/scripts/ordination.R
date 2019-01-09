@@ -46,7 +46,7 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
 #head(sample_data(physeq_no_unassigned_phylum_bact_only))
 
 #### BrewerColors
- getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+ getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
  ColList = unique(metadata[[sample_type]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
