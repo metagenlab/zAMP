@@ -23,10 +23,11 @@ output_folder <- (dirname(output_folder)[1])
 
 ## Parameters
 ordination_distance = snakemake@params[["ordination_distance"]]
-x_axis_column <- snakemake@params[["x_axis_column"]]
+# x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_column_value <- snakemake@params[["grouping_column_value"]]
 sample_type <- snakemake@params[["sample_type"]]
+ordination_shape_column <- snakemake@params[["ordination_shape_column"]]
 
 
 ## Load needed libraries
@@ -76,7 +77,7 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
           iMDS  <- ordinate(g_physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
           ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type) +
+            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type, shape = ordination_shape_column) +
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
