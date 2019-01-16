@@ -225,12 +225,12 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
             #### filter the table for this value of the grouping columns. Depending of the used arguments, the t_neg_PCR values are kept or not on the barplots
                 ##### Keep t_neg_PCR rows
-                    if (isTRUE(t_neg_PCR_sample_on_plots) & !is_null(t_neg_PCR_sample_grp_column_value)){
+                    if (isTRUE(t_neg_PCR_sample_on_plots) & !is.null(t_neg_PCR_sample_grp_column_value)){
                         filtered_df_abs_i <- filter(threshod_filtered_abs_no_zero, threshod_filtered_abs_no_zero[[grouping_column]] == i | threshod_filtered_abs_no_zero[[grouping_column]] == t_neg_PCR_sample_grp_column_value)
 
                         print('Keeping t_neg_PCR values for the graphs. The "t_neg_PCR_sample_grp_column_value" must match the one in the grouping_column for this sample')
                     }
-                    else if (isTRUE(t_neg_PCR_sample_on_plots) & is_null(t_neg_PCR_sample_grp_column_value)){
+                    else if (isTRUE(t_neg_PCR_sample_on_plots) & is.null(t_neg_PCR_sample_grp_column_value)){
                     stop('If "t_neg_PCR_sample_on_plots" is "TRUE, a "t_neg_PCR_sample_grp_column_value" indicating the value of the T neg PCR sample in the grouping column must be indicated')
                     }
 
@@ -266,16 +266,16 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
 
             #### Renames the values of the vector used for labeling
-                x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
-                names(x_labels) <- filtered_df_abs_i[["Sample"]]
+                #x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
+                #names(x_labels) <- filtered_df_abs_i[["Sample"]]
 
 
             #### Create the barplot
                 taxrank_barplot <- filtered_df_abs_i %>%
-                    ggplot(aes(x = Sample, y = Abundance, fill = get(t))) +
+                    ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(t))) +
                     theme_bw() +
                     geom_col() +
-                    scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
+                    #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
                     theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = -0.5)) + # axis and title settings
                     guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
                     labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
