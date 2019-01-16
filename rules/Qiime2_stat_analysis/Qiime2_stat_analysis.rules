@@ -1,5 +1,4 @@
 
-
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
@@ -17,3 +16,27 @@
         --p-where "BodySite='gut'" \
         --o-filtered-table gut-table.qza
         '''
+
+
+rule ordination:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
+        Metadata_table = config["local_samples"]
+    output:
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{grouping_column}_{ordination_distance}.png",
+    params:
+        grouping_column = config["grouping_column"],
+        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        x_axis_column = config["x_axis_column"],
+        sample_type = config["sample_type"],
+        ordination_distance = lambda wildcards: wildcards.ordination_distance ,
+        ordination_shape_column = lambda wildcards: config["ordination_shape_column"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_{ordination_distance}_logs.txt"
+    script:
+        "scripts/ordination.R"
+
+
+expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/adundancy_comparison/ANCOM/ANCOM_{factor}.qzv",factor=config["ANCOM_factors"], rarefaction_value=config["rarefaction_value"])

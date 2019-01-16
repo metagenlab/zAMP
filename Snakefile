@@ -27,6 +27,8 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/adundancy_comparison/ANCOM/ANCOM_{factor}.qzv",factor=config["ANCOM_factors"], rarefaction_value=config["rarefaction_value"])
+
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
