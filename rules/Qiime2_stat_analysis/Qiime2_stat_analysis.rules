@@ -1,0 +1,19 @@
+
+
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        Metadata_table = config["local_samples"],
+        count_table = "{tool}/2_denoised/count-table.qza",
+    output:
+        "{tool}/2_denoised/count-table.qza"
+    log:
+        logging_folder + "{tool}/2_denoised/count-table.txt"
+    shell:
+        '''
+        qiime feature-table filter-samples \
+        --i-table table.qza \
+        --m-metadata-file sample-metadata.tsv \
+        --p-where "BodySite='gut'" \
+        --o-filtered-table gut-table.qza
+        '''

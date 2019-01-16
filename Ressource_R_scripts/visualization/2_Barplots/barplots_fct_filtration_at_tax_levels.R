@@ -285,12 +285,20 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
             #### In option, turn barplot horizontally
                 if (isTRUE(horizontal_barplot)){
                     taxrank_barplot <- taxrank_barplot + coord_flip() ### Reverse the order of the samples
+
+                #### In option, create facet view
+                    if (isTRUE(facet_plot)){
+                        taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
+                    }
+                } else {
+                    #### In option, create facet view
+                    if (isTRUE(facet_plot)){
+                        taxrank_barplot <- taxrank_barplot + facet_grid(~ get(facetting_column), scales = "free", space = "free")
+                    }
                 }
 
-            #### In option, create facet view
-                if (isTRUE(facet_plot)){
-                    taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
-                }
+
+
             #### In option, keep the barplot without the legend
                 if (isTRUE(separated_legend)){
                     taxrank_barplot_no_leg <- (taxrank_barplot + guides(fill = FALSE))
