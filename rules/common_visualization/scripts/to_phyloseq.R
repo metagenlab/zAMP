@@ -98,7 +98,7 @@ load_objects_fct(features_counts_table = features_counts_table, Metadata_table =
 # Import all as phyloseq objects
 OTU <- otu_table(count_table, taxa_are_rows = TRUE)
 TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
-META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
+META <- metadata %>% as.data.frame() %>% column_to_rownames("SampleID") %>% sample_data()
 
 
 # Sanity checks for consistent OTU names

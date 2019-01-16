@@ -8,17 +8,36 @@ rule Qiime2_samples_filtration :
     output:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/filtered_samples.qza",
     params:
-        filtration = lambda wildcards: config["Filtration_rule"]
+        filtration = config["Filtration_rule"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/filtered_samples.txt"
     shell:
         '''
         qiime feature-table filter-samples \
-            --i-table input[count_table] \
-            --m-metadata-file input[Metadata_table] \
-            --p-where params [filtration] \
-            --o-filtered-table output[output1]
+            --i-table {input[count_table]} \
+            --m-metadata-file {input[Metadata_table]} \
+            --p-where {params[filtration]} \
+            --o-filtered-table {output[output1]}
         '''
+
+rule create_visualize_table_QIIME2_filtered :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/filtered_samples.qza"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/filtered_samples.qzv"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/filtered_samples.txt"
+    shell:
+        '''
+        qiime metadata tabulate \
+            --m-input-file {input} \
+            --o-visualization {output}
+        '''
+
+
+
 
 rule Qiime2_taxa_collapse :
     conda:
@@ -35,7 +54,7 @@ rule Qiime2_taxa_collapse :
     shell:
         '''
         qiime taxa collapse \
-          --i-table {input[table]}\
+          --i-table {input[table]} \
           --i-taxonomy {input[taxonomy]} \
           --p-level {wildcards.collapse_level} \
           --o-collapsed-table {output}
@@ -54,8 +73,8 @@ rule Qiime2_pseudocounts :
     shell:
         '''
         qiime composition add-pseudocount \
-        --i-table gut-table.qza \
-        --o-composition-table comp-gut-table.qza
+        --i-table {input} \
+        --o-composition-table {output}
         '''
 
 
@@ -63,7 +82,7 @@ rule Qiime2_ANCOM :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/taxa_collapse_{collapse_level}/coll_filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/taxa_collapse_{collapse_level}/comp_filtered_samples.qza",
         Metadata = config["local_samples"],
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/adundancy_comparison/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv"
