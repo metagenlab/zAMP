@@ -91,3 +91,24 @@ rule create_visualize_rep_seq_QIIME2 :
         --i-data {input[0]} \
         --o-visualization {output[0]}
         '''
+
+rule import_taxonomy_to_Qiime2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    output:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+    log:
+        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    shell:
+        '''
+        qiime tools import \
+         --type FeatureData[Taxonomy] \
+         --input-path {input[0]} \
+         --source-format HeaderlessTSVTaxonomyFormat \
+         --output-path {output[0]}
+        '''
+
+
+

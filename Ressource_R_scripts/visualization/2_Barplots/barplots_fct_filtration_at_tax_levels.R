@@ -104,8 +104,8 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
                         dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
-                        ungroup %>%
-                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        #ungroup %>%
+                        #dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
                         ungroup
                     }
@@ -118,8 +118,8 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     physeq_subset_df_filtered <- physeq_subset_df  %>%
                         dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
-                        ungroup %>%
-                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        #ungroup %>%
+                        #dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
                         ungroup
                     }
@@ -276,9 +276,9 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     theme_bw() +
                     geom_col() +
                     #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = -0.5)) + # axis and title settings
-                    guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-                    labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
+                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
+                    guides(fill = guide_legend(title = paste0(t),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
+                    labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", t,"level" )) + # axis and graph title
                     scale_fill_manual(values = colors_palette) # colors as set previously
 
 
