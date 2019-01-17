@@ -3,9 +3,9 @@ channels:
 - conda-forge
 dependencies:
 - r-base=3.5.1
-- r-devtools=1.13.6=r351h6115d3f_1
-- bioconductor-dada2=1.8.0=r351hfc679d8_0
-- r-dplyr=0.7.6=r351h9d2a408_1
-- bioconductor-phyloseq=1.24.2=r351_0
-- bioconductor-biomformat=1.8.0=r351_0
-- r-bindrcpp=0.2.2=r351h9d2a408_1
+- r-devtools=1.13.6
+- bioconductor-dada2=1.8.0
+- r-dplyr=0.7.6
+- bioconductor-phyloseq=1.24.2
+- bioconductor-biomformat=1.8.0
+- r-bindrcpp=0.2.2
