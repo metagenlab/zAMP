@@ -5,7 +5,7 @@ rule PANDAseq_trim_pair_reads:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
         R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
     output:
-        paired_trimmed_reads = "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta",
+        paired_trimmed_reads = temp("vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"),
     log:
         logging_folder + "vsearch/1b_q_score_filtered_paired/logs/{sample}_trimmed_paired.fasta.txt"
     params:

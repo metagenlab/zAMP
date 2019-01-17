@@ -5,8 +5,8 @@ rule cutadapt_trim_for_DADA2:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
         R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
     output:
-        R1_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz",
-        R2_trimmed_reads = "{tool}/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz",
+        R1_trimmed_reads = temp("{tool}/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz"),
+        R2_trimmed_reads = temp("{tool}/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz"),
         cutadapt_logs = "{tool}/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt"
     log:
         "{tool}/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt"
