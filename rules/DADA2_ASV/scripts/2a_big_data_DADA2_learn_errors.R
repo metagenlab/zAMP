@@ -9,7 +9,8 @@
     #sink(log)
     #sink(log, type="message")
 
-unlink(".RData")
+
+
 
 # Input
     q_score_filtered_F <- snakemake@input[["q_score_filtered_F"]]
@@ -21,18 +22,23 @@ unlink(".RData")
     error_plot_F <- snakemake@output[["error_profile_F_plot"]]
     error_plot_R <- snakemake@output[["error_profile_R_plot"]]
 
+
 # Load needed libraries
+    library(Rcpp); packageVersion("Rcpp")
     library(dada2); packageVersion("dada2")
+
+.libPaths()
+R.home()
+
+
 
 # set.seed
     set.seed(100)
 
 
-R.home()
-
 # Learn error rates
-    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=FALSE, verbose = 1)
-    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread=FALSE, verbose = 1)
+    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=TRUE, verbose = 1)
+    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread=TRUE, verbose = 1)
 
 # Write these error profiles
     saveRDS(object = errF, file = error_profile_F)
