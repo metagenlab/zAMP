@@ -5,12 +5,9 @@
 # Modified from :https://benjjneb.github.io/dada2/bigdata_paired.html
 
 # Redirect R output
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
-
-
-
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 # Input
     q_score_filtered_F <- snakemake@input[["q_score_filtered_F"]]
@@ -26,11 +23,6 @@
 # Load needed libraries
     library(Rcpp); packageVersion("Rcpp")
     library(dada2); packageVersion("dada2")
-
-.libPaths()
-R.home()
-
-
 
 # set.seed
     set.seed(100)
