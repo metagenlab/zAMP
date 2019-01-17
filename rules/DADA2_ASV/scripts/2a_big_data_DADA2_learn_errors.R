@@ -5,9 +5,11 @@
 # Modified from :https://benjjneb.github.io/dada2/bigdata_paired.html
 
 # Redirect R output
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+    #log <- file(snakemake@log[[1]], open="wt")
+    #sink(log)
+    #sink(log, type="message")
+
+unlink(".RData")
 
 # Input
     q_score_filtered_F <- snakemake@input[["q_score_filtered_F"]]
@@ -25,9 +27,12 @@
 # set.seed
     set.seed(100)
 
+
+R.home()
+
 # Learn error rates
-    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=TRUE, verbose = 1)
-    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread=TRUE, verbose = 1)
+    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=FALSE, verbose = 1)
+    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread=FALSE, verbose = 1)
 
 # Write these error profiles
     saveRDS(object = errF, file = error_profile_F)
