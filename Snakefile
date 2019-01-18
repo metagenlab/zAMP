@@ -26,6 +26,10 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
 
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv", collapse_level = config["collapse_level"], ANCOM_factor= config["ANCOM_factor"]),
+        "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/filtered_samples.qzv",
+
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
         "vsearch/2_denoised/count-table.qzv",
