@@ -104,8 +104,8 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
                         dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
-                        ungroup %>%
-                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        #ungroup %>%
+                        #dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
                         ungroup
                     }
@@ -118,8 +118,8 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     physeq_subset_df_filtered <- physeq_subset_df  %>%
                         dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
-                        ungroup %>%
-                        dplyr::group_by(!!g_column, !!t_column) %>% # group the dataframe by Sample and taxa
+                        #ungroup %>%
+                        #dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                         dplyr::filter(sumper >= quantity_filtering_value) %>%# keep only the taxa above threshold. From the applied grouping, the taxa remain in all amples if over the filtering value in one sample?
                         ungroup
                     }
@@ -225,12 +225,12 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
             #### filter the table for this value of the grouping columns. Depending of the used arguments, the t_neg_PCR values are kept or not on the barplots
                 ##### Keep t_neg_PCR rows
-                    if (isTRUE(t_neg_PCR_sample_on_plots) & !is_null(t_neg_PCR_sample_grp_column_value)){
+                    if (isTRUE(t_neg_PCR_sample_on_plots) & !is.null(t_neg_PCR_sample_grp_column_value)){
                         filtered_df_abs_i <- filter(threshod_filtered_abs_no_zero, threshod_filtered_abs_no_zero[[grouping_column]] == i | threshod_filtered_abs_no_zero[[grouping_column]] == t_neg_PCR_sample_grp_column_value)
 
                         print('Keeping t_neg_PCR values for the graphs. The "t_neg_PCR_sample_grp_column_value" must match the one in the grouping_column for this sample')
                     }
-                    else if (isTRUE(t_neg_PCR_sample_on_plots) & is_null(t_neg_PCR_sample_grp_column_value)){
+                    else if (isTRUE(t_neg_PCR_sample_on_plots) & is.null(t_neg_PCR_sample_grp_column_value)){
                     stop('If "t_neg_PCR_sample_on_plots" is "TRUE, a "t_neg_PCR_sample_grp_column_value" indicating the value of the T neg PCR sample in the grouping column must be indicated')
                     }
 
@@ -266,31 +266,39 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
 
             #### Renames the values of the vector used for labeling
-                x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
-                names(x_labels) <- filtered_df_abs_i[["Sample"]]
+                #x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
+                #names(x_labels) <- filtered_df_abs_i[["Sample"]]
 
 
             #### Create the barplot
                 taxrank_barplot <- filtered_df_abs_i %>%
-                    ggplot(aes(x = Sample, y = Abundance, fill = get(t))) +
+                    ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(t))) +
                     theme_bw() +
                     geom_col() +
-                    scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = -0.5)) + # axis and title settings
-                    guides(fill = guide_legend(title = paste(grouping_column, i, sep= " "),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-                    labs(x=x_axis_column,  y = paste(plotting, "abundance"), title = paste(t, "composition",grouping_column , i, sep= " ")) + # axis and graph title
+                    #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
+                    theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
+                    guides(fill = guide_legend(title = paste0(t),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
+                    labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", t,"level" )) + # axis and graph title
                     scale_fill_manual(values = colors_palette) # colors as set previously
 
 
             #### In option, turn barplot horizontally
                 if (isTRUE(horizontal_barplot)){
                     taxrank_barplot <- taxrank_barplot + coord_flip() ### Reverse the order of the samples
+
+                #### In option, create facet view
+                    if (isTRUE(facet_plot)){
+                        taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
+                    }
+                } else {
+                    #### In option, create facet view
+                    if (isTRUE(facet_plot)){
+                        taxrank_barplot <- taxrank_barplot + facet_grid(~ get(facetting_column), scales = "free", space = "free")
+                    }
                 }
 
-            #### In option, create facet view
-                if (isTRUE(facet_plot)){
-                    taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
-                }
+
+
             #### In option, keep the barplot without the legend
                 if (isTRUE(separated_legend)){
                     taxrank_barplot_no_leg <- (taxrank_barplot + guides(fill = FALSE))

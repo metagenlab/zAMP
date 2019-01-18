@@ -1,0 +1,35 @@
+name: aldex2
+channels:
+ - r
+ - conda-forge
+ - defaults
+ - bioconda
+ - biocore
+dependencies:
+ - r-base
+ - r-devtools
+ - r-ggplot2
+ - r-vegan
+ - r-dplyr
+ - r-scales
+ - r-reshape2
+ - bioconductor-phyloseq
+ - r-RColorBrewer
+# - r-randomcoloR = 1.1.0
+ - r-tidyverse
+ - r-data.table
+ - r-forcats
+ - r-ggpubr
+# - bioconductor-psadd = 0.1.2
+ - r-taxa
+ - r-rlang
+ - bioconductor-deseq2
+ - r-gtools =
+# - r-decontam = 1.1.0
+ - krona
+ - r-magrittr
+ - r-cowplot
+ - rstudio
+ - bioconductor-aldex2 = 1.10
+ - bioconductor-genomeinfodbdata
+

@@ -48,13 +48,13 @@
 # Sample inference and merger of paired-end reads
     cat("Processing:", sam, "\n")
     ## Forward
-        derepF <- derepFastq(q_score_filtered_F)
+        derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
         ddF <- dada(derepF, err=errF, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Reverse
-        derepR <- derepFastq(q_score_filtered_R)
+        derepR <- derepFastq(q_score_filtered_R, verbose = TRUE)
         ddR <- dada(derepR, err=errR, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Merge
-        merger <- mergePairs(ddF, derepF, ddR, derepR, verbose = TRUE)
+        merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = 20, maxMismatch = 0)
         mergers[[sam]] <- merger
 
 # Save the dereplicated, corrected and merged sequences for this sample

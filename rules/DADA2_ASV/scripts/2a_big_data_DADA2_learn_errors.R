@@ -19,11 +19,14 @@
     error_plot_F <- snakemake@output[["error_profile_F_plot"]]
     error_plot_R <- snakemake@output[["error_profile_R_plot"]]
 
+
 # Load needed libraries
+    library(Rcpp); packageVersion("Rcpp")
     library(dada2); packageVersion("dada2")
 
 # set.seed
     set.seed(100)
+
 
 # Learn error rates
     errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread=TRUE, verbose = 1)
