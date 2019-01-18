@@ -6,11 +6,11 @@ rule Qiime2_samples_filtration :
         count_table = "{tool}/2_denoised/count-table.qza",
         Metadata_table = config["local_samples"],
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.qza",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
     params:
         filtration = '''%s="%s"''' % (config["filtration_column"], config["filtration_value"])
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.txt"
     shell:
         '''
         qiime feature-table filter-samples \
@@ -85,19 +85,39 @@ rule Qiime2_ANCOM :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/comp_filtered_samples.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.qzv"
     params:
-        ANCOM_factor = lambda wildcards: wildcards.ANCOM_factor
+        tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.txt"
     shell:
         '''
         qiime composition ancom \
           --i-table {input[table]} \
           --m-metadata-file {input[Metadata]} \
-          --m-metadata-column {params[ANCOM_factor]} \
+          --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
 
 
+rule Qiime2_Gneiss_gradient-clustering :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        Metadata = config["local_samples"],
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}//taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.qzv"
+    params:
+        tested_factor = lambda wildcards: wildcards.tested_factor
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.txt"
+    shell:
+        '''
+        qiime gneiss gradient-clustering \
+          --i-table {input[table]} \
+          --m-gradient-file {input[Metadata]}  \
+          --m-gradient-column {params[tested_factor]} \
+          --o-clustering {output}
+        '''
 

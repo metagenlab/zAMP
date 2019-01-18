@@ -27,11 +27,11 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv", collapse_level = config["collapse_level"], ANCOM_factor= config["ANCOM_factor"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["tested_factor"]),
         "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/filtered_samples.qzv",
 
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv", collapse_level = config["collapse_level"], ANCOM_factor= config["ANCOM_factor"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["tested_factor"]),
         "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/filtered_samples.qzv",
 

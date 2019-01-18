@@ -86,7 +86,7 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
             ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",ordination_distance,".png"))
 
 
-      #}
+
     }else{
         filename <- paste0(output_folder,"/",grouping_column_value,"_", ordination_distance,".png")
         file.create(file.path(filename))
