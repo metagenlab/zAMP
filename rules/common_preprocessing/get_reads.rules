@@ -2,8 +2,8 @@ rule copy_fastq_paired_from_link:
     input:
         lambda wildcards: expand(link_directory + original_names[wildcards.sample] + "_{ext}", ext=read_naming[wildcards.sample])
     output:
-        "raw_reads/{sample}_R1.fastq.gz",
-        "raw_reads/{sample}_R2.fastq.gz"
+        temp("raw_reads/{sample}_R1.fastq.gz"),
+        temp("raw_reads/{sample}_R2.fastq.gz")
     shell:
         """
         gzip -t {input[0]}

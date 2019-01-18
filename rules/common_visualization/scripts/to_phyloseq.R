@@ -33,17 +33,21 @@ library(readr);packageVersion("readr")
 load_objects_fct <- function(features_counts_table, Metadata_table, taxonomy_table, replace_empty_tax = TRUE, tax_tree) {
 
     # Read count table
+    print("reading count table")
     count_table <- read.table(file = features_counts_table, header = TRUE, check.names=FALSE)
 
     # Read sample_data
-    metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
+    print("reading metadata")
+    metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
 
     # Read taxonomic tree
+    print("reading taxonomic tree")
     PHY <- read_tree(tax_tree)
 
     # Read taxonomy table
 
         ### Load into R a table with all Features ID and their taxonomic assignemnt.
+        print("reading taxonomy table")
         taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 
         ### Convert the table into a tabular split version
@@ -94,7 +98,7 @@ load_objects_fct(features_counts_table = features_counts_table, Metadata_table =
 # Import all as phyloseq objects
 OTU <- otu_table(count_table, taxa_are_rows = TRUE)
 TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
-META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
+META <- metadata %>% as.data.frame() %>% column_to_rownames("SampleID") %>% sample_data()
 
 
 # Sanity checks for consistent OTU names

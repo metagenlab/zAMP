@@ -22,11 +22,12 @@ output_folder <- (dirname(output_folder)[1])
 
 
 ## Parameters
-x_axis_column <- snakemake@params[["x_axis_column"]]
+ordination_distance = snakemake@params[["ordination_distance"]]
+# x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_column_value <- snakemake@params[["grouping_column_value"]]
 sample_type <- snakemake@params[["sample_type"]]
-
+ordination_shape_column <- snakemake@params[["ordination_shape_column"]]
 
 
 ## Load needed libraries
@@ -40,8 +41,12 @@ library("rlang"); packageVersion("rlang")
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
+### Remove sample with abundance = 0
+physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_unassigned_phylum_bact_only)>20, physeq_no_unassigned_phylum_bact_only)
+#head(sample_data(physeq_no_unassigned_phylum_bact_only))
+
 #### BrewerColors
- getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
+ getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
  ColList = unique(metadata[[sample_type]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
@@ -57,32 +62,33 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
     if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){
     ### Create a list of all ordination methods
-    dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
+    #dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
     ### Run a loop to save in a list all plots
       ### Create a liste
-      plist <- vector("list", length(dist_methods))
+      #plist <- vector("list", length(dist_methods))
       ### Rename entries in the list
-      names(plist) = dist_methods
+      #names(plist) = dist_methods
       ### Loop over all methods
-      for(i in dist_methods){
-          print(i)
+      # for(i in dist_methods){
+          print(ordination_distance)
           # Calculate distance matrix
-          iDist <- phyloseq::distance(g_physeq_no_unassigned_phylum_bact_only, method=i)
+          iDist <- phyloseq::distance(g_physeq_no_unassigned_phylum_bact_only, method= ordination_distance)
           # Calculate ordination
           iMDS  <- ordinate(g_physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
           ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type) +
+            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type, shape = ordination_shape_column) +
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
-            p <- p + ggtitle(paste("MDS using distance method", i, sep=" "))
+            p <- p + ggtitle(paste("MDS using distance method", ordination_distance, sep=" "))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",i,".png"))
+            ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",ordination_distance,".png"))
 
-      }
+
+      #}
     }else{
-        filename <- paste0(output_folder,"/",grouping_column_value,"_bray.png")
+        filename <- paste0(output_folder,"/",grouping_column_value,"_", ordination_distance,".png")
         file.create(file.path(filename))
     }
 

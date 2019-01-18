@@ -27,6 +27,8 @@ rule create_raw_reads_multiqc_report:
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     log:
         logging_folder + "QC/multiqc_raw_reads_report.txt"
+    priority:
+        1
     shell:
         """
         multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") &> {log[0]}

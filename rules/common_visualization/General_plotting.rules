@@ -74,14 +74,16 @@ rule ordination:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq_object",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{grouping_column}_bray.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{grouping_column}_{ordination_distance}.png",
     params:
         grouping_column = config["grouping_column"],
         grouping_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
-        sample_type = config["sample_type"]
+        sample_type = config["sample_type"],
+        ordination_distance = lambda wildcards: wildcards.ordination_distance ,
+        ordination_shape_column = lambda wildcards: config["ordination_shape_column"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_ordination/logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_{ordination_distance}_logs.txt"
     script:
         "scripts/ordination.R"
 

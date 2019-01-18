@@ -1,6 +1,5 @@
 channels:
  - r
- - bioconda
  - conda-forge
  - defaults
  - bioconda
@@ -8,7 +7,7 @@ channels:
 dependencies:
  - r-base = 3.5.1
  - r-devtools = 1.13.6
- - r-ggplot2 = 3.0.0
+ - r-ggplot2 = 3.1.0
  - r-vegan = 2.5.2
  - r-dplyr = 0.7.6
  - r-scales = 1.0.0
