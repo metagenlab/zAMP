@@ -4,7 +4,7 @@ rule vsearch_dereplicate_samples:
     input:
         "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
     output:
-        "vsearch/1c_derep/{sample}_derep.fasta"
+        temp("vsearch/1c_derep/{sample}_derep.fasta")
     log:
          logging_folder + "vsearch/1b_derep/{sample}_derep.txt"
     threads:

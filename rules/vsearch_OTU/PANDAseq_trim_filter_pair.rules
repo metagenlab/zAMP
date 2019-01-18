@@ -2,8 +2,8 @@ rule PANDAseq_trim_pair_reads:
     conda:
         "../../envs/PANDAseq.yml"
     input:
-        R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
-        R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"
+        R1_raw_reads = temp("raw_reads/{sample}_R1.fastq.gz"),
+        R2_raw_reads = temp("raw_reads/{sample}_R2.fastq.gz")
     output:
         paired_trimmed_reads = temp("vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"),
     log:
