@@ -1,0 +1,5 @@
+channels:
+- bioconda
+- biocore
+dependencies:
+- picrust2=2.0.3_b

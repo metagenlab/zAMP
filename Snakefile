@@ -35,6 +35,9 @@ rule all:
         "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/filtered_samples.qzv",
 
+        #Picrust
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv",
+
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
         "vsearch/2_denoised/count-table.qzv",
@@ -73,3 +76,4 @@ include: "rules/common_visualization/to_Phyloseq.rules"
 include: "rules/common_visualization/rarefy.rules"
 include: "rules/common_visualization/General_plotting.rules"
 include: "rules/Qiime2_stat_analysis/Qiime2_stat_analysis.rules"
+include: "rules/Picrust/picrust.rules"

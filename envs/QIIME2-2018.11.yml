@@ -116,14 +116,14 @@ dependencies:
 - krb5=1.14.6
 - libffi=3.2.1
 - libgcc=7.2.0
-- libgcc-ng=7.2.0
+- libgcc-ng #=7.2.0
 - libgfortran=3.0.0
 - libgfortran-ng=7.2.0
 - libiconv=1.15
 - libpng=1.6.35
 - libsodium=1.0.16
 - libssh2=1.8.0
-- libstdcxx-ng=7.2.0
+- libstdcxx-ng #=7.2.0
 - libtiff=4.0.9
 - libuuid=2.32.1
 - libxcb=1.13
@@ -290,5 +290,6 @@ dependencies:
 - qiime2=2018.11.0
 - ijson=2.3
 - tzlocal=1.3
+- picrust2=2.0.3_b
 - pip:
   - msgpack==0.5.6

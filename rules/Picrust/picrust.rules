@@ -1,0 +1,28 @@
+
+rule picrust2_custom_tree :
+    conda:
+        "../../envs/picrust2.yml"
+    input:
+        seqs = "{tool}/2_denoised/dna-sequences_all_UPPER.fasta",
+        table = "{tool}/2_denoised/otu_biom.biom",
+        reference_HMM = workflow.basedir + "/data/picrust/prokaryotic/reference.hmm",
+        reference_seq = workflow.basedir + "/data/picrust/prokaryotic/reference.fna",
+        reference_tree = workflow.basedir + "/data/picrust/prokaryotic/reference.tre",
+        map = workflow.basedir + "/data/picrust/prokaryotic/ec.txt.gz",
+        tree = "{tool}/4_tree/rooted-tree.qza"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
+    shell:
+        '''
+        mkdir -p $CONDA_PREFIX/lib/python3.6/site-packages/default_files && \
+        ln -snf basename "$(dirname {input.reference_HMM})" $CONDA_PREFIX/lib/python3.6/site-packages/default_files/ && \
+        picrust2_pipeline.py \
+            -s {input[seqs]} \
+            -i {input[table]} \
+            -o {output} \
+            --threads {threads} \
+            -n
+        '''
+
