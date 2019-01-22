@@ -8,11 +8,11 @@ rule fragment_inserption_sepp :
         picrust = workflow.basedir + "/data/picrust2-2.0.3-b.zip",
         reference = workflow.basedir + "/data/picrust/prokaryotic/16S.txt.gz"
     output:
-        directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/"),
+        directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/seep/tree.qza"),
     threads:
         4
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/sepp.txt"
     shell:
         '''
         unzip -u {input[picrust]}  && cd picrust2-2.0.3-b && conda-env update -p $CONDA_PREFIX -f picrust2-env.yaml && pip install --editable . ; \
@@ -21,6 +21,8 @@ rule fragment_inserption_sepp :
 	    unzip -u {input[q_picrust]} && cd q2-picrust2-0.0.2 && python setup.py install && qiime dev refresh-cache && cd .. ; \
         mkdir -p $CONDA_PREFIX/lib/python3.5/site-packages/default_files && \
         ln -snf basename "$(dirname {input.reference})" $CONDA_PREFIX/lib/python3.5/site-packages/default_files/ ; \
+        DIR = "$(dirname {output[0]})" ; \
+        echo DIR ; \
         wget -nc http://kronos.pharmacology.dal.ca/public_files/tutorial_datasets/picrust2_tutorial_files/reference.fna.qza -P {output[0]} ; \
         wget -nc http://kronos.pharmacology.dal.ca/public_files/tutorial_datasets/picrust2_tutorial_files/reference.tre.qza -P {output[0]} ; \
         cp {input[rep_seqs]} {output[0]} ; \
@@ -35,5 +37,28 @@ rule fragment_inserption_sepp :
         '''
 
 
-
-
+rule picrust2_qiime2 :
+    conda:
+        "../../envs/QIIME2-2018.11.yml"
+    input:
+        seqs = "{tool}/2_denoised/rep-seqs.qza",
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/sepp/tree.qza",
+        table = "{tool}/2_denoised/count-table.qza",
+    output:
+        directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/metagenomes")
+    threads:
+        4
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
+    shell:
+        '''
+        rm -R {output}
+	    qiime picrust2 custom-tree-pipeline \
+            	--i-table {input[table]} \
+            	--i-tree {input[tree]} \
+            	--output-dir {output} \
+            	--p-threads {threads} \
+            	--p-hsp-method mp \
+            	--p-max-nsti 2 \
+		        --verbose
+        '''
