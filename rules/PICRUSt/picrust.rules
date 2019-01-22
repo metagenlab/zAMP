@@ -14,6 +14,8 @@ rule picrust2_custom_tree :
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv"
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
+    threads:
+        4
     shell:
         '''
         mkdir -p $CONDA_PREFIX/lib/python3.6/site-packages/default_files && \

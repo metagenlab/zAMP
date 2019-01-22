@@ -36,7 +36,7 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/filtered_samples.qzv",
 
         #Picrust
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/picrust/",
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",

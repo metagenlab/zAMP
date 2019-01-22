@@ -1,25 +1,39 @@
-rule picrust2_qiime2 :
+
+rule fragment_inserption_sepp :
     conda:
         "../../envs/QIIME2-2018.11.yml"
     input:
-        seqs = "{tool}/2_denoised/rep-seqs.qza",
-        tree = "{tool}/2_denoised/rep-seqs.qza",
-        table = "{tool}/2_denoised/otu_biom.biom",
-        q-picrust = "workflow.basedir + "/data/q2-picrust2-0.0.2.zip"
+        rep_seqs = "{tool}/2_denoised/rep-seqs.qza",
+        q_picrust = workflow.basedir + "/data/q2-picrust2-0.0.2.zip",
+        picrust = workflow.basedir + "/data/picrust2-2.0.3-b.zip",
+        reference = workflow.basedir + "/data/picrust/prokaryotic/16S.txt.gz"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv"
+        directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/"),
     threads:
         4
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
     shell:
         '''
-          unzip {q-picrust} && cd q2-picrust2-0.0.2.zip && cd q2-picrust2-0.0.2 && python setup.py install && qiime dev refresh-cache && \
-          qiime picrust2 custom-tree-pipeline \
-            --i-table mammal_biom.qza \
-            --i-tree tutorial_placed_out/tree.qza \
-            --output-dir {output} \
+        unzip -u {input[picrust]}  && cd picrust2-2.0.3-b && conda-env update -p $CONDA_PREFIX -f picrust2-env.yaml && pip install --editable . ; \
+        pytest tests/test_hsp.py tests/test_metagenome_pipeline.py tests/test_run_minpath.py tests/test_util.py ; \
+        cd .. && \
+	    unzip -u {input[q_picrust]} && cd q2-picrust2-0.0.2 && python setup.py install && qiime dev refresh-cache && cd .. ; \
+        mkdir -p $CONDA_PREFIX/lib/python3.5/site-packages/default_files && \
+        ln -snf basename "$(dirname {input.reference})" $CONDA_PREFIX/lib/python3.5/site-packages/default_files/ ; \
+        wget -nc http://kronos.pharmacology.dal.ca/public_files/tutorial_datasets/picrust2_tutorial_files/reference.fna.qza -P {output[0]} ; \
+        wget -nc http://kronos.pharmacology.dal.ca/public_files/tutorial_datasets/picrust2_tutorial_files/reference.tre.qza -P {output[0]} ; \
+        cp {input[rep_seqs]} {output[0]} ; \
+        echo "starting fragment-insertion" ; \
+        qiime fragment-insertion sepp \
+            --i-representative-sequences {input[rep_seqs]} \
             --p-threads {threads} \
-            --p-hsp-method mp \
-            --p-max-nsti 2
+            --i-reference-alignment {output[0]}/reference.fna.qza \
+            --i-reference-phylogeny {output[0]}/reference.tre.qza \
+            --output-dir {output[0]}/sepp \
+		    --verbose
         '''
+
+
+
+
