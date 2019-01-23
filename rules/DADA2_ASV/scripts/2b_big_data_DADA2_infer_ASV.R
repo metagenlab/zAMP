@@ -49,10 +49,10 @@
     cat("Processing:", sam, "\n")
     ## Forward
         derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
-        ddF <- dada(derepF, err=errF, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
+        ddF <- dada(derepF, err=errF, multithread=FALSE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Reverse
         derepR <- derepFastq(q_score_filtered_R, verbose = TRUE)
-        ddR <- dada(derepR, err=errR, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
+        ddR <- dada(derepR, err=errR, multithread=FALSE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Merge
         merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = 20, maxMismatch = 0)
         mergers[[sam]] <- merger
