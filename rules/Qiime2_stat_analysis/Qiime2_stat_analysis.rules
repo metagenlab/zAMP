@@ -6,11 +6,11 @@ rule Qiime2_samples_filtration :
         count_table = "{tool}/2_denoised/count-table.qza",
         Metadata_table = config["local_samples"],
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
     params:
         filtration = '''%s="%s"''' % (config["filtration_column"], config["filtration_value"])
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.txt"
     shell:
         '''
         qiime feature-table filter-samples \
@@ -24,12 +24,12 @@ rule create_visualize_table_QIIME2_filtered :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
         Metadata_table = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qzv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples_qzv.txt"
     shell:
         '''
         qiime feature-table summarize \
@@ -43,14 +43,14 @@ rule Qiime2_taxa_collapse :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/ANCOM/filtered_samples.qza",
         taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     output:
-         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/coll_filtered_samples.qza"
+         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/ANCOM/taxa_collapse_{collapse_level}/coll_filtered_samples.qza"
     params:
         collapse_level = lambda wildcards: wildcards.collapse_level
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/coll_filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/ANCOM/taxa_collapse_{collapse_level}/coll_filtered_samples.txt"
     shell:
         '''
         qiime taxa collapse \
@@ -121,3 +121,32 @@ rule Qiime2_Gneiss_gradient-clustering :
           --o-clustering {output}
         '''
 
+
+rule Qiime2_Gneiss_correlation-clustering :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        Metadata = config["local_samples"],
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}//taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.qzv"
+    params:
+        tested_factor = lambda wildcards: wildcards.tested_factor
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.txt"
+    shell:
+        '''
+        qiime gneiss gradient-clustering \
+          --i-table {input[table]} \
+          --m-gradient-file {input[Metadata]}  \
+          --m-gradient-column {params[tested_factor]} \
+          --o-clustering {output}
+        '''
+
+
+
+
+
+qiime gneiss correlation-clustering \
+  --i-table table.qza \
+  --o-clustering hierarchy.qza
