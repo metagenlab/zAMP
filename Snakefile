@@ -31,6 +31,7 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", tested_factor= config["tested_factor"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["tested_factor"]),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/filtered_samples.qzv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abudance/no_collapse/Gneiss_correlation_clustering.qzv",
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",

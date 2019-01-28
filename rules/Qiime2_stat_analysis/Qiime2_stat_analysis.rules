@@ -116,7 +116,6 @@ rule Qiime2_pseudocounts_collapsed :
         --o-composition-table {output}
         '''
 
-
 rule Qiime2_ANCOM_collapsed :
     conda:
         "../../envs/QIIME2-2018.8.yml"
@@ -138,7 +137,6 @@ rule Qiime2_ANCOM_collapsed :
           --o-visualization {output}
         '''
 
-
 rule Qiime2_Gneiss_gradient_clustering :
     conda:
         "../../envs/QIIME2-2018.8.yml"
@@ -146,11 +144,11 @@ rule Qiime2_Gneiss_gradient_clustering :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{tested_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{tested_factor}.qza"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{tested_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{tested_factor}.txt"
     shell:
         '''
         qiime gneiss gradient-clustering \
@@ -160,17 +158,15 @@ rule Qiime2_Gneiss_gradient_clustering :
           --o-clustering {output}
         '''
 
-
 rule Qiime2_Gneiss_correlation_clustering :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
-        Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_correlation.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_correlation.txt"
     shell:
         '''
         qiime gneiss correlation-clustering \
@@ -178,45 +174,41 @@ rule Qiime2_Gneiss_correlation_clustering :
           --o-clustering {output}
         '''
 
-
 rule Qiime2_Gneiss_ilr_hierarchical :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
-        Metadata = config["local_samples"],
-        tree = "{tool}/4_tree/rooted-tree.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.txt"
     shell:
         '''
         qiime gneiss ilr-hierarchical \
           --i-table {input[table]} \
-          --i-tree {input[table]} \
+          --i-tree {input[tree]} \
           --o-balances {output}
         '''
 
-
-rule Qiime2_Gneiss_building_model :
+rule Qiime2_Gneiss_regression :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.qza",
         Metadata = config["local_samples"],
-        tree = "{tool}/4_tree/rooted-tree.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_clustering.qzv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_clustering.txt"
     shell:
         '''
         qiime gneiss ols-regression \
-          --p-formula "Subject+Sex+Age+BMI+sCD14ugml+LBPugml+LPSpgml" \
-          --i-table balances.qza \
-          --i-tree hierarchy.qza \
-          --m-metadata-file sample-metadata.tsv \
-          --o-visualization regression_summary.qzv
+          --p-formula "{config[filtration_column]}" \
+          --i-table {input[table]} \
+          --i-tree {input[tree]} \
+          --m-metadata-file {input[Metadata]} \
+          --o-visualization {output}
         '''
-
