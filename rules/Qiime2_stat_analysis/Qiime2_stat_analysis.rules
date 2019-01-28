@@ -206,7 +206,7 @@ rule Qiime2_Gneiss_regression :
     shell:
         '''
         qiime gneiss ols-regression \
-          --p-formula "{config[filtration_column]}" \
+          --p-formula "{config[Gneiss_formula]}" \
           --i-table {input[table]} \
           --i-tree {input[tree]} \
           --m-metadata-file {input[Metadata]} \

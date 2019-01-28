@@ -30,4 +30,4 @@ filtration_column: sample_group
 filtration_value: sample
 collapse_level: [2,3,4,5,6,7]
 tested_factor: ["patientID", "Gender", "BMI","daily_consump"]
-
+Gneiss_formula: "Subject+Sex+Age+BMI+sCD14ugml+LBPugml+LPSpgml"
