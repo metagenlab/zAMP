@@ -16,7 +16,7 @@ rule Qiime2_samples_filtration :
         qiime feature-table filter-samples \
             --i-table {input[count_table]} \
             --m-metadata-file {input[Metadata_table]} \
-            --p-where '{config[filtration_column]}="{config[filtration_value]}"' \
+            --p-where '"{config[filtration_column]}"="{config[filtration_value]}"' \
             --o-filtered-table {output[output1]}
         '''
 
