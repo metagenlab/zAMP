@@ -11,6 +11,7 @@ rule all:
         "DADA2/2_denoised/count-table.qzv",
         "DADA2/2_denoised/rep-seqs.qzv",
         "DADA2/2_denoised/DADA2_denoising_stats.tsv",
+        "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
         #rarefied
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/alpha_diversity/{grouping_column}_alpha_divesity.png", grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/rarefaction_{rarefaction_value}/ordination/{grouping_column}_{ordination_distance}.png",grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"], ordination_distance = config["ordination_distance"]),
@@ -27,13 +28,10 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
-        #expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv", collapse_level = config["collapse_level"], ANCOM_factor= config["ANCOM_factor"]),
-        #"DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
-        #"DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/adundancy_comparison/filtered_samples.qzv",
-
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/taxa_collapse_{collapse_level}/ANCOM_{ANCOM_factor}.qzv", collapse_level = config["collapse_level"], ANCOM_factor= config["ANCOM_factor"]),
-        "DADA2/3_classified/rdp/ezbiocloud_valentin/dna-sequences_tax_assignments.qzv",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/ANCOM/filtered_samples.qzv",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", tested_factor= config["tested_factor"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["tested_factor"]),
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/filtered_samples.qzv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abudance/no_collapse/Gneiss_correlation_clustering.qzv",
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",

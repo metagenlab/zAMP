@@ -29,5 +29,5 @@ rarefaction_value: [10000,20000,50000,100000,200000,300000]
 filtration_column: sample_group
 filtration_value: sample
 collapse_level: [2,3,4,5,6,7]
-ANCOM_factor: ["patientID", "Gender", "BMI","daily_consump"]
+tested_factor: ["patientID", "Gender", "BMI","daily_consump"]
 
