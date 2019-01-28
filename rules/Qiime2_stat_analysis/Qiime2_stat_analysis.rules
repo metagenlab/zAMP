@@ -162,7 +162,7 @@ rule Qiime2_Gneiss_correlation_clustering :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_correlation.qza"
     log:
