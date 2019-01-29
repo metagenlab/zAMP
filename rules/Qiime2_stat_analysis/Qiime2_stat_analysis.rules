@@ -6,7 +6,7 @@ rule Qiime2_samples_filtration :
         count_table = "{tool}/2_denoised/count-table.qza",
         Metadata_table = config["local_samples"],
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
     params:
         filtration = '''%s="%s"''' % (config["filtration_column"], config["filtration_value"])
     log:
@@ -24,12 +24,12 @@ rule create_visualize_table_QIIME2_filtered :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
         Metadata_table = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qzv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples_qzv.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples_qzv.txt"
     shell:
         '''
         qiime feature-table summarize \
@@ -39,53 +39,14 @@ rule create_visualize_table_QIIME2_filtered :
         '''
 
 
-rule Qiime2_pseudocounts_no_collapse :
-    conda:
-        "../../envs/QIIME2-2018.8.yml"
-    input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza"
-    output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/comp_filtered_samples.qza"
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/comp_filtered_samples.txt"
-    shell:
-        '''
-        qiime composition add-pseudocount \
-        --i-table {input} \
-        --o-composition-table {output}
-        '''
-
-
-rule Qiime2_ANCOM_no_collapse :
-    conda:
-        "../../envs/QIIME2-2018.8.yml"
-    input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/comp_filtered_samples.qza",
-        Metadata = config["local_samples"],
-    output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv"
-    params:
-        tested_factor = lambda wildcards: wildcards.tested_factor
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.txt"
-    shell:
-        '''
-        qiime composition ancom \
-          --i-table {input[table]} \
-          --m-metadata-file {input[Metadata]} \
-          --m-metadata-column {params[tested_factor]} \
-          --o-visualization {output}
-        '''
-
-
 rule Qiime2_taxa_collapse :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
         taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     output:
-         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/coll_filtered_samples.qza"
+         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/filtered_samples.qza"
     params:
         collapse_level = lambda wildcards: wildcards.collapse_level
     log:
@@ -99,16 +60,15 @@ rule Qiime2_taxa_collapse :
           --o-collapsed-table {output}
         '''
 
-
-rule Qiime2_pseudocounts_collapsed :
+rule Qiime2_pseudocounts :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/coll_filtered_samples.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/comp_filtered_samples.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/comp_filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.txt"
     shell:
         '''
         qiime composition add-pseudocount \
@@ -116,18 +76,19 @@ rule Qiime2_pseudocounts_collapsed :
         --o-composition-table {output}
         '''
 
-rule Qiime2_ANCOM_collapsed :
+
+rule Qiime2_ANCOM :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/comp_filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/ANCOM/ANCOM_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/ANCOM/ANCOM_{tested_factor}.txt"
     shell:
         '''
         qiime composition ancom \
@@ -137,18 +98,19 @@ rule Qiime2_ANCOM_collapsed :
           --o-visualization {output}
         '''
 
+
 rule Qiime2_Gneiss_gradient_clustering :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{tested_factor}.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/gradient/{tested_factor}_clustering.qza"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{tested_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/gradient/clustering_{tested_factor}.txt",
     shell:
         '''
         qiime gneiss gradient-clustering \
@@ -158,15 +120,16 @@ rule Qiime2_Gneiss_gradient_clustering :
           --o-clustering {output}
         '''
 
+
 rule Qiime2_Gneiss_correlation_clustering :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_correlation.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/correlation/correlation_clustering.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_correlation.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/correlation/clustering_correlation.txt"
     shell:
         '''
         qiime gneiss correlation-clustering \
@@ -174,16 +137,17 @@ rule Qiime2_Gneiss_correlation_clustering :
           --o-clustering {output}
         '''
 
+
 rule Qiime2_Gneiss_ilr_hierarchical :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.qza",
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}.qza"
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza",
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_balance.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_balance.txt"
     shell:
         '''
         qiime gneiss ilr-hierarchical \
@@ -192,23 +156,80 @@ rule Qiime2_Gneiss_ilr_hierarchical :
           --o-balances {output}
         '''
 
+
 rule Qiime2_Gneiss_regression :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_balances.qza",
+        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_balance.qza",
         Metadata = config["local_samples"],
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_clustering.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/regression_{clustering_factor}.qzv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abudance/no_collapse/Gneiss_{Gneiss_parameter}_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}_regression_{clustering_factor}.txt"
     shell:
         '''
         qiime gneiss ols-regression \
           --p-formula "{config[Gneiss_formula]}" \
-          --i-table {input[table]} \
+          --i-table {input[balance]} \
           --i-tree {input[tree]} \
           --m-metadata-file {input[Metadata]} \
           --o-visualization {output}
         '''
+
+
+rule Qiime2_Gneiss_heatmap :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza",
+        Metadata = config["local_samples"],
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{tested_factor}_heatmap_{clustering_factor}.qzv"
+    params:
+        tested_factor = lambda wildcards: wildcards.tested_factor
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/heatmap_{clustering_factor}_{tested_factor}.txt"
+    shell:
+        '''
+        qiime gneiss dendrogram-heatmap \
+          --i-table {input[table]} \
+          --i-tree {input[tree]} \
+          --m-metadata-file {input[Metadata]} \
+          --m-metadata-column {params[tested_factor]} \
+          --p-color-map seismic \
+          --o-visualization {output}
+        '''
+
+
+rule Qiime2_Gneiss_balances_taxonomy :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
+        Metadata = config["local_samples"],
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza",
+        taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
+    params:
+        tested_factor = lambda wildcards: wildcards.tested_factor,
+        collapse_level = lambda wildcards: wildcards.collapse_level,
+        y_balances = lambda wildcards: wildcards.y_balances
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
+    shell:
+        '''
+        qiime gneiss balance-taxonomy \
+          --i-table {input[table]} \
+          --i-tree {input[tree]} \
+          --i-taxonomy {input[taxonomy]} \
+          --p-taxa-level {params[collapse_level]} \
+          --p-balance-name 'y{params[y_balances]}' \
+          --m-metadata-file {input[Metadata]} \
+          --m-metadata-column {params[tested_factor]} \
+          --o-visualization {output}
+        '''
+

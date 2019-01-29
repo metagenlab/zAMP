@@ -28,10 +28,18 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", tested_factor= config["tested_factor"]),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["tested_factor"]),
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/filtered_samples.qzv",
-        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abudance/no_collapse/Gneiss_correlation_clustering.qzv",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", tested_factor= config["ANCOM_factors"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/filtered_samples.qzv",
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/regression_correlation.qzv",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/gradient/regression_{tested_factor}.qzv", tested_factor = config["Gneiss_gradient_clustering"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/regression_correlation.qzv", collapse_level = config["collapse_level"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/gradient/regression_{clustering_factor}.qzv", clustering_factor = config["Gneiss_gradient_clustering"],collapse_level = config["collapse_level"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_heatmap_correlation.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/{tested_factor}_heatmap_correlation.qzv", tested_factor= config["ANCOM_factors"]),
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_correlation_y_{y_balances}.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
+
+
 
         #vsearch
         "vsearch/2_denoised/all_samples_reads_count.txt",
