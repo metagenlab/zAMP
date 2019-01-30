@@ -235,13 +235,13 @@ rule Qiime2_Gneiss_ilr_phylogeny :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_features.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
         tree = "{tool}/4_tree/rooted-tree.qza"
     output:
-        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
-        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
+        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
+        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phylogenetic_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phylogenetic_clustering.txt"
     shell:
         '''
         qiime gneiss ilr-phylogenetic \
@@ -299,6 +299,14 @@ rule Qiime2_Gneiss_heatmap :
         '''
 
 
+def myfunc(wildcards):
+    if wildcards == '7':
+        value = '0'
+    else :
+        value = wildcards
+    return(value)
+
+
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/balance-taxonomy/
 rule Qiime2_Gneiss_balance_taxonomy :
     conda:
@@ -312,7 +320,7 @@ rule Qiime2_Gneiss_balance_taxonomy :
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor,
-        collapse_level = lambda wildcards: wildcards.collapse_level,
+        collapse_level = lambda wildcards: myfunc(wildcards.collapse_level),
         y_balances = lambda wildcards: wildcards.y_balances
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
