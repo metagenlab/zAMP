@@ -86,7 +86,7 @@ rule Qiime2_seqs_filtration :
         "../../envs/QIIME2-2019.01.yml"
     input:
         seqs = "{tool}/2_denoised/rep-seqs.qza",
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.qza"
     log:
@@ -236,7 +236,7 @@ rule Qiime2_Gneiss_ilr_phylogeny :
         "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
-        tree = "{tool}/4_tree/rooted-tree.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/rooted-tree.qza"
     output:
         balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
         hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
