@@ -66,7 +66,7 @@ rule Qiime2_features_filtration :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
     log:
@@ -75,6 +75,8 @@ rule Qiime2_features_filtration :
         '''
         qiime feature-table filter-features \
             --i-table {input[table]} \
+            --p-min-frequency {config[features_min_freq]} \
+            --p-min-samples {config[features_in_min_X_samples]} \
             --o-filtered-table {output}
         '''
 
@@ -92,29 +94,24 @@ rule Qiime2_seqs_filtration :
     shell:
         '''
         qiime feature-table filter-seqs \
-            --i-data {input[seq]} \
+            --i-data {input[seqs]} \
             --i-table {input[table]} \
             --o-filtered-data {output}
         '''
-
-
-
-
-
 
 
 rule create_collapse_filtered_tree_in_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/2_denoised/rep-seqs.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.qza"
     output:
-        aligned = "{tool}/4_tree/aligned-rep-seqs.qza" ,
-        masked = "{tool}/4_tree/masked-aligned-rep-seqs.qza" ,
-        unrooted = "{tool}/4_tree/unrooted-tree.qza" ,
-        rooted = "{tool}/4_tree/rooted-tree.qza"
+        aligned = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/aligned-rep-seqs.qza" ,
+        masked = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/unrooted-tree.qza" ,
+        rooted = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/rooted-tree.qza"
     log:
-        logging_folder + "{tool}/4_tree/tree.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree.txt"
     threads:
         4
     shell:
@@ -237,7 +234,7 @@ rule Qiime2_Gneiss_ilr_phylogeny :
         "../../envs/QIIME2-2018.8.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_features.qza",
-        tree = "{tool}/4_tree/rooted-tree.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/tree/rooted-tree.qza"
     output:
         balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
         hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
