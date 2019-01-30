@@ -2,7 +2,7 @@
 
 rule Qiime2_samples_filtration :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         count_table = "{tool}/2_denoised/count-table.qza",
         Metadata_table = config["local_samples"],
@@ -23,7 +23,7 @@ rule Qiime2_samples_filtration :
 
 rule create_visualize_table_QIIME2_filtered :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
         Metadata_table = config["local_samples"],
@@ -42,7 +42,7 @@ rule create_visualize_table_QIIME2_filtered :
 
 rule Qiime2_taxa_collapse :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
         taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
@@ -64,7 +64,7 @@ rule Qiime2_taxa_collapse :
 
 rule Qiime2_features_filtration :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
     output:
@@ -74,7 +74,7 @@ rule Qiime2_features_filtration :
     shell:
         '''
         qiime feature-table filter-features \
-            --i-table {input[table]} \
+            --i-table {input} \
             --p-min-frequency {config[features_min_freq]} \
             --p-min-samples {config[features_in_min_X_samples]} \
             --o-filtered-table {output}
@@ -83,7 +83,7 @@ rule Qiime2_features_filtration :
 
 rule Qiime2_seqs_filtration :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         seqs = "{tool}/2_denoised/rep-seqs.qza",
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
@@ -102,7 +102,7 @@ rule Qiime2_seqs_filtration :
 
 rule create_collapse_filtered_tree_in_QIIME2 :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.qza"
     output:
@@ -130,7 +130,7 @@ rule create_collapse_filtered_tree_in_QIIME2 :
 
 rule Qiime2_pseudocounts :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
     output:
@@ -147,7 +147,7 @@ rule Qiime2_pseudocounts :
 
 rule Qiime2_ANCOM :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza",
         Metadata = config["local_samples"],
@@ -172,7 +172,7 @@ rule Qiime2_ANCOM :
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/gradient-clustering/
 rule Qiime2_Gneiss_gradient_clustering :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
         Metadata = config["local_samples"],
@@ -194,7 +194,7 @@ rule Qiime2_Gneiss_gradient_clustering :
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/correlation-clustering/
 rule Qiime2_Gneiss_correlation_clustering :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
     output:
@@ -212,7 +212,7 @@ rule Qiime2_Gneiss_correlation_clustering :
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/ilr-hierarchical/
 rule Qiime2_Gneiss_ilr_hierarchical :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/hier_{clustering_factor}_clustering.qza",
@@ -228,18 +228,20 @@ rule Qiime2_Gneiss_ilr_hierarchical :
           --o-balances {output}
         '''
 
+
+
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/ilr-phylogenetic/
 rule Qiime2_Gneiss_ilr_phylogeny :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/rooted-tree.qza"
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_features.qza",
+        tree = "{tool}/4_tree/rooted-tree.qza"
     output:
-        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
-        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
+        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_balance.qza",
+        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phyl_phylogenetic_clustering.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/phylogeny/phylogenetic_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/phylogeny/phylogenetic_clustering.txt"
     shell:
         '''
         qiime gneiss ilr-phylogenetic \
@@ -249,9 +251,10 @@ rule Qiime2_Gneiss_ilr_phylogeny :
           --o-hierarchy {output[hierarchy]}
         '''
 
+
 rule Qiime2_Gneiss_ols_regression :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_balance.qza",
         Metadata = config["local_samples"],
@@ -273,7 +276,7 @@ rule Qiime2_Gneiss_ols_regression :
 
 rule Qiime2_Gneiss_heatmap :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
         Metadata = config["local_samples"],
@@ -299,7 +302,7 @@ rule Qiime2_Gneiss_heatmap :
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/balance-taxonomy/
 rule Qiime2_Gneiss_balance_taxonomy :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_features.qza",
         Metadata = config["local_samples"],
@@ -325,3 +328,4 @@ rule Qiime2_Gneiss_balance_taxonomy :
           --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
+

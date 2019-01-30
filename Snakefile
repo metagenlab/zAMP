@@ -42,7 +42,7 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", tested_factor= config["ANCOM_factors"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_hier_correlation_y_{y_balances}.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",collapse_level = config["collapse_level"]),
+        #expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",collapse_level = config["collapse_level"]),
 
 
 
