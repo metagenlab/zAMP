@@ -299,6 +299,7 @@ rule Qiime2_Gneiss_heatmap :
         '''
 
 
+# A small function to transform the 7 collapse values into 0 to fit the requirements of this function
 def myfunc(wildcards):
     if wildcards == '7':
         value = '0'
