@@ -28,9 +28,12 @@ rule all:
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/rarefaction_curve.png",
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/phyloseq_object",
 
+        #ANCOM
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", tested_factor= config["ANCOM_factors"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/filtered_samples.qzv",
+
+        #Gneiss
         "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/regression_hier_correlation.qzv",
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/gradient/regression_hier_{tested_factor}.qzv", tested_factor = config["Gneiss_gradient_clustering"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/regression_hier_correlation.qzv", collapse_level = config["collapse_level"]),
@@ -38,8 +41,8 @@ rule all:
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", tested_factor= config["ANCOM_factors"]),
         expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_hier_correlation_y_{y_balances}.qzv", collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
-        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",collapse_level = config["collapse_level"]),
-
+        "DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",
+        expand("DADA2/5_visualization/rdp/ezbiocloud_valentin/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv",collapse_level = config["collapse_level"]),
 
 
 
