@@ -65,7 +65,7 @@ rule Qiime2_features_filtration :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
     log:
