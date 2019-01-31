@@ -1,33 +1,12 @@
 ## Preprocessing
 
-rule Qiime2_samples_filtration_phy :
-    conda:
-        "../../envs/R_visualization.yml"
-    input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/norarefaction/phyloseq_object"
-    output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
-    params:
-        filtration = '''%s="%s"''' % (config["filtration_column"], config["filtration_value"])
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/filtered_samples.txt"
-    shell:
-        '''
-        qiime feature-table filter-samples \
-            --i-table {input[count_table]} \
-            --m-metadata-file {input[Metadata_table]} \
-            --p-where '"{config[filtration_column]}"="{config[filtration_value]}"' \
-            --o-filtered-table {output[output1]}
-        '''
-
-rule create_visualize_table_QIIME2_filtered :
+rule reimport_count_table_in_Qiime2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
-        Metadata_table = config["local_samples"],
+       "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples_qzv.txt"
     shell:

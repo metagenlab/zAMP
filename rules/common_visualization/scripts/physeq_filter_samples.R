@@ -26,8 +26,8 @@ library(phyloseq);packageVersion("phyloseq")
 phyloseq_object <- readRDS(phyloseq_object)
 
 ## filter taxa
-phyltered_taxa = subset_samples(phyloseq_object, get(meta_column) == as.character(column_value))
+filtered_samples = subset_samples(phyloseq_object, get(meta_column) == as.character(column_value))
 
 
 # Write the new phyloseq object
-saveRDS(object = phyltered_taxa, file = phyloseq_filtered_object)
+saveRDS(object = filtered_samples, file = phyloseq_filtered_object)
