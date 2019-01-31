@@ -1,120 +1,64 @@
 ## Preprocessing
 
-rule reimport_count_table_in_Qiime2 :
+rule create_biom_from_count_table_2 :
     conda:
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/DADA2_in_R.yml"
     input:
        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples_qzv.txt"
-    shell:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom"
+    script:
         '''
-        qiime feature-table summarize \
-            --i-table {input[table]} \
-            --o-visualization {output} \
-            --m-sample-metadata-file {input[Metadata_table]}
+        "scripts/create_biom_from_count_table.R"
         '''
 
-
-rule Qiime2_taxa_collapse :
+rule import_count_table_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
-        taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom",
     output:
-         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/filtered_samples.qza"
-    params:
-        collapse_level = lambda wildcards: wildcards.collapse_level
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/coll_filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.txt",
     shell:
         '''
-        qiime taxa collapse \
-          --i-table {input[table]} \
-          --i-taxonomy {input[taxonomy]} \
-          --p-level {wildcards.collapse_level} \
-          --o-collapsed-table {output}
+        qiime tools import \
+        --input-path {input[0]} \
+        --type 'FeatureTable[Frequency]' \
+        --input-format BIOMV100Format \
+        --output-path {output[0]}
         '''
 
-
-rule Qiime2_features_filtration :
+rule import_tree_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_samples.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/tree.tree",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/rooted-tree.qza",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/rooted-tree.txt",
     shell:
         '''
-        qiime feature-table filter-features \
-            --i-table {input} \
-            --p-min-frequency {config[features_min_freq]} \
-            --p-min-samples {config[features_in_min_X_samples]} \
-            --o-filtered-table {output}
+        qiime tools import \
+          --input-path {input} \
+          --output-path {output} \
+          --type 'Phylogeny[Rooted]'
         '''
-
-
-rule Qiime2_seqs_filtration :
-    conda:
-        "../../envs/QIIME2-2019.01.yml"
-    input:
-        seqs = "{tool}/2_denoised/rep-seqs.qza",
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
-    output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.qza"
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.txt"
-    shell:
-        '''
-        qiime feature-table filter-seqs \
-            --i-data {input[seqs]} \
-            --i-table {input[table]} \
-            --o-filtered-data {output}
-        '''
-
-
-rule create_collapse_filtered_tree_in_QIIME2 :
-    conda:
-        "../../envs/QIIME2-2019.01.yml"
-    input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_seqs.qza"
-    output:
-        aligned = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/aligned-rep-seqs.qza" ,
-        masked = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/masked-aligned-rep-seqs.qza" ,
-        unrooted = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/unrooted-tree.qza" ,
-        rooted = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree/rooted-tree.qza"
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/tree.txt"
-    threads:
-        4
-    shell:
-        '''
-        qiime phylogeny align-to-tree-mafft-fasttree \
-          --p-n-threads {threads} \
-          --i-sequences {input[0]} \
-          --o-alignment {output[aligned]} \
-          --o-masked-alignment {output[masked]} \
-          --o-tree {output[unrooted]} \
-          --o-rooted-tree {output[rooted]}
-        '''
-
-
 ## ANCOM
 
 rule Qiime2_pseudocounts :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_count-table.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_pseudocounts.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_pseudocounts.qza"
     shell:
         '''
         qiime composition add-pseudocount \
@@ -122,19 +66,18 @@ rule Qiime2_pseudocounts :
         --o-composition-table {output}
         '''
 
-
 rule Qiime2_ANCOM :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_pseudocounts.qza"
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/ANCOM/ANCOM_{tested_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/ANCOM/ANCOM_{tested_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/ANCOM/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}.txt"
     shell:
         '''
         qiime composition ancom \
@@ -152,14 +95,14 @@ rule Qiime2_Gneiss_gradient_clustering :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/gradient/hier_{tested_factor}_clustering.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}_hier_{tested_factor}_clustering.qza"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/gradient/hier_clustering_{tested_factor}.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}_hier_{tested_factor}_clustering.txt"
     shell:
         '''
         qiime gneiss gradient-clustering \
@@ -174,7 +117,7 @@ rule Qiime2_Gneiss_correlation_clustering :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/filtered_features.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}_hier_{tested_factor}_clustering.qza"
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/correlation/hier_correlation_clustering.qza"
     log:
@@ -315,4 +258,3 @@ rule Qiime2_Gneiss_balance_taxonomy :
           --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
-
