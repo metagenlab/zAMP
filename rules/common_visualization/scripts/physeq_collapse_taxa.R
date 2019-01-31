@@ -5,9 +5,9 @@
 
 ## Inspired from https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32
 ## Redirect R output
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[[1]]
@@ -16,16 +16,20 @@ phyloseq_object <- snakemake@input[[1]]
 phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
-collapse_tax_rank <- snakemake@params[["collapse_tax_rank"]]
+collapse_level <- snakemake@params[["collapse_level"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 
-## Load the phyloseq phyloseq_object
+
+## Load the phyloseq object
 phyloseq_object <- readRDS(phyloseq_object)
 
+rank_names(phyloseq_object)[[as.numeric(collapse_level)]]
+
+
 ## Collapse taxa
-collapsed_physeq <- tax_glom(phyloseq_object, taxrank=rank_names(physeq)[collapse_tax_rank], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+collapsed_physeq <- tax_glom(phyloseq_object, taxrank=rank_names(phyloseq_object)[[as.numeric(collapse_level)]], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 
 # Write the new phyloseq object
-saveRDS(x = collapsed_physeq, file = phyloseq_filtered_object)
+saveRDS(object = collapsed_physeq, file = phyloseq_filtered_object)

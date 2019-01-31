@@ -22,7 +22,7 @@ column_value <- snakemake@params[["column_value"]]
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 
-## Load the phyloseq phyloseq_object
+## Load the phyloseq object
 phyloseq_object <- readRDS(phyloseq_object)
 
 ## filter taxa
