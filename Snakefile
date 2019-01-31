@@ -10,13 +10,13 @@ rule all:
         expand("{denoiser}/2_denoised/dna-sequences.fasta", denoiser = config["denoiser"]),
         expand("{denoiser}/2_denoised/count-table.qzv", denoiser = config["denoiser"]),
         expand("{denoiser}/2_denoised/rep-seqs.qzv", denoiser = config["denoiser"]),
-        expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]),
+        #expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]),
         expand("{denoiser}/3_classified/rdp/{tax_DB}/dna-sequences_tax_assignments.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
         #rarefied
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/alpha_diversity/{grouping_column}_alpha_divesity.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"], grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"]),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/ordination/{grouping_column}_{ordination_distance}.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"],grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"], ordination_distance = config["ordination_distance"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/rarefaction_curve.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"], rarefaction_value=config["rarefaction_value"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/phyloseq_object", denoiser = config["denoiser"], tax_DB = config["tax_DB"], rarefaction_value=config["rarefaction_value"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/rarefaction_curve.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"], rarefaction_value=config["rarefaction_value"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/phyloseq_object", denoiser = config["denoiser"], tax_DB = config["tax_DB"], rarefaction_value=config["rarefaction_value"]),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/KRONA/{grouping_column}.html", denoiser = config["denoiser"], tax_DB = config["tax_DB"], grouping_column=list(set(all_samples[config["grouping_column"]])), rarefaction_value=config["rarefaction_value"]),
         #notrarefied
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/rarefaction_curve.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
@@ -26,23 +26,23 @@ rule all:
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/alpha_diversity/{grouping_column}_alpha_divesity.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"], grouping_column=list(set(all_samples[config["grouping_column"]]))),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{grouping_column}_{ordination_distance}.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"], grouping_column=list(set(all_samples[config["grouping_column"]])), ordination_distance = config["ordination_distance"]),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/rarefaction_curve.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/phyloseq_object", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_subset_features_melted.tsv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], column_value = config["column_value"], meta_column = config["meta_column"], filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"] ),
 
         #ANCOM
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor= config["ANCOM_factors"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/filtered_samples.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/ANCOM/ANCOM_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor= config["ANCOM_factors"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/ANCOM/ANCOM_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/filtered_samples.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
 
         #Gneiss
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/regression_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/gradient/regression_hier_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor = config["Gneiss_gradient_clustering"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/regression_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/gradient/regression_hier_{clustering_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], clustering_factor = config["Gneiss_gradient_clustering"],collapse_level = config["collapse_level"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor= config["ANCOM_factors"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_hier_correlation_y_{y_balances}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/regression_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/gradient/regression_hier_{tested_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor = config["Gneiss_gradient_clustering"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/regression_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/gradient/regression_hier_{clustering_factor}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], clustering_factor = config["Gneiss_gradient_clustering"],collapse_level = config["collapse_level"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/correlation/{tested_factor}_heatmap_hier_correlation.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], tested_factor= config["ANCOM_factors"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_hier_correlation_y_{y_balances}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
+        #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"]),
 
 
 
@@ -80,7 +80,7 @@ include: "rules/vsearch_OTU/vsearch_count_tables_and_reformat.rules"
 include: "rules/common_tax_assignment/RDP_in_QIIME.rules"
 include: "rules/common_tax_tree/tree.rules"
 include: "rules/common_visualization/Import_to_QIIME2.rules"
-include: "rules/common_visualization/to_Phyloseq.rules"
+include: "rules/common_visualization/Phyloseq.rules"
 include: "rules/common_visualization/rarefy.rules"
 include: "rules/common_visualization/General_plotting.rules"
 include: "rules/Qiime2_stat_analysis/Qiime2_stat_analysis.rules"

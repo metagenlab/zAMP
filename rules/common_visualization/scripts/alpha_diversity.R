@@ -13,7 +13,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object))
 Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
@@ -36,6 +35,9 @@ library("ggplot2"); packageVersion("ggplot2")
 library("phyloseq"); packageVersion("phyloseq")
 library("data.table"); packageVersion("data.table")
 library("RColorBrewer"); packageVersion("RColorBrewer")
+
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
 
 ## Order the x axis as in the metadata_table
 sample_data(phyloseq_obj)[[sample_type]] = factor(metadata[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)

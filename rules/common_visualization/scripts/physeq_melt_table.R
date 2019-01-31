@@ -10,16 +10,16 @@ sink(log)
 sink(log, type="message")
 
 ## Input
-phyloseq_object <- snakemake@input[["phyloseq_object"]]
+phyloseq_object <- snakemake@input[[1]]
 
 ## Output
-phyloseq_melted_table <- snakemake@output[["phyloseq_melted_table"]]
+phyloseq_melted_table <- snakemake@output[[1]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 
 ## Load the phyloseq phyloseq_object
-load(phyloseq_object)
+phyloseq_obj <- readRDS(phyloseq_object)
 
 ### Melt the physeq objet into a dataframe with one row per feature.id and per sample, needed later
 physeq_df <- psmelt(phyloseq_obj)

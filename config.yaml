@@ -14,6 +14,20 @@ merged_max_length: 500
 F_extected_error: 2
 R_extected_error: 2
 
+# Denoisier
+denoiser: ["vsearch", "DADA2"]
+
+# Database
+tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
+
+# Phyloseq processing
+filter_tax_rank: ["Kingdom"]
+filter_lineage: ["Bacterium"]
+collapse_tax_rank: [1,2,3,4,5,6,7,8]
+column_value: ["sample"]
+meta_column: ["sample_group"]
+subset_formula: "sum(x > 3) > (0.2*length(x)), TRUE"
+
 # Visualization
 viz_replace_empty_tax: TRUE
 grouping_column: PatientID

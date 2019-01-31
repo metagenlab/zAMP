@@ -1,13 +1,12 @@
 ## Preprocessing
 
-rule Qiime2_samples_filtration :
+rule Qiime2_samples_filtration_phy :
     conda:
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/R_visualization.yml"
     input:
-        count_table = "{tool}/2_denoised/count-table.qza",
-        Metadata_table = config["local_samples"],
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/norarefaction/phyloseq_object"
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/filtered_samples.qza",
     params:
         filtration = '''%s="%s"''' % (config["filtration_column"], config["filtration_value"])
     log:
@@ -297,6 +296,7 @@ rule Qiime2_Gneiss_heatmap :
           --p-color-map seismic \
           --o-visualization {output}
         '''
+
 
 # A small function to transform the 7 collapse values into 0 to fit the requirements of this function
 def myfunc(wildcards):

@@ -117,5 +117,5 @@ sample_names(META)
 phyloseq_obj <- phyloseq(OTU, TAX, META, PHY)
 
 # Write the phyloseq object
-save(x = phyloseq_obj, file = phyloseq_object)
+saveRDS(object = phyloseq_obj, file = phyloseq_object)
 

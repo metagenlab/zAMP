@@ -1,0 +1,91 @@
+
+rule to_Phyloseq:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        count_table = "{tool}/2_denoised/count_table.txt",
+        Metadata_table = config["local_samples"],
+        taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
+        tax_tree = "{tool}/4_tree/tree.nwk"
+    output:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.rds"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.txt"
+    script:
+        "scripts/physeq_import.R"
+
+
+rule filter_Phyloseq_taxa:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.rds"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_physeq.rds"
+    params:
+        filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
+        filter_lineage = lambda wildcards: wildcards.filter_lineage
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_physeq.txt"
+    script:
+        "scripts/physeq_filter_taxa.R"
+
+
+rule filter_Phyloseq_samples:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_physeq.rds"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_physeq.rds"
+    params:
+        meta_column = lambda wildcards: wildcards.meta_column,
+        column_value = lambda wildcards: wildcards.column_value
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_physeq.txt"
+    script:
+        "scripts/physeq_filter_samples.R"
+
+
+rule filter_Phyloseq_features:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_physeq.rds"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_subset_features_physeq.rds"
+    params:
+        subset_formula = config["subset_formula"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{filter_tax_rank}_{filter_lineage}_filt_{column_value}_in_{meta_column}_samples_subset_features_physeq.txt"
+    script:
+        "scripts/physeq_subset_features.R"
+
+
+rule filter_Phyloseq_collapse_taxa:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{column_value}_in_{meta_column}_subset_features_physeq.rds"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_tax_rank}_collapsed_physeq.rds"
+    params:
+        collapse_tax_rank = lambda wildcards: wildcards.collapse_tax_rank,
+    log:
+        logging_folder + "{{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_tax_rank}_collapsed_physeq.txt"
+    script:
+        "scripts/physeq_subset_features.R"
+
+
+rule melt_Phyloseq_object:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{prefix}_physeq.rds"
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{prefix}_melted.tsv"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq/{prefix}_melted.txt"
+    script:
+        "scripts/physeq_melt_table.R"
+
