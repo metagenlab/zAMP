@@ -336,4 +336,3 @@ rule Qiime2_Gneiss_balance_taxonomy :
           --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
-
