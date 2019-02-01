@@ -286,7 +286,7 @@ rule Qiime2_Gneiss_heatmap :
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/heatmap_{clustering_factor}_{tested_factor}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_heatmap_{tested_factor}.txt"
     shell:
         '''
         qiime gneiss dendrogram-heatmap \
