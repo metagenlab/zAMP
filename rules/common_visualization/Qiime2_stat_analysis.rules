@@ -47,11 +47,11 @@ rule Qiime2_taxa_collapse :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/no_collapse/filtered_samples.qza",
         taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     output:
-         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/taxa_collapse_{collapse_level}/filtered_samples.qza"
+         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/filtered_samples.qza"
     params:
         collapse_level = lambda wildcards: wildcards.collapse_level
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/taxa_collapse_{collapse_level}/coll_filtered_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/coll_filtered_samples.txt"
     shell:
         '''
         qiime taxa collapse \
