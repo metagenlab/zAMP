@@ -42,7 +42,7 @@ rule filter_Phyloseq_samples:
         meta_column = lambda wildcards: wildcards.meta_column,
         column_value = lambda wildcards: wildcards.column_value
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_samples.txt"
     script:
         "scripts/physeq_filter_samples.R"
 

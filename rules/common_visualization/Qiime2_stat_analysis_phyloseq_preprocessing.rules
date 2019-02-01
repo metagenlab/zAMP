@@ -4,15 +4,14 @@ rule create_biom_from_count_table_2 :
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-       "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
+        count_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count_table.txt",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom",
+        biom_count = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom",
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/otu_biom.biom"
     script:
-        '''
         "scripts/create_biom_from_count_table.R"
-        '''
+
 
 rule import_count_table_to_QIIME2_2 :
     conda:
@@ -32,6 +31,25 @@ rule import_count_table_to_QIIME2_2 :
         --output-path {output[0]}
         '''
 
+
+rule create_visualize_count_table_QIIME2_2 :
+    conda:
+        "../../envs/QIIME2-2019.01.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qzv",
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.txt",
+    shell:
+        '''
+        qiime feature-table summarize \
+        --i-table {input[0]} \
+        --o-visualization {output[0]}
+        '''
+
+
+
 rule import_tree_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
@@ -49,24 +67,23 @@ rule import_tree_to_QIIME2_2 :
           --type 'Phylogeny[Rooted]'
         '''
 
-
-rule import_rep_seq_to_QIIME2_2 :
+rule import_taxonomy_to_Qiime2_2 :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.txt",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.txt"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.qza"
     log:
-        logging_folder + "{tool}/2_denoised/rep-seqs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.txt"
     shell:
         '''
         qiime tools import \
-        --input-path {input[0]} \
-        --output-path {output[0]} \
-        --type 'FeatureData[Sequence]'
+         --type FeatureData[Taxonomy] \
+         --input-path {input[0]} \
+         --input-format HeaderlessTSVTaxonomyFormat \
+         --output-path {output[0]}
         '''
-
 
 
 ## ANCOM
@@ -90,7 +107,7 @@ rule Qiime2_ANCOM :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_pseudocounts.qza"
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_pseudocounts.qza",
         Metadata = config["local_samples"],
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{tested_factor}.qzv"
@@ -118,11 +135,11 @@ rule Qiime2_Gneiss_gradient_clustering :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_{tested_factor}_clustering.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_{tested_factor}_clustering.qza"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_{tested_factor}_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_{tested_factor}_clustering.txt"
     shell:
         '''
         qiime gneiss gradient-clustering \
@@ -139,9 +156,9 @@ rule Qiime2_Gneiss_correlation_clustering :
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_correlation_clustering.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_correlation_clustering.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_correlation_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_correlation_clustering.txt"
     shell:
         '''
         qiime gneiss correlation-clustering \
@@ -156,9 +173,9 @@ rule Qiime2_Gneiss_ilr_hierarchical :
         "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_{clustering_factor}_clustering.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_{clustering_factor}_clustering.qza"
     output:
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_{clustering_factor}_balances.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/hier_{clustering_factor}_balances.qza"
     log:
         logging_folder +  "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_hier_{clustering_factor}_balances.txt"
     shell:
@@ -175,13 +192,14 @@ rule Qiime2_Gneiss_ilr_phylogeny :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
-        tree =  "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/tree.tree",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
+        #tree =  "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/rooted-tree.qza",
+        tree = "{tool}/4_tree/rooted-tree.qza",
     output:
-        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phlogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_phyl_phylogenetic_balances.qza"
-        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phlogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_phyl_phylogenetic_clustering.qza"
+        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/phyl_phylogenetic_balances.qza",
+        hierarchy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/phyl_phylogenetic_clustering.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phlogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_phyl_phylogenetic_clustering.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/phlogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/_phyl_phylogenetic_clustering.txt"
     shell:
         '''
         qiime gneiss ilr-phylogenetic \
@@ -196,13 +214,13 @@ rule Qiime2_Gneiss_ols_regression :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_balances.qza"
+        balance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_balances.qza",
         Metadata = config["local_samples"],
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_clustering.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_regression_{clustering_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/regression_{clustering_factor}.qzv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}_regression_{clustering_factor}.txt"
+        logging_folder +  "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/regression_{clustering_factor}.txt"
     shell:
         '''
         qiime gneiss ols-regression \
@@ -220,13 +238,13 @@ rule Qiime2_Gneiss_heatmap :
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
         Metadata = config["local_samples"],
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_clustering.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_heatmap.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_heatmap.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_heatmap.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_heatmap.txt"
     shell:
         '''
         qiime gneiss dendrogram-heatmap \
@@ -239,42 +257,30 @@ rule Qiime2_Gneiss_heatmap :
         '''
 
 
+
 # A small function to transform the 7 collapse values into 0 to fit the requirements of this function
 def myfunc(wildcards):
-    if wildcards == '7':
-        value = '0'
-    else :
-        value = wildcards
+    value = int(wildcards)-1
     return(value)
 
 
 
-
-
-
-
-######################## stopped here ###########################
-
-
-
-#https://docs.qiime2.org/2018.11/plugins/available/gneiss/balance-taxonomy/
 rule Qiime2_Gneiss_balance_taxonomy :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qza",
-        Metadata = config["local_samples"],
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza",
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_clustering.qza"
+        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/metadata_table.csv",
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_clustering.qza",
         taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.qza",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_y_{y_balances}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor,
         collapse_level = lambda wildcards: myfunc(wildcards.collapse_level),
         y_balances = lambda wildcards: wildcards.y_balances
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{tested_factor}_{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_y_{y_balances}.txt"
     shell:
         '''
         qiime gneiss balance-taxonomy \
@@ -287,3 +293,9 @@ rule Qiime2_Gneiss_balance_taxonomy :
           --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
+
+
+
+
+
+

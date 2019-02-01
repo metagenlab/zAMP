@@ -28,7 +28,7 @@ rule all:
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/rarefaction_curve.png", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt_melted.tsv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], column_value = config["column_value"], meta_column = config["meta_column"], filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"]),
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt_melted.tsv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], column_value = config["column_value"], meta_column = config["meta_column"], filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"] , collapse_level = config["collapse_level"]),
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/tree.tree", denoiser = config["denoiser"], tax_DB = config["tax_DB"], column_value = config["column_value"], meta_column = config["meta_column"], filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"] , collapse_level = config["collapse_level"]),
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/tree.tree", denoiser = config["denoiser"], tax_DB = config["tax_DB"],  filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"] , collapse_level = config["collapse_level"], column_value = config["column_value"], meta_column = config["meta_column"]),
 
 
 
@@ -47,8 +47,8 @@ rule all:
         #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/correlation/{tested_factor}_taxbalance_hier_correlation_y_{y_balances}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9))),
         #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/no_collapse/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]),
         #expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/phylogeny/regression_phyl_phylogenetic.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"]),
-
-
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/collap_{collapse_level}/Gneiss/phylogeny/{tested_factor}_{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/phyl_phylogenetic_y_{y_balances}.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9)), filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"], column_value = config["column_value"], meta_column = config["meta_column"]),
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/count-table.qzv",  denoiser = config["denoiser"], tax_DB = config["tax_DB"], collapse_level = config["collapse_level"], tested_factor= config["ANCOM_factors"], y_balances = list(range(1, 9)), filter_tax_rank = config["filter_tax_rank"], filter_lineage = config["filter_lineage"], column_value = config["column_value"], meta_column = config["meta_column"])
 
         #vsearch
         #"vsearch/2_denoised/all_samples_reads_count.txt",
@@ -87,4 +87,4 @@ include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/Phyloseq.rules"
 include: "rules/common_visualization/rarefy.rules"
 include: "rules/common_visualization/General_plotting.rules"
-include: "rules/Qiime2_stat_analysis/Qiime2_stat_analysis.rules"
+include: "rules/common_visualization/Qiime2_stat_analysis_phyloseq_preprocessing.rules"

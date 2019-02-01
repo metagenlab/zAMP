@@ -5,9 +5,9 @@
 
 ## Inspired from https://stackoverflow.com/questions/15260245/r-convert-text-field-to-function and https://github.com/vmikk/metagMisc/blob/master/R/physeq_rm_na_tax.R
 ## Redirect R output
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[[1]]
@@ -32,7 +32,10 @@ tree <- phy_tree(phyloseq_object)
 ape::write.tree(tree, tree_path)
 
 # Write the metadata table of the phyloseq object
-write.table(sample_data(phyloseq_object), meta_path , sep="\t", quote=F, row.names = FALSE)
+metadata <- (sample_data(phyloseq_object))
+metadata$SampleID <- rownames(metadata)
+metadata <- metadata %>% select(SampleID, everything())
+write.table(metadata, meta_path , sep="\t", quote=F, row.names = FALSE)
 
 # Write the taxonomy table of the phyloseq object
 taxa_df<- as.data.frame(tax_table(phyloseq_object), stringsAsFactors = F)
