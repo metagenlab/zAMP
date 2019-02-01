@@ -49,6 +49,26 @@ rule import_tree_to_QIIME2_2 :
           --type 'Phylogeny[Rooted]'
         '''
 
+
+rule import_rep_seq_to_QIIME2_2 :
+    conda:
+        "../../envs/QIIME2-2018.8.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.txt",
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.qza",
+    log:
+        logging_folder + "{tool}/2_denoised/rep-seqs.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --output-path {output[0]} \
+        --type 'FeatureData[Sequence]'
+        '''
+
+
+
 ## ANCOM
 rule Qiime2_pseudocounts :
     conda:
@@ -246,7 +266,7 @@ rule Qiime2_Gneiss_balance_taxonomy :
         Metadata = config["local_samples"],
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_{clustering_factor}_clustering.qza"
-        taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+        taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_export/dna-sequences_tax_assignments.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
     params:
