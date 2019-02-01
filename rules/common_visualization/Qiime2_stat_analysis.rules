@@ -152,7 +152,7 @@ rule Qiime2_ANCOM :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/pseudocounts.qza",
         Metadata = config["local_samples"],
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/ANCOM/ANCOM_{tested_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_f_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
@@ -260,7 +260,7 @@ rule Qiime2_Gneiss_ols_regression :
         Metadata = config["local_samples"],
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/regression_{clustering_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_regression.qzv"
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}_regression_{clustering_factor}.txt"
     shell:
@@ -282,7 +282,7 @@ rule Qiime2_Gneiss_heatmap :
         Metadata = config["local_samples"],
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/{collapse}/Gneiss/{clustering_method}/{tested_factor}_heatmap_{clustering_factor}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_heatmap_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor
     log:
@@ -317,7 +317,7 @@ rule Qiime2_Gneiss_balance_taxonomy :
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/no_collapse/Gneiss/{clustering_method}/{clustering_factor}_clustering.qza",
         taxonomy = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/differential_abundance/taxa_collapse_{collapse_level}/Gneiss/{clustering_method}/{tested_factor}_taxbalance_{clustering_factor}_y_{y_balances}.qzv"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/collap_{collapse_level}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}/{clustering_factor}_y_{y_balances}_f_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor,
         collapse_level = lambda wildcards: myfunc(wildcards.collapse_level),
