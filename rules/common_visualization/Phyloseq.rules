@@ -1,3 +1,12 @@
+## Small function to extraction numbers from rarefaction values
+import re
+def NumberFromStrings(wildcards):
+    if wildcards == "norarefaction":
+        value = "norarefaction"
+    else :
+        value = re.findall('\d+',string)
+    return value
+
 
 rule to_Phyloseq:
     conda:
@@ -8,11 +17,14 @@ rule to_Phyloseq:
         taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
         tax_tree = "{tool}/4_tree/tree.nwk"
     output:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds"
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_value/physeq/no_collapse/base.rds"
+    params:
+        rarefaction_value = "{rarefaction_value}",
+        replace_empty_tax = config["viz_replace_empty_tax"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base_physeq.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_value/physeq/no_collapse/base_physeq.txt"
     script:
-        "scripts/physeq_import.R"
+        "scripts/physeq_rarefy_and_import.R"
 
 
 rule filter_Phyloseq_taxa:
