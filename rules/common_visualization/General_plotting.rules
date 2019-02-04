@@ -3,7 +3,7 @@ rule raw_to_filtered_reads_stats:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
         raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.tsv"
@@ -35,7 +35,7 @@ rule KRONA_plots:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_melted.tsv"
+        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base_melted.tsv"
     output:
         output = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA/{grouping_column}.html"
     params:
@@ -52,7 +52,7 @@ rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
     output:
         alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{grouping_column}_alpha_divesity.png",
@@ -71,7 +71,7 @@ rule ordination:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/base_physeq.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
     output:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{grouping_column}_{ordination_distance}.png",
@@ -86,4 +86,3 @@ rule ordination:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_{ordination_distance}_logs.txt"
     script:
         "scripts/ordination.R"
-

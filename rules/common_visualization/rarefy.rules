@@ -3,7 +3,7 @@ rule rarefy:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/norarefaction/physeq/base_physeq.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         Metadata_table = config["local_samples"],
         taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
         tax_tree = "{tool}/4_tree/tree.nwk"
@@ -21,7 +21,7 @@ rule rarefaction_curve:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/norarefaction/physeq/base_physeq.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
     output:
         rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.png"
