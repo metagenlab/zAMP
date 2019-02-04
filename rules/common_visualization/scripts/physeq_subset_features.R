@@ -5,9 +5,9 @@
 
 ## Inspired from https://stackoverflow.com/questions/15260245/r-convert-text-field-to-function
 ## Redirect R output
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[[1]]
