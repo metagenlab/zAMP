@@ -21,6 +21,7 @@ subset_formula <- snakemake@params[["subset_formula"]]
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 library(plyr);packageVersion("plyr")
+library(dplyr);packageVersion("dplyr")
 
 ## Load the phyloseq phyloseq_object
 phyloseq_object <- readRDS(phyloseq_object)
@@ -30,7 +31,14 @@ subset_fct <- function(x){}
 body(subset_fct) <- as.quoted(subset_formula)[[1]]
 
 ## filter taxa
-fitered_taxa <- filter_taxa(phyloseq_object, subset_fct, TRUE)
+subset_features <- filter_taxa(phyloseq_object, subset_fct, TRUE)
 
-# Write the new phyloseq object
-saveRDS(object = fitered_taxa, file = phyloseq_filtered_object)
+## Remove already in metadata alphia diversity values
+sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher))
+
+## Add alpha diversity indexes to metadata
+alpha_div <- estimate_richness(physeq = subset_features, split = TRUE)
+sample_data(subset_features) <- cbind(sample_data(subset_features),alpha_div)
+
+## Write the new phyloseq object
+saveRDS(object = subset_features, file = phyloseq_filtered_object)

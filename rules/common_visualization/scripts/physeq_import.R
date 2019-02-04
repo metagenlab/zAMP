@@ -112,10 +112,14 @@ sample_names(OTU)
 sample_names(META)
 
 
-
 # Finally merge!
 phyloseq_obj <- phyloseq(OTU, TAX, META, PHY)
 
+
+# Add alpha diversity indexes to metadata
+alpha_div <- estimate_richness(physeq = phyloseq_obj, split = TRUE)
+sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div)
+
+
 # Write the phyloseq object
 saveRDS(object = phyloseq_obj, file = phyloseq_object)
-

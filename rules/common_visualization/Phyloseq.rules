@@ -88,6 +88,7 @@ rule melt_Phyloseq_object:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq/{collapsed_or_not}/{prefix}_melted.txt"
     script:
         "scripts/physeq_melt_table.R"
+        
 
 rule export_Phyloseq_object:
     conda:
