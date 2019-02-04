@@ -121,5 +121,24 @@ alpha_div <- estimate_richness(physeq = phyloseq_obj, split = TRUE)
 sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div)
 
 
+# Add alpha diveristy indexes at 1% filtration threshold
+## Keep the taxa above 1%
+physeqrF = filter_taxa(phyloseq_obj, function(x) mean(x) > 0.01,TRUE)
+## IDs of taxa to be kept
+keeptaxa = taxa_names(physeqrF)
+## All taxa
+alltaxa = taxa_names(phyloseq_obj)
+## Taxa to be kept
+myTaxa = alltaxa[alltaxa %in% keeptaxa]
+## Keep only those
+physeqaF <- prune_taxa(myTaxa,phyloseq_obj)
+## Calculate new indexes
+alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE)
+## Rename those
+colnames(alpha_div_1) <- paste0(colnames(alpha_div_1), ("_min_1"))
+## Again, bing these columns
+sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div_1)
+
+
 # Write the phyloseq object
 saveRDS(object = phyloseq_obj, file = phyloseq_object)
