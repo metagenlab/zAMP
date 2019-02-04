@@ -6,9 +6,9 @@
 # inspired from : https://rdrr.io/bioc/phyloseq/man/rarefy_even_depth.html
 
 ## Redirect R output to the log file
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
 features_counts_table <- snakemake@input[["count_table"]]
