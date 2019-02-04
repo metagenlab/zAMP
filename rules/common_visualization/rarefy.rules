@@ -17,18 +17,3 @@ rule rarefy:
         "scripts/rarefy.R"
 
 
-rule rarefaction_curve:
-    conda:
-        "../../envs/R_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
-        Metadata_table = config["local_samples"]
-    output:
-        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.png"
-    params:
-        sample_type = config["sample_type"],
-        x_axis_column = config["x_axis_column"]
-    log:
-        logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.txt"
-    script:
-        "scripts/rarefaction_curve.R"

@@ -1,10 +1,10 @@
 ## Small function to extraction numbers from rarefaction values
 import re
-def NumberFromStrings(wildcards):
+def rafe_value_fct(wildcards):
     if wildcards == "norarefaction":
         value = "norarefaction"
     else :
-        value = re.findall('\d+',string)
+        value = re.findall('\d+',wildcards)
     return value
 
 
@@ -17,14 +17,31 @@ rule to_Phyloseq:
         taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
         tax_tree = "{tool}/4_tree/tree.nwk"
     output:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_value/physeq/no_collapse/base.rds"
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base.rds"
     params:
-        rarefaction_value = "{rarefaction_value}",
+        rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value),
         replace_empty_tax = config["viz_replace_empty_tax"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_value/physeq/no_collapse/base_physeq.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base_physeq.txt"
     script:
         "scripts/physeq_rarefy_and_import.R"
+
+
+rule rarefaction_curve:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.png"
+    params:
+        sample_type = config["sample_type"],
+        x_axis_column = config["x_axis_column"]
+    log:
+        logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.txt"
+    script:
+        "scripts/rarefaction_curve.R"
 
 
 rule filter_Phyloseq_taxa:
