@@ -256,9 +256,13 @@ rule Qiime2_Gneiss_heatmap :
 # A small function to transform the 7 collapse values into 0 to fit the requirements of this function
 def myfunc(wildcards):
     if wildcards == "no_collapse":
-        value = "no_collapse"
+        value = 0
     else :
         value = re.findall('\d+',wildcards)
+        if value == 7 :
+            value = 0
+        else:
+            value = value
     return(value)
 
 
