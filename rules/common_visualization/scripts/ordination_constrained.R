@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 
 ## Input
@@ -15,9 +15,7 @@ Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
-output_folder <- snakemake@output[["output1"]]
-output_folder
-output_folder <- (dirname(output_folder)[1])
+output_path<- snakemake@output[["output1"]]
 
 
 ## Parameters
@@ -26,8 +24,8 @@ ordination_distance = snakemake@params[["ordination_distance"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_column_value <- snakemake@params[["grouping_column_value"]]
 sample_type <- snakemake@params[["sample_type"]]
-ordination_shape_column <- snakemake@params[["ordination_shape_column"]]
-
+ordination_factor <- snakemake@params[["ordination_factor"]]
+ordination_method <-   snakemake@params[["ordination_method"]]
 
 ## Load needed libraries
 library("ggplot2"); packageVersion("ggplot2")
@@ -36,9 +34,10 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
 ## Ordination
 
+ordination_factor
+
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
-
 
 ### Remove sequences not assigned at the phylum level
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
@@ -46,7 +45,6 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 ### Remove sample with abundance = 0
 physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_unassigned_phylum_bact_only)>20, physeq_no_unassigned_phylum_bact_only)
-#head(sample_data(physeq_no_unassigned_phylum_bact_only))
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
@@ -54,44 +52,30 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
-
  ### Order the x axis as in the metadata_table
     sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
-
-#for (g in get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)){
+### Keep only the data of the samples of interest
     remove_idx <- as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_column_value
     g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
 
     if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){
-    ### Create a list of all ordination methods
-    #dist_methods <- c("unifrac" , "wunifrac", "jsd", "bray", "jaccard") # , "chao" removed because causing errors
-    ### Run a loop to save in a list all plots
-      ### Create a liste
-      #plist <- vector("list", length(dist_methods))
-      ### Rename entries in the list
-      #names(plist) = dist_methods
-      ### Loop over all methods
-      # for(i in dist_methods){
-          print(ordination_distance)
-          # Calculate distance matrix
-          iDist <- phyloseq::distance(g_physeq_no_unassigned_phylum_bact_only, method= ordination_distance)
-          # Calculate ordination
-          iMDS  <- ordinate(g_physeq_no_unassigned_phylum_bact_only, "MDS", distance=iDist)
-          ## Make plot
+
+
+            # Calculate ordination
+            #iMDS  <- do.call(ordinate, list(physeq = g_physeq_no_unassigned_phylum_bact_only, formula = paste0("~", ordination_factor), method = ordination_method))
+            iMDS <- ordinate(physeq = g_physeq_no_unassigned_phylum_bact_only, formula = ~ get(ordination_factor), method = ordination_method)
+            ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type, shape = ordination_shape_column) +
+            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type, shape = ordination_factor) +
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
-            p <- p + ggtitle(paste("MDS using distance method", ordination_distance, sep=" "))
+            p <- p + ggtitle(paste(ordination_method, "constrained on", ordination_factor))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",ordination_distance,".png"))
-
-
+            ggsave(plot = p, filename = output_path)
 
     }else{
-        filename <- paste0(output_folder,"/",grouping_column_value,"_", ordination_distance,".png")
-        file.create(file.path(filename))
-    }
 
+        file.create(file.path(output_path))
+    }

@@ -37,8 +37,10 @@ grouping_column: PatientID
 x_axis_column: Sample
 sample_type: sample_source
 ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
-ordination_method: ["DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA"]
-ordination_shape_column : sample_source
+ordination_method_distance_based: ["NMDS", "MDS", "PCoA"]
+ordination_method_constrained: ["DCA", "CCA", "RDA", "CAP", "DPCoA"]
+ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
+ordination_factor : sample_source
 
 #Qiime2 stat analysis
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
