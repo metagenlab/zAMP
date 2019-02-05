@@ -66,12 +66,12 @@ rule filter_Phyloseq_samples:
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt.rds"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_samples.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples.rds"
     params:
-        meta_column = lambda wildcards: wildcards.meta_column,
-        column_value = lambda wildcards: wildcards.column_value
+        filter_meta_column = lambda wildcards: wildcards.filter_meta_column,
+        filter_column_value = lambda wildcards: wildcards.filter_column_value
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples.txt"
     script:
         "scripts/physeq_filter_samples.R"
 
@@ -80,13 +80,13 @@ rule filter_Phyloseq_features:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_samples.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples.rds"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.rds"
     params:
-        subset_formula = config["subset_formula"]
+        filter_features_subset_formula = config["filter_features_subset_formula"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.txt"
     script:
         "scripts/physeq_subset_features.R"
 
@@ -95,13 +95,13 @@ rule Phyloseq_collapse_taxa:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.rds"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.rds"
     params:
         collapse_level = lambda wildcards: wildcards.collapse_level,
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/collap_{collapse_level}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.txt"
     script:
         "scripts/physeq_collapse_taxa.R"
 
@@ -123,13 +123,13 @@ rule export_Phyloseq_object:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.rds"
     output:
-        tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt/tree.tree",
-        meta_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt/metadata_table.csv",
-        taxonomy_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt/dna-sequences_tax_assignments.txt",
-        OTU_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt/count_table.txt",
+        tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/tree.tree",
+        meta_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/metadata_table.csv",
+        taxonomy_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.txt",
+        OTU_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count_table.txt",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{column_value}_in_{meta_column}_featuresfilt_phyloseq_export.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt_phyloseq_export.txt"
     script:
         "scripts/physeq_export.R"

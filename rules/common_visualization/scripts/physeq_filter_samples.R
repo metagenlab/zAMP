@@ -17,7 +17,7 @@ phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
 meta_column <- snakemake@params[["meta_column"]]
-column_value <- snakemake@params[["column_value"]]
+filter_column_value <- snakemake@params[["filter_column_value"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
@@ -26,7 +26,7 @@ library(phyloseq);packageVersion("phyloseq")
 phyloseq_object <- readRDS(phyloseq_object)
 
 ## filter taxa
-filtered_samples = subset_samples(phyloseq_object, get(meta_column) == as.character(column_value))
+filtered_samples = subset_samples(phyloseq_object, get(meta_column) == as.character(filter_column_value))
 
 
 # Write the new phyloseq object

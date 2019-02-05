@@ -16,7 +16,7 @@ phyloseq_object <- snakemake@input[[1]]
 phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
-subset_formula <- snakemake@params[["subset_formula"]]
+filter_features_subset_formula <- snakemake@params[["filter_features_subset_formula"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
@@ -28,7 +28,7 @@ phyloseq_object <- readRDS(phyloseq_object)
 
 ## Convert the fonction to be used later
 subset_fct <- function(x){}
-body(subset_fct) <- as.quoted(subset_formula)[[1]]
+body(subset_fct) <- as.quoted(filter_features_subset_formula)[[1]]
 
 ## filter taxa
 subset_features <- filter_taxa(phyloseq_object, subset_fct, TRUE)

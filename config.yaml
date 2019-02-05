@@ -24,13 +24,13 @@ tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbioc
 rarefaction_value: [10000,20000,50000,100000,200000,300000]
 
 # Phyloseq processing
+viz_replace_empty_tax: TRUE
 filter_tax_rank: ["Kingdom"]
 filter_lineage: ["Bacterium"]
-meta_column: ["sample_group"]
-column_value: ["sample"]
+filter_meta_column: ["sample_group"]
+filter_column_value: ["sample"]
+filter_features_subset_formula: "sum(x > 3) > (0.2*length(x)), TRUE"
 collapse_level: [2,3,4,5,6,7]
-subset_formula: "sum(x > 3) > (0.2*length(x)), TRUE"
-viz_replace_empty_tax: TRUE
 
 # Visualization
 grouping_column: PatientID

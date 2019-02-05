@@ -19,7 +19,7 @@ output_path <- snakemake@output[["output1"]]
 ## Parameters
 # x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-grouping_column_value <- snakemake@params[["grouping_column_value"]]
+grouping_filter_column_value <- snakemake@params[["grouping_filter_column_value"]]
 sample_type <- snakemake@params[["sample_type"]]
 ordination_factor <- snakemake@params[["ordination_factor"]]
 ordination_method <-   snakemake@params[["ordination_method"]]
@@ -51,7 +51,7 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
     sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Keep only the data of the samples of interest
-    remove_idx <- as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_column_value
+    remove_idx <- as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_filter_column_value
     g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
 
     if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){

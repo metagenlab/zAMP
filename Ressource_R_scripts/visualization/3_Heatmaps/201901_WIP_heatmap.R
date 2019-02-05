@@ -1,6 +1,6 @@
 
 ### Create a function
-Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by = TRUE, comparison, patient_ID){
+Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by = TRUE, comparison, patient_ID){
 
   # Transform values in  dplyr format
   g_column <- rlang::sym(grouping_column)
@@ -219,13 +219,13 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
 
       ### filter the table for this value of the grouping columns. Depending of the used arguments, the t_neg_PCR values are kept or not on the barplots
       ### Keep t_neg_PCR rows
-      if (isTRUE(t_neg_PCR_sample_on_plots) & !is_null(t_neg_PCR_sample_grp_column_value)){
-        filtered_df_abs_i <- threshod_filtered_abs_no_zero %>% filter(grepl(i, .[[grouping_column]]) | grepl(t_neg_PCR_sample_grp_column_value, .[[grouping_column]]))
-        print('Keeping t_neg_PCR values for the graphs. The "t_neg_PCR_sample_grp_column_value" must match the one in the grouping_column for this sample')
+      if (isTRUE(t_neg_PCR_sample_on_plots) & !is_null(t_neg_PCR_sample_grp_filter_column_value)){
+        filtered_df_abs_i <- threshod_filtered_abs_no_zero %>% filter(grepl(i, .[[grouping_column]]) | grepl(t_neg_PCR_sample_grp_filter_column_value, .[[grouping_column]]))
+        print('Keeping t_neg_PCR values for the graphs. The "t_neg_PCR_sample_grp_filter_column_value" must match the one in the grouping_column for this sample')
 
       }
-      else if (isTRUE(t_neg_PCR_sample_on_plots) & is_null(t_neg_PCR_sample_grp_column_value)){
-        stop('If "t_neg_PCR_sample_on_plots" is "TRUE, a "t_neg_PCR_sample_grp_column_value" indicating the value of the T neg PCR sample in the grouping column must be indicated')
+      else if (isTRUE(t_neg_PCR_sample_on_plots) & is_null(t_neg_PCR_sample_grp_filter_column_value)){
+        stop('If "t_neg_PCR_sample_on_plots" is "TRUE, a "t_neg_PCR_sample_grp_filter_column_value" indicating the value of the T neg PCR sample in the grouping column must be indicated')
       }
 
       ### Do not keep t_neg_PCR rows

@@ -22,7 +22,7 @@
 # Parameters
     sam <- snakemake@params[["sample_name"]]
     run <- snakemake@params[["run"]]
-    x_axis_column_value <- snakemake@params[["x_axis_column_value"]]
+    x_axis_filter_column_value <- snakemake@params[["x_axis_filter_column_value"]]
 
 # Load needed libraries
     library(dada2); packageVersion("dada2")
@@ -66,7 +66,7 @@
         infer$denoisedR <- getN(ddR)
         infer$merged_pairs <- getN(merger)
         infer$Sample <- sam
-        infer$label <- x_axis_column_value
+        infer$label <- x_axis_filter_column_value
         infer$RUN <- run
 
     ## Save the sequences stats for this sample

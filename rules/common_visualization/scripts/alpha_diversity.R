@@ -26,8 +26,8 @@ output_folder <- (dirname(alpha_plot)[1])
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 sample_type <- snakemake@params[["sample_type"]]
-grouping_column_value <- snakemake@params[["grouping_column_value"]]
-print(grouping_column_value)
+grouping_filter_column_value <- snakemake@params[["grouping_filter_column_value"]]
+print(grouping_filter_column_value)
 
 
 ## Load needed libraries
@@ -56,7 +56,7 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
 
 
 #for (g in get_variable(phyloseq_obj, grouping_column)){
-    remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_column_value
+    remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_filter_column_value
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
  if(nsamples(g_phyloseq_obj)>0){
@@ -76,10 +76,10 @@ p <- p + theme(axis.text.x = element_text(size=5))
 
 ## Save plot
 p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
-ggsave(filename = paste0(output_folder,"/",grouping_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
+ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
 
 }else{
-    filename <- paste0(output_folder,"/",grouping_column_value,"_alpha_divesity.png")
+    filename <- paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png")
     print(paste("Create empty file", filename))
     file.create(file.path(filename))
 } #}

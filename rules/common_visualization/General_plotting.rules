@@ -40,7 +40,7 @@ rule KRONA_plots:
         output = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA/{grouping_column}.html"
     params:
         grouping_column = config["grouping_column"],
-        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}_KRONA.txt"
@@ -58,7 +58,7 @@ rule alpha_diversity:
         alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{grouping_column}_alpha_divesity.png",
     params:
         grouping_column = config["grouping_column"],
-        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"]
     log:
@@ -77,7 +77,7 @@ rule ordination_distance_based:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/distance_based/{ordination_method_distance_based}/{grouping_column}_d_{ordination_distance}.png",
     params:
         grouping_column = config["grouping_column"],
-        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"],
         ordination_distance = lambda wildcards: wildcards.ordination_distance ,
@@ -99,7 +99,7 @@ rule ordination_unconstrained:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/unconstrained/{ordination_method}/{grouping_column}.png",
     params:
         grouping_column = config["grouping_column"],
-        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"],
         ordination_method = lambda wildcards: wildcards.ordination_method,
@@ -120,7 +120,7 @@ rule ordination_constrained:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/constrained/{ordination_method}/{grouping_column}_f_{ordination_factor}.png",
     params:
         grouping_column = config["grouping_column"],
-        grouping_column_value = lambda wildcards: wildcards.grouping_column,
+        grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"],
         ordination_method = lambda wildcards: wildcards.ordination_method,
