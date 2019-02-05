@@ -31,17 +31,16 @@ library("ggplot2"); packageVersion("ggplot2")
 library("phyloseq"); packageVersion("phyloseq")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
-## Ordination
 
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
 
 ### Remove sequences not assigned at the phylum level
-physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
-physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
+#physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
+#physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
-### Remove sample with abundance = 0
-physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_unassigned_phylum_bact_only)>20, physeq_no_unassigned_phylum_bact_only)
+### Remove sample with abundance < 20
+physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
@@ -50,21 +49,21 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
  names(ColPalette) = ColList
  colors_palette <- ColPalette
  ### Order the x axis as in the metadata_table
-    sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]] = factor(sample_data(physeq_no_unassigned_phylum_bact_only)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+    sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Keep only the data of the samples of interest
-    remove_idx <- as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_filter_column_value
-    g_physeq_no_unassigned_phylum_bact_only = prune_samples(remove_idx, physeq_no_unassigned_phylum_bact_only)
+    remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
+    g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
 
-    if(nsamples(g_physeq_no_unassigned_phylum_bact_only)>3){
+    if(nsamples(g_physeq_filtered)>3){
 
 
             # Calculate ordination
             #iMDS  <- do.call(ordinate, list(physeq = g_physeq_no_unassigned_phylum_bact_only, formula = paste0("~", ordination_factor), method = ordination_method))
-            iMDS <- ordinate(physeq = g_physeq_no_unassigned_phylum_bact_only, formula = ~ get(ordination_factor), method = ordination_method)
+            iMDS <- ordinate(physeq = g_physeq_filtered, formula = ~ get(ordination_factor), method = ordination_method)
             ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(g_physeq_no_unassigned_phylum_bact_only, iMDS, color = sample_type, shape = ordination_factor) +
+            p <- plot_ordination(g_physeq_filtered, iMDS, color = sample_type, shape = ordination_factor) +
               scale_color_manual(values = colors_palette) +
               geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot

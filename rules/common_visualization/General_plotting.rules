@@ -72,10 +72,10 @@ rule ordination_distance_based:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/distance_based/{ordination_method_distance_based}/{grouping_column}_d_{ordination_distance}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}_d_{ordination_distance}.png",
     params:
         grouping_column = config["grouping_column"],
         grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
@@ -85,7 +85,7 @@ rule ordination_distance_based:
         ordination_method = lambda wildcards: wildcards.ordination_method_distance_based,
         ordination_factor = lambda wildcards: config["ordination_factor"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/distance_based/{ordination_method_distance_based}/{grouping_column}_d_{ordination_distance}_logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}_d_{ordination_distance}_logs.txt"
     script:
         "scripts/ordination_distance_based.R"
 
@@ -94,10 +94,10 @@ rule ordination_unconstrained:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/unconstrained/{ordination_method}/{grouping_column}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}.png",
     params:
         grouping_column = config["grouping_column"],
         grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
@@ -106,7 +106,7 @@ rule ordination_unconstrained:
         ordination_method = lambda wildcards: wildcards.ordination_method,
         ordination_factor = lambda wildcards: config["ordination_factor"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/unconstrained/{ordination_method}/{grouping_column}_logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}_logs.txt"
     script:
         "scripts/ordination_unconstrained.R"
 
@@ -115,10 +115,10 @@ rule ordination_constrained:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/constrained/{ordination_method}/{grouping_column}_f_{ordination_factor}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}_f_{ordination_factor}.png",
     params:
         grouping_column = config["grouping_column"],
         grouping_filter_column_value = lambda wildcards: wildcards.grouping_column,
@@ -127,6 +127,6 @@ rule ordination_constrained:
         ordination_method = lambda wildcards: wildcards.ordination_method,
         ordination_factor = lambda wildcards: wildcards.ordination_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/constrained/{ordination_method}/{grouping_column}_f_{ordination_factor}.logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}_f_{ordination_factor}.logs.txt"
     script:
         "scripts/ordination_constrained.R"
