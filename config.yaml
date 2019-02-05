@@ -20,31 +20,26 @@ denoiser: ["vsearch", "DADA2"]
 # Database
 tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
 
+# Rarefaction
+rarefaction_value: [10000,20000,50000,100000,200000,300000]
+
 # Phyloseq processing
 filter_tax_rank: ["Kingdom"]
 filter_lineage: ["Bacterium"]
-collapse_tax_rank: [1,2,3,4,5,6,7,8]
 column_value: ["sample"]
 meta_column: ["sample_group"]
+collapse_level: [2,3,4,5,6,7]
 subset_formula: "sum(x > 3) > (0.2*length(x)), TRUE"
+viz_replace_empty_tax: TRUE
 
 # Visualization
-viz_replace_empty_tax: TRUE
 grouping_column: PatientID
 x_axis_column: Sample
 sample_type: sample_source
 ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
 ordination_shape_column : sample_source
 
-# Rarefaction
-rarefaction_value: [10000,20000,50000,100000,200000,300000]
-
-# Qiime stats
-filtration_column: sample_group
-filtration_value: sample
-collapse_level: [2,3,4,5,6,7]
-features_min_freq: 10
-features_in_min_X_samples: 5
+#Qiime2 stat analysis
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
 Gneiss_formula: Subject_ID + Test_day + Condition_group
