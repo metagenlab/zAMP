@@ -10,7 +10,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object)) # loads an object names phyloseq_obj
 multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
 multi_QC_report <- read.table(multi_QC_report_path, header = T)
 
@@ -21,6 +20,9 @@ raw_to_filtered_reads_stats <- snakemake@output[["raw_to_filtered_reads_stats"]]
 library("phyloseq");packageVersion("phyloseq")
 library("data.table");packageVersion("data.table")
 library("dplyr");packageVersion("dplyr")
+
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
 
 ## Create a table with the number of raw reads and filtered reads
 

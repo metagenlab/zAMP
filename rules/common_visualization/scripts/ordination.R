@@ -11,7 +11,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object))
 Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
@@ -36,6 +35,10 @@ library("phyloseq"); packageVersion("phyloseq")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
 ## Ordination
+
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
+
 
 ### Remove sequences not assigned at the phylum level
 physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
@@ -86,7 +89,7 @@ physeq_no_unassigned_phylum_bact_only <- prune_samples(sample_sums(physeq_no_una
             ggsave(plot = p, filename = paste0(output_folder,"/",grouping_column_value,"_",ordination_distance,".png"))
 
 
-      #}
+
     }else{
         filename <- paste0(output_folder,"/",grouping_column_value,"_", ordination_distance,".png")
         file.create(file.path(filename))

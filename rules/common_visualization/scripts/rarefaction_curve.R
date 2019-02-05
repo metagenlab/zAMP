@@ -14,7 +14,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object))
 
 ## Ouput
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
@@ -29,6 +28,10 @@ library('ggplot2')
 library('plyr') # ldply
 library('reshape2') # melt
 library('vegan')
+
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
+
 
 ## Create a modified version of estimate_richness function of phyloseq to accept sample names containing numbers only
 
