@@ -4,10 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
-
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
@@ -16,7 +15,6 @@ metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
 output_path <- snakemake@output[["output1"]]
-
 
 ## Parameters
 # x_axis_column <- snakemake@params[["x_axis_column"]]
@@ -31,7 +29,6 @@ library("ggplot2"); packageVersion("ggplot2")
 library("phyloseq"); packageVersion("phyloseq")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
-## Ordination
 
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)

@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 
 ## Input
@@ -16,7 +16,6 @@ metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
 output_path<- snakemake@output[["output1"]]
-
 
 ## Parameters
 ordination_distance = snakemake@params[["ordination_distance"]]
@@ -33,8 +32,6 @@ library("phyloseq"); packageVersion("phyloseq")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
 ## Ordination
-
-ordination_factor
 
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
