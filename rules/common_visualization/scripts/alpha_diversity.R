@@ -44,8 +44,8 @@ sample_data(phyloseq_obj)[[sample_type]] = factor(metadata[[sample_type]], level
 sample_data(phyloseq_obj)[[x_axis_column]] = factor(metadata[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
 
 ### Remove sequences not assigned at the phylum level
-physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
-physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
+#physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
+#physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
@@ -54,9 +54,8 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
  names(ColPalette) = ColList
  colors_palette <- ColPalette
 
-
-#for (g in get_variable(phyloseq_obj, grouping_column)){
-    remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_filter_column_value
+### Keep sample of interest
+    remove_idx = as.character(get_variable(phyloseq_obj, grouping_column)) == grouping_filter_column_value
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
  if(nsamples(g_phyloseq_obj)>0){
