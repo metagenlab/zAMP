@@ -80,7 +80,16 @@ def get_final_output(config):
                 ordination_factor = config["ordination_factor"]),
 
         ### Melted Phyloseq
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
+
+        ### Melted Phyloseq in %
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_pct_trsf_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             filter_tax_rank = config["filter_tax_rank"],
@@ -154,7 +163,17 @@ def get_final_output(config):
                 ordination_factor = config["ordination_factor"]),
 
         ### Melted Phyloseq
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            rarefaction_value=config["rarefaction_value"],
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
+
+        ### Melted Phyloseq in %
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/rarefaction_{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_pct_trsf_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value=config["rarefaction_value"],
@@ -165,6 +184,7 @@ def get_final_output(config):
 
 
     ## Statistical analyses
+
         ### ANCOM
             #### No taxa collapse
             expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/no_collapse/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_f_{tested_factor}.qzv",
@@ -307,7 +327,6 @@ def get_final_output(config):
                 filter_meta_column = config["filter_meta_column"],
                 tested_factor= config["ANCOM_factors"],
                 y_balances = list(range(1, 9))),
-
 
                 ##### Balances - No taxa collapse
             expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/no_collapse/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",

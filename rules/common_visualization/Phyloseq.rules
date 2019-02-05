@@ -106,6 +106,19 @@ rule Phyloseq_collapse_taxa:
         "scripts/physeq_collapse_taxa.R"
 
 
+rule Phyloseq_transform_to_percent:
+    conda:
+        "../../envs/R_visualization.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}.rds"
+    output:
+        tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}_pct_trsf.rds",
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}_pct_trsf.rds"
+    script:
+        "scripts/physeq_pct_trsf.R"
+
+
 rule melt_Phyloseq_object:
     conda:
         "../../envs/R_visualization.yml"
@@ -133,3 +146,4 @@ rule export_Phyloseq_object:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/phyloseq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt_phyloseq_export.txt"
     script:
         "scripts/physeq_export.R"
+
