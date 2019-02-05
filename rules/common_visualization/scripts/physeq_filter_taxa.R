@@ -18,6 +18,8 @@ phyloseq_filtered_object <- snakemake@output[[1]]
 ## Parameters
 tax_rank <- snakemake@params[["filter_tax_rank"]]
 lineage <- snakemake@params[["filter_lineage"]]
+filter_out_tax_rank  <- snakemake@params[["filter_out_tax_rank"]]
+filter_out_lineage <- snakemake@params[["filter_out_lineage"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
@@ -29,6 +31,7 @@ phyloseq_object
 
 ## filter taxa
 filtered_taxa <- subset_taxa(phyloseq_object, get(tax_rank) == as.character(lineage))
+filtered_taxa <- subset_taxa(filtered_taxa, get(filter_out_tax_rank) != as.character(filter_out_lineage))
 
 ## Remove already in metadata alphia diversity values
 sample_data(filtered_taxa) <- select(sample_data(filtered_taxa), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1, Chao1_min_1, se.chao1_min_1, ACE_min_1, se.ACE_min_1, Shannon_min_1, Simpson_min_1, InvSimpson_min_1, Fisher_min_1))

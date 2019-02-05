@@ -23,6 +23,7 @@ rarefied_phyloseq_path <- snakemake@output[["phyloseq_object"]]
 rarefy_value <- snakemake@params[["rarefaction_value"]]
 replace_empty_tax <- snakemake@params[["viz_replace_empty_tax"]]
 
+
 ## Load libraries
 library(vegan);packageVersion("vegan")
 library(dplyr);packageVersion("dplyr")
@@ -108,7 +109,7 @@ set.seed(1)
 
     ## Sanity checks for consistent OTU names
     taxa_names(TAX)
-    taxa_names(OTU)
+    #taxa_names(OTU)
     taxa_names(PHY)
     # Same sample names
     sample_names(OTU)

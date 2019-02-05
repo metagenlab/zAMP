@@ -20,7 +20,7 @@ rule to_Phyloseq:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base.rds"
     params:
         rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value),
-        replace_empty_tax = config["viz_replace_empty_tax"]
+        viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base_physeq.txt"
     script:
@@ -53,7 +53,10 @@ rule filter_Phyloseq_taxa:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt.rds"
     params:
         filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
-        filter_lineage = lambda wildcards: wildcards.filter_lineage
+        filter_lineage = lambda wildcards: wildcards.filter_lineage,
+        filter_out_tax_rank = config["filter_out_tax_rank"],
+        filter_out_lineage = config["filter_out_lineage"],
+
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt.txt"
     script:

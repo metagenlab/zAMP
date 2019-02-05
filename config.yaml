@@ -27,6 +27,8 @@ rarefaction_value: [10000,20000,50000,100000,200000,300000]
 viz_replace_empty_tax: TRUE
 filter_tax_rank: ["Kingdom"]
 filter_lineage: ["Bacterium"]
+filter_out_tax_rank: ["Phylum"]
+filter_out_lineage: ["Bacteria_phy"]
 filter_meta_column: ["sample_group"]
 filter_column_value: ["sample"]
 filter_features_subset_formula: "sum(x > 3) > (0.2*length(x)), TRUE"
