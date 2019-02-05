@@ -16,7 +16,7 @@ phyloseq_object <- snakemake@input[[1]]
 phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
-meta_column <- snakemake@params[["meta_column"]]
+meta_column <- snakemake@params[["filter_meta_column"]]
 filter_column_value <- snakemake@params[["filter_column_value"]]
 
 ## Load needed libraries
