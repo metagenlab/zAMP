@@ -37,6 +37,7 @@ grouping_column: PatientID
 x_axis_column: Sample
 sample_type: sample_source
 ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
+ordination_method: ["DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA"]
 ordination_shape_column : sample_source
 
 #Qiime2 stat analysis
