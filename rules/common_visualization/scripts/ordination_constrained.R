@@ -32,6 +32,9 @@ library("phyloseq"); packageVersion("phyloseq")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
 
+## Set seed for reproducibility
+set.seed(100)
+
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
 
