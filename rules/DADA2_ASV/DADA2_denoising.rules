@@ -36,7 +36,7 @@ rule DADA2_learn_errors:
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_error_profile.txt"
     threads:
-        2
+        1
     script:
         "scripts/2a_big_data_DADA2_learn_errors.R"
 

@@ -5,9 +5,9 @@
 
 ## Inspired from https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32
 ## Redirect R output
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
@@ -21,6 +21,9 @@ x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_filter_column_value <- snakemake@params[["grouping_filter_column_value"]]
 
+print(x_axis_column)
+print(grouping_column)
+print(grouping_filter_column_value)
 
 ## Load needed library
 library(dplyr);packageVersion("dplyr")

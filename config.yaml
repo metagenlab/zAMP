@@ -11,11 +11,12 @@ DADA2_R_reads_length_trim: 255
 # Filtering
 merged_min_length: 390
 merged_max_length: 500
-F_extected_error: 2
-R_extected_error: 2
+F_extected_error: 6
+R_extected_error: 6
 
 # Denoisier
 denoiser: ["vsearch", "DADA2"]
+run_column: seq_run
 
 # Database
 tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
