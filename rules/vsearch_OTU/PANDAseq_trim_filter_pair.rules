@@ -26,7 +26,7 @@ rule PANDAseq_trim_pair_reads:
         -A simple_bayesian \
         -l {params[merged_min_length]} \
         -L {params[merged_max_length]} \
-        -g {log} \
+        -Gs {log} \
         -w {output[paired_trimmed_reads]} \
         -B \
         -N
