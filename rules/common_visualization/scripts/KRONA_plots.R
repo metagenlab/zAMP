@@ -19,7 +19,7 @@ output_folder <- (dirname(output_folder)[1])
 ## Parameters
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-grouping_filter_column_value <- snakemake@params[["grouping_filter_column_value"]]
+grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 
 print(x_axis_column)
 print(grouping_column)

@@ -26,7 +26,7 @@ output_folder <- (dirname(alpha_plot)[1])
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 sample_type <- snakemake@params[["sample_type"]]
-grouping_filter_column_value <- snakemake@params[["grouping_filter_column_value"]]
+grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 print(grouping_filter_column_value)
 
 
