@@ -115,9 +115,9 @@ rule Phyloseq_transform_to_percent:
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}.rds"
     output:
-        tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/percent/{prefix}_pct_trsf.rds",
+        tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/percent/pct_{prefix}_trfs.rds",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}_pct_trsf.rds"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/percent/pct_{prefix}_trfs.logs"
     script:
         "scripts/physeq_pct_trsf.R"
 
