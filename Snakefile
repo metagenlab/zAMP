@@ -168,7 +168,7 @@ def get_final_output(config):
                 ordination_factor = config["ordination_factor"]),
 
         ### Melted Phyloseq
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_{filter_column_value}_in_{filter_meta_column}_trsf_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilts_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
