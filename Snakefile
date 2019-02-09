@@ -130,29 +130,69 @@ def get_final_output(config):
                 filter_meta_column = config["filter_meta_column"],
                 grouping_key = get_grouping_key(config["grouping_column"])),
 
+     ### Ordination
+            #### Distance-based
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                ordination_method_distance_based = config["ordination_method_distance_based"],
+                grouping_key = get_grouping_key(config["grouping_column"]),
+                ordination_distance = config["ordination_distance"]),
+
+            #### Unconstrained
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/unconstrained/{ordination_method_unconstrained}/{grouping_key}.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                ordination_method_unconstrained = config["ordination_method_unconstrained"],
+                grouping_key = get_grouping_key(config["grouping_column"])),
+
+            #### Constrained
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/constrained/{ordination_method_constrained}/{grouping_key}_f_{ordination_factor}.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                ordination_method_constrained = config["ordination_method_constrained"],
+                grouping_key = get_grouping_key(config["grouping_column"]),
+                ordination_factor = config["ordination_factor"]),
+
 
         ### Melted Phyloseq
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-
-        ### Melted Phyloseq in %
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/percent/pct_{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_trsf_samples_melted.tsv",
+        
+        
+        ### Melted Phyloseq - percent transformed
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-
-        ### Transposed rarefy count table in %
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/percent/pct_{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_trsf_samples/count_table_transposed.txt",
+        
+        ### Count-table transposed format
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),

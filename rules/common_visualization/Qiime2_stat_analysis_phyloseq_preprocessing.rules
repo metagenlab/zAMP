@@ -5,11 +5,11 @@ rule create_biom_from_count_table_2 :
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        count_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count_table.txt",
+        count_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count_table.txt",
     output:
-        biom_count = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/otu_biom.biom",
+        biom_count = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/otu_biom.biom",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/otu_biom.biom"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/otu_biom.biom"
     script:
         "scripts/create_biom_from_count_table.R"
 
@@ -18,11 +18,11 @@ rule import_count_table_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/otu_biom.biom",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/otu_biom.biom",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.txt",
     shell:
         '''
         qiime tools import \
@@ -36,11 +36,11 @@ rule create_visualize_count_table_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qzv",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qzv",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.txt",
     shell:
         '''
         qiime feature-table summarize \
@@ -52,11 +52,11 @@ rule import_tree_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/tree.tree",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/tree.tree",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/rooted-tree.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/rooted-tree.qza",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/rooted-tree.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/rooted-tree.txt",
     shell:
         '''
         qiime tools import \
@@ -69,11 +69,11 @@ rule import_taxonomy_to_Qiime2_2 :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.txt"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/dna-sequences_tax_assignments.txt"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.qza"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/dna-sequences_tax_assignments.qza"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/dna-sequences_tax_assignments.txt"
     shell:
         '''
         qiime tools import \
@@ -88,7 +88,7 @@ rule Qiime2_pseudocounts :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_pseudocounts.qza"
     log:
@@ -128,7 +128,7 @@ rule Qiime2_Gneiss_gradient_clustering :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
         Metadata = config["local_samples"],
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{tested_factor}_clustering.qza"
@@ -150,7 +150,7 @@ rule Qiime2_Gneiss_correlation_clustering :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_clustering.qza"
     log:
@@ -168,8 +168,8 @@ rule Qiime2_Gneiss_ilr_hierarchical :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
-        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{clustering_factor}_clustering.qza"
+        tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{clustering_factor}_clustering.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza"
     output:
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{clustering_factor}_balances.qza"
     log:
@@ -188,7 +188,7 @@ rule Qiime2_Gneiss_ilr_phylogeny :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
         #tree =  "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/rooted-tree.qza",
         tree = "{tool}/4_tree/rooted-tree.qza",
     output:
@@ -232,8 +232,8 @@ rule Qiime2_Gneiss_heatmap :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
-        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/metadata_table.csv",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
+        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/metadata_table.csv",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_clustering.qza"
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapse}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_heatmap_{tested_factor}.qzv"
@@ -267,10 +267,10 @@ rule Qiime2_Gneiss_balance_taxonomy :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
-        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/count-table.qza",
-        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/metadata_table.csv",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
+        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/metadata_table.csv",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_clustering.qza",
-        taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.qza",
+        taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/dna-sequences_tax_assignments.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_y_{y_balances}_f_{tested_factor}.qzv"
     params:

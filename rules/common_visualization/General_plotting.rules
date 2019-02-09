@@ -52,7 +52,7 @@ rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
         alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
@@ -71,7 +71,7 @@ rule ordination_distance_based:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.png",
@@ -93,7 +93,7 @@ rule ordination_unconstrained:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}.png",
@@ -114,7 +114,7 @@ rule ordination_constrained:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
         output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.png",
