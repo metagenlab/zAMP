@@ -3,7 +3,7 @@ rule raw_to_filtered_reads_stats:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
         raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.tsv"
@@ -52,17 +52,17 @@ rule alpha_diversity:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{prefix}_samples.rds",
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples.rds",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
     script:
         "scripts/alpha_diversity.R"
 
