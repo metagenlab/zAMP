@@ -97,9 +97,9 @@ rule filter_Phyloseq_features:
     conda:
         "../../envs/R_visualization.yml"
     input:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{prefix}_samples.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/2_filter_samples/{prefix}_samples.rds"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/3_filter_features/{prefix}_features.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/3_filter_features/{prefix}_features.rds"
     params:
         filter_features_subset_formula = config["filter_features_subset_formula"]
     log:
