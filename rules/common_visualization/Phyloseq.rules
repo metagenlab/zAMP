@@ -103,7 +103,7 @@ rule filter_Phyloseq_features:
     params:
         filter_features_subset_formula = config["filter_features_subset_formula"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/3_filter_features/{prefix}_features.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/3_filter_features/{prefix}_features.txt"
     script:
         "scripts/physeq_subset_features.R"
 
