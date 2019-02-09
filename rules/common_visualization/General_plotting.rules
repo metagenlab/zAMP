@@ -62,7 +62,7 @@ rule alpha_diversity:
         x_axis_column = config["x_axis_column"],
         sample_type = config["sample_type"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
     script:
         "scripts/alpha_diversity.R"
 
