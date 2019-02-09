@@ -163,6 +163,6 @@ rule transpose_count_table:
     log:
         logging_folder + "{prefix}/count_table_transposed.log"
     shell:
-        "datamas transpose --nostrict < {input} > {output}"
+        "datamash transpose --nostrict < {input} > {output}"
 
 
