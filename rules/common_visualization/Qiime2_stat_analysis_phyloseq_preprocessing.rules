@@ -269,7 +269,7 @@ rule Qiime2_Gneiss_balance_taxonomy :
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
         Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/metadata_table.csv",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_clustering.qza",
-        taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt/dna-sequences_tax_assignments.qza",
+        taxonomy = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/dna-sequences_tax_assignments.qza",
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_y_{y_balances}_f_{tested_factor}.qzv"
     params:
