@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
@@ -55,8 +55,9 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
     sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Keep only the data of the samples of interest
-    remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
-    g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
+    #remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
+    #g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
+    g_physeq_filtered <- physeq_filtered
 
     if(nsamples(g_physeq_filtered)>3){
 

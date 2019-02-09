@@ -75,6 +75,10 @@ p <- p + theme(axis.text.x = element_text(size=5))
 
 ## Save plot
 p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
+
+if (p.width >= 30){
+   p.width <- 30}
+
 ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
 
 }else{

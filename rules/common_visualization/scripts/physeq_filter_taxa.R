@@ -17,9 +17,13 @@ phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
 tax_rank <- snakemake@params[["filter_tax_rank"]]
+print(tax_rank)
 lineage <- snakemake@params[["filter_lineage"]]
+print(lineage)
 filter_out_tax_rank  <- snakemake@params[["filter_out_tax_rank"]]
+print(filter_out_tax_rank)
 filter_out_lineage <- snakemake@params[["filter_out_lineage"]]
+print(filter_out_lineage)
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")

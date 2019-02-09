@@ -130,43 +130,6 @@ def get_final_output(config):
                 filter_meta_column = config["filter_meta_column"],
                 grouping_key = get_grouping_key(config["grouping_column"])),
 
-        ### Ordination
-            #### Distance-based
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_distance_based = config["ordination_method_distance_based"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                ordination_distance = config["ordination_distance"]),
-
-            #### Unconstrained
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/unconstrained/{ordination_method_unconstrained}/{grouping_key}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_unconstrained = config["ordination_method_unconstrained"],
-                grouping_key = get_grouping_key(config["grouping_column"])),
-
-            #### Constrained
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/constrained/{ordination_method_constrained}/{grouping_key}_f_{ordination_factor}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_constrained = config["ordination_method_constrained"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                ordination_factor = config["ordination_factor"]),
-
 
         ### Melted Phyloseq
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
