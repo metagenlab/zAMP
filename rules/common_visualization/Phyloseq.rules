@@ -81,9 +81,9 @@ rule filter_Phyloseq_samples:
     conda:
         "../../envs/R_visualization.yml"
     input:
-         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/1_filter_taxa/{prefix}.rds"
+         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/1_filter_taxa/{prefix}_taxfilt.rds"
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/2_filter_samples/{prefix}_{filter_column_value}_in_{filter_meta_column}_samples.rds"
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/2_filter_samples/{prefix}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples.rds"
     params:
         filter_meta_column = lambda wildcards: wildcards.filter_meta_column,
         filter_column_value = lambda wildcards: wildcards.filter_column_value
