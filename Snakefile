@@ -169,7 +169,7 @@ def get_final_output(config):
 
 
         ### Melted Phyloseq
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trsf_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -179,7 +179,7 @@ def get_final_output(config):
             filter_meta_column = config["filter_meta_column"]),
 
         ### Melted Phyloseq in %
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/percent/pct_{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_trsf_samples_melted.tsv",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trsf_melted.tsv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -188,8 +188,7 @@ def get_final_output(config):
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
 
-        ### Transposed rarefy count table in %
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/percent/pct_{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_trsf_samples/count_table_transposed.txt",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
