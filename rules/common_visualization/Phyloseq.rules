@@ -88,7 +88,7 @@ rule filter_Phyloseq_samples:
         filter_meta_column = lambda wildcards: wildcards.filter_meta_column,
         filter_column_value = lambda wildcards: wildcards.filter_column_value
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{collapse_or_not}/no_collapse/2_filter_samples/{prefix}_samples.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/2_filter_samples/{prefix}_{filter_column_value}_in_{filter_meta_column}_samples.txt"
     script:
         "scripts/physeq_filter_samples.R"
 
