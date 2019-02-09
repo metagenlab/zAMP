@@ -103,7 +103,7 @@ rule filter_Phyloseq_features:
     params:
         filter_features_subset_formula = config["filter_features_subset_formula"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_featuresfilt.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/{prefix}_featuresfilt.txt"
     script:
         "scripts/physeq_subset_features.R"
 
@@ -117,7 +117,7 @@ rule Phyloseq_transform_to_percent:
     output:
         tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs.rds",
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefixtxt2}_trfs."
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs."
     script:
         "scripts/physeq_pct_trsf.R"
 
@@ -144,7 +144,7 @@ rule export_Phyloseq_object:
         tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/tree.tree",
         meta_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/metadata_table.csv",
         taxonomy_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/dna-sequences_tax_assignments.txt",
-        OTU_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix}_export/count_table.txt",
+        OTU_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix2}/{prefix2}_export/count_table.txt",
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/export.txt",
     script:
