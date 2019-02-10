@@ -12,7 +12,7 @@ rule assess_quality_paired_raw_reads_with_fastqc:
         logging_folder + "QC/FastQC/raw_reads/{sample}_fastqc.txt"
     shell:
         """
-        fastqc {input} -o $(dirname {output[0]}) &> {log}
+        fastqc {input} -o $(dirname {output[0]}) 2> {log}
         """
 
 
@@ -31,5 +31,5 @@ rule create_raw_reads_multiqc_report:
         1
     shell:
         """
-        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") &> {log[0]}
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") 2> {log[0]}
         """
