@@ -14,11 +14,11 @@ RUN conda info env
 
 #ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
 
-RUN  /bin/bash -c 'source activate /opt/conda/envs/r_visualization/'
+RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/'
 
 RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
   apt-get update && \
   apt-get update && \
   apt-get -y --no-install-recommends install libv8-dev
 
-RUN  echo 'install.packages(randomcoloR, repos="http://cran.us.r-project.org", dependencies=TRUE)' > /tmp/packages.R && Rscript /tmp/packages.R
+RUN  /bin/bash -c 'source activate /opt/conda/envs/r_visualization/' && echo 'install.packages(randomcoloR, repos="http://cran.us.r-project.org", dependencies=TRUE)' > /tmp/packages.R && Rscript /tmp/packages.R
