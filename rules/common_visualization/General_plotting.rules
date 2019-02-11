@@ -134,6 +134,7 @@ rule ordination_constrained:
 # A small function to transform the taxa levels to the collapse levels
 def barplot_levels(wildcards):
     print(wildcards)
+
     if wildcards == "OTU":
         value = 'no_collapse'
     if wildcards == "Species":
@@ -152,6 +153,9 @@ def barplot_levels(wildcards):
         value = 'collap_2'
     else :
         raise ValueError("Forbidden value in taxa level for barplots")
+
+    print(value)    
+
     return(value)
 
 
