@@ -22,7 +22,7 @@ RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
   apt-get -y --no-install-recommends install libv8-dev
 
 
-RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/'
+RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && conda info --envs'
 
 RUN conda info --envs
 
