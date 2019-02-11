@@ -5,7 +5,11 @@ RUN conda config --add channels defaults && conda config --add channels conda-fo
 # RUN useradd -r -u 1080 pipeline_user
 
 # Install most of needed packages
-RUN conda install conda env create -f envs\r_visualization.yml -n r_visualization
+RUN conda create -n r_visualization
+
+RUN source activate r_visualization
+
+RUN conda env update -f=envs/r_visualization.yml
 
 # randomcoloR dependancy
 RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
