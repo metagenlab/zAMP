@@ -131,8 +131,9 @@ rule ordination_constrained:
         "scripts/ordination_constrained.R"
 
 
-# A small function to transform the taxa levels to the collapse levelsn
+# A small function to transform the taxa levels to the collapse levels
 def barplot_levels(wildcards):
+    print(wildcards)
     if wildcards == "OTU":
         value = 'no_collapse'
     if wildcards == "Species":
