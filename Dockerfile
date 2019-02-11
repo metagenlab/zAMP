@@ -6,7 +6,7 @@ ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
 
 RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
 
-RUN conda env update -f envs/r_visualization.yml
+RUN conda env update -f envs/r_visualization.yml -n r_visualization
 
 # randomcoloR dependancy
 RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
