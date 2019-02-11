@@ -178,7 +178,7 @@ rule barplot:
         facetting_column = snakemake@params[["facetting_column"]],
         order_by_abundance = snakemake@params[["order_by_abundance"]],
         separated_legend = snakemake@params[["separated_legend"]],
-        log:
+    log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{taxa}_barplot.txt",
     script:
         "scripts/barplot.R"
