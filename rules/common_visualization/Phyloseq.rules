@@ -10,7 +10,7 @@ def rafe_value_fct(wildcards):
 
 rule to_Phyloseq_and_rarefy:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         count_table = "{tool}/2_denoised/count_table.txt",
         Metadata_table = config["local_samples"],
@@ -29,7 +29,7 @@ rule to_Phyloseq_and_rarefy:
 
 rule rarefaction_curve:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
@@ -46,7 +46,7 @@ rule rarefaction_curve:
 
 rule Phyloseq_collapse_taxa:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds"
     output:
@@ -61,7 +61,7 @@ rule Phyloseq_collapse_taxa:
 
 rule filter_Phyloseq_taxa:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/base.rds"
     output:
@@ -79,7 +79,7 @@ rule filter_Phyloseq_taxa:
 
 rule filter_Phyloseq_samples:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
          "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/1_filter_taxa/{prefix}_taxfilt.rds"
     output:
@@ -95,7 +95,7 @@ rule filter_Phyloseq_samples:
 
 rule filter_Phyloseq_features:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/2_filter_samples/{prefix}_samples.rds"
     output:
@@ -111,7 +111,7 @@ rule filter_Phyloseq_features:
 
 rule Phyloseq_transform_to_percent:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}.rds"
     output:
@@ -124,7 +124,7 @@ rule Phyloseq_transform_to_percent:
 
 rule melt_Phyloseq_object:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}.rds"
     output:
@@ -133,11 +133,11 @@ rule melt_Phyloseq_object:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}_melted.txt"
     script:
         "scripts/physeq_melt_table.R"
-        
+
 
 rule export_Phyloseq_object:
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}.rds"
     output:
@@ -164,5 +164,3 @@ rule transpose_count_table:
         logging_folder + "{prefix}/count_table_transposed.log"
     shell:
         "datamash transpose --no-strict < {input} > {output}"
-
-
