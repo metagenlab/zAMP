@@ -161,7 +161,7 @@ rule barplot:
     conda:
         "R_visualizationf"
     input:
-        phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.taxa) + "/{prefix1}_samples_melted.tsv"
+        phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.plotting_tax_ranks) + "/{prefix1}_samples_melted.tsv"
     output:
         barplot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
         barplot_leg = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot_leg.png",
