@@ -130,6 +130,21 @@ def get_final_output(config):
                 filter_meta_column = config["filter_meta_column"],
                 grouping_key = get_grouping_key(config["grouping_column"])),
 
+        ### Barplot
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}/{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                relative_or_absolute_plot = config["relative_or_absolute_baxplot"]
+                grouping_key = get_grouping_key(config["grouping_column"]),
+                relative_or_absolute_filtering = config["relative_or_absolute_filtering"],
+                filtering_value = config["filtering_value"],
+                plotting_tax_ranks = config["plotting_tax_ranks"]),
+
      ### Ordination
             #### Distance-based
             expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
@@ -178,8 +193,8 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-        
-        
+
+
         ### Melted Phyloseq - percent transformed
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_melted.tsv",
             denoiser = config["denoiser"],
@@ -190,7 +205,7 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-        
+
         ### Count-table transposed format
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
@@ -305,7 +320,6 @@ def get_final_output(config):
 ## Run the function
 rule all:
     input:
-        #QC
         get_final_output(config),
 
 
@@ -326,5 +340,3 @@ include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/Phyloseq.rules"
 include: "rules/common_visualization/General_plotting.rules"
 include: "rules/common_visualization/Qiime2_stat_analysis_phyloseq_preprocessing.rules"
-
-

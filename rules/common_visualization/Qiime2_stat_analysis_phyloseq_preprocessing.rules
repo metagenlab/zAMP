@@ -254,7 +254,7 @@ rule Qiime2_Gneiss_heatmap :
 
 
 # A small function to transform the 7 collapse values into 0 to fit the requirements of this function
-def myfunc(wildcards):
+def coll_level_fct(wildcards):
     if wildcards == "no_collapse":
         value = '0'
     else :
@@ -275,7 +275,7 @@ rule Qiime2_Gneiss_balance_taxonomy :
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_y_{y_balances}_f_{tested_factor}.qzv"
     params:
         tested_factor = lambda wildcards: wildcards.tested_factor,
-        collapse_level = lambda wildcards: myfunc(wildcards.collapsed_or_not),
+        collapse_level = lambda wildcards: coll_level_fct(wildcards.collapsed_or_not),
         y_balances = lambda wildcards: wildcards.y_balances
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/{clustering_method}/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{clustering_factor}_y_{y_balances}_f_{tested_factor}.txt"
@@ -291,7 +291,3 @@ rule Qiime2_Gneiss_balance_taxonomy :
           --m-metadata-column {params[tested_factor]} \
           --o-visualization {output}
         '''
-
-
-
-

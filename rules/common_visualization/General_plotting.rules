@@ -129,3 +129,56 @@ rule ordination_constrained:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.logs.txt"
     script:
         "scripts/ordination_constrained.R"
+
+
+# A small function to transform the taxa levels to the collapse levelsn
+def barplot_levels(wildcards):
+    if wildcards == "OTU":
+        value = 'no_collapse'
+    if wildcards == "Species":
+        value = 'collap_1'
+    if wildcards == "Genus":
+        value = 'collap_2'
+    if wildcards == "Family":
+        value = 'collap_3'
+    if wildcards == "Order":
+        value = 'collap_4'
+    if wildcards == "Class":
+        value = 'collap_5'
+    if wildcards == "Phylum":
+        value = 'collap_6'
+    if wildcards == "Kingdom":
+        value = 'collap_7'
+    else :
+        raise ValueError("Forbidden value in taxa level for barplots")
+    return(value)
+
+
+rule barplot
+    singularity:
+        "Dockerfile"
+    conda:
+        "R_visualizationf"
+    input:
+        phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.taxa) + "/{prefix1}_samples_melted.tsv"
+    output:
+        barplot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{taxa}_barplot.png",
+        barplot_leg = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{taxa}_barplot_leg.png",
+    params:
+        x_axis_column = config["x_axis_column"]
+        t_neg_PCR_sample_on_plots = config["t_neg_PCR_sample_on_plots"]
+        t_neg_PCR_group_column_value = config["t_neg_PCR_group_column_value"]
+        relative_or_absolute_filtering = lambda wildcards: wildcards.relative_or_absolute_filtering
+        filtering_value = lambda wildcards: wildcards.filtering_value
+        relative_or_absolute_plot = lambda wildcards: wildcards.relative_or_absolute_plot
+        plotting_tax_ranks = lambda wildcards: wildcards.plotting_tax_ranks
+        distinct_colors = snakemake@params[["distinct_colors"]]
+        horizontal_barplot = snakemake@params[["horizontal_barplot"]]
+        facet_plot = snakemake@params[["facet_plot"]]
+        facetting_column = snakemake@params[["facetting_column"]]
+        order_by_abundance = snakemake@params[["order_by_abundance"]]
+        separated_legend = snakemake@params[["separated_legend"]]
+        log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{taxa}_barplot.txt",
+    script:
+        "scripts/barplot.R"
