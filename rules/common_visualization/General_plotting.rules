@@ -172,12 +172,12 @@ rule barplot:
         filtering_value = lambda wildcards: wildcards.filtering_value,
         relative_or_absolute_plot = lambda wildcards: wildcards.relative_or_absolute_plot,
         plotting_tax_ranks = lambda wildcards: wildcards.plotting_tax_ranks,
-        distinct_colors = snakemake@params[["distinct_colors"]],
-        horizontal_barplot = snakemake@params[["horizontal_barplot"]],
-        facet_plot = snakemake@params[["facet_plot"]],
-        facetting_column = snakemake@params[["facetting_column"]],
-        order_by_abundance = snakemake@params[["order_by_abundance"]],
-        separated_legend = snakemake@params[["separated_legend"]],
+        distinct_colors = config[["distinct_colors"]],
+        horizontal_barplot = config[["horizontal_barplot"]],
+        facet_plot = config[["facet_plot"]],
+        facetting_column = config[["facetting_column"]],
+        order_by_abundance = config[["order_by_abundance"]],
+        separated_legend = config[["separated_legend"]],
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{taxa}_barplot.txt",
     script:
