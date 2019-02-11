@@ -40,8 +40,8 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 phyloseq_obj <- readRDS(phyloseq_object)
 
 ## Order the x axis as in the metadata_table
-sample_data(phyloseq_obj)[[sample_type]] = factor(metadata[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-sample_data(phyloseq_obj)[[x_axis_column]] = factor(metadata[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
 
 ### Remove sequences not assigned at the phylum level
 #physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
