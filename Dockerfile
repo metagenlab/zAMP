@@ -12,7 +12,7 @@ RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
   apt-get update && \
   apt-get -y --no-install-recommends install libv8-dev
 
-RUN source activate r_visualization
+#RUN source activate r_visualization
 
 # randomcoloR
 RUN echo 'install.packages(randomcoloR, repos="http://cran.us.r-project.org", dependencies=TRUE)' > /tmp/packages.R \ && Rscript /tmp/packages.R
