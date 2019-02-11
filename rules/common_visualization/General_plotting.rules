@@ -154,7 +154,7 @@ def barplot_levels(wildcards):
     return(value)
 
 
-rule barplot
+rule barplot:
     singularity:
         "Dockerfile"
     conda:
