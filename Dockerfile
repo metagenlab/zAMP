@@ -12,4 +12,4 @@ RUN apt-get update && apt-get -y install libv8-dev && apt-get -y install g++
 RUN dpkg -L libv8-dev
 
 
-RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && R CMD install --configure-vars='INCLUDE_DIR="/usr/include"',  randomcoloR
+RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && R CMD INSTALL --configure-vars='INCLUDE_DIR="/usr/include"',  \"randomcoloR\"'
