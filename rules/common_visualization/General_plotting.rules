@@ -137,19 +137,19 @@ def barplot_levels(wildcards):
     if wildcards == "OTU":
         value = 'no_collapse'
     if wildcards == "Species":
-        value = 'collap_1'
+        value = 'collap_7'
     if wildcards == "Genus":
-        value = 'collap_2'
+        value = 'collap_6'
     if wildcards == "Family":
-        value = 'collap_3'
+        value = 'collap_5'
     if wildcards == "Order":
         value = 'collap_4'
     if wildcards == "Class":
-        value = 'collap_5'
+        value = 'collap_4'
     if wildcards == "Phylum":
-        value = 'collap_6'
+        value = 'collap_3'
     if wildcards == "Kingdom":
-        value = 'collap_7'
+        value = 'collap_2'
     else :
         raise ValueError("Forbidden value in taxa level for barplots")
     return(value)
