@@ -1,5 +1,7 @@
 FROM continuumio/miniconda3:4.5.12
 
+echo ("test")
+
 RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
 
 # RUN useradd -r -u 1080 pipeline_user
