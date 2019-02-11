@@ -139,7 +139,7 @@ def get_final_output(config):
                 filter_lineage = config["filter_lineage"],
                 filter_column_value = config["filter_column_value"],
                 filter_meta_column = config["filter_meta_column"],
-                relative_or_absolute_plot = config["relative_or_absolute_baxplot"]
+                relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
                 grouping_key = get_grouping_key(config["grouping_column"]),
                 relative_or_absolute_filtering = config["relative_or_absolute_filtering"],
                 filtering_value = config["filtering_value"],
