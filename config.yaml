@@ -50,14 +50,14 @@ relative_or_absolute_baxplot: ["relative", "absolute"]
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
 filtering_value: [2, 200]
 plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"]
-t_neg_PCR_sample_on_plots: TRUE (#or 'FALSE')
+t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE')
 t_neg_PCR_group_column_value: "t_neg_PCR"
-distinct_colors: TRUE (#or 'FALSE')
-horizontal_barplot: TRUE (#or 'FALSE')
-facet_plot:  TRUE (#or 'FALSE')
+distinct_colors: TRUE #(or 'FALSE')
+horizontal_barplot: TRUE #(or 'FALSE')
+facet_plot:  TRUE #(or 'FALSE')
 facetting_column: "extraction_method"
-order_by_abundance:  TRUE (#or 'FALSE')
-separated_legend: TRUE (#or 'FALSE')
+order_by_abundance:  TRUE #(or 'FALSE')
+separated_legend: TRUE #(or 'FALSE')
 
 #Qiime2 stat analysis
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
