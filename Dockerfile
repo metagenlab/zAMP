@@ -24,8 +24,5 @@ RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
 
 RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && conda info --envs'
 
-RUN conda info --envs
 
-RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/' && Rscript -e "install.packages(randomcoloR, repos="http://cran.us.r-project.org", dependencies=TRUE)"
-
-RUN /bin/bash -c 'source activate /opt/conda/envs/5181c089/ && rgi load -i card.json'
+RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && Rscript -e "install.packages(randomcoloR, repos="http://cran.us.r-project.org", dependencies=TRUE)"'
