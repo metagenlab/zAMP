@@ -22,9 +22,7 @@ RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
   apt-get -y --no-install-recommends install libv8-dev
 
 
-RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && conda info --envs'
-
-RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && apt-get install libv8-dev'
+RUN dpkg -L libv8-dev
 
 
 RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/ && Rscript -e "install.packages(\"randomcoloR\", dependencies=TRUE, repos=\"http://cran.us.r-project.org\")"'
