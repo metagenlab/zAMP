@@ -131,7 +131,7 @@ def get_final_output(config):
                 grouping_key = get_grouping_key(config["grouping_column"])),
 
         ### Barplot
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}/{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
                 denoiser = config["denoiser"],
                 tax_DB = config["tax_DB"],
                 rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
