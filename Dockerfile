@@ -5,6 +5,8 @@ RUN conda env create -f /tmp/r_visualization.yml -n r_visualization
 
 # Pull the environment name out of the r_visualization.yml
 RUN echo "source activate r_visualization" > ~/.bashrc
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
+
 ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
 
 RUN conda activate r_visualization
