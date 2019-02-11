@@ -7,7 +7,7 @@ RUN /bin/bash -c 'source activate /opt/conda/envs/r_visualization/'
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 
-RUN apt-get update && apt-get -y install libv8-dev && apt-get install g++
+RUN apt-get update && apt-get -y install libv8-dev && apt-get -y install g++
 
 RUN dpkg -L libv8-dev
 
