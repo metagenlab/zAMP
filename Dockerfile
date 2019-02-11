@@ -2,11 +2,12 @@ FROM continuumio/miniconda3:4.5.12
 
 RUN conda create -n r_visualization
 RUN echo "source activate r_visualization" > ~/.bashrc
-ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
+ENV PATH /opt/conda:$PATH
+
 
 RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
 
-RUN conda env update -f envs/r_visualization.yml -n r_visualization
+RUN conda update -f envs/r_visualization.yml -p /opt/conda/envs/r_visualization
 
 # randomcoloR dependancy
 RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
