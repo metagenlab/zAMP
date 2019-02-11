@@ -161,7 +161,7 @@ def barplot_levels(wildcards):
 
 rule barplot:
     singularity:
-        "Dockerfile"
+        "docker://Dockerfile"
     conda:
         "R_visualizationf"
     input:
