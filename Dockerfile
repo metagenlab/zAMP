@@ -12,7 +12,7 @@ RUN echo "source activate r_visualization" > ~/.bashrc
 
 #ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
 
-RUN bin/sh conda activate r_visualization
+RUN bin/bash conda activate r_visualization
 
 RUN export DEBIAN_FRONTEND=noninteractive TERM=linux && \
   apt-get update && \
