@@ -54,7 +54,7 @@ COPY envs/r_visualization2.yml /tmp/r_visualization2.yml
 ############################## Activate USER ##############################
 RUN mkdir -p /home/pipeline_user
 USER pipeline_user
-RUN chown -R /home/pipeline_user
+RUN chown pipeline_user -R /home/pipeline_user 
 WORKDIR /home/pipeline_user
 
 ############################## Install conda env ##############################
