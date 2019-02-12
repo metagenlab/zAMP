@@ -34,11 +34,11 @@ ENTRYPOINT [ "/usr/bin/tini", "--" ]
 CMD [ "/bin/bash" ]
 
 ############################## Install a default R ##############################
-RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
-	apt install apt-transport-https && \
-	apt update && \
-	apt-get install r-base -y
+#RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
+#	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
+#	apt install apt-transport-https && \
+#	apt update && \
+#	apt-get install r-base -y
 
 ## Install a dependancy for the r-V8 package, itself needed for randomcoloR
 RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
@@ -60,19 +60,19 @@ WORKDIR /home/pipeline_user
 ############################## Install conda env ##############################
 ## Create the conda environement
 RUN conda env create -f /tmp/r_visualization2.yml -n r_visualization
+ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
 
 ############################## Add the needed packages ##############################
 ## Download the r-V8 package
 RUN wget https://cran.r-project.org/src/contrib/Archive/V8/V8_1.5.tar.gz -O /tmp/rv8.tar.gz
 
 ## Install the package
-# RUN R CMD INSTALL /tmp/rv8.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
+RUN source activate r_visualization && R CMD INSTALL /tmp/rv8.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
 
 ## Download the randomcoloR package
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 
 ## Install the package
-RUN /home/pipeline_user/.conda/envs/r_visualization/bin/R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
+RUN source activate r_visualization && R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
 
 ## Activate the r-visualiation
-ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
