@@ -61,13 +61,13 @@ RUN conda env create -f /tmp/r_visualization2.yml -n r_visualization
 RUN wget https://cran.r-project.org/src/contrib/Archive/V8/V8_1.5.tar.gz -O /tmp/rv8.tar.gz
 
 ## Install the package
-RUN source activate r_visualization && R CMD INSTALL /tmp/rv8.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
+RUN R CMD INSTALL /tmp/rv8.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
 
 ## Download the randomcoloR package
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 
 ## Install the package
-RUN source activate r_visualization && R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
+RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
 
 ## Activate the r-visualiation
 ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
