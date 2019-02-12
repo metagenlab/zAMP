@@ -161,7 +161,7 @@ def barplot_levels(wildcards):
 
 rule barplot:
     singularity:
-        "docker://Dockerfile"
+        "docker://valscherz/16srna:init"
     conda:
         "r_visualizationf"
     input:
