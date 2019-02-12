@@ -40,7 +40,7 @@ RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /e
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
 	apt install apt-transport-https && \
 	apt update && \
-	apt-get install r-base -y	
+	apt-get install r-base -y
 
 # Import definition of the conda environment
 COPY envs/r_visualization2.yml /tmp/r_visualization2.yml
@@ -51,16 +51,20 @@ RUN conda env create -f /tmp/r_visualization2.yml -n r_visualization
 # RUN conda info env
 
 ## Install a dependancy for the r-V8 package, itself needed for randomcoloR
-RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev 
+RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
 
-## Download the r-V8 package 
+## Download the r-V8 package
 RUN wget https://cran.r-project.org/src/contrib/Archive/V8/V8_1.5.tar.gz -O /tmp/rv8.tar.gz
 ## Install the package
-RUN R CMD INSTALL /tmp/rv8.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/ 
+RUN R CMD INSTALL /tmp/rv8.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/
 
-## Download the randomcoloR package 
+## Download the randomcoloR package
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 ## Install the package
-RUN /opt/conda/envs/r_visualization/bin/R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/	
+RUN /opt/conda/envs/r_visualization/bin/R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/
 
+## Remove uncessary pacakges
 RUN apt remove r-base -y && apt-get autoremove -y
+
+## Activate the conda env
+ENV PATH /opt/conda/envs/r_visualization/bin:$PATH

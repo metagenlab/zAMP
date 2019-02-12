@@ -162,8 +162,6 @@ def barplot_levels(wildcards):
 rule barplot:
     singularity:
         "docker://valscherz/16srna:init"
-    conda:
-        "envs/r_visualization"
     input:
         phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.plotting_tax_ranks) + "/2_filter_samples/{prefix1}_samples_melted.tsv"
     output:
