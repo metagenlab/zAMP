@@ -72,4 +72,4 @@ RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_v
 ## Activate the r-visualiation
 ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
 WORKDIR /home/pipeline_user
-RUN source activate r_visualization
+# RUN source activate r_visualization
