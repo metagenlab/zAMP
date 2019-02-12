@@ -63,5 +63,8 @@ RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp
 ## Install the package
 RUN /opt/conda/envs/r_visualization/bin/R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/
 
+## Remove uncessary pacakges
+RUN apt remove r-base -y && apt-get autoremove -y
+
 ## Activate the conda env
 ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
