@@ -30,8 +30,8 @@ RUN apt-get install -y curl grep sed dpkg && \
     rm tini.deb && \
     apt-get clean
 
-ENTRYPOINT [ "/usr/bin/tini", "--" ]
-CMD [ "/bin/bash" ]
+#ENTRYPOINT [ "/usr/bin/tini", "--" ]
+#CMD [ "/bin/bash" ]
 
 ############################## Install a default R ##############################
 RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
@@ -73,3 +73,5 @@ RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_v
 ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
 WORKDIR /home/pipeline_user
 # RUN source activate r_visualization
+
+ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
