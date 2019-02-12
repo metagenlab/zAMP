@@ -10,6 +10,9 @@ FROM ubuntu:16.04
 #  $ docker push continuumio/miniconda2:latest
 #  $ docker push continuumio/miniconda2:4.5.11
 
+RUN groupadd -r User1 && useradd --no-log-init -r -g User1 User1 && su User1
+
+
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
@@ -33,8 +36,6 @@ RUN apt-get install -y curl grep sed dpkg && \
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 CMD [ "/bin/bash" ]
-
-
 
 RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
@@ -63,8 +64,5 @@ RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp
 ## Install the package
 RUN /opt/conda/envs/r_visualization/bin/R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/envs/r_visualization/lib/R/library/
 
-## Remove uncessary pacakges
-RUN apt remove r-base -y && apt-get autoremove -y
-
-## Activate the conda env
+## Activate the r-visualiation
 ENV PATH /opt/conda/envs/r_visualization/bin:$PATH
