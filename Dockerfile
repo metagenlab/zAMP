@@ -52,8 +52,8 @@ RUN useradd -r -u 1080 pipeline_user
 COPY envs/r_visualization2.yml /tmp/r_visualization2.yml
 
 ############################## Activate USER ##############################
-USER pipeline_user
 RUN mkdir -p /home/pipeline_user
+USER pipeline_user
 RUN chown -R /home/pipeline_user
 WORKDIR /home/pipeline_user
 
