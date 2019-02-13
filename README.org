@@ -2,5 +2,16 @@
 * General use
 
 #+BEGIN_SRC sh
-snakemake --snakefile $pipeline_folder/Snakefile  --use-conda --conda-prefix $HOME/miniconda3/ --cores 8 --configfile config.yaml
+snakemake --snakefile $pipeline_folder/Snakefile --use-conda --conda-prefix $pipeline_folder/miniconda3/ --cores 8 --configfile config.yaml --use-singularity -k
 #+END_SRC
+
+
+with:
+
+/--use-singularity/ to allow the use of singularity, a system enabling the use of docker environements for certain rules
+
+/--k/ to go on with the pipeline despite errors
+
+*Singularity:*
+
+Singularity is a system enabling the use of docker containers for per-rule environements [[https://snakemake.readthedocs.io/en/v5.4.0/snakefiles/deployment.html][(see Snakemake doc)]]. It must be installed [[https://www.sylabs.io/guides/3.0/user-guide.pdf][as indicated here]]. It was here use since package as r-V8, needed for randomcoloR used for plotting were not available for Conda. ([[https://github.com/conda-forge/staged-recipes/pull/6982]]).
