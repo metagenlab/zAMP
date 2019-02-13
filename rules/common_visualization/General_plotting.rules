@@ -159,8 +159,6 @@ def barplot_levels(wildcards):
     return(value)
 
 
-<<<<<<< HEAD
-=======
 rule barplot:
     singularity:
         "docker://valscherz/16srna:0.0.3-beta"
@@ -188,4 +186,6 @@ rule barplot:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.txt",
     script:
         "scripts/barplot.R"
->>>>>>> barplot
+
+
+
