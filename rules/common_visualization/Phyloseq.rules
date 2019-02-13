@@ -161,7 +161,7 @@ rule transpose_and_meta_count_table:
         transposed_table = "{prefix}/count_table_transposed.txt",
         merged_meta = "{prefix}/count_table_transposed_with_meta.txt"
     priority:
-        50
+        1
     log:
         logging_folder + "{prefix}/count_table_transposed.log"
     script:
