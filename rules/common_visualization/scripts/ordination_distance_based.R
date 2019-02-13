@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
@@ -45,6 +45,8 @@ phyloseq_obj <- readRDS(phyloseq_object)
 ### Remove sample with abundance < 20
 physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
 
+physeq_filtered
+
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
  ColList = unique(metadata[[sample_type]])
@@ -52,7 +54,7 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
  names(ColPalette) = ColList
  colors_palette <- ColPalette
  ### Order the x axis as in the metadata_table
-    sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+    # sample_data(physeq_filtered)[[sample_type]] <- factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Keep only the data of the samples of interest
     #remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value

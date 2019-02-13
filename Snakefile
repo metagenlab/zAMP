@@ -85,8 +85,6 @@ def get_taxa_collapse_level_key(collapse_level):
 
 
 def get_filtering_key(filtering):
-
-    print(filtering)
     file_list = []
 
     for i in set(filtering):
@@ -98,7 +96,9 @@ def get_filtering_key(filtering):
             value =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
         else :
             raise ValueError("Forbidden value for filtering type")
+
     file_list = file_list + value
+
     return(file_list)
 
 

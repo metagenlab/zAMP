@@ -169,7 +169,7 @@ rule barplot:
         barplot_leg = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot_leg.png",
     params:
         x_axis_column = config["x_axis_column"],
-        grouping_column = lambda wildcards: wildcards.grouping_column,
+        grouping_column = lambda wildcards: wildcards.relative_or_absolute_plot,
         t_neg_PCR_sample_on_plots = config["t_neg_PCR_sample_on_plots"],
         t_neg_PCR_group_column_value = config["t_neg_PCR_group_column_value"],
         relative_or_absolute_filtering = lambda wildcards: wildcards.relative_or_absolute_filtering,
