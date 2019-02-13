@@ -14,4 +14,4 @@ with:
 
 *Singularity:*
 
-Singularity is a system enabling the use of docker containers for per-rule environements [[https://snakemake.readthedocs.io/en/v5.4.0/snakefiles/deployment.html][(see Snakemake doc)]]. It must be installed [[https://www.sylabs.io/guides/3.0/user-guide.pdf][as indicated here]]. It was here use since package as r-V8, needed for randomcoloR used for plotting were not available for Conda. ([[https://github.com/conda-forge/staged-recipes/pull/6982]]).
+Singularity is a system enabling the use of docker containers for per-rule environements [[https://snakemake.readthedocs.io/en/v5.4.0/snakefiles/deployment.html][(see Snakemake doc)]]. It must be installed [[https://www.sylabs.io/guides/3.0/user-guide.pdf][as indicated here]]. It is used here use R randomcoloR package, used for plotting, is not available for Conda due to a missing dependancy, r-V8. ([[https://github.com/conda-forge/staged-recipes/pull/6982][See here for more about failure in building the package]]).
