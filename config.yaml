@@ -60,6 +60,10 @@ facetting_column: "extraction_method"
 order_by_abundance:  TRUE #(or 'FALSE')
 separated_legend: TRUE #(or 'FALSE')
 
+# Volatility
+individual_id_column: ["patientID"]
+p_state_column: ["time"]
+
 #Qiime2 stat analysis
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]

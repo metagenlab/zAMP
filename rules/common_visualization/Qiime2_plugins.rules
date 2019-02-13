@@ -1,0 +1,42 @@
+
+rule Qiime2_import_relative_freq :
+    conda:
+        "../../envs/QIIME2-2019.01.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/otu_biom.biom",
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.qza"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.txt"
+    shell:
+        '''
+        qiime tools import \
+          --input-path {input} \
+          --type 'FeatureTable[RelativeFrequency]' \
+          --input-format BIOMV100Format \
+          --output-path {output}
+        '''
+
+
+rule Qiime2_volatility :
+    conda:
+        "../../envs/QIIME2-2019.01.yml"
+    input:
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.qza",
+        Metadata = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/metadata_table.tsv",
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/volatility/{collapsed_or_not}/{prefix1}/{prefix2}/volatility.qzv"
+    params:
+        individual_id_column = config["individual_id_column"] ,
+        p_state_column = config["p_state_column"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}/volatility.txt"
+    shell:
+        '''
+        qiime longitudinal volatility \
+          --m-metadata-file {input[Metadata]} \
+          --p-individual-id-column {params[individual_id_column]} \
+          --p-state-column {params[p_state_column]} \
+          --i-table {input[table]} \
+          --o-visualization {output[0]}
+        '''

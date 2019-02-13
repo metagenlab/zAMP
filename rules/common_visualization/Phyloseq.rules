@@ -142,7 +142,7 @@ rule export_Phyloseq_object:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}.rds"
     output:
         tree_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/tree.tree",
-        meta_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/metadata_table.csv",
+        meta_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/metadata_table.tsv",
         taxonomy_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/dna-sequences_tax_assignments.txt",
         OTU_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/count_table.txt",
     log:
@@ -156,7 +156,7 @@ rule transpose_and_meta_count_table:
         "../../envs/r_visualization.yml"
     input:
         count_table = "{prefix}/count_table.txt",
-        meta = "{prefix}/metadata_table.csv"
+        meta = "{prefix}/metadata_table.tsv"
     output:
         transposed_table = "{prefix}/count_table_transposed.txt",
         merged_meta = "{prefix}/count_table_transposed_with_meta.txt"

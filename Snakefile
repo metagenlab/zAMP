@@ -235,6 +235,19 @@ def get_final_output(config):
             filter_meta_column = config["filter_meta_column"]),
 
 
+
+    ## Volatility viz {tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}_export/volatility.qzv
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/volatility.qzv",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"]),
+
+
     ## Statistical analyses
 
         ### ANCOM
@@ -357,3 +370,4 @@ include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/Phyloseq.rules"
 include: "rules/common_visualization/General_plotting.rules"
 include: "rules/common_visualization/Qiime2_stat_analysis.rules"
+include: "rules/common_visualization/Qiime2_plugins.rules"
