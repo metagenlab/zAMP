@@ -10,7 +10,7 @@ sink(log)
 sink(log, type="message")
 
 ## Input
-count_table <- snakemake@input[["count_table"
+count_table <- snakemake@input[["count_table"]]
 print(count_table)
 
 meta <- snakemake@input[["meta"]]

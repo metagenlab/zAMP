@@ -37,7 +37,7 @@ RUN apt-get install -y curl grep sed dpkg && \
 RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
 	apt install apt-transport-https && \
-  apt update && \
+    apt update && \
 	apt-get install r-base -y
 
 ## Install a dependancy for the r-V8 package, itself needed for randomcoloR

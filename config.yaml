@@ -61,6 +61,7 @@ order_by_abundance:  TRUE #(or 'FALSE')
 separated_legend: TRUE #(or 'FALSE')
 
 # Volatility
+with_type_table: Metadata_q2.tsv
 individual_id_column: ["patientID"]
 p_state_column: ["time"]
 
