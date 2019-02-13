@@ -151,16 +151,18 @@ rule export_Phyloseq_object:
         "scripts/physeq_export.R"
 
 
-rule transpose_count_table:
+rule transpose_and_meta_count_table:
     conda:
-        "../../envs/datamash.yml"
+        "../../envs/r_visualization.yml"
     input:
-        "{prefix}/count_table.txt"
+        transposed_table = "{prefix}/count_table.txt",
+        meta = "{prefix}/metadata_table.csv"
     output:
-        "{prefix}/count_table_transposed.txt"
+        transposed_table = "{prefix}/count_table_transposed.txt"
+        merged_meta = "{prefix}/count_table_transposed_with_meta.txt"
     priority:
         50
     log:
         logging_folder + "{prefix}/count_table_transposed.log"
-    shell:
-        "datamash transpose --no-strict < {input} > {output}"
+    script:
+        "scripts/transpose_and_add_meta_count_table.R"
