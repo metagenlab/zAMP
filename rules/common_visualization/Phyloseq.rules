@@ -158,7 +158,7 @@ rule transpose_and_meta_count_table:
         transposed_table = "{prefix}/count_table.txt",
         meta = "{prefix}/metadata_table.csv"
     output:
-        transposed_table = "{prefix}/count_table_transposed.txt"
+        transposed_table = "{prefix}/count_table_transposed.txt",
         merged_meta = "{prefix}/count_table_transposed_with_meta.txt"
     priority:
         50
