@@ -84,6 +84,24 @@ def get_taxa_collapse_level_key(collapse_level):
     return(file_list)
 
 
+def get_filtering_key(filtering):
+    file_list = []
+
+    for i in set(filtering):
+        if i == "nofiltering" :
+            value = "nofiltering"
+        elif i == "absolute" :
+            value =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
+        elif i == "relative" :
+            value =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
+        else :
+            raise ValueError("Forbidden value for filtering type")
+
+    file_list = file_list + value
+
+    return(file_list)
+
+
 
 ## A function do define the ouput based on the content of the config file:
 def get_final_output(config):
@@ -130,6 +148,19 @@ def get_final_output(config):
                 filter_meta_column = config["filter_meta_column"],
                 grouping_key = get_grouping_key(config["grouping_column"])),
 
+        ### Barplot
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+                grouping_key = get_grouping_key(config["grouping_column"]),
+                filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+                plotting_tax_ranks = config["plotting_tax_ranks"]),
 
      ### Ordination
             #### Distance-based
@@ -294,7 +325,7 @@ def get_final_output(config):
                 y_balances = list(range(1, 9))),
 
     ###Gneiss gradient based to be implemented
-    ]
+   ] 
 
     ## Conditional output
     if config["denoiser"] == "DADA2":

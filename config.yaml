@@ -48,7 +48,8 @@ ordination_factor : sample_source
 # barplot
 relative_or_absolute_baxplot: ["relative", "absolute"]
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
-filtering_value: [2, 200]
+relative_filtering_value: [10]
+absolute_filtering_value: [200]
 plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"]
 t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE')
 t_neg_PCR_group_column_value: "t_neg_PCR"
