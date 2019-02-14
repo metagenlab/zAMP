@@ -34,7 +34,6 @@ library(ggplot2); packageVersion("ggplot2")
 library(dplyr); packageVersion("dplyr")
 library(phyloseq); packageVersion("phyloseq")
 library(RColorBrewer); packageVersion("RColorBrewer")
-library(randomcoloR); packageVersion("randomcoloR")
 library(data.table); packageVersion("data.table")
 library(forcats); packageVersion("forcats")
 library(rlang); packageVersion("rlang")
@@ -51,7 +50,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 ################################################################################
 
 ### Create a function
-    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by){
+    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder,  horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -218,8 +217,8 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                         }
 
 
-      #### Reorder by abundancy
-      if (order_by == "abundancy"){
+      #### Reorder by abundance
+      if (order_by == "abundance"){
         print("Ordered by abundance")
         filtered_df_abs_i <- filtered_df_abs_i %>%
           group_by(!! t_column) %>%
@@ -253,17 +252,17 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
         filtered_df_abs_i$OTU <- fct_rev(filtered_df_abs_i$OTU)
         order_by_ <- "clu"
       }else{
-        stop('order_by_abundance must be "abundancy", "alphabet_class" or "cluster"')
+        stop('order_by_abundance must be "abundance", "alphabet_class" or "cluster"')
       }
 
 
-      if (quantity_filtering_type != "nofiltering"){
+      if (relative_or_absolute_filtering != "nofiltering"){
         #### Set the filtering_tabl at the top of the plot
         filtered_df_abs_i[[tax_ranks]] <- fct_relevel(filtered_df_abs_i[[tax_ranks]], filtering_tag, after = 0)
       }
 
       #### Write the content of the plot table in a external file
-      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      #write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
@@ -279,7 +278,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
         scale_color_manual(guide = FALSE, values = c("white", "black")) +
         theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
         scale_y_discrete(labels = taxalabel, drop = TRUE) +
-        scale_x_discrete(drop = FALSE) +
+        scale_x_discrete(drop = FALSE, drop = TRUE) +
         labs(x= x_axis_column,  y = tax_ranks)
 
 
@@ -299,7 +298,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
     ##### Set the filename
       filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
     ##### Finally, save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
+      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 7, height = 7)
     #### Extract the legend and save it
 
         }}
@@ -323,7 +322,7 @@ heatmap_fct(
     horizontal_barplot = horizontal_barplot,
     facet_plot = facet_plot,
     facetting_column = facetting_column,
-    order_by = "cluster")
+    order_by = "abundance")
 
 
 
