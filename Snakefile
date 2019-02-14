@@ -252,6 +252,18 @@ def get_final_output(config):
 
 
         ### Count-table transposed format
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_export/count_table_transposed.txt",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
+
+
+        ### Count-table transposed format - filtered
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -261,6 +273,18 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
+
+        ### Count-table transposed format - non filtered
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/no_collapse/base_export/count_table_transposed.txt",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
+
 
 
 

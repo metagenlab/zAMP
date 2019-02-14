@@ -4,9 +4,9 @@
 # Created on: 11.02.19
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
@@ -39,6 +39,7 @@ library(forcats); packageVersion("forcats")
 library(rlang); packageVersion("rlang")
 library(grid); packageVersion("grid")
 library(cowplot); packageVersion("cowplot")
+library(reshape2); packageVersion("reshape2")
 
 ## Load the melted phyloseq table
 melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
@@ -134,6 +135,9 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
                 under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
 
+
+
+
             ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
                 #merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
                 #    filter(Abundance>0)
@@ -198,6 +202,16 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
                     print(paste("Start plotting", grouping_column, i))
 
+                    ## If table is empty, create empty image to prevent rule errors
+                    if(nrow(above_threshold_df ==0)){
+                        filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
+                        print(paste("Create empty file", i))
+                        file.create(file.path(filename = paste0(filename_base, "_heatmap.png")))
+                    }else{
+                        print("Some rows in table, plotting...")
+
+
+
                 #### filter the table for this value of the grouping columns. Depending of the used arguments, the t_neg_PCR values are kept or not on the barplots
                     ##### Keep t_neg_PCR rows
                         if (isTRUE(t_neg_PCR_sample_on_plots) & !is.null(t_neg_PCR_group_column_value)){
@@ -237,8 +251,12 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 
       }else if (order_by =="cluster"){
-        selected_col <- filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
-        selected_col_wide <- reshape2::dcast(selected_col, sample_source ~ OTU)
+        x_column <- rlang::sym(x_axis_column)
+        selected_col <- filtered_df_abs_i %>% select(c(get(x_axis_column),"OTU", "Abundance"))
+        print("test1")
+        #selected_col_wide <- do.call(what = reshape2::dcast, args = c(selected_col, paste(SampleID ~ "OTU")), quote = FALSE)
+        selected_col_wide <- reshape2::dcast(selected_col, sample_label ~ OTU)
+          print("test2")
         selected_col_wide[is.na(selected_col_wide)] <- 0
         rownames(selected_col_wide) <- selected_col_wide[,1]
         selected_col_wide[[x_axis_column]] <- NULL
@@ -278,7 +296,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
         scale_color_manual(guide = FALSE, values = c("white", "black")) +
         theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
         scale_y_discrete(labels = taxalabel, drop = TRUE) +
-        scale_x_discrete(drop = FALSE, drop = TRUE) +
+        scale_x_discrete(drop = TRUE) +
         labs(x= x_axis_column,  y = tax_ranks)
 
 
@@ -294,14 +312,14 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
       }
 
 
- #### Save it
-    ##### Set the filename
-      filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
-    ##### Finally, save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 7, height = 7)
-    #### Extract the legend and save it
+     #### Save it
+        ##### Set the filename
+          filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
+        ##### Finally, save the figure
+          ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 7, height = 7)
+        #### Extract the legend and save it
 
-        }}
+        }}}
 ################################################################################
 
 #save.image(file = file.path(output_folder, "rdebug.RData"))
@@ -322,7 +340,7 @@ heatmap_fct(
     horizontal_barplot = horizontal_barplot,
     facet_plot = facet_plot,
     facetting_column = facetting_column,
-    order_by = "abundance")
+    order_by = "cluster")
 
 
 
