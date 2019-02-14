@@ -12,7 +12,7 @@ sink(log, type="message")
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 
 ## Ouput
-output_folder <- dirname(snakemake@output[["barplot"]])
+output_folder <- dirname(snakemake@output[["heatmap"]])
 
 ## Parameters
 x_axis_column =snakemake@params[[ "x_axis_column"]]
@@ -23,12 +23,10 @@ relative_or_absolute_filtering = snakemake@params[["relative_or_absolute_filteri
 filtering_value = snakemake@params[["filtering_value"]]
 relative_or_absolute_plot = snakemake@params[["relative_or_absolute_plot"]]
 plotting_tax_ranks = snakemake@params[["plotting_tax_ranks"]]
-distinct_colors = snakemake@params[["distinct_colors"]]
 horizontal_barplot = snakemake@params[["horizontal_barplot"]]
 facet_plot = snakemake@params[["facet_plot"]]
 facetting_column = snakemake@params[["facetting_column"]]
-order_by_abundance = snakemake@params[["order_by_abundance"]]
-separated_legend = snakemake@params[["separated_legend"]]
+#order_by = snakemake@params[["order_by_abundance"]]
 
 
 ## Load needed libraries
@@ -53,7 +51,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -159,7 +157,6 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                     }
 
 
-
                     if (relative_or_absolute_filtering != "nofiltering"){
                 #### Apply the filtering tag
                     under_threshold_df$Kingdom <-filtering_tag
@@ -198,33 +195,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 } else {stop('"horizontal_barplot" must be TRUE or FALSE')
                 }
 
-                print("test5")
-            ### Set colors palette
-                #### Brewer colors
-                    if (distinct_colors == FALSE) {
-                        getPalette <- colorRampPalette(brewer.pal(n=9, "Set1"))
-                        ColList <- unique(threshod_filtered_abs_no_zero[[tax_ranks]])
-                        ColPalette = getPalette(length(ColList))
-                        names(ColPalette) = ColList
-                        colors_palette <- ColPalette
-                        colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck
-                    }
-                #### Distinct colors
-                    else if (distinct_colors == TRUE) {
-                        set.seed(4)
-                        ColList <- unique(threshod_filtered_abs_no_zero[[tax_ranks]])
-                        print(length(unique(threshod_filtered_abs_no_zero[[tax_ranks]])))
-                        ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(threshod_filtered_abs_no_zero[[tax_ranks]])))
-                        names(ColPalette) = ColList
-                        colors_palette <- ColPalette
-                        colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck
-
-                    }else{ print("distinct_colors must be TRUE or FALSE")
-                    }
-
-                print("test6")
-
-            ### Loop for unique value in grouping_column
+                    ### Loop for unique value in grouping_column
                 for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
                     print(paste("Start plotting", grouping_column, i))
 
@@ -246,79 +217,90 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                         else{ stop('"t_neg_PCR_sample_on_plots" must be TRUE or FALSE')
                         }
 
-                #### Reorder by abundance
-                    if (isTRUE(order_by_abundance)){
-                        print("Ordered by abundance")
-                        filtered_df_abs_i <- filtered_df_abs_i %>%
-                            group_by(!! t_column) %>%
-                            mutate(tot = sum(Abundance)) %>%
-                            ungroup() %>%
-                            mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
-                            arrange(desc(tot))
-                    }
-                    else if (isFALSE(order_by_abundance)){ print("NOT ordered by abundance")
-                    }
-                    else { stop('"order_by_abundance" must be TRUE or FALSE')
-                    }
 
-                #### Set the filtering_tabl at the top of the plot
-                    filtered_df_abs_i[[tax_ranks]] <- fct_relevel(filtered_df_abs_i[[tax_ranks]], filtering_tag, after = 0)
+      #### Reorder by abundancy
+      if (order_by == "abundancy"){
+        print("Ordered by abundance")
+        filtered_df_abs_i <- filtered_df_abs_i %>%
+          group_by(!! t_column) %>%
+          mutate(tot = sum(Abundance))%>%
+          ungroup() %>%
+          arrange(desc(tot)) %>%
+          mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
+          order_by_ <- "abund"
 
-
-                #### Write the content of the plot table in a external file
-                    #write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_",grouping_column, "_", i, "_", tax_ranks,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      }else if (order_by =="alphabet_class"){
+        print("Ordered alphabetically considering the Class")
+          filtered_df_abs_i <- filtered_df_abs_i %>%
+            arrange(desc(Class, Genus, Species)) %>%
+            mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
+            order_by_ <- "alphclass"
 
 
-                #### Renames the values of the vector used for labeling
-                    #x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
-                    #names(x_labels) <- filtered_df_abs_i[["Sample"]]
+      }else if (order_by =="cluster"){
+        selected_col <- filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
+        selected_col_wide <- reshape2::dcast(selected_col, sample_source ~ OTU)
+        selected_col_wide[is.na(selected_col_wide)] <- 0
+        rownames(selected_col_wide) <- selected_col_wide[,1]
+        selected_col_wide[[x_axis_column]] <- NULL
+        # sample_source_order = c("EC_Q", "liver", "spleen", "lungs", "water_Q", "EC_MN", "PCR_neg")
+        row.order <- hclust(dist(selected_col_wide))$order # clustering
+        col.order <- hclust(dist(t(selected_col_wide)))$order
+        dat_new <- selected_col_wide[row.order , col.order] # re-order matrix accoring to clustering
+        df_molten_dat <- melt(as.matrix(dat_new))
+        names(df_molten_dat)[c(1:3)] <- c("sample_source", "OTU","Abundance")
+        filtered_df_abs_i <- df_molten_dat %>% filter(Abundance != 0)
+        filtered_df_abs_i$OTU <- fct_rev(filtered_df_abs_i$OTU)
+        order_by_ <- "clu"
+      }else{
+        stop('order_by_abundance must be "abundancy", "alphabet_class" or "cluster"')
+      }
 
 
-                #### Create the barplot
-                    taxrank_barplot <- filtered_df_abs_i %>%
-                        ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(tax_ranks))) +
-                        theme_bw() +
-                        geom_col() +
-                        #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                        theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
-                        guides(fill = guide_legend(title = paste0(tax_ranks),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-                        labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level" )) + # axis and graph title
-                        scale_fill_manual(values = colors_palette) # colors as set previously
+      if (quantity_filtering_type != "nofiltering"){
+        #### Set the filtering_tabl at the top of the plot
+        filtered_df_abs_i[[tax_ranks]] <- fct_relevel(filtered_df_abs_i[[tax_ranks]], filtering_tag, after = 0)
+      }
+
+      #### Write the content of the plot table in a external file
+      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
-                #### In option, turn barplot horizontally
-                    if (isTRUE(horizontal_barplot)){
-                        taxrank_barplot <- taxrank_barplot + coord_flip() ### Reverse the order of the samples
+      ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
+      taxalabel <- as.character(paste0(toupper(substr(filtered_df_abs_i[["Class"]],1 ,9)) , ";",  filtered_df_abs_i[[tax_ranks]]))
+      names(taxalabel) <- filtered_df_abs_i[["OTU"]]
 
-                    #### In option, create facet view
-                        if (isTRUE(facet_plot)){
-                            taxrank_barplot <- taxrank_barplot + facet_grid(get(facetting_column) ~., scales = "free", space = "free")
-                        }
-                    } else {
-                        #### In option, create facet view
-                        if (isTRUE(facet_plot)){
-                            taxrank_barplot <- taxrank_barplot + facet_grid(~ get(facetting_column), scales = "free", space = "free")
-                        }
-                    }
-
-
-                #### In option, keep the barplot without the legend
-                    if (isTRUE(separated_legend)){
-                        taxrank_barplot_no_leg <- (taxrank_barplot + guides(fill = FALSE))
-                    }else {
-                        taxrank_barplot_no_leg <- taxrank_barplot
-                    }
+      ### Generate heatmap
+      heatmap <- ggplot(filtered_df_abs_i, aes(x = get(x_axis_column), y = OTU, fill = Abundance)) +
+        theme_bw() +
+        geom_tile(aes(fill=Abundance), show.legend=TRUE) +
+        scale_fill_gradient(na.value = "white", low="#000033", high="#CCFF66") +
+        geom_text(aes(label = round(Abundance, digits = 1), color = Abundance > max(Abundance)/2), size = 2 ) +
+        scale_color_manual(guide = FALSE, values = c("white", "black")) +
+        theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
+        scale_y_discrete(labels = taxalabel, drop = TRUE) +
+        scale_x_discrete(drop = FALSE) +
+        labs(x= x_axis_column,  y = tax_ranks)
 
 
-                    #### Save it
-                        ##### Set the filename
-                            filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
-                        ##### Finally, save the figure
-                          ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
-                        #### Extract the legend and save it
-                        leg <- get_legend(taxrank_barplot)
-                        ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
+      ### Turn heatmap horizontally
+      if (isTRUE(horizontal_barplot)){
+        ### Reverse the order of the samples
+        heatmap <- heatmap + coord_flip()
+      }
 
+      ### Create facet view
+      if (isTRUE(facet_plot)){
+        heatmap <- heatmap + facet_grid(scales = "free", space = "free", cols = vars(get(facetting_column)))
+      }
+
+
+ #### Save it
+    ##### Set the filename
+      filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
+    ##### Finally, save the figure
+      ggsave(heatmap, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
+    #### Extract the legend and save it
 
         }}
 ################################################################################
@@ -327,7 +309,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 
 ## Run the function
-barplots_fct(
+heatmap_fct(
   melted_dataframe = melted_dataframe,
     grouping_column = grouping_column,
     x_axis_column = x_axis_column,
@@ -338,9 +320,10 @@ barplots_fct(
     relative_or_absolute_plot = relative_or_absolute_plot,
     plotting_tax_ranks = plotting_tax_ranks,
     output_folder = output_folder,
-    distinct_colors = distinct_colors,
     horizontal_barplot = horizontal_barplot,
     facet_plot = facet_plot,
     facetting_column = facetting_column,
-    order_by_abundance = order_by_abundance,
-    separated_legend = separated_legend)
+    order_by = "cluster")
+
+
+

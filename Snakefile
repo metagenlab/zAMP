@@ -162,6 +162,22 @@ def get_final_output(config):
                 filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
                 plotting_tax_ranks = config["plotting_tax_ranks"]),
 
+
+       ### Heatmap
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/heatmaps/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+                grouping_key = get_grouping_key(config["grouping_column"]),
+                filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+                plotting_tax_ranks = config["plotting_tax_ranks"]),
+
+
      ### Ordination
             #### Distance-based
             expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
