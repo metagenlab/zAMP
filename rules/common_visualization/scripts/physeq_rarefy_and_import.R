@@ -126,7 +126,7 @@ set.seed(1)
 
         ### Add alpha diveristy indexes at 1% filtration threshold
             ### Keep the IDSs of the taxa above 1%
-            physeqrF = filter_taxa(physeq = phyloseq_obj, function(x) mean(x) > 0.1, FALSE)
+            physeqrF = filter_taxa(physeq = phyloseq_obj, function(x) mean(x) > 0.01, FALSE)
             ### Keep only those
             physeqaF <- prune_taxa(physeqrF,phyloseq_obj)
             ### Calculate new indexes
