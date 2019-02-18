@@ -403,6 +403,19 @@ def get_final_output(config):
                 y_balances = list(range(1, 9))),
 
     ###Gneiss gradient based to be implemented
+
+
+    ### PIRCUST 2
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                tested_factor= config["ANCOM_factors"],
+                y_balances = list(range(1, 9))),
    ] 
 
     ## Conditional output
