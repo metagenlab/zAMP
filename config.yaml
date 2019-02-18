@@ -11,23 +11,61 @@ DADA2_R_reads_length_trim: 255
 # Filtering
 merged_min_length: 390
 merged_max_length: 500
-F_extected_error: 2
-R_extected_error: 2
+F_extected_error: 6
+R_extected_error: 6
 
-# Visualization
-viz_replace_empty_tax: TRUE
-grouping_column: PatientID
-x_axis_column: Sample
-sample_type: sample_source
-ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
-ordination_shape_column : sample_source
+# Denoisier
+denoiser: ["vsearch", "DADA2"]
+run_column: seq_run
+
+# Database
+tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
 
 # Rarefaction
 rarefaction_value: [10000,20000,50000,100000,200000,300000]
 
-# Qiime stats
-filtration_column: sample_group
-filtration_value: sample
+# Phyloseq processing
+viz_replace_empty_tax: TRUE
+filter_tax_rank: ["Kingdom"]
+filter_lineage: ["Bacterium"]
+filter_out_tax_rank: ["Phylum"]
+filter_out_lineage: ["Bacteria_phy"]
+filter_meta_column: ["sample_group"]
+filter_column_value: ["sample"]
+filter_features_subset_formula: sum(x > 3) > (0.2*length(x))
 collapse_level: [2,3,4,5,6,7]
-ANCOM_factor: ["patientID", "Gender", "BMI","daily_consump"]
 
+# Visualization
+grouping_column: [PatientID]
+x_axis_column: Sample
+sample_type: sample_source
+ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
+ordination_method_distance_based: ["NMDS", "MDS", "PCoA"]
+ordination_method_constrained: ["DCA", "CCA", "RDA", "CAP", "DPCoA"]
+ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
+ordination_factor : sample_source
+
+# barplot
+relative_or_absolute_baxplot: ["relative", "absolute"]
+relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
+relative_filtering_value: [10]
+absolute_filtering_value: [200]
+plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"]
+t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE')
+t_neg_PCR_group_column_value: "t_neg_PCR"
+distinct_colors: TRUE #(or 'FALSE')
+horizontal_barplot: TRUE #(or 'FALSE')
+facet_plot:  TRUE #(or 'FALSE')
+facetting_column: "extraction_method"
+order_by_abundance:  TRUE #(or 'FALSE')
+separated_legend: TRUE #(or 'FALSE')
+
+# Volatility
+with_type_table: Metadata_q2.tsv
+individual_id_column: ["patientID"]
+p_state_column: ["time"]
+
+#Qiime2 stat analysis
+ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
+Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
+Gneiss_formula: Subject_ID + Test_day + Condition_group

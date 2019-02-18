@@ -5,8 +5,8 @@ rule DADA2_q_filtering:
         R1_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz",
         R2_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz",
     output:
-        q_score_filtered_F = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
-        q_score_filtered_R = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
+        q_score_filtered_F = temp("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz"),
+        q_score_filtered_R = temp("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz"),
         q_filtering_stats = "DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds"
     log:
         logging_folder + "DADA2/1b_q_score_filtered/{sample}_DADA2_1b_q_score_filtering.txt"
@@ -55,11 +55,11 @@ rule DADA2_infer_ASV:
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
-        x_axis_column_value = lambda wildcards: all_samples[config["x_axis_column"]][wildcards.sample]
+        x_axis_filter_column_value = lambda wildcards: all_samples[config["x_axis_column"]][wildcards.sample]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
     threads:
-        1
+        2
     script:
         "scripts/2b_big_data_DADA2_infer_ASV.R"
 

@@ -13,7 +13,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object))
 Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
@@ -27,8 +26,8 @@ output_folder <- (dirname(alpha_plot)[1])
 x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 sample_type <- snakemake@params[["sample_type"]]
-grouping_column_value <- snakemake@params[["grouping_column_value"]]
-print(grouping_column_value)
+grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
+print(grouping_filter_column_value)
 
 
 ## Load needed libraries
@@ -37,13 +36,16 @@ library("phyloseq"); packageVersion("phyloseq")
 library("data.table"); packageVersion("data.table")
 library("RColorBrewer"); packageVersion("RColorBrewer")
 
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
+
 ## Order the x axis as in the metadata_table
-sample_data(phyloseq_obj)[[sample_type]] = factor(metadata[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-sample_data(phyloseq_obj)[[x_axis_column]] = factor(metadata[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
 
 ### Remove sequences not assigned at the phylum level
-physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
-physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
+#physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
+#physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
@@ -52,9 +54,8 @@ physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylu
  names(ColPalette) = ColList
  colors_palette <- ColPalette
 
-
-#for (g in get_variable(phyloseq_obj, grouping_column)){
-    remove_idx = as.character(get_variable(physeq_no_unassigned_phylum_bact_only, grouping_column)) == grouping_column_value
+### Keep sample of interest
+    remove_idx = as.character(get_variable(phyloseq_obj, grouping_column)) == grouping_filter_column_value
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
  if(nsamples(g_phyloseq_obj)>0){
@@ -74,10 +75,14 @@ p <- p + theme(axis.text.x = element_text(size=5))
 
 ## Save plot
 p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
-ggsave(filename = paste0(output_folder,"/",grouping_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
+
+if (p.width >= 30){
+   p.width <- 30}
+
+ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
 
 }else{
-    filename <- paste0(output_folder,"/",grouping_column_value,"_alpha_divesity.png")
+    filename <- paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png")
     print(paste("Create empty file", filename))
     file.create(file.path(filename))
 } #}

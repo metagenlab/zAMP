@@ -14,7 +14,7 @@ rule reformat_tax_table :
 
 rule otus_tax_table :
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         full_taxonomy_table = "vsearch/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments_reformatted.txt",
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
@@ -54,7 +54,7 @@ rule read_counts_merge :
 
 rule create_vsearch_count_table :
     conda:
-        "../../envs/R_visualization.yml"
+        "../../envs/r_visualization.yml"
     input:
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
     output:

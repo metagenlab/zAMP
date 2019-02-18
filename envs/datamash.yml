@@ -1,0 +1,4 @@
+channels:
+ - bioconda
+dependencies:
+ - datamash = 1.1.0

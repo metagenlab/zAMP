@@ -2,11 +2,11 @@ rule create_biom_from_count_table :
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
-        count_table = "{tool}/2_denoised/count_table.txt"
+        count_table = "{prefix}/count_table.txt"
     output:
-        biom_count = "{tool}/2_denoised/otu_biom.biom"
+        biom_count = "{prefix}/otu_biom.biom"
     log:
-        logging_folder + "{tool}/2_denoised/otu_biom.txt"
+        logging_folder + "{prefix}/otu_biom.txt"
     script:
         "scripts/create_biom_from_count_table.R"
 
@@ -15,11 +15,11 @@ rule import_count_table_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/2_denoised/otu_biom.biom"
+        "{prefix}/otu_biom.biom"
     output:
-        "{tool}/2_denoised/count-table.qza"
+        "{prefix}/count-table.qza"
     log:
-        logging_folder + "{tool}/2_denoised/count-table.txt"
+        logging_folder + "{prefix}/count-table.txt"
     shell:
         '''
         qiime tools import \
@@ -33,11 +33,11 @@ rule create_visualize_count_table_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"
     input:
-        "{tool}/2_denoised/count-table.qza"
+        "{prefix}/count-table.qza"
     output:
-        "{tool}/2_denoised/count-table.qzv"
+        "{prefix}/count-table.qzv"
     log:
-        logging_folder + "{tool}/2_denoised/count-table_qzv.txt"
+        logging_folder + "{prefix}.txt"
     shell:
         '''
         qiime feature-table summarize \

@@ -14,7 +14,6 @@ sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
-load(file =  file.path(phyloseq_object))
 
 ## Ouput
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
@@ -29,6 +28,10 @@ library('ggplot2')
 library('plyr') # ldply
 library('reshape2') # melt
 library('vegan')
+
+## Load the phyloseq object
+phyloseq_obj <- readRDS(phyloseq_object)
+
 
 ## Create a modified version of estimate_richness function of phyloseq to accept sample names containing numbers only
 
@@ -135,7 +138,7 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
   rarefaction_curve_data
 }
 
-rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
+rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
 summary(rarefaction_curve_data)
 
 
@@ -160,8 +163,8 @@ p <- ggplot(
     colour = get(sample_type),
     group = get("Sample"))) +
       labs(col = "Sample type") +
-      geom_line() +
-      geom_pointrange() +
+      geom_line(size = 0.2) +
+      geom_pointrange(size = 0.2) +
       facet_wrap(facets = ~ Measure, scales = 'free_y')
 
 

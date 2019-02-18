@@ -22,7 +22,7 @@
 # Parameters
     sam <- snakemake@params[["sample_name"]]
     run <- snakemake@params[["run"]]
-    x_axis_column_value <- snakemake@params[["x_axis_column_value"]]
+    x_axis_filter_column_value <- snakemake@params[["x_axis_filter_column_value"]]
 
 # Load needed libraries
     library(dada2); packageVersion("dada2")
@@ -49,10 +49,10 @@
     cat("Processing:", sam, "\n")
     ## Forward
         derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
-        ddF <- dada(derepF, err=errF, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
+        ddF <- dada(derepF, err=errF, multithread = TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Reverse
         derepR <- derepFastq(q_score_filtered_R, verbose = TRUE)
-        ddR <- dada(derepR, err=errR, multithread=TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
+        ddR <- dada(derepR, err=errR, multithread = TRUE, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Merge
         merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = 20, maxMismatch = 0)
         mergers[[sam]] <- merger
@@ -66,7 +66,7 @@
         infer$denoisedR <- getN(ddR)
         infer$merged_pairs <- getN(merger)
         infer$Sample <- sam
-        infer$label <- x_axis_column_value
+        infer$label <- x_axis_filter_column_value
         infer$RUN <- run
 
     ## Save the sequences stats for this sample
