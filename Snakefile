@@ -91,15 +91,15 @@ def get_filtering_key(filtering):
 
     for i in set(filtering):
         if i == "nofiltering" :
-            value = "nofiltering"
+            filt = "nofiltering"
         elif i == "absolute" :
-            value =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
         elif i == "relative" :
-            value =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
         else :
             raise ValueError("Forbidden value for filtering type")
 
-    file_list = file_list + value
+    file_list = file_list + [filt]
 
     return(file_list)
 
@@ -278,14 +278,13 @@ def get_final_output(config):
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]),
+            filter_meta_column = config["filter_meta_column"])
     ]
 
-
     ## Conditional output
-    if config["Volatility"] == "TRUE":
+    if config["Volatility"] == True:
        lst.append(
-       ## Volatility viz
+        ## Volatility viz
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/volatility.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -294,9 +293,10 @@ def get_final_output(config):
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]),
+            filter_meta_column = config["filter_meta_column"]))
 
         ## Volatility viz {tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}_export/volatility.qzv
+       lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/feature-volatility_filtered-table.qza",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -305,26 +305,26 @@ def get_final_output(config):
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]),
-    )
+            filter_meta_column = config["filter_meta_column"]))
 
     ## Statistical analyses
-    if config["ANCOM"] == "TRUE":
+    if config["ANCOM"] == True:
         lst.append(
         ## ANCOM
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_f_{tested_factor}.qzv",
-            denoiser = config["denoiser"],
-            tax_DB = config["tax_DB"],
-            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-            filter_tax_rank = config["filter_tax_rank"],
-            filter_lineage = config["filter_lineage"],
-            filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"],
-            tested_factor= config["ANCOM_factors"])
-    )
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_f_{tested_factor}.qzv",
+                denoiser = config["denoiser"],
+                tax_DB = config["tax_DB"],
+                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+                filter_tax_rank = config["filter_tax_rank"],
+                filter_lineage = config["filter_lineage"],
+                filter_column_value = config["filter_column_value"],
+                filter_meta_column = config["filter_meta_column"],
+                tested_factor= config["ANCOM_factors"]))
 
+    else :
+        print("ANCOM not 'True', will not be in output")
 
-    if config["Gneiss"] == "TRUE":
+    if config["Gneiss"] == "True":
         lst.append(
         ### Gneiss
         #### Correlation based
@@ -336,10 +336,12 @@ def get_final_output(config):
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]),
+            filter_meta_column = config["filter_meta_column"])
+        )
 
 
         ##### Heatmaps - Taxa collapse
+        lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_heatmap_{tested_factor}.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -348,10 +350,12 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
-            tested_factor= config["ANCOM_factors"]),
+            tested_factor= config["ANCOM_factors"])
+        )
 
 
         ##### Balances - Taxa collapase
+        lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_y_{y_balances}_f_{tested_factor}.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -361,11 +365,13 @@ def get_final_output(config):
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
             tested_factor= config["ANCOM_factors"],
-            y_balances = list(range(1, 9))),
+            y_balances = list(range(1, 9)))
+        )
 
 
         ### Phylogeny based
         ##### Regression - Taxa collapse
+        lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_regression.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -373,10 +379,12 @@ def get_final_output(config):
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]),
+            filter_meta_column = config["filter_meta_column"])
+        )
 
 
         ##### Heatmaps - Taxa collapse
+        lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_heatmap_{tested_factor}.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -386,10 +394,12 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
-            tested_factor = config["ANCOM_factors"]),
+            tested_factor = config["ANCOM_factors"])
+        )
 
 
         ##### Balances - Taxa collapase
+        lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -400,26 +410,33 @@ def get_final_output(config):
             filter_meta_column = config["filter_meta_column"],
             tested_factor= config["ANCOM_factors"],
             y_balances = list(range(1, 9)))
+        )
+
+    else :
+        print("Gneiss not 'True', will not be in output")
+
 
 
     ###Gneiss gradient based to be implemented
 
-    ### PIRCUST 2
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor= config["ANCOM_factors"],
-                y_balances = list(range(1, 9))),
-   ] 
+
+    if config["PICRUST"] == True:
+        lst.append(
+        ### PIRCUST 2
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv",
+                    denoiser = config["denoiser"],
+                    tax_DB = config["tax_DB"]))
+
+    else :
+        print("PIRCURST not 'True', will not be in output")
+
 
     if config["denoiser"] == "DADA2":
         lst.append(
-                expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]))
+                expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"])
+        )
+
+
     return lst
 
 
@@ -427,6 +444,7 @@ def get_final_output(config):
 rule all:
     input:
         get_final_output(config),
+
 
 
 ## Include the needed rules
@@ -445,6 +463,6 @@ include: "rules/common_tax_tree/tree.rules"
 include: "rules/common_visualization/Import_to_QIIME2.rules"
 include: "rules/common_visualization/Phyloseq.rules"
 include: "rules/common_visualization/General_plotting.rules"
-include: "rules/PICRUSt/PICRUSt_Qiime2.rules"
+include: "rules/PICRUSt/picrust.rules"
 include: "rules/common_visualization/Qiime2_stat_analysis.rules"
 include: "rules/common_visualization/Qiime2_plugins.rules"
