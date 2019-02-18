@@ -1,5 +1,7 @@
 include: "rules/common_preprocessing/making_sample_dataset.rules"
 
+## Function to modulate keys
+
 
 def get_alpha_diversity_files(config):
 
@@ -122,99 +124,95 @@ def get_final_output(config):
            denoiser = config["denoiser"],
            tax_DB = config["tax_DB"]),
 
-    ## Rarefied visualiation
 
-        ### Rarefaction curve
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/rarefaction_curve.png",
-            denoiser = config["denoiser"],
-            tax_DB = config["tax_DB"],
-            rarefaction_value = get_rarefaction_key(config["rarefaction_value"])),
+    ### Rarefaction curve
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/rarefaction_curve.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"])),
 
-        ### KRONA
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/KRONA/{grouping_key}.html",
+    ### KRONA
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/KRONA/{grouping_key}.html",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        grouping_key = get_grouping_key(config["grouping_column"])),
+
+    ### Alpha diversity
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/alpha_diversity/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{grouping_key}_alpha_divesity.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"],
+        grouping_key = get_grouping_key(config["grouping_column"])),
+
+    ### Barplot
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"],
+        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+        grouping_key = get_grouping_key(config["grouping_column"]),
+        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+        plotting_tax_ranks = config["plotting_tax_ranks"]),
+
+    ### Heatmap
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/heatmaps/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"],
+        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+        grouping_key = get_grouping_key(config["grouping_column"]),
+        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+        plotting_tax_ranks = config["plotting_tax_ranks"]),
+
+    ### Ordination
+        #### Distance-based
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            ordination_method_distance_based = config["ordination_method_distance_based"],
+            grouping_key = get_grouping_key(config["grouping_column"]),
+            ordination_distance = config["ordination_distance"]),
+
+        #### Unconstrained
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/unconstrained/{ordination_method_unconstrained}/{grouping_key}.png",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            ordination_method_unconstrained = config["ordination_method_unconstrained"],
             grouping_key = get_grouping_key(config["grouping_column"])),
 
-        ### Alpha diversity
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/alpha_diversity/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{grouping_key}_alpha_divesity.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                grouping_key = get_grouping_key(config["grouping_column"])),
-
-        ### Barplot
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                plotting_tax_ranks = config["plotting_tax_ranks"]),
-
-
-       ### Heatmap
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/heatmaps/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                plotting_tax_ranks = config["plotting_tax_ranks"]),
-
-
-     ### Ordination
-            #### Distance-based
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_distance_based = config["ordination_method_distance_based"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                ordination_distance = config["ordination_distance"]),
-
-            #### Unconstrained
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/unconstrained/{ordination_method_unconstrained}/{grouping_key}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_unconstrained = config["ordination_method_unconstrained"],
-                grouping_key = get_grouping_key(config["grouping_column"])),
-
-            #### Constrained
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/constrained/{ordination_method_constrained}/{grouping_key}_f_{ordination_factor}.png",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                ordination_method_constrained = config["ordination_method_constrained"],
-                grouping_key = get_grouping_key(config["grouping_column"]),
-                ordination_factor = config["ordination_factor"]),
-
+        #### Constrained
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/constrained/{ordination_method_constrained}/{grouping_key}_f_{ordination_factor}.png",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            ordination_method_constrained = config["ordination_method_constrained"],
+            grouping_key = get_grouping_key(config["grouping_column"]),
+            ordination_factor = config["ordination_factor"]),
 
         ### Melted Phyloseq
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_melted.tsv",
@@ -226,7 +224,6 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-
 
         ### Melted Phyloseq - percent transformed
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_melted.tsv",
@@ -250,7 +247,6 @@ def get_final_output(config):
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
 
-
         ### Count-table transposed format
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
@@ -261,7 +257,6 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
-
 
         ### Count-table transposed format - filtered
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples_trfs_export/count_table_transposed.txt",
@@ -284,126 +279,130 @@ def get_final_output(config):
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]),
+    ]
 
 
+    ## Conditional output
+    if config["Volatility"] == "TRUE":
+       lst.append(
+       ## Volatility viz
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/volatility.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
 
-
-    ## Volatility viz {tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}_export/volatility.qzv
-    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/volatility.qzv",
-        denoiser = config["denoiser"],
-        tax_DB = config["tax_DB"],
-        collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-        filter_tax_rank = config["filter_tax_rank"],
-        filter_lineage = config["filter_lineage"],
-        filter_column_value = config["filter_column_value"],
-        filter_meta_column = config["filter_meta_column"]),
-
-
-    ## Volatility viz {tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}_export/volatility.qzv
-    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/feature-volatility_filtered-table.qza",
-        denoiser = config["denoiser"],
-        tax_DB = config["tax_DB"],
-        collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-        filter_tax_rank = config["filter_tax_rank"],
-        filter_lineage = config["filter_lineage"],
-        filter_column_value = config["filter_column_value"],
-        filter_meta_column = config["filter_meta_column"]),
-
-
+        ## Volatility viz {tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/Qiime2/{collapsed_or_not}/{prefix1}/{prefix2}_export/volatility.qzv
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/volatility/{collapse_key}/2_filter_samples/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_samples/feature-volatility_filtered-table.qza",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
+    )
 
     ## Statistical analyses
+    if config["ANCOM"] == "TRUE":
+        lst.append(
+        ## ANCOM
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_f_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor= config["ANCOM_factors"])
+    )
 
-        ### ANCOM
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/ANCOM/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_f_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor= config["ANCOM_factors"]),
 
-
+    if config["Gneiss"] == "TRUE":
+        lst.append(
         ### Gneiss
-            #### Correlation based
-                ##### Regression - Taxa collapse
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_regression.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"]),
+        #### Correlation based
+        ##### Regression - Taxa collapse
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_regression.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
 
 
-                ##### Heatmaps - Taxa collapse
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_heatmap_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor= config["ANCOM_factors"]),
+        ##### Heatmaps - Taxa collapse
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_heatmap_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor= config["ANCOM_factors"]),
 
 
-                ##### Balances - Taxa collapase
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_y_{y_balances}_f_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor= config["ANCOM_factors"],
-                y_balances = list(range(1, 9))),
+        ##### Balances - Taxa collapase
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_y_{y_balances}_f_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor= config["ANCOM_factors"],
+            y_balances = list(range(1, 9))),
 
 
-            ### Phylogeny based
-                ##### Regression - Taxa collapse
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_regression.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"]),
+        ### Phylogeny based
+        ##### Regression - Taxa collapse
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_regression.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"]),
 
 
-                ##### Heatmaps - Taxa collapse
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_heatmap_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                y_balances = list(range(1, 9)),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor = config["ANCOM_factors"]),
+        ##### Heatmaps - Taxa collapse
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_heatmap_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            y_balances = list(range(1, 9)),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor = config["ANCOM_factors"]),
 
 
-                ##### Balances - Taxa collapase
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
-                denoiser = config["denoiser"],
-                tax_DB = config["tax_DB"],
-                collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
-                filter_tax_rank = config["filter_tax_rank"],
-                filter_lineage = config["filter_lineage"],
-                filter_column_value = config["filter_column_value"],
-                filter_meta_column = config["filter_meta_column"],
-                tested_factor= config["ANCOM_factors"],
-                y_balances = list(range(1, 9))),
+        ##### Balances - Taxa collapase
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor= config["ANCOM_factors"],
+            y_balances = list(range(1, 9)))
+
 
     ###Gneiss gradient based to be implemented
-
 
     ### PIRCUST 2
             expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
@@ -418,7 +417,6 @@ def get_final_output(config):
                 y_balances = list(range(1, 9))),
    ] 
 
-    ## Conditional output
     if config["denoiser"] == "DADA2":
         lst.append(
                 expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]))
