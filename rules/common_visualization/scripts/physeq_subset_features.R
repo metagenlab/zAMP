@@ -3,11 +3,11 @@
 # Created by: valentinscherz
 # Created on: 26.10.18
 
-## Inspired from https://stackoverflow.com/questions/15260245/r-convert-text-field-to-function
+## Inspired from https://stackoverflow.com/questions/15260245/r-convert-text-field-to-function and https://github.com/joey711/phyloseq/issues/694
 ## Redirect R output
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[[1]]
@@ -33,21 +33,19 @@ body(subset_fct) <- as.quoted(filter_features_subset_formula)[[1]]
 
 
 ## Generate the list of taxa to keep
-if (filter_features_subset_relative_or_absolute == "relative"){
-phyloseq_object_pct  = transform_sample_counts(phyloseq_object, function(x) x*100 / sum(x))
-subset_features_list = filter_taxa(phyloseq_object_pct, subset_fct, FALSE)
-}
+    if (filter_features_subset_relative_or_absolute == "relative"){
+        phyloseq_object_pct  = transform_sample_counts(phyloseq_object, function(x) 100*x / sum(x))
+        subset_features_list = taxa_names(filter_taxa(physeq = phyloseq_object_pct, flist = subset_fct, prune = TRUE))
+        print("relative")
 
-else if (filter_features_subset_relative_or_absolute == "absolute"){
-subset_features_list <- filter_taxa(phyloseq_object, subset_fct, FALSE)
-}
+    } else if(filter_features_subset_relative_or_absolute == "absolute"){
+        subset_features_list <- taxa_names(filter_taxa(physeq = phyloseq_object, flist = subset_fct, prune = TRUE))
 
-else {
-    stop("filter_features_subset_relative_or_absolute must be 'absolute' or 'relative'")
-}
+    } else{stop("filter_features_subset_relative_or_absolute must be 'absolute' or 'relative'")}
+
 
 ## Prune taxa to keep only the ones passing the applied filter
-subset_features <- prune_taxa(subset_features_list,phyloseq_object )
+subset_features <- prune_taxa(x = phyloseq_object, taxa = subset_features_list)
 
 ## Remove already in metadata alphia diversity values
 sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher))
