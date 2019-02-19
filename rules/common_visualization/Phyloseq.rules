@@ -101,7 +101,7 @@ rule filter_Phyloseq_features:
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/3_filter_features/{prefix}_features.rds"
     params:
-        filter_features_subset_relative_or_absolute: config["filter_features_subset_relative_or_absolute"],
+        filter_features_subset_relative_or_absolute = config["filter_features_subset_relative_or_absolute"],
         filter_features_subset_formula = config["filter_features_subset_formula"]
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapse_or_not}/3_filter_features/{prefix}_features.txt"
