@@ -17,6 +17,7 @@ phyloseq_filtered_object <- snakemake@output[[1]]
 
 ## Parameters
 filter_features_subset_formula <- snakemake@params[["filter_features_subset_formula"]]
+filter_features_subset_relative_or_absolute <- snakemake@params[["filter_features_subset_relative_or_absolute"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
@@ -30,8 +31,23 @@ phyloseq_object <- readRDS(phyloseq_object)
 subset_fct <- function(x){}
 body(subset_fct) <- as.quoted(filter_features_subset_formula)[[1]]
 
-## filter taxa
-subset_features <- filter_taxa(phyloseq_object, subset_fct, TRUE)
+
+## Generate the list of taxa to keep
+if (filter_features_subset_relative_or_absolute == "relative"){
+phyloseq_object_pct  = transform_sample_counts(phyloseq_object, function(x) x*100 / sum(x))
+subset_features_list = filter_taxa(phyloseq_object_pct, subset_fct, FALSE)
+}
+
+else if (filter_features_subset_relative_or_absolute == "absolute"){
+subset_features_list <- filter_taxa(phyloseq_object, subset_fct, FALSE)
+}
+
+else {
+    stop("filter_features_subset_relative_or_absolute must be 'absolute' or 'relative'")
+}
+
+## Prune taxa to keep only the ones passing the applied filter
+subset_features <- prune_taxa(subset_features_list,phyloseq_object )
 
 ## Remove already in metadata alphia diversity values
 sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher))
