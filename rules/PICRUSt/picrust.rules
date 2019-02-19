@@ -6,7 +6,7 @@ rule picrust2_custom_tree :
         seqs = "{tool}/2_denoised/dna-sequences_all_UPPER.fasta",
         table = "{tool}/2_denoised/otu_biom.biom",
     output:
-        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv"
+        directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/")
     log:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/picrust.txt"
     threads:
@@ -17,7 +17,7 @@ rule picrust2_custom_tree :
             --in_traits COG,EC,KO,PFAM,TIGRFAM \
             -s {input[seqs]} \
             -i {input[table]} \
-            -o {output} \
+            -o {output}/output \
             --threads {threads}
         '''
 

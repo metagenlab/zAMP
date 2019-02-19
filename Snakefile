@@ -423,7 +423,7 @@ def get_final_output(config):
     if config["PICRUST"] == True:
         lst.append(
         ### PIRCUST 2
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/picrust/EC_metagenome_out/pred_metagenome_unstrat.tsv",
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/picrust/",
                     denoiser = config["denoiser"],
                     tax_DB = config["tax_DB"]))
 
