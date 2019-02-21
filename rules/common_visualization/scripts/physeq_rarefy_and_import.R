@@ -130,7 +130,7 @@ set.seed(1)
             ### Keep only those
             physeqaF <- prune_taxa(physeqrF,phyloseq_obj)
             ### Calculate new indexes
-            alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE)
+            alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE, measure = "Observed")
             ### Rename those
             colnames(alpha_div_1) <- paste0(colnames(alpha_div_1), ("_min_1"))
             ### Again, bind these columns

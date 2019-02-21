@@ -75,14 +75,13 @@ rule Qiime2_ANCOM :
         '''
 
 ## Gneiss
-
 #https://docs.qiime2.org/2018.11/plugins/available/gneiss/gradient-clustering/
 rule Qiime2_Gneiss_gradient_clustering :
     conda:
         "../../envs/QIIME2-2019.01.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_export/count-table.qza",
-        Metadata = config["local_samples"],
+        Metadata = config["Qiime2_metadata"],
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/diff_abundance/{collapsed_or_not}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{tested_factor}_clustering.qza"
     params:

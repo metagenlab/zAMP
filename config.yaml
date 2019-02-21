@@ -71,6 +71,6 @@ p_state_column: ["time"]
 ANCOM: TRUE
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 
-Gneiss: TRUE
+Gneiss: ["Gradient", "Phylogeny", "Clustering"]
 Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
 Gneiss_formula: Subject_ID + Test_day + Condition_group

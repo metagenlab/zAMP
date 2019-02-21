@@ -10,7 +10,6 @@ rule create_biom_from_count_table :
     script:
         "scripts/create_biom_from_count_table.R"
 
-
 rule import_count_table_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2018.8.yml"
@@ -45,7 +44,6 @@ rule create_visualize_count_table_QIIME2 :
         --o-visualization {output[0]}
         '''
 
-
 rule force_all_upper_case_rep_seq :
     input:
         "{tool}/2_denoised/dna-sequences.fasta"
@@ -74,7 +72,6 @@ rule import_rep_seq_to_QIIME2 :
         --output-path {output[0]} \
         --type 'FeatureData[Sequence]'
         '''
-
 
 rule create_visualize_rep_seq_QIIME2 :
     conda:

@@ -38,7 +38,7 @@ filtered_taxa <- subset_taxa(filtered_taxa, get(filter_out_tax_rank) != as.chara
 if(collapse_level == "no_collapse"){
 
     ## Remove already in metadata alphia diversity values
-    sample_data(filtered_taxa) <- select(sample_data(filtered_taxa), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1, Chao1_min_1, se.chao1_min_1, ACE_min_1, se.ACE_min_1, Shannon_min_1, Simpson_min_1, InvSimpson_min_1, Fisher_min_1))
+    sample_data(filtered_taxa) <- select(sample_data(filtered_taxa), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
 
     ## Add alpha diversity indexes to metadata
     alpha_div <- estimate_richness(physeq = filtered_taxa, split = TRUE)
@@ -56,7 +56,7 @@ if(collapse_level == "no_collapse"){
     ## Keep only those
     physeqaF <- prune_taxa(myTaxa,filtered_taxa)
     ## Calculate new indexes
-    alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE, "Observed")
+    alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE, measures = "Observed")
     ## Rename those
     colnames(alpha_div_1) <- paste0(colnames(alpha_div_1), ("_min_1"))
     ## Again, bing these columns

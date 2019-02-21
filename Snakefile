@@ -336,11 +336,11 @@ def get_final_output(config):
     else :
         print("ANCOM not 'True', will not be in output")
 
-    if config["Gneiss"] == "True":
+    if "Correlation" in config["Gneiss"] :
         lst.append(
         ### Gneiss
         #### Correlation based
-        ##### Regression - Taxa collapse
+        ##### Regression
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_regression.qzv",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
@@ -352,7 +352,7 @@ def get_final_output(config):
         )
 
 
-        ##### Heatmaps - Taxa collapse
+        ##### Heatmaps
         lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_heatmap_{tested_factor}.qzv",
             denoiser = config["denoiser"],
@@ -366,7 +366,7 @@ def get_final_output(config):
         )
 
 
-        ##### Balances - Taxa collapase
+        ##### Balances
         lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/correlation/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_correlation_y_{y_balances}_f_{tested_factor}.qzv",
             denoiser = config["denoiser"],
@@ -381,8 +381,10 @@ def get_final_output(config):
         )
 
 
+
+    if "Phylogeny" in config["Gneiss"]:
         ### Phylogeny based
-        ##### Regression - Taxa collapse
+        ##### Regression
         lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_regression.qzv",
             denoiser = config["denoiser"],
@@ -395,7 +397,7 @@ def get_final_output(config):
         )
 
 
-        ##### Heatmaps - Taxa collapse
+        ##### Heatmaps
         lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_heatmap_{tested_factor}.qzv",
             denoiser = config["denoiser"],
@@ -410,7 +412,7 @@ def get_final_output(config):
         )
 
 
-        ##### Balances - Taxa collapase
+        ##### Balances
         lst.append(
         expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/phylogeny/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/phyl_phylogenetic_y_{y_balances}_f_{tested_factor}.qzv",
             denoiser = config["denoiser"],
@@ -421,6 +423,51 @@ def get_final_output(config):
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
             tested_factor= config["ANCOM_factors"],
+            y_balances = list(range(1, 9)))
+        )
+
+    if "Gradient" in config["Gneiss"]:
+        ### Gradient based
+        ##### Regression
+        lst.append(
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{tested_factor}_regression.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor = config["Gneiss_gradient_clustering"])
+        )
+
+
+        ##### Heatmaps
+        lst.append(
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{tested_factor}_heatmap_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            y_balances = list(range(1, 9)),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor = config["Gneiss_gradient_clustering"])
+        )
+
+
+        ##### Balances
+        lst.append(
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/diff_abundance/{collapse_key}/Gneiss/gradient/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/hier_{tested_factor}_y_{y_balances}_f_{tested_factor}.qzv",
+            denoiser = config["denoiser"],
+            tax_DB = config["tax_DB"],
+            collapse_key = get_taxa_collapse_level_key(config["collapse_level"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            filter_column_value = config["filter_column_value"],
+            filter_meta_column = config["filter_meta_column"],
+            tested_factor = config["Gneiss_gradient_clustering"],
             y_balances = list(range(1, 9)))
         )
 

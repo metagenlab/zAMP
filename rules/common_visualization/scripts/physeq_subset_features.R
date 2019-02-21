@@ -47,13 +47,11 @@ body(subset_fct) <- as.quoted(filter_features_subset_formula)[[1]]
 ## Prune taxa to keep only the ones passing the applied filter
 subset_features <- prune_taxa(x = phyloseq_object, taxa = subset_features_list)
 
-## Remove already in metadata alphia diversity values
-sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher))
 
 if(collapse_level == "no_collapse"){
 
     ## Remove already in metadata alphia diversity values
-    sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1, Chao1_min_1, se.chao1_min_1, ACE_min_1, se.ACE_min_1, Shannon_min_1, Simpson_min_1, InvSimpson_min_1, Fisher_min_1))
+    sample_data(subset_features) <- select(sample_data(subset_features), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
 
     ## Add alpha diversity indexes to metadata
     alpha_div <- estimate_richness(physeq = subset_features, split = TRUE)
@@ -71,7 +69,7 @@ if(collapse_level == "no_collapse"){
     ## Keep only those
     physeqaF <- prune_taxa(myTaxa,subset_features)
     ## Calculate new indexes
-    alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE, "Observed")
+    alpha_div_1 <- estimate_richness(physeq = physeqaF, split = TRUE, measures = "Observed")
     ## Rename those
     colnames(alpha_div_1) <- paste0(colnames(alpha_div_1), ("_min_1"))
     ## Again, bing these columns
