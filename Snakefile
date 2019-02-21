@@ -56,16 +56,21 @@ def get_alpha_diversity_files(config):
 
 
 def get_grouping_key(column_of_interest):
+
+    filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
+
     file_list = []
 
     for i in set(column_of_interest):
-        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(all_samples[i])))
+        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(filtered_all_samples[i])))
         file_list = file_list + combined_values
     return(file_list)
 
 
 def get_rarefaction_key(rarefaction_values):
     file_list = []
+
+
 
     for i in set(rarefaction_values):
         combined_values = expand("rarefaction_{rarefaction_values}", rarefaction_values = i)
@@ -91,7 +96,7 @@ def get_filtering_key(filtering):
 
     for i in set(filtering):
         if i == "nofiltering" :
-            filt = "nofiltering"
+            filt = ["nofiltering_0"]
         elif i == "absolute" :
             filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
         elif i == "relative" :
@@ -99,7 +104,7 @@ def get_filtering_key(filtering):
         else :
             raise ValueError("Forbidden value for filtering type")
 
-    file_list = file_list + [filt]
+    file_list = file_list + filt
 
     return(file_list)
 
@@ -149,33 +154,6 @@ def get_final_output(config):
         filter_meta_column = config["filter_meta_column"],
         grouping_key = get_grouping_key(config["grouping_column"])),
 
-    ### Barplot
-    expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
-        denoiser = config["denoiser"],
-        tax_DB = config["tax_DB"],
-        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-        filter_tax_rank = config["filter_tax_rank"],
-        filter_lineage = config["filter_lineage"],
-        filter_column_value = config["filter_column_value"],
-        filter_meta_column = config["filter_meta_column"],
-        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-        grouping_key = get_grouping_key(config["grouping_column"]),
-        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-        plotting_tax_ranks = config["plotting_tax_ranks"]),
-
-    ### Heatmap
-    expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/heatmaps/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
-        denoiser = config["denoiser"],
-        tax_DB = config["tax_DB"],
-        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-        filter_tax_rank = config["filter_tax_rank"],
-        filter_lineage = config["filter_lineage"],
-        filter_column_value = config["filter_column_value"],
-        filter_meta_column = config["filter_meta_column"],
-        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-        grouping_key = get_grouping_key(config["grouping_column"]),
-        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-        plotting_tax_ranks = config["plotting_tax_ranks"]),
 
     ### Ordination
         #### Distance-based
@@ -282,6 +260,40 @@ def get_final_output(config):
     ]
 
     ## Conditional output
+
+    if config["Barplot"] == True:
+        lst.append(
+        ### Barplot
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"],
+        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+        grouping_key = get_grouping_key(config["grouping_column"]),
+        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+        plotting_tax_ranks = config["plotting_tax_ranks"]))
+
+    if config["Heatmap"] == True:
+        lst.append(
+        ### Heatmap
+        expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/heatmaps/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
+        denoiser = config["denoiser"],
+        tax_DB = config["tax_DB"],
+        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+        filter_tax_rank = config["filter_tax_rank"],
+        filter_lineage = config["filter_lineage"],
+        filter_column_value = config["filter_column_value"],
+        filter_meta_column = config["filter_meta_column"],
+        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+        grouping_key = get_grouping_key(config["grouping_column"]),
+        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
+        plotting_tax_ranks = config["plotting_tax_ranks"]))
+
+
     if config["Volatility"] == True:
        lst.append(
         ## Volatility viz

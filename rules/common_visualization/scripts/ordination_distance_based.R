@@ -4,9 +4,9 @@
 # Created on: 19.11.18
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 ## Input
 phyloseq_object <- snakemake@input[["phyloseq_object"]]
@@ -20,7 +20,9 @@ output_path <- snakemake@output[["output1"]]
 ordination_distance = snakemake@params[["ordination_distance"]]
 # x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
+grouping_column
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
+grouping_filter_column_value
 sample_type <- snakemake@params[["sample_type"]]
 ordination_factor <- snakemake@params[["ordination_factor"]]
 ordination_method <-   snakemake@params[["ordination_method"]]
