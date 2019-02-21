@@ -314,7 +314,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                         ##### Set the filename
                             filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
                         ##### Finally, save the figure
-                          ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
+                          ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 10, height = 7)
                         #### Extract the legend and save it
                         leg <- get_legend(taxrank_barplot)
                         ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
