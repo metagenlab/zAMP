@@ -94,7 +94,10 @@ def get_taxa_collapse_level_key(collapse_level):
 def get_filtering_key(filtering):
     file_list = []
 
+    print(filtering)
+
     for i in set(filtering):
+        print(i)
         if i == "nofiltering" :
             filt = ["nofiltering_0"]
         elif i == "absolute" :
@@ -104,7 +107,9 @@ def get_filtering_key(filtering):
         else :
             raise ValueError("Forbidden value for filtering type")
 
-    file_list = file_list + filt
+        file_list = file_list + filt
+
+    print(file_list)
 
     return(file_list)
 
