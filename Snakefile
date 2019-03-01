@@ -157,7 +157,7 @@ def get_final_output(config):
 
     ### Ordination
         #### Distance-based
-        expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
+    expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/distance_based/{ordination_method_distance_based}/{grouping_key}_d_{ordination_distance}.png",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -259,7 +259,7 @@ def get_final_output(config):
             filter_meta_column = config["filter_meta_column"])
     ]
 
-    ## Conditional output
+      ## Conditional output
 
     if config["Barplot"] == True:
         lst.append(

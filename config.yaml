@@ -47,6 +47,8 @@ ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
 ordination_factor : sample_source
 
 # barplot
+Heatmap: True # or False
+Barplot: True # or False
 relative_or_absolute_baxplot: ["relative", "absolute"]
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
 relative_filtering_value: [10]
@@ -74,3 +76,6 @@ ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 Gneiss: ["Gradient", "Phylogeny", "Clustering"]
 Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
 Gneiss_formula: Subject_ID + Test_day + Condition_group
+
+# Picrust
+PICRUST: True

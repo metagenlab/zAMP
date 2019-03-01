@@ -30,3 +30,4 @@ dependencies:
  - r-magrittr = 1.5
  - r-cowplot = 0.9.3
  - bioconductor-microbiome = 1.2.1
+ - bioconductor-genomeinfodbdata = 1.1.0 ## prevent a Conda bug with version 1.2.0
