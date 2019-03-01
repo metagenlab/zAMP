@@ -27,7 +27,7 @@ rarefaction_value: [10000,20000,50000,100000,200000,300000]
 # Phyloseq processing
 viz_replace_empty_tax: TRUE
 filter_tax_rank: ["Kingdom"]
-filter_lineage: ["Bacterium"]
+filter_lineage: ["Bacteria"]
 filter_out_tax_rank: ["Phylum"]
 filter_out_lineage: ["Bacteria_phy"]
 filter_meta_column: ["sample_group"]
