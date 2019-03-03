@@ -67,7 +67,11 @@ print(colors_palette)
 
           print(ordination_distance)
           # Calculate distance matrix
-          iDist <- phyloseq::distance(g_physeq_filtered, method = ordination_distance)
+            if (ordination_distance == "jaccard"){
+            iDist <- phyloseq::distance(g_physeq_filtered, method = ordination_distance, binary = TRUE)
+            }else{
+            iDist <- phyloseq::distance(g_physeq_filtered, method = ordination_distance)
+            }
           # Calculate ordination
           iMDS  <- ordinate(g_physeq_filtered, method = ordination_method, distance = iDist)
           ## Make plot
