@@ -128,13 +128,13 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
     #### Write the table after table choice for relative of absolute value plotting , without Abundance = 0 rows to reduce its size.
     plotted_df %>%
       filter(Abundance>0) %>%
-      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
     #### Write the table with values that passed the quantity filtering.
     physeq_subset_df_filtered %>%  ### To follow and control the process, write external .tsv tables
       filter(Abundance>0) %>%
-      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
     ### Now we have a dataframe ("plotted_df") containing all values, with Abundance expressed in absolute reads number or relative quanity in %, and a dataframe containing the rows that have to be kept while the rest will be merged by tagging them with the same name
@@ -145,7 +145,7 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
     ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
     merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
       filter(Abundance>0)
-    write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+    write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
     ### Rename taxa with < percent/reads abundance, defending of the filtering applied
     #### Define the filtering tag depending of the applied filtering
@@ -249,11 +249,11 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
           dplyr::group_by(Sample, !!(x_column), !!(g_column), !!(f_column), Genus, Species) %>%
           dplyr::mutate(Abundance = sum(Abundance)) %>%
           dplyr::ungroup() %>%
-          dplyr::distinct(Sample, Genus, Specis, .keep_all = TRUE)
+          dplyr::distinct(Sample, Genus, Species, .keep_all = TRUE)
 
 
       #### Reorder by abundancy
-      if (order_by == "abundancy"){
+      if (order_by == "abundance"){
         print("Ordered by abundance")
         select_filtered_df_abs_i_reord <- select_filtered_df_abs_i %>%
           group_by(!! t_column) %>%
@@ -262,10 +262,11 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
           arrange(desc(tot)) %>%
           mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
           order_by_ <- "abund"
+          select_filtered_df_abs_i_reord <<- select_filtered_df_abs_i_reord
 
       }else if (order_by =="alphabet_class"){
         print("Ordered alphabetically considering the Class")
-          #select_filtered_df_abs_i <<- select_filtered_df_abs_i
+          #select_filtered_df_abs_i <- select_filtered_df_abs_i
           select_filtered_df_abs_i_reord <- select_filtered_df_abs_i  #%>%
             #arrange(desc(Class, Genus,Species))  %>%
             #dplyr::mutate(OTU = factor(OTU, levels = unique(OTU), ordered = TRUE))
@@ -274,20 +275,24 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
 
 
       }else if (order_by =="cluster"){
-        selected_col <- select_filtered_df_abs_i %>% select(c("sample_source","OTU", "Abundance"))
-        selected_col_wide <- reshape2::dcast(selected_col, sample_source ~ OTU)
+        selected_col <- select_filtered_df_abs_i %>% select(c("Sample","OTU", "Abundance"))
+        selected_col <<- selected_col
+        selected_col_wide <- reshape2::dcast(selected_col, Sample ~ OTU)
         selected_col_wide[is.na(selected_col_wide)] <- 0
         rownames(selected_col_wide) <- selected_col_wide[,1]
-        selected_col_wide[[x_axis_column]] <- NULL
+        selected_col_wide[["Sample"]] <- NULL
         # sample_source_order = c("EC_Q", "liver", "spleen", "lungs", "water_Q", "EC_MN", "PCR_neg")
         row.order <- hclust(dist(selected_col_wide))$order # clustering
         col.order <- hclust(dist(t(selected_col_wide)))$order
         dat_new <- selected_col_wide[row.order , col.order] # re-order matrix accoring to clustering
         df_molten_dat <- melt(as.matrix(dat_new))
-        names(df_molten_dat)[c(1:3)] <- c("sample_source", "OTU","Abundance")
+        names(df_molten_dat)[c(1:3)] <- c("Sample", "OTU","Abundance")
         select_filtered_df_abs_i_reord <- df_molten_dat %>% filter(Abundance != 0)
-        select_filtered_df_abs_i_reord$OTU <- fct_rev(select_filtered_df_abs_i_reord$OTU)
+        select_filtered_df_abs_i_reord <- left_join(select_filtered_df_abs_i_reord, select_filtered_df_abs_i, by = c("Sample", "OTU", "Abundance"))
         order_by_ <- "clu"
+        select_filtered_df_abs_i_reord <<- select_filtered_df_abs_i_reord
+       
+      
       }else{
         stop('order_by_abundance must be "abundancy", "alphabet_class" or "cluster"')
       }
@@ -295,19 +300,23 @@ Variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_colum
 
       if (quantity_filtering_type != "nofiltering"){
         #### Set the filtering_tabl at the top of the plot
+        print("t1")
         select_filtered_df_abs_i_reord[[t]] <- fct_relevel(select_filtered_df_abs_i_reord[[t]], filtering_tag, after = 0)
+        print("t2")
       }
 
 
         select_filtered_df_abs_i_reord[["OTU"]] <- fct_relevel(select_filtered_df_abs_i_reord[["OTU"]], filtering_tag, after = 0)
-
+        print("t3")
+        
       #### Write the content of the plot table in a external file
-      write.table(select_filtered_df_abs_i_reord, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(select_filtered_df_abs_i_reord, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
-
+      
+      
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
-      taxalabel <- as.character(paste0(toupper(substr(select_filtered_df_abs_i_reord[["Family"]],1 ,9)) , ";",  select_filtered_df_abs_i[[t]]))
+      taxalabel <- as.character(paste0(toupper(substr(select_filtered_df_abs_i_reord[["Phylum"]],1 ,9)) , ";",  select_filtered_df_abs_i_reord[[t]]))
       names(taxalabel) <- select_filtered_df_abs_i[["OTU"]]
 
 

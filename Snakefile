@@ -490,9 +490,9 @@ def get_final_output(config):
         print("PIRCURST not 'True', will not be in output")
 
 
-    if config["denoiser"] == "DADA2":
+    if "DADA2" in config["denoiser"]:
         lst.append(
-                expand("{denoiser}/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"])
+                expand("DADA2/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"])
         )
 
 
