@@ -2,7 +2,6 @@ include: "rules/common_preprocessing/making_sample_dataset.rules"
 
 ## Function to modulate keys
 
-
 def get_alpha_diversity_files(config):
 
     import itertools
@@ -69,8 +68,6 @@ def get_grouping_key(column_of_interest):
 
 def get_rarefaction_key(rarefaction_values):
     file_list = []
-
-
 
     for i in set(rarefaction_values):
         combined_values = expand("rarefaction_{rarefaction_values}", rarefaction_values = i)
@@ -482,9 +479,11 @@ def get_final_output(config):
     if config["PICRUST"] == True:
         lst.append(
         ### PIRCUST 2
-            expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/picrust/",
+            expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/picrust/",
                     denoiser = config["denoiser"],
-                    tax_DB = config["tax_DB"]))
+                    tax_DB = config["tax_DB"],
+                    rarefaction_value = get_rarefaction_key(config["rarefaction_value"])
+                    ))
 
     else :
         print("PIRCURST not 'True', will not be in output")
