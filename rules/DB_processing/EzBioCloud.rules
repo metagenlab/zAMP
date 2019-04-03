@@ -1,0 +1,106 @@
+
+rule Import_DB :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+        config["DBpath_seq"]
+    output :
+        workflow.basedir + "/data/DB_intermediate/EzBioCloud_seq.qza"
+    log :
+        logging_folder + ""
+    threads :
+        1
+    shell :
+         '''
+        qiime tools import \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output}
+        '''
+
+
+rule Extract_V3V4 :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+        workflow.basedir + "/data/DB_intermediate/EzBioCloud_seq.qza"
+    output :
+        workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.qza"
+    params :
+        forward_primer = CCTACGGGNGGCWGCAG, #ou primerF = config["forward_primer"],
+        reverse_primer =  GACTACHVGGGTATCTAATCC, #ou primerR = config["reverse_primer"],
+        length = 500 #ou config["length_max"]
+    log :
+        logging_folder + ""
+    threads :
+        1
+    shell :
+         '''
+        qiime feature-classifier extract-reads \
+        --i-sequences {input} \
+        --p-f-primer {params[forward_primer]} \
+        --p-r-primer {params[reverse_primer]} \
+        --p-trunc-len {params[length]} \
+        --o-reads {output} \
+        --verbose
+        '''
+
+
+
+rule Export :
+   conda :
+        "../../envs/QIIME2-2019.01.yml"
+   input :
+        workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.qza"
+   output :
+        workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.fasta"
+   log :
+        logging_folder + ""
+   threads :
+        1
+   shell :
+         '''
+        qiime tools export {input} \
+        --output-dir {output}
+        '''
+
+
+
+rule Vsearch :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+         workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.fasta"
+    output :
+        fasta = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.fasta",
+        uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
+    log :
+        logging_folder + ""
+    threads :
+        1
+    shell :
+         '''
+        vsearch --derep_fulllength {input} \
+        --output {output[fasta]} \
+        --uc {output[uc]}
+        '''
+
+
+
+rule Taxonomy :
+    conda :
+        "../../envs/R_DB_processing.yml"
+    input :
+        tax = config["DBpath_tax"],
+        uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
+    output :
+        filtrated = workflow.basedir + "/data/DB_intermediate/cEzBioCloud_V3V4_taxonomy.txt",
+        all = workflow.basedir + "/data/DB_intermediate/cEzBioCloud_V3V4_all_taxonomy.txt"
+    params :
+        ""
+    log :
+        logging_folder + ""
+    threads :
+        1
+    script :
+        "scripts/DB_EzBioCloud_processing.R"
