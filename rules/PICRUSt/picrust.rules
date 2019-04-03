@@ -4,7 +4,7 @@ rule picrust2_custom_tree :
         "../../envs/picrust2.yml"
     input:
         seqs = "{tool}/2_denoised/dna-sequences_all_UPPER.fasta",
-        table = "{tool}/2_denoised/otu_biom.biom",
+        table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base_export/otu_biom.biom",
     output:
         directory("{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/")
     log:
