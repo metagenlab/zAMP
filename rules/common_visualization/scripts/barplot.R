@@ -175,9 +175,14 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
             ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
                 threshod_filtered_abs <- full_join(under_threshold_df,above_threshold_df)
 
+print("test1")
+
 
             ### Remove the (now but needed before) Abundance = 0 rows
                 threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0)
+
+print("test2")
+
 
             ### Reorder the facet factor if later used for plotting
                 if (isTRUE(facet_plot)){
@@ -189,6 +194,8 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 }else {stop('"facet_plot" must be TRUE or FALSE')
                 }
 
+print("test3")
+
            ### Reverse the x_axis_column column for later if using horizontal barplot
                 if (isTRUE(horizontal_barplot)){
                     threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
@@ -198,7 +205,9 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 } else {stop('"horizontal_barplot" must be TRUE or FALSE')
                 }
 
-                print("test5")
+ 
+
+
             ### Set colors palette
                 #### Brewer colors
                     if (distinct_colors == FALSE) {
@@ -222,7 +231,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                     }else{ print("distinct_colors must be TRUE or FALSE")
                     }
 
-                print("test6")
+  
 
             ### Loop for unique value in grouping_column
                 for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
@@ -246,6 +255,8 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                         else{ stop('"t_neg_PCR_sample_on_plots" must be TRUE or FALSE')
                         }
 
+
+
                 #### Reorder by abundance
                     if (isTRUE(order_by_abundance)){
                         print("Ordered by abundance")
@@ -260,6 +271,8 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                     }
                     else { stop('"order_by_abundance" must be TRUE or FALSE')
                     }
+
+
 
                 #### Set the filtering_tabl at the top of the plot
                     filtered_df_abs_i[[tax_ranks]] <- fct_relevel(filtered_df_abs_i[[tax_ranks]], filtering_tag, after = 0)
