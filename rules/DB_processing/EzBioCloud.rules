@@ -15,7 +15,8 @@ rule Import_DB :
         qiime tools import \
         --type 'FeatureData[Sequence]' \
         --input-path {input} \
-        --output-path {output}
+        --output-path {output} \
+        2> {log}
         '''
 
 
@@ -42,7 +43,8 @@ rule Extract_V3V4 :
         --p-r-primer {params[primer_reverse]} \
         --p-trunc-len {params[length]} \
         --o-reads {output} \
-        --verbose
+        --verbose \
+        2> {log}
         '''
 
 
@@ -62,7 +64,8 @@ rule Export :
          '''
         qiime tools export \
         --input-path {input} \
-        --output-format {output}
+        --output-format {output} \
+        2> {log}
         '''
 
 
@@ -84,7 +87,8 @@ rule Vsearch :
         vsearch \
         --derep_fulllength {input} \
         --output {output[fasta]} \
-        --uc {output[uc]}
+        --uc {output[uc]} \
+        2> {log}
         '''
 
 
