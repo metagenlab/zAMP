@@ -13,6 +13,7 @@ EzBio_uc
 EzBioCloud_V3V4_taxonomy <- snakemake@output[["filtrated"]]
 EzBioCloud_V3V4_all_taxonomy <-  snakemake@output[["all"]]
 EzBioCloud_V3V4_taxonomy_Qiime <- snakemake@output[["qiime"]]
+EzBioCloud_V3V4_all_taxonomy_Qiime <- snakemake@output[["qiime_all"]]
 
 ## Parameters
 # nom dans R <- snakemake@params[["nom dans params"]]
@@ -235,6 +236,15 @@ tax_table_V3V4 <- rbind(Bacteria_tax_table_cluster,Archaea_tax_table_cluster,tax
 colnames(tax_table_V3V4) <- c("seq_name","kingdom","phylum","class","order","family","genus","species")
 write.csv(x = tax_table_V3V4, file = EzBioCloud_V3V4_taxonomy, quote = FALSE, row.names = FALSE)
 
+# Creation of a file type Qiime that is to say we have a space instead of a ";" after the accession number
+
+EzBioCloud_V3V4_tax <- read.csv(file = EzBioCloud_V3V4_taxonomy, as.is = TRUE, strip.white = TRUE)
+
+tax_collapsed <- apply(EzBioCloud_V3V4_tax[,2:8],1,paste,collapse=";")
+new_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_collapsed)
+write.table(x = new_tax, file = EzBioCloud_V3V4_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
+
+
 
 ## grouping tables and conditions to get a table with all the parameters
 #version with all species names
@@ -260,12 +270,12 @@ tax_table_V3V4_all <- rbind(Bacteria_tax_table_cluster_all,Archaea_tax_table_clu
 colnames(tax_table_V3V4_all) <- c("seq_name","kingdom","phylum","class","order","family","genus","species")
 write.csv(x = tax_table_V3V4_all,file = EzBioCloud_V3V4_all_taxonomy,quote = FALSE, row.names = FALSE)
 
-
-
 # Creation of a file type Qiime that is to say we have a space instead of a ";" after the accession number
 
-EzBioCloud_V3V4_tax <- read.csv(file = EzBioCloud_V3V4_taxonomy, as.is = TRUE, strip.white = TRUE)
+EzBioCloud_V3V4_all_tax <- read.csv(file = EzBioCloud_V3V4_all_taxonomy, as.is = TRUE, strip.white = TRUE)
 
-tax_collapsed <- apply(EzBioCloud_V3V4_tax[,2:8],1,paste,collapse=";")
-new_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_collapsed)
-write.table(x = new_tax, file = EzBioCloud_V3V4_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
+tax_all_collapsed <- apply(EzBioCloud_V3V4_all_tax[,2:8],1,paste,collapse=";")
+new_all_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_all_collapsed)
+write.table(x = new_all_tax, file = EzBioCloud_V3V4_all_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
+
+
