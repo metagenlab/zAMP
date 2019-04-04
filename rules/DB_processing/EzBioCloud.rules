@@ -36,11 +36,11 @@ rule Extract_V3V4 :
         1
     shell :
          '''
-        qiime feature-classifier extract-reads
+        qiime feature-classifier extract-reads \
         --i-sequences {input} \
         --p-f-primer {params[primer_forward]} \
         --p-r-primer {params[primer_reverse]} \
-        --p-trunc-len {params[length_max]} \
+        --p-trunc-len {params[length]} \
         --o-reads {output} \
         --verbose
         '''
@@ -60,8 +60,9 @@ rule Export :
         1
    shell :
          '''
-        qiime tools export {input} \
-        --output-dir {output}
+        qiime tools export \
+        --input-path {input} \
+        --output-format {output}
         '''
 
 
@@ -70,7 +71,7 @@ rule Vsearch :
     conda :
         "../../envs/QIIME2-2019.01.yml"
     input :
-         workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.fasta"
+         workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.fasta/dna-sequences.fasta"
     output :
         fasta = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.fasta",
         uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
@@ -80,7 +81,7 @@ rule Vsearch :
         1
     shell :
          '''
-        qiime vsearch 
+        vsearch \
         --derep_fulllength {input} \
         --output {output[fasta]} \
         --uc {output[uc]}
@@ -95,11 +96,9 @@ rule Taxonomy :
         tax = config["DBpath_tax"],
         uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
     output :
-        filtrated = workflow.basedir + "/data/DB/EzBioCloud_V3V4_taxonomy.txt",
-        all = workflow.basedir + "/data/DB/EzBioCloud_V3V4_all_taxonomy.txt",
-        qiime = workflow.basedir + "/data/DB/EzBioCloud_V3V4_taxonomy_Qiime.txt"
-    params :
-        ""
+        filtrated = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_taxonomy.txt",
+        all = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_all_taxonomy.txt",
+        qiime = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_taxonomy_Qiime.txt"
     log :
        workflow.basedir + "/data/DB_intermediate/log/EzBioCloud_V3V4_taxonomy.log"
     threads :

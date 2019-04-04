@@ -17,7 +17,6 @@ EzBioCloud_V3V4_taxonomy_Qiime <- snakemake@output[["qiime"]]
 ## Parameters
 # nom dans R <- snakemake@params[["nom dans params"]]
 
-
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
 library(lattice);packageVersion("lattice")
@@ -87,14 +86,12 @@ Bacteria_clusters_table <- bigger_clusters_table[bigger_clusters_table[,1]%in%Ba
 # Only accession numbers correspondig to Archaea so the function said to be different from accession numbers cooresponding to Bacteria
 Archaea_clusters_table <- bigger_clusters_table[!bigger_clusters_table[,1]%in%Bacteria_clusters_names,]
 
-
+## genus
+genus_split <- split(tax_table[Bacteria_clusters_table[,2],6],Bacteria_clusters_table[,1])
 
 ## terms of the species' names based on the number of genera and species
 g2correct <- names(which(sapply(genus_split,function(x){length(unique(x))})>1))
 tax_table_all <- tax_table
-
-## genus
-genus_split <- split(tax_table[Bacteria_clusters_table[,2],6],Bacteria_clusters_table[,1])
 
 # c_name is the name of the local variable to the "for" function which will take a different value for each iteration
 # g2correct corresponds to the vector containing the values that the take c_name
