@@ -468,9 +468,6 @@ def get_final_output(config):
             y_balances = list(range(1, 9)))
         )
 
-    else :
-        print("Gneiss not 'True', will not be in output")
-
 
 
     ###Gneiss gradient based to be implemented
