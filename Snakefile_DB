@@ -1,0 +1,6 @@
+include: "rules/DB_processing/EzBioCloud.rules"
+
+## Run the function
+rule all:
+    input:
+         workflow.basedir + "/data/DB/EzBioCloud_V3V4_all_taxonomy.txt"

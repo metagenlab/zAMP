@@ -7,7 +7,7 @@ rule Import_DB :
     output :
         workflow.basedir + "/data/DB_intermediate/EzBioCloud_seq.qza"
     log :
-        logging_folder + ""
+         workflow.basedir + "/data/DB_intermediate/log/EzBioCloud_seq.log"
     threads :
         1
     shell :
@@ -27,20 +27,20 @@ rule Extract_V3V4 :
     output :
         workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.qza"
     params :
-        forward_primer = CCTACGGGNGGCWGCAG, #ou primerF = config["forward_primer"],
-        reverse_primer =  GACTACHVGGGTATCTAATCC, #ou primerR = config["reverse_primer"],
-        length = 500 #ou config["length_max"]
+        primer_forward = config["forward_primer"],
+        primer_reverse = config["reverse_primer"],
+        length = config["length_max"]
     log :
-        logging_folder + ""
+        workflow.basedir + "/data/DB_intermediate/log/EzBioCloudV3V4_seq.log"
     threads :
         1
     shell :
          '''
-        qiime feature-classifier extract-reads \
+        qiime feature-classifier extract-reads
         --i-sequences {input} \
-        --p-f-primer {params[forward_primer]} \
-        --p-r-primer {params[reverse_primer]} \
-        --p-trunc-len {params[length]} \
+        --p-f-primer {params[primer_forward]} \
+        --p-r-primer {params[primer_reverse]} \
+        --p-trunc-len {params[length_max]} \
         --o-reads {output} \
         --verbose
         '''
@@ -55,7 +55,7 @@ rule Export :
    output :
         workflow.basedir + "/data/DB_intermediate/EzBioCloudV3V4_seq.fasta"
    log :
-        logging_folder + ""
+        workflow.basedir + "/data/DB_intermediate/log/EzBioCloudV3V4_seq1.log"
    threads :
         1
    shell :
@@ -75,12 +75,13 @@ rule Vsearch :
         fasta = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.fasta",
         uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
     log :
-        logging_folder + ""
+        workflow.basedir + "/data/DB_intermediate/log/EzBioCloud_Vsearch_V3V4_seq.log"
     threads :
         1
     shell :
          '''
-        vsearch --derep_fulllength {input} \
+        qiime vsearch 
+        --derep_fulllength {input} \
         --output {output[fasta]} \
         --uc {output[uc]}
         '''
@@ -94,12 +95,13 @@ rule Taxonomy :
         tax = config["DBpath_tax"],
         uc = workflow.basedir + "/data/DB_intermediate/EzBioCloud_Vsearch_V3V4_seq.uc"
     output :
-        filtrated = workflow.basedir + "/data/DB_intermediate/cEzBioCloud_V3V4_taxonomy.txt",
-        all = workflow.basedir + "/data/DB_intermediate/cEzBioCloud_V3V4_all_taxonomy.txt"
+        filtrated = workflow.basedir + "/data/DB/EzBioCloud_V3V4_taxonomy.txt",
+        all = workflow.basedir + "/data/DB/EzBioCloud_V3V4_all_taxonomy.txt",
+        qiime = workflow.basedir + "/data/DB/EzBioCloud_V3V4_taxonomy_Qiime.txt"
     params :
         ""
     log :
-        logging_folder + ""
+       workflow.basedir + "/data/DB_intermediate/log/EzBioCloud_V3V4_taxonomy.log"
     threads :
         1
     script :

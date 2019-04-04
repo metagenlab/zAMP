@@ -1,8 +1,9 @@
 #localisation of database
-DBpath_seq: "./database/ezbiocloud_qiime-full.fasta"
-DBpath_tax: "./database/ezbiocloud_qiime-full.txt "
+DBpath_seq: "database/ezbiocloud_qiime-full.fasta"
+DBpath_tax: "database/ezbiocloud_qiime-full.txt"
 
 #trimming
 forward_primer: CCTACGGGNGGCWGCAG
 reverse_primer: GACTACHVGGGTATCTAATCC
 length_max: 500
+

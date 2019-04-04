@@ -1,33 +1,28 @@
-##Environment
+## Redirect R output
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
+
+## Input
+EzBio_tax1 <- snakemake@input[["tax"]]
+EzBio_tax1
+EzBio_uc <- snakemake@input[["uc"]]
+EzBio_uc
+
+## Output
+EzBioCloud_V3V4_taxonomy <- snakemake@output[["filtrated"]]
+EzBioCloud_V3V4_all_taxonomy <-  snakemake@output[["all"]]
+EzBioCloud_V3V4_taxonomy_Qiime <- snakemake@output[["qiime"]]
+
+## Parameters
+# nom dans R <- snakemake@params[["nom dans params"]]
 
 
-# get environment variable who is returns the values of environment variables
-sys_home <- Sys.getenv("HOME")
-
-if(sys_home=="/home/charlottejuliet")
-{
-  home_path <- "/home/charlottejuliet/labbooks/Charlotte/Database_EzBioCloudDB/database/"
-}
-
-project_path <- file.path(home_path)
-setwd(getwd())
-project_path<-getwd()
-
-##Recovering the files you want thanks to the path
-EzBio_tax1 <-  file.path("/home/charlottejuliet/labbooks/Charlotte/Database_EzBioCloudDB/database/ezbiocloud_id_taxonomy.txt")
-EzBio_uc <- file.path("/home/charlottejuliet/labbooks/Charlotte/Database_EzBioCloudDB/database/ezbiocloudV3V4.uc")
-
-
-
-
-## Load the packages, libraries needed to run the program
-library(dplyr)
-#library(ggplot2)
-library(lattice)
-library(stringr)
-library(forcats)
-
-
+## Load needed libraries
+library(dplyr);packageVersion("dplyr")
+library(lattice);packageVersion("lattice")
+library(stringr);packageVersion("stringr")
+library(forcats);packageVersion("forcats")
 
 
 
@@ -121,7 +116,7 @@ for (c_name in g2correct)
     # If loop we have the number of species superior to 4, we replace the name of the species by the genus and sp.
     if (nr_species > 4)
     {
-	      new_species_names <- paste(new_genus_name,"sp.")
+	      new_species_name <- paste(new_genus_name,"sp.")
 	      new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
     }
 
@@ -184,15 +179,15 @@ for (c_name in s2correct)
         warning("Case not present in if conditions")
     }
 
-  new_species_name_all <- paste(unique(selected_tax_table[,7]),collapse="/")
+    new_species_name_all <- paste(unique(selected_tax_table[,7]),collapse="/")
 
-  new_entry <- c(selected_tax_table[1,1:6],new_species_name_f)
-  new_entry_all <- c(selected_tax_table[1,1:6],new_species_name_all)
-  new_selected_tax_table <- matrix(rep(new_entry,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
-  new_selected_tax_table_all <- matrix(rep(new_entry_all,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
+    new_entry <- c(selected_tax_table[1,1:6],new_species_name_f)
+    new_entry_all <- c(selected_tax_table[1,1:6],new_species_name_all)
+    new_selected_tax_table <- matrix(rep(new_entry,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
+    new_selected_tax_table_all <- matrix(rep(new_entry_all,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
 
-  tax_table[names(genus_split[[c_name]]),] <- new_selected_tax_table
-  tax_table_all[names(genus_split[[c_name]]),] <- new_selected_tax_table_all
+    tax_table[names(genus_split[[c_name]]),] <- new_selected_tax_table
+    tax_table_all[names(genus_split[[c_name]]),] <- new_selected_tax_table_all
 
 }
 
@@ -241,7 +236,7 @@ Archaea_tax_table_cluster <- cbind(Archaea_c_names,tax_table[Archaea_c_names,])
 tax_table_cluster_singletons <- cbind(singleton_clusters_rep_seq,tax_table[singleton_clusters_rep_seq,])
 tax_table_V3V4 <- rbind(Bacteria_tax_table_cluster,Archaea_tax_table_cluster,tax_table_cluster_singletons)
 colnames(tax_table_V3V4) <- c("seq_name","kingdom","phylum","class","order","family","genus","species")
-write.csv(tax_table_V3V4,file=file.path(project_path,"EzBioCloud_V3V4_taxonomy.txt"), quote = FALSE, row.names = FALSE)
+write.csv(x = tax_table_V3V4, file = EzBioCloud_V3V4_taxonomy, quote = FALSE, row.names = FALSE)
 
 
 ## grouping tables and conditions to get a table with all the parameters
@@ -266,14 +261,14 @@ tax_table_cluster_singletons <- cbind(singleton_clusters_rep_seq,tax_table_all[s
 tax_table_V3V4_all <- rbind(Bacteria_tax_table_cluster_all,Archaea_tax_table_cluster_all,tax_table_cluster_singletons)
 
 colnames(tax_table_V3V4_all) <- c("seq_name","kingdom","phylum","class","order","family","genus","species")
-write.csv(tax_table_V3V4_all,file=file.path(project_path,"EzBioCloud_V3V4_all_taxonomy.txt"),quote = FALSE, row.names = FALSE)
+write.csv(x = tax_table_V3V4_all,file = EzBioCloud_V3V4_all_taxonomy,quote = FALSE, row.names = FALSE)
 
 
 
 # Creation of a file type Qiime that is to say we have a space instead of a ";" after the accession number
 
-EzBioCloud_V3V4_tax <- read.csv("/home/charlottejuliet/labbooks/Charlotte/Database_EzBioCloudDB/Script_R/Modification_genres_especes/EzBioCloud_V3V4_taxonomy.txt", as.is = TRUE, strip.white = TRUE)
+EzBioCloud_V3V4_tax <- read.csv(file = EzBioCloud_V3V4_taxonomy, as.is = TRUE, strip.white = TRUE)
 
 tax_collapsed <- apply(EzBioCloud_V3V4_tax[,2:8],1,paste,collapse=";")
 new_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_collapsed)
-write.table(new_tax,file=file.path(project_path,"EzBioCloud_V3V4_taxonomy_Qiime.txt"),quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
+write.table(x = new_tax, file = EzBioCloud_V3V4_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
