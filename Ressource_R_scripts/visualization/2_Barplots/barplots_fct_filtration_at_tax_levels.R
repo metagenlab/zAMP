@@ -63,7 +63,13 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
         if (plotting_value == "relative"){
             plotting <- "Relative"
             print("Relative value plotting")
-            plotted_df <- physeq_subset_norm_df
+            plotted_df <- physeq_subset_norm_df %>%
+              group_by(!! x_column) %>%
+              mutate(per=paste0((100*Abundance/sum(Abundance)))) %>%
+              ungroup %>%
+              select(-Abundance)  %>%
+              dplyr::rename(Abundance = per)
+            plotted_df$Abundance <- as.numeric(plotted_df$Abundance)
         }
     ## Absolute value plotting
         else if (plotting_value == "absolute"){
@@ -209,7 +215,7 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
 
             #### Distinct colors
                 else if (distinct_colors == TRUE) {
-                    set.seed(4)
+                    set.seed(8)
                     ColList <- unique(threshod_filtered_abs_no_zero[[t]])
                     ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(threshod_filtered_abs_no_zero[[t]])))
                     names(ColPalette) = ColList
@@ -311,11 +317,11 @@ barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, group
                     filename_base <- (paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",facetting_column,"_" ,t))
                     print(filename_base) #Print the filename to follow progress
                 ##### Finally, save the figure
-                  ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 7, height = 7)
+                  ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.svg"), width = 7, height = 4)
 
                 #### Extract the legend and save it
                 leg <- get_legend(taxrank_barplot)
-                ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
+                ggsave(leg, filename = paste0(filename_base, "_barplot_leg.svg"), width = 5, height = 10)
 
     # The loop restart to create blots for all taxa
       

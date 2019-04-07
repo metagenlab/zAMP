@@ -59,7 +59,7 @@ rule DADA2_infer_ASV:
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
     threads:
-        2
+        1
     script:
         "scripts/2b_big_data_DADA2_infer_ASV.R"
 
