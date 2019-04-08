@@ -13,7 +13,7 @@ A file "config_DB.yaml" allowing to have the parameters of some data and the loc
 
 
 When a database update is done :
-- You only have to change the two basic files
+- You only have to change the two basic files who is in microbiome16S_pipeline/data/ezbiocloud.  
 - Leave the following code separately if the names of these files are different from the previous ones you have to change them so that it matches to the system can easily find them in the rules file "EzBioCloud.rules" and config_DB.yaml.
 
 
