@@ -1,7 +1,9 @@
 ### Create a function
 merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE){
-  
-  
+
+
+  x_column <- rlang::sym(x_axis_column)
+
   ### In option, filter for a given grouping_columns. In both cases keep only lines with Abundance not equal to 0 to reduce the dataframe size
   
   ### No filter for the grouping column
@@ -63,7 +65,13 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
   if (plotting_value == "relative"){
     plotting <- "Relative"
     print("Relative value plotting")
-    plotted_df <- physeq_subet_norm_df
+    plotted_df <- physeq_subet_norm_df %>%
+      group_by(!! x_column) %>%
+      mutate(per=paste0((100*Abundance/sum(Abundance)))) %>%
+      ungroup %>%
+      select(-Abundance)  %>%
+      dplyr::rename(Abundance = per)
+    plotted_df$Abundance <- as.numeric(plotted_df$Abundance)
   }
   
   # Absolute value plotting
@@ -315,7 +323,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
     f_column <- rlang::sym(facetting_column)
     filtered_OTU <- filtered_df_abs_i %>% 
       dplyr::filter(grepl("<", Species)) %>%
-      group_by(Sample, !!(x_column), !!(g_column), !!(f_column)) %>%
+      group_by(!!(x_column), !!(g_column), !!(f_column)) %>%
       summarise(Abundance = sum(Abundance)) %>% 
       filter(Abundance > 0)
     
@@ -389,10 +397,10 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
         f_column <- rlang::sym(facetting_column)
         taxa_column <- rlang::sym(t)
         merged_taxa_df <- to_melt_df %>%
-          dplyr::group_by(Sample, !!(x_column), !!(g_column), !!(f_column), !!(taxa_column)) %>%
+          dplyr::group_by(!!(x_column), !!(g_column), !!(f_column), !!(taxa_column)) %>%
           dplyr::mutate(Abundance = sum(Abundance)) %>% 
           dplyr::ungroup() %>%
-          dplyr::distinct(Sample, !!(taxa_column), .keep_all = TRUE)
+          dplyr::distinct(!!(x_column), !!(taxa_column), .keep_all = TRUE)
         
         
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
@@ -431,7 +439,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 10, height = 7)
+      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.svg"), width = 4.5, height = 7)
       
       
       
