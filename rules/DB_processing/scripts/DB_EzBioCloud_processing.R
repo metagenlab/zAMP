@@ -165,7 +165,7 @@ for (c_name in s2correct)
     if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) <= 4)
     {
         print("Less than four with Species name")
-        species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE) # filter the values of the vector directly with grep
+        species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE <= 4) # filter the values of the vector directly with grep
         new_species_name <- paste(species, collapse = "/")
         new_species_name_f <- paste(new_species_name, "(", nr_species,")", sep = "")
         print(new_species_name_f)
