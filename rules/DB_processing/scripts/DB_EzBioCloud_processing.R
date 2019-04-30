@@ -121,7 +121,7 @@ for (c_name in g2correct)
     # If Loop when we have the number of species less than or equal to 4, we make a filtrer to eliminate the unknowns and we keep the same names (if there are several that are joined by "/")
     if ( nr_species <= 4)
     {
-        species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE) # filter the values of the vector directly with grep
+          species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE) # filter the values of the vector directly with grep
 	      new_species_name <- paste(unique(species),collapse = "/")
 	      new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
 	      print(new_species_name_f)
@@ -153,7 +153,7 @@ for (c_name in s2correct)
     nr_species <- length(unique(selected_tax_table[,7]))
 
     # when we do not find the symbol "_s" in the species names and that it is superior to 4, we put only the extension "sp."
-    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE)) > 4)
+    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) > 4)
     {
         print("More than four with Species names")
         new_species_name <- paste(new_genus_name,"sp.")
@@ -162,7 +162,7 @@ for (c_name in s2correct)
     }
 
     # when we do not find the symbol "_s" in the species names and it is less than or equal to 4, we realize a filter then we glue the names of species one after the others separated by a "/"
-    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE)) <= 4)
+    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) <= 4)
     {
         print("Less than four with Species name")
         species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE) # filter the values of the vector directly with grep
