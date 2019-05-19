@@ -4,7 +4,7 @@ channels:
 dependencies:
   - r-base=3.5.1
   - r-devtools = 1.13.6
-  - bioconductor-DADA2=1.12.0
+  - bioconductor-DADA2=1.10.0
   - r-dplyr=0.7.6
   - bioconductor-phyloseq=1.24.2
   - bioconductor-biomformat=1.8.0
