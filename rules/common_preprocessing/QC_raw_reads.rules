@@ -21,7 +21,7 @@ rule create_per_run_raw_reads_multiqc_report:
         "../../envs/MultiQC.yml"
     input:
       lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
-      lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcardS.RUN),
+      lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
     output:
         "QC/{RUN}_multiqc_raw_reads_report.html",
         "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt"
