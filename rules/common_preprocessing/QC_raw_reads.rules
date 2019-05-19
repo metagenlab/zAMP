@@ -34,13 +34,21 @@ rule create_per_run_raw_reads_multiqc_report:
         multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
         """
 
+def sample_list():
+
+    file_list = []
+
+    for i in set(all_samples[config['filter_meta_column']):
+        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_R{read_number}_fastqc.zip", RUN = i, sample = all_samples.index.values[all_samples[config["run_column"]] == i], read_number = [1,2])
+        file_list = file_list + combined_values
+    return(file_list)
+
 
 rule create_overall_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     input:
-       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", RUN = all_samples[config["run_column"]], sample = all_samples.index.values[all_samples[config["run_column"]] == {RUN}]),
-       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", RUN = all_samples[config["run_column"]], sample = all_samples.index.values[all_samples[config["run_column"]] == {RUN}]),
+       sample_list(),
     output:
         "QC/multiqc_raw_reads_report.html",
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
