@@ -20,10 +20,10 @@ rule create_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     input:
-       expand("QC/FastQC/raw_reads/{sample}_R1_fastqc.zip", sample = list(read_naming.keys())),
-       expand("QC/FastQC/raw_reads/{sample}_R2_fastqc.zip", sample = list(read_naming.keys())),
+      lambda wildcards: expand("QC/FastQC/raw_reads/{sample}_R1_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
+      lambda wildcards: expand("QC/FastQC/raw_reads/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
     output:
-        "QC/multiqc_raw_reads_report.html",
+        "QC/{RUN}_multiqc_raw_reads_report.html",
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     log:
         logging_folder + "QC/multiqc_raw_reads_report.txt"
