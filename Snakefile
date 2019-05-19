@@ -115,6 +115,7 @@ def get_final_output(config):
 
     ## QC
     expand("QC/{RUN}_multiqc_raw_reads_report.html", RUN = all_samples[config["run_column"]]),
+    "QC/multiqc_raw_reads_report.html",
     #"QC/multiqc_DADA2_filtered_reads_report.html",
 
     ## Generic output

@@ -16,7 +16,7 @@ rule assess_quality_paired_raw_reads_with_fastqc:
         """
 
 
-rule create_raw_reads_multiqc_report:
+rule create_per_run_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     input:
@@ -27,6 +27,24 @@ rule create_raw_reads_multiqc_report:
         "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     log:
         logging_folder + "QC/{RUN}_multiqc_raw_reads_report.txt"
+    priority:
+        100
+    shell:
+        """
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
+        """
+
+rule create_overall_raw_reads_multiqc_report:
+    conda:
+        "../../envs/MultiQC.yml"
+    input:
+       expand("QC/FastQC/raw_reads/{sample}_R1_fastqc.zip", sample = list(read_naming.keys())),
+       expand("QC/FastQC/raw_reads/{sample}_R2_fastqc.zip", sample = list(read_naming.keys())),
+    output:
+        "QC/multiqc_raw_reads_report.html",
+        "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+    log:
+        logging_folder + "QC/multiqc_raw_reads_report.txt"
     priority:
         100
     shell:
