@@ -1,0 +1,102 @@
+
+rule Import_DB :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+        config["DBpath_seq"]
+    output :
+        temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_seq.qza")
+    threads :
+        1
+    shell :
+         '''
+        qiime tools import \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output} 
+        '''
+
+
+rule Extract_V3V4 :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+        workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_seq.qza"
+    output :
+        temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloudV3V4_seq.qza")
+    params :
+        primer_forward = config["forward_primer"],
+        primer_reverse = config["reverse_primer"],
+        length = config["length_max"]
+    threads :
+        1
+    shell :
+         '''
+        qiime feature-classifier extract-reads \
+        --i-sequences {input} \
+        --p-f-primer {params[primer_forward]} \
+        --p-r-primer {params[primer_reverse]} \
+        --p-trunc-len {params[length]} \
+        --o-reads {output} 
+        '''
+
+
+
+rule Export :
+   conda :
+        "../../envs/QIIME2-2019.01.yml"
+   input :
+        workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloudV3V4_seq.qza"
+   output :
+        temp(workflow.basedir + "/data/ezbiocloud_charlotte/dna-sequences.fasta")
+   threads :
+        1
+   shell :
+         '''
+        qiime tools export \
+        --input-path {input} \
+        --output-path $(dirname {output}) 
+        '''
+
+
+
+rule Vsearch :
+    conda :
+        "../../envs/QIIME2-2019.01.yml"
+    input :
+        workflow.basedir + "/data/ezbiocloud_charlotte/dna-sequences.fasta"
+    output :
+        fasta = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4.fasta",
+        uc = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4.uc"
+    log :
+        workflow.basedir + "/data/ezbiocloud_charlotte/log/EzBioCloud_V3V4.log"
+    threads :
+        1
+    shell :
+         '''
+        vsearch \
+        --derep_fulllength {input} \
+        --output {output[fasta]} \
+        --uc {output[uc]} \
+        2> {log}
+        '''
+
+
+
+rule Taxonomy :
+    conda :
+        "../../envs/R_DB_processing.yml"
+    input :
+        tax = config["DBpath_tax"],
+        uc = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4.uc"
+    output :
+        filtrated = temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud1_V3V4_taxonomy.txt"),
+        all = temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud1_V3V4_all_taxonomy.txt"),
+        qiime = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_taxonomy.txt",
+        qiime_all = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4_all_taxonomy.txt"
+    log :
+       workflow.basedir + "/data/ezbiocloud_charlotte/log/EzBioCloud_V3V4_taxonomy.log"
+    threads :
+        1
+    script :
+        "scripts/DB_EzBioCloud_processing.R"

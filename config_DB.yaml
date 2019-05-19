@@ -1,0 +1,9 @@
+#localisation of database
+DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud/ezbiocloud_qiime-full.fasta"
+DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud//ezbiocloud_qiime-full.txt"
+
+#trimming
+forward_primer: CCTACGGGNGGCWGCAG
+reverse_primer: GACTACHVGGGTATCTAATCC
+length_max: 500
+
