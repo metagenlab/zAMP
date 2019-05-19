@@ -6,6 +6,6 @@ dependencies:
   - r-devtools = 1.13.6
   - bioconductor-DADA2=1.10.0
   - r-dplyr=0.7.6
-  - bioconductor-phyloseq=1.28.0
+  - bioconductor-phyloseq=1.26.1
   - bioconductor-biomformat=1.10.0
   # - libgcc-ng =7.2.0 #7.3.0 doesnt work
