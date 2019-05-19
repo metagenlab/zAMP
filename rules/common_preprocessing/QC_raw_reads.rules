@@ -24,7 +24,7 @@ rule create_per_run_raw_reads_multiqc_report:
       lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
     output:
         "QC/{RUN}_multiqc_raw_reads_report.html",
-        "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+        "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt",
     log:
         logging_folder + "QC/{RUN}_multiqc_raw_reads_report.txt"
     priority:
@@ -35,14 +35,11 @@ rule create_per_run_raw_reads_multiqc_report:
         """
 
 def sample_list():
-
     file_list = []
-
     for i in set(all_samples[config['filter_meta_column']):
-        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_R{read_number}_fastqc.zip", RUN = i, sample = all_samples.index.values[all_samples[config["run_column"]] == i], read_number = [1,2])
+        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_R{read_number}_fastqc.zip", RUN = i, sample = all_samples.index.values[all_samples[config["run_column"]] == i], read_number = ["1","2"])
         file_list = file_list + combined_values
     return(file_list)
-
 
 rule create_overall_raw_reads_multiqc_report:
     conda:
@@ -51,7 +48,7 @@ rule create_overall_raw_reads_multiqc_report:
        sample_list(),
     output:
         "QC/multiqc_raw_reads_report.html",
-        "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+        "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt",
     log:
         logging_folder + "QC/multiqc_raw_reads_report.txt"
     priority:
