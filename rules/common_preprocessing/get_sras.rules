@@ -43,7 +43,3 @@ rule download_sra_paired:
             rm ${{cache_dir}}/sra/{wildcards.sample}.sra.cache
         fi
         """
-
-
-
-
