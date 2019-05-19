@@ -1,6 +1,6 @@
 rule create_tree_in_QIIME2 :
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         "{tool}/2_denoised/rep-seqs.qza"
     output:
@@ -25,7 +25,7 @@ rule create_tree_in_QIIME2 :
 
 rule export_QIIME2_tree:
     conda:
-        "../../envs/QIIME2-2018.8.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         "{tool}/4_tree/rooted-tree.qza"
     output:

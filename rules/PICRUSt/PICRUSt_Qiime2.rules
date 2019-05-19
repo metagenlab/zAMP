@@ -1,7 +1,7 @@
 
 rule fragment_inserption_sepp :
     conda:
-        "../../envs/QIIME2-2018.11.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         rep_seqs = "{tool}/2_denoised/rep-seqs.qza",
         q_picrust = workflow.basedir + "/data/q2-picrust2-0.0.2.zip",
@@ -39,7 +39,7 @@ rule fragment_inserption_sepp :
 
 rule picrust2_qiime2 :
     conda:
-        "../../envs/QIIME2-2018.11.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         seqs = "{tool}/2_denoised/rep-seqs.qza",
         tree = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/picrust/sepp/tree.qza",

@@ -1,7 +1,7 @@
 
 rule Qiime2_import_relative_freq :
     conda:
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/otu_biom.biom",
     output:
@@ -20,7 +20,7 @@ rule Qiime2_import_relative_freq :
 
 rule Qiime2_volatility :
     conda:
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.qza",
         Metadata = config["with_type_table"],
@@ -44,7 +44,7 @@ rule Qiime2_volatility :
 # https://docs.qiime2.org/2019.1/plugins/available/longitudinal/feature-volatility/
 rule Qiime2_feature_volatility :
     conda:
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/count-table.qza",
         Metadata = config["with_type_table"],
