@@ -39,8 +39,8 @@ rule create_overall_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     input:
-       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", sample = list(read_naming.keys())),
-       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = list(read_naming.keys())),
+       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", sample = list(read_naming.keys()), RUN = all_samples[config["run_column"]]),
+       expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = list(read_naming.keys()), RUN = all_samples[config["run_column"]]),
     output:
         "QC/multiqc_raw_reads_report.html",
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
