@@ -1,0 +1,70 @@
+
+
+def get_grouping_key(column_of_interest):
+
+    filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
+
+    file_list = []
+
+    for i in set(column_of_interest):
+        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(filtered_all_samples[i])))
+        file_list = file_list + combined_values
+    return(file_list)
+
+
+def get_rarefaction_key(rarefaction_values):
+    file_list = []
+
+    for i in set(rarefaction_values):
+        combined_values = expand("rarefaction_{rarefaction_values}", rarefaction_values = i)
+        file_list = file_list + combined_values
+    file_list = file_list + ["norarefaction"]
+
+    return(file_list)
+
+
+def get_taxa_collapse_level_key(collapse_level):
+    file_list = []
+
+    for i in set(collapse_level):
+        combined_values = expand("collap_{collapse_level}", collapse_level = i)
+        file_list = file_list + combined_values
+    file_list = file_list + ["no_collapse"]
+
+    return(file_list)
+
+
+def get_filtering_key(filtering):
+    file_list = []
+    for i in set(filtering):
+        if i == "nofiltering" :
+            filt = ["nofiltering_0"]
+        elif i == "absolute" :
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
+        elif i == "relative" :
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
+        else :
+            raise ValueError("Forbidden value for filtering type")
+
+        file_list = file_list + filt
+
+    return(file_list)
+
+
+def phyloseq_output_list():
+    output = MultiQC + minimal_output + minimal_diagnostic_plots + phyloseq
+    if config["transposed_tables"] == True:
+        phyloseq.append(transposed_output)
+    return(output)
+
+
+def plots_list():
+    output = phyloseq_output_list()
+    if config["Barplots"] == True:
+        output.append(barplots)
+    if config["Heatmaps"] == True:
+        output.append(barplots)
+    if config["Alpha_divs"] == True:
+        output.append(barplots)
+    return(output)
+

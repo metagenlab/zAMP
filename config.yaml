@@ -1,81 +1,104 @@
-#mandatory, one of them or both
+## Dataset ############################################################################################################
+### Set input samples list. (Mandatory, one of them or both)
 sra_samples: example_sra_samples.tsv
 local_samples: Metadata.tsv
 
-# Trimming
-forward_primer: CCTACGGGNGGCWGCAG
-reverse_primer: GACTACHVGGGTATCTAATCC
-DADA2_F_reads_length_trim: 280
-DADA2_R_reads_length_trim: 255
+## Reads proccessing ##################################################################################################
+### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
+denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
 
-# Filtering
-merged_min_length: 390
-merged_max_length: 500
-F_extected_error: 6
-R_extected_error: 6
+### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
+forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
+reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
-# Denoisier
-denoiser: ["vsearch", "DADA2"]
-run_column: seq_run
+### Length trimming of reads (after primer removal, for DADA2 approach only)
+DADA2_F_reads_length_trim: 280 # 280 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
+DADA2_R_reads_length_trim: 255 # 250 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
 
-# Database
-tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
+### Quality-based filtering of reads (reads trimming, for DADA2 approach only)
+F_extected_error: 6 # 6 recommended, increase if too much reads are filtered out
+R_extected_error: 6 # 6 recommended, increase if too much reads are filtered out
 
-# Rarefaction
-rarefaction_value: [10000,20000,50000,100000,200000,300000]
+### Column identifying the sequencing run (sequencing error are learned for each run for DADA2)
+run_column: seq_run # specifiy the name the column in the "local_samples" table
 
-# Phyloseq processing
-viz_replace_empty_tax: TRUE
-filter_tax_rank: ["Kingdom"]
-filter_lineage: ["Bacteria"]
-filter_out_tax_rank: ["Phylum"]
-filter_out_lineage: ["Bacteria_phy"]
-filter_meta_column: ["sample_group"]
-filter_column_value: ["sample"]
-filter_features_subset_relative_or_absolute: "relative" #(or 'absolute')
-filter_features_subset_formula: sum(x > 3) > (0.2*length(x)) # or (sum(x) > 1) to keep what is above 1
-collapse_level: [2,3,4,5,6,7]
+## Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
+merged_min_length: 390 # from 390 to 400 for V3V4
+merged_max_length: 500 # from 450 to 500 for V3V4
 
-# Visualization
-grouping_column: [PatientID]
-x_axis_column: Sample
-sample_type: sample_source
+### Database used for taxonomic assignment
+tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple
+
+
+## Reads post-processing ##############################################################################################
+### Rarefaction
+rarefaction_value: [10000,20000,300000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve
+
+### Phyloseq processing
+viz_replace_empty_tax: TRUE # "TRUE" to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc...
+filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "Kingdom")
+filter_lineage: ["Bacteria"] # What we filter in. (Usually "Bacteria")
+filter_out_tax_rank: ["Phylum"] # At which taxonomic rank we filter out. (Usually "Phylum")
+filter_out_lineage: ["Bacteria_phy"] # At which taxonomic rank we filter out. (Usually "Bacteria_phy" to remove suspicious not assigned Bacteria, probably which are probably not bacteria)
+filter_meta_column: "sample_group" # Column in "local_samples" to define which samples are kept in.
+filter_column_value: "sample" # Define value of "filter_meta_column" to degine which samples are kept in.
+collapse_level: [2,3,4,5,6,7] # At which taxonomic levels are agglomering the reads. 7 for Species, 6 for Genus etc...
+
+filter_features_subset_formula: sum(x > 3) > (0.2*length(x)) # or (sum(x) > 1) to keep what is above 1 ??
+filter_features_subset_relative_or_absolute: "relative" #(or 'absolute') ??
+transposed_tables: False # True to have transposed count table
+
+## Visualization ######################################################################################################
+### Select output
+Barplots: True # or False
+Heatmaps: True # or False
+Alpha_divs: True # or False
+Ordinations: True # or False
+
+### General
+grouping_column: ["PatientID"] # Column in "local_samples" for which a plot will be generated for each value of.
+x_axis_column: sample_label # Column in "local_samples" used to label the x axis. Cannot be the first column
+sample_type: sample_source # Column in "local_samples" used to fill the plots ??
+
+### Ordination parameters
+ordination_types: ["distance", "constrained", "unconstrained"]
 ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
 ordination_method_distance_based: ["NMDS", "MDS", "PCoA"]
 ordination_method_constrained: ["DCA", "CCA", "RDA", "CAP", "DPCoA"]
 ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
 ordination_factor : sample_source
 
-# barplot
-Heatmap: True # or False
-Barplot: True # or False
-relative_or_absolute_baxplot: ["relative", "absolute"]
-relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
-relative_filtering_value: [10]
-absolute_filtering_value: [200]
-plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"]
-t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE')
-t_neg_PCR_group_column_value: "t_neg_PCR"
-distinct_colors: TRUE #(or 'FALSE')
-horizontal_barplot: TRUE #(or 'FALSE')
-facet_plot:  TRUE #(or 'FALSE')
-facetting_column: "extraction_method"
-order_by_abundance:  TRUE #(or 'FALSE')
-separated_legend: TRUE #(or 'FALSE')
+### Barplots and heatmaps parameters
+relative_or_absolute_baxplot: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
+relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
+relative_filtering_value: [1] # % for relative value based filtering.
+absolute_filtering_value: [200] # number of reads for absolute value based filtering
+plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
+t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
+t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
+distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors on barplots
+horizontal_barplot: TRUE #(or 'FALSE') # Turn horizontally the plots
+facet_plot:  TRUE #(or 'FALSE') # Create facet plots with ggplot2
+facetting_column: "extraction_method" # If facets, which column in "local_samples" concaints the information for facetting
+order_by_abundance:  TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
+separated_legend: TRUE #(or 'FALSE') # should the legend be separated
 
-# Volatility
-Volatility: TRUE
-with_type_table: Metadata_q2.tsv
+
+## Special Qiime2 outputs, in dev. ####################################################################################
+### Volatility plots https://docs.qiime2.org/2019.4/plugins/available/longitudinal/
+Volatility: FALSE
+Qiime2_metadata: Metadata_q2.tsv ## Redifine a table with categories https://docs.qiime2.org/2019.4/tutorials/metadata/
 individual_id_column: ["patientID"]
 p_state_column: ["time"]
 
-#Qiime2 stat analysis
+### ANCOM differential abundance stat. analysis
 ANCOM: TRUE
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 
+### Gneiss differential abundance stat. analysis https://docs.qiime2.org/2019.4/tutorials/gneiss/
 Gneiss: ["Gradient", "Phylogeny", "Clustering"]
 Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
 Gneiss_formula: Subject_ID + Test_day + Condition_group
 
-# Picrust
-PICRUST: True
+## Picrust ############################################################################################################
+PICRUST: True # use PICRUSt2 to predict genes content based on 16S rRNA taxonomic profiles. To be used with caution. https://github.com/picrust/picrust2/wiki

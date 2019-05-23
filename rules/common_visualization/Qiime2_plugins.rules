@@ -23,7 +23,7 @@ rule Qiime2_volatility :
         "../../envs/QIIME2-2019.04.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.qza",
-        Metadata = config["with_type_table"],
+        Metadata = config["Qiime2_metadata"],
     output:
         "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/volatility/{collapsed_or_not}/{prefix1}/{prefix2}/volatility.qzv"
     params:
@@ -47,7 +47,7 @@ rule Qiime2_feature_volatility :
         "../../envs/QIIME2-2019.04.yml"
     input:
         table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_export/count-table.qza",
-        Metadata = config["with_type_table"],
+        Metadata = config["Qiime2_metadata"],
     output:
         filtered_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/volatility/{collapsed_or_not}/{prefix1}/{prefix2}/feature-volatility_filtered-table.qza",
         feature_importance = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/volatility/{collapsed_or_not}/{prefix1}/{prefix2}/feature-volatility_feature-importance.qza",
