@@ -48,88 +48,6 @@ rule KRONA_plots:
         "scripts/KRONA_plots.R"
 
 
-rule alpha_diversity:
-    conda:
-        "../../envs/r_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
-        Metadata_table = config["local_samples"]
-    output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
-    params:
-        grouping_column = lambda wildcards: wildcards.grouping_column,
-        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
-        sample_label = config["sample_label"],
-        sample_type = config["sample_type"]
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
-    script:
-        "scripts/alpha_diversity.R"
-
-
-rule ordination_distance_based:
-    conda:
-        "../../envs/r_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
-        Metadata_table = config["local_samples"]
-    output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.png",
-    params:
-        grouping_column = lambda wildcards: wildcards.grouping_column,
-        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
-        sample_label = config["sample_label"],
-        sample_type = config["sample_type"],
-        ordination_distance = lambda wildcards: wildcards.ordination_distance ,
-        ordination_method = lambda wildcards: wildcards.ordination_method_distance_based,
-        ordination_factor = lambda wildcards: config["ordination_factor"]
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.logs",
-    script:
-        "scripts/ordination_distance_based.R"
-
-
-rule ordination_unconstrained:
-    conda:
-        "../../envs/r_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
-        Metadata_table = config["local_samples"]
-    output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}.png",
-    params:
-        grouping_column = lambda wildcards: wildcards.grouping_column,
-        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
-        sample_label = config["sample_label"],
-        sample_type = config["sample_type"],
-        ordination_method = lambda wildcards: wildcards.ordination_method,
-        ordination_factor = lambda wildcards: config["ordination_factor"]
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}_logs.txt"
-    script:
-        "scripts/ordination_unconstrained.R"
-
-
-rule ordination_constrained:
-    conda:
-        "../../envs/r_visualization.yml"
-    input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
-        Metadata_table = config["local_samples"]
-    output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.png",
-    params:
-        grouping_column = lambda wildcards: wildcards.grouping_column,
-        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
-        sample_label = config["sample_label"],
-        sample_type = config["sample_type"],
-        ordination_method = lambda wildcards: wildcards.ordination_method,
-        ordination_factor = lambda wildcards: wildcards.ordination_factor
-    log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.logs.txt"
-    script:
-        "scripts/ordination_constrained.R"
-
 
 # A small function to transform the taxa levels to the collapse levels
 def barplot_levels(wildcards):
@@ -212,4 +130,88 @@ rule physeq_heatmap:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/heatmaps/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.txt",
     script:
         "scripts/heatmap.R"
+
+
+
+rule alpha_diversity:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
+    params:
+        grouping_column = lambda wildcards: wildcards.grouping_column,
+        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
+        sample_label = config["sample_label"],
+        sample_type = config["sample_type"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
+    script:
+        "scripts/alpha_diversity.R"
+
+
+rule ordination_distance_based:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.png",
+    params:
+        grouping_column = lambda wildcards: wildcards.grouping_column,
+        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
+        sample_label = config["sample_label"],
+        sample_type = config["sample_type"],
+        ordination_distance = lambda wildcards: wildcards.ordination_distance ,
+        ordination_method = lambda wildcards: wildcards.ordination_method_distance_based,
+        ordination_factor = lambda wildcards: config["ordination_factor"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.logs",
+    script:
+        "scripts/ordination_distance_based.R"
+
+
+rule ordination_unconstrained:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}.png",
+    params:
+        grouping_column = lambda wildcards: wildcards.grouping_column,
+        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
+        sample_label = config["sample_label"],
+        sample_type = config["sample_type"],
+        ordination_method = lambda wildcards: wildcards.ordination_method,
+        ordination_factor = lambda wildcards: config["ordination_factor"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}_logs.txt"
+    script:
+        "scripts/ordination_unconstrained.R"
+
+
+rule ordination_constrained:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.png",
+    params:
+        grouping_column = lambda wildcards: wildcards.grouping_column,
+        grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
+        sample_label = config["sample_label"],
+        sample_type = config["sample_type"],
+        ordination_method = lambda wildcards: wildcards.ordination_method,
+        ordination_factor = lambda wildcards: wildcards.ordination_factor
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.logs.txt"
+    script:
+        "scripts/ordination_constrained.R"
 

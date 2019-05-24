@@ -1,9 +1,9 @@
 
 ## Input/output
 ### Generate the input sample list
-include: "rules/output_definition/making_sample_dataset.rules"
+include: "rules/0_preprocessing/make_sample_dataset.rules"
 ## Include list of callable outputs integrated in fuctions that will be called by the following rules
-include: "rules/output_definition/making_output_list_files.rules"
+include: "rules/0_preprocessing/make_output_list_files.rules"
 
 ### Defaul rule all. Include all but PICRUSt2 and QIIME2 special outputs
 rule all:
@@ -40,20 +40,17 @@ rule PICRUSt2_output:
 
 
 ## Include the pipeline rules
-include: "rules/common_preprocessing/get_reads.rules"
-include: "rules/common_preprocessing/get_sras.rules"
-include: "rules/common_preprocessing/QC_raw_reads.rules"
-include: "rules/DADA2_ASV/cutadapt_trim.rules"
-include: "rules/DADA2_ASV/DADA2_denoising.rules"
-include: "rules/DADA2_ASV/QC_DADA2.rules"
-include: "rules/vsearch_OTU/PANDAseq_trim_filter_pair.rules"
-include: "rules/vsearch_OTU/vsearch_derep_and_clustering.rules"
-include: "rules/vsearch_OTU/vsearch_count_tables_and_reformat.rules"
-include: "rules/common_tax_assignment/RDP_in_QIIME.rules"
-include: "rules/common_tax_tree/tree.rules"
-include: "rules/common_visualization/Import_to_QIIME2.rules"
-include: "rules/common_visualization/Phyloseq.rules"
-include: "rules/common_visualization/General_plotting.rules"
-include: "rules/PICRUSt/picrust.rules"
-include: "rules/common_visualization/Qiime2_stat_analysis.rules"
-include: "rules/common_visualization/Qiime2_plugins.rules"
+include: "rules/0_preprocessing/get_reads.rules"
+include: "rules/0_preprocessing/get_sras.rules"
+include: "rules/0_preprocessing/QC_raw_reads.rules"
+include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"
+include: "rules/1_2_DADA2_ASVs/2_DADA2_denoising.rules"
+include: "rules/1_2_vsearch_OTUs/1_PANDAseq_trim_filter_merge.rules"
+include: "rules/1_2_vsearch_OTUs/2_vsearch_denoising.rules"
+include: "rules/3_tax_assignment/RDP_in_QIIME.rules"
+include: "rules/4_tax_tree/QIIME2_tree.rules"
+include: "rules/5_visualization/Phyloseq.rules"
+include: "rules/5_visualization/General_plotting.rules"
+include: "rules/5_visualization/QIIME2_import.rules"
+include: "rules/5_visualization/QIIME2_plugins.rules"
+include: "rules/PICRUSt2/picrust.rules"

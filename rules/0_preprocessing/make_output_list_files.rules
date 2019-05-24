@@ -1,6 +1,6 @@
 ## Define set of outputs as that will be called by function from the Snakefile
 ## Import list of functions to handle the output
-include: "making_output_list_fcts.rules"
+include: "make_output_list_fcts.rules"
 
 ### MultiQC
 MultiQC = expand("QC/{RUN}_multiqc_raw_reads_report.html", RUN = set(all_samples[config["run_column"]]))

@@ -1,7 +1,5 @@
 User manual DB processing :
 
-
-
 Snakemake is a workflow management system. We use it to create data analysis pipelines, so such as the implementation of the database.
 
 
