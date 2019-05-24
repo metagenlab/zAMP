@@ -5,9 +5,7 @@ include: "rules/0_preprocessing/make_sample_dataset.rules"
 ## Include list of callable outputs integrated in fuctions that will be called by the following rules
 include: "rules/0_preprocessing/make_output_list_files.rules"
 
-### Defaul rule all. Include all but PICRUSt2 and QIIME2 special outputs
-rule all:
-    input: rule_all_list()
+
 
 ## Rules to call defined sets of output. For each, we first generate a function calling the combined list of output. Then its is integrated in a easily callable rule
 ### Only QC of the reads
@@ -37,6 +35,10 @@ rule Qiime2_output:
 ### PICRUSt2 outputs
 rule PICRUSt2_output:
     input: PICRUSt2_list()
+
+### Defaul rule all. Include all but PICRUSt2 and QIIME2 special outputs
+rule all:
+    input: rule_all_list()
 
 
 ## Include the pipeline rules
