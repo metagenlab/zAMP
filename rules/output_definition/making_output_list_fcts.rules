@@ -1,6 +1,7 @@
 
-## Set of functions generating a list that will be part of output paths based on the content of config file
 
+## Set of functions generating a list that will be part of output paths based on the content of config file
+### define samples to keep
 def get_grouping_key(column_of_interest):
 
     filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
@@ -12,10 +13,9 @@ def get_grouping_key(column_of_interest):
         file_list = file_list + combined_values
     return(file_list)
 
-
+### Define rarefaction levels (values in config + no rarefaction)
 def get_rarefaction_key(rarefaction_values):
     file_list = []
-
     for i in set(rarefaction_values):
         combined_values = expand("rarefaction_{rarefaction_values}", rarefaction_values = i)
         file_list = file_list + combined_values
@@ -24,7 +24,9 @@ def get_rarefaction_key(rarefaction_values):
     return(file_list)
 
 
+### Define taxonomic collapse levels from config
 def get_taxa_collapse_level_key(collapse_level):
+
     file_list = []
 
     for i in set(collapse_level):
@@ -34,9 +36,11 @@ def get_taxa_collapse_level_key(collapse_level):
 
     return(file_list)
 
-
+### Define abundance filtering from config
 def get_filtering_key(filtering):
+
     file_list = []
+
     for i in set(filtering):
         if i == "nofiltering" :
             filt = ["nofiltering_0"]
@@ -51,4 +55,81 @@ def get_filtering_key(filtering):
 
     return(file_list)
 
-## Set of function generating a list of output from config
+## Set of function to generate list of output from config
+
+
+### Light output, including count table, consensus sequences and taxonomic assignement
+def light_output_list():
+    output = []
+    output = MultiQC
+    output.append(light_output)
+    if "DADA2" in config["denoiser"]:
+        output.append("DADA2/2_denoised/DADA2_denoising_stats.tsv")
+    return(output)
+
+### Basic output, generated plots numbers, KRONA plots and rarefaction curve
+def basic_plots_list():
+    output = []
+    output = light_output_list()
+    output.append(basic_plots)
+    return(output)
+
+### Complete set of phyloseq, in option including transposed count table and metadata (wide to long)
+def phyloseq_output_list():
+    output = []
+    output = basic_plots_list()
+    output.append(phyloseq)
+    if config["transposed_tables"] == True:
+        output.append(transposed_output)
+    return(output)
+
+### Complete set of plots
+def plots_output_list():
+    output = []
+    output = basic_plots_list()
+    if config["Barplots"] == True:
+        output.append(barplots)
+    if config["Heatmaps"] == True:
+        output.append(barplots)
+    if config["Alpha_divs"] == True:
+        output.append(barplots)
+    if config["Distance_ordinations"] == True:
+        output.append(distance_ordinations)
+    if config["Constrained_ordinations"] == True:
+        output.append(constrained_ordinations)
+    if config["Unconstrained_ordinations"] == True:
+        output.append(unconstrained_ordinations)
+    return(output)
+
+### Qiime2 outputs
+def Qiime2_output_list():
+    output = []
+    output = basic_plots_list()
+    if config["Qiime2_basic_output_visualization"] == True:
+        output.append(Qiime2_vis_qzv)
+    if config["Volatility"] == True:
+        output.append(Qiime2_volatility)
+    if config["ANCOM"] == True:
+        output.append(Qiime2_ANCOM)
+    if "Gradient" in config["Gneiss"]:
+        output.append(Qiime2_Gneiss_correlation)
+    if "Phylogeny" in config["Gneiss"]:
+        output.append(Qiime2_Gneiss_Phylogeny)
+    if "Clustering" in config["Gneiss"]:
+        output.append(Qiime2_Gneiss_gradient)
+    return(output)
+
+### PICRUSt2 outputs
+def PICRUSt2_list():
+    output = []
+    output = basic_plots_list()
+    output.append(picrust2)
+    return(output)
+
+### Rule all, the default rule including all output
+def rule_all_list():
+    output = []
+    output.append(phyloseq_output_list())
+    output.append(plots_output_list())
+    output.append(Qiime2_vis_qzv)
+    return(output)

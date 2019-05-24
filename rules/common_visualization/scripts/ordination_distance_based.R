@@ -18,7 +18,7 @@ output_path <- snakemake@output[["output1"]]
 
 ## Parameters
 ordination_distance = snakemake@params[["ordination_distance"]]
-# x_axis_column <- snakemake@params[["x_axis_column"]]
+# sample_label <- snakemake@params[["sample_label"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_column
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]

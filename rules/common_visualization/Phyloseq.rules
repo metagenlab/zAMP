@@ -37,7 +37,7 @@ rule rarefaction_curve:
         rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.png"
     params:
         sample_type = config["sample_type"],
-        x_axis_column = config["x_axis_column"]
+        sample_label = config["sample_label"]
     log:
         logging_folder +"{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/rarefaction_curve.txt"
     script:

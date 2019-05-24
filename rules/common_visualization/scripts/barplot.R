@@ -15,7 +15,7 @@ phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 output_folder <- dirname(snakemake@output[["barplot"]])
 
 ## Parameters
-x_axis_column =snakemake@params[[ "x_axis_column"]]
+sample_label =snakemake@params[[ "sample_label"]]
 grouping_column <- snakemake@params[[ "grouping_column"]]
 t_neg_PCR_sample_on_plots = snakemake@params[["t_neg_PCR_sample_on_plots"]]
 t_neg_PCR_group_column_value = snakemake@params[["t_neg_PCR_group_column_value"]]
@@ -48,12 +48,12 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 ## Order the x axis as in the metadata_table
 #sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-#sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
+#sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
 
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    barplots_fct <- function(melted_dataframe, sample_label, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -123,13 +123,13 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 #### Write the table after table choice for relative of absolute value plotting , without Abundance = 0 rows to reduce its size.
                     #plotted_df %>%
                         #filter(Abundance>0) %>%
-                        #write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+                        #write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", sample_label, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
                 #### Write the table with values that passed the quantity filtering.
                     #physeq_subset_df_filtered %>%  ### To follow and control the process, write external .tsv tables
                         #filter(Abundance>0) %>%
-                        #write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_all_", x_axis_column,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+                        #write.table(file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_all_", sample_label,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
             ### Now we have a dataframe ("plotted_df") containing all values, with Abundance expressed in absolute reads number or relative quanity in %, and a dataframe containing the rows that have to be kept while the rest will be merged by tagging them with the same name
@@ -140,7 +140,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
             ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
                 #merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
                 #    filter(Abundance>0)
-                #write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+                #write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_all_", sample_label, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
             ### Rename taxa with < percent/reads abundance, defending of the filtering applied
                 #### Define the filtering tag depending of the applied filtering
@@ -187,7 +187,7 @@ print("test2")
             ### Reorder the facet factor if later used for plotting
                 if (isTRUE(facet_plot)){
                     #threshod_filtered_abs_no_zero[[facetting_column]] <- as.factor(threshod_filtered_abs_no_zero[[facetting_column]])
-                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
+                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[sample_label]]))
 
                 }else if (isFALSE(facet_plot)){print("No faceting")
 
@@ -196,9 +196,9 @@ print("test2")
 
 print("test3")
 
-           ### Reverse the x_axis_column column for later if using horizontal barplot
+           ### Reverse the sample_label column for later if using horizontal barplot
                 if (isTRUE(horizontal_barplot)){
-                    threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
+                    threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
 
                 } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
 
@@ -279,17 +279,17 @@ print("test3")
 
 
                 #### Write the content of the plot table in a external file
-                    #write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_",grouping_column, "_", i, "_", tax_ranks,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+                    #write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/quantitative_barplots/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", filtering_value, "_",grouping_column, "_", i, "_", tax_ranks,"_",sample_label, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
                 #### Renames the values of the vector used for labeling
-                    #x_labels <- as(filtered_df_abs_i[[x_axis_column]], "character")
+                    #x_labels <- as(filtered_df_abs_i[[sample_label]], "character")
                     #names(x_labels) <- filtered_df_abs_i[["Sample"]]
 
 
                 #### Create the barplot
                     taxrank_barplot <- filtered_df_abs_i %>%
-                        ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(tax_ranks))) +
+                        ggplot(aes(x = get(sample_label), y = Abundance, fill = get(tax_ranks))) +
                         theme_bw() +
                         geom_col() +
                         #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
@@ -343,7 +343,7 @@ print("test3")
 barplots_fct(
   melted_dataframe = melted_dataframe,
     grouping_column = grouping_column,
-    x_axis_column = x_axis_column,
+    sample_label = sample_label,
     t_neg_PCR_sample_on_plots = t_neg_PCR_sample_on_plots,
     t_neg_PCR_group_column_value = t_neg_PCR_group_column_value,
     relative_or_absolute_filtering = relative_or_absolute_filtering,
