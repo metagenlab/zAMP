@@ -55,7 +55,7 @@ rule DADA2_infer_ASV:
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
-        x_axis_filter_column_value = lambda wildcards: all_samples[config["x_axis_column"]][wildcards.sample]
+        x_axis_filter_column_value = lambda wildcards: all_samples[config["sample_label"]][wildcards.sample]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
     threads:
@@ -120,3 +120,42 @@ rule DADA2_filter_stats:
         1
     script:
         "scripts/3_big_data_DADA2_filtering_stats.R"
+
+
+
+
+
+### Accessory rules to generate QC reports after q-score filtering. Not really used
+rule assess_quality_paired_filtered_reads_with_fastqc :
+    conda:
+        "../../envs/FastQC.yml"
+    input:
+        "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
+        "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
+    output:
+        "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip",
+        "QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip",
+    log:
+        logging_folder + "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.txt"
+    shell:
+        """
+        fastqc {input} -o $(dirname {output[0]}) &> {log}
+        """
+
+rule create_filtered_reads_multiqc_report:
+    conda:
+        "../../envs/MultiQC.yml"
+    input:
+       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(read_naming.keys())),
+       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
+       expand("DADA2/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt", sample = list(read_naming.keys()))
+    output:
+        "QC/multiqc_DADA2_filtered_reads_report.html"
+    log:
+        logging_folder + "QC/multiqc_filtered_reads_report.txt"
+#    params:
+#        configfile = multiqc_configfile
+    shell:
+        """
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") &> {log[0]}
+        """

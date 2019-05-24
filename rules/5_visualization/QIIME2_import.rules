@@ -124,4 +124,20 @@ rule create_visualize_table_QIIME2 :
         '''
 
 
-
+rule Qiime2_import_relative_freq :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/otu_biom.biom",
+    output:
+        "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.qza"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/{collapsed_or_not}/{prefix1}/{prefix2}_trfs_export/rel_count-table.txt"
+    shell:
+        '''
+        qiime tools import \
+          --input-path {input} \
+          --type 'FeatureTable[RelativeFrequency]' \
+          --input-format BIOMV100Format \
+          --output-path {output}
+        '''

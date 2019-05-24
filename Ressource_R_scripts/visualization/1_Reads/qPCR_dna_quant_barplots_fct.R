@@ -7,7 +7,7 @@ https://gist.github.com/tomhopper/faa24797bb44addeba79
 ```{r}
 
 ### Create the function
-qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column, filling_column, x_axis_column, distinct_colors = FALSE, facet_plot = FALSE, facetting_column = NULL){
+qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column, filling_column, sample_label, distinct_colors = FALSE, facet_plot = FALSE, facetting_column = NULL){
   
   
   ### Record data on the distribution of number of reads (useful later to scale plots axis)
@@ -44,7 +44,7 @@ qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, groupi
   
   
   ### Create the barplot for qPCR actin
-  qPCR_16s_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = Quantity_actin, fill = get(filling_column))) + 
+  qPCR_16s_barplot <- ggplot(count_table_df, aes(x = get(sample_label), y = Quantity_actin, fill = get(filling_column))) +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Quantification actin qPCR [copies/ml]") +
@@ -57,7 +57,7 @@ qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, groupi
   
   
   ### Create the barplot for qPCR 16S
-  qPCR_actin_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = Quantity_16S, fill = get(filling_column))) + 
+  qPCR_actin_barplot <- ggplot(count_table_df, aes(x = get(sample_label), y = Quantity_16S, fill = get(filling_column))) +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Quantification 16S qPCR [copies/ml]") +
@@ -70,7 +70,7 @@ qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, groupi
   
   
   ## Create the barplot for bact to actin ratio
-  bact_to_actin_ratio_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = bact_to_human_ratio, fill = get(filling_column))) + 
+  bact_to_actin_ratio_barplot <- ggplot(count_table_df, aes(x = get(sample_label), y = bact_to_human_ratio, fill = get(filling_column))) +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
     labs(x= grouping_column,  y ="Quantitative DNA ratio between bacteria and actin") +
@@ -83,10 +83,10 @@ qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, groupi
   
   
   ### Create the barplot for reads
-  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) + 
+  overall_reads_barplot <- ggplot(count_table_df, aes(x = get(sample_label), y = TotalReads, fill = get(filling_column))) +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 
-    labs(x= x_axis_column,  y ="Reads") +
+    labs(x= sample_label,  y ="Reads") +
     ggtitle(paste("Reads counts overall")) +
     scale_x_discrete(drop = TRUE) + # Keep all groups, included the ones with values. Alternative : (drop = FALSE)  
     scale_y_continuous(labels = comma, limits = c(0,smax)) +
@@ -100,7 +100,7 @@ qPCR_dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, groupi
   
 }   
 
-dna_quant_barplots_fct(count_table_df = reads_counts_df, figures_save_dir = "r_figures", grouping_column = "extraction_kit", filling_column = "sample_source", x_axis_column = "sample_label", distinct_colors = TRUE, facet_plot = FALSE)
+dna_quant_barplots_fct(count_table_df = reads_counts_df, figures_save_dir = "r_figures", grouping_column = "extraction_kit", filling_column = "sample_source", sample_label = "sample_label", distinct_colors = TRUE, facet_plot = FALSE)
 
 
 

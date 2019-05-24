@@ -1,5 +1,5 @@
 ### Create the function
-dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column, filling_column, x_axis_column, distinct_colors = FALSE, facet_plot = FALSE, facetting_column = NULL, dna_quant_column, patient_ID){
+dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_column, filling_column, sample_label, distinct_colors = FALSE, facet_plot = FALSE, facetting_column = NULL, dna_quant_column, patient_ID){
   
   
   ### Record data on the distribution of number of reads (useful later to scale plots axis)
@@ -42,7 +42,7 @@ for (i in patient_ID){
 
 
   ### Create the barplot for DNA
-  overall_dna_barplot <- ggplot(count_table_df_i, aes(x = get(x_axis_column), y = get(dna_quant_column), fill = get(filling_column))) +
+  overall_dna_barplot <- ggplot(count_table_df_i, aes(x = get(sample_label), y = get(dna_quant_column), fill = get(filling_column))) +
     geom_col() +
     theme_bw() +
     scale_fill_manual(values = colors_palette) + 
@@ -73,7 +73,7 @@ for (i in patient_ID){
   }
 
   ### Create the barplot for reads
-  overall_reads_barplot <- ggplot(count_table_df_i, aes(x = get(x_axis_column), y = TotalReads, fill = get(filling_column))) +
+  overall_reads_barplot <- ggplot(count_table_df_i, aes(x = get(sample_label), y = TotalReads, fill = get(filling_column))) +
     theme_bw() +
     geom_col() +
     scale_fill_manual(values = colors_palette) + 

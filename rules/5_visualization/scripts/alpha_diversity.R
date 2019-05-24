@@ -23,7 +23,7 @@ print(paste("output", alpha_plot))
 output_folder <- (dirname(alpha_plot)[1])
 
 ## Parameters
-x_axis_column <- snakemake@params[["x_axis_column"]]
+sample_label <- snakemake@params[["sample_label"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 sample_type <- snakemake@params[["sample_type"]]
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
@@ -41,7 +41,7 @@ phyloseq_obj <- readRDS(phyloseq_object)
 
 ## Order the x axis as in the metadata_table
 sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
+sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
 
 ### Remove sequences not assigned at the phylum level
 #physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
@@ -59,13 +59,13 @@ sample_data(phyloseq_obj)[[x_axis_column]] = factor(sample_data(phyloseq_obj)[[x
     g_phyloseq_obj = prune_samples(remove_idx, phyloseq_obj)
 
  if(nsamples(g_phyloseq_obj)>0){
-    if (x_axis_column == "Sample"){
+    if (sample_label == "Sample"){
     ## Plot
     p <- plot_richness(g_phyloseq_obj, color = sample_type) +
     scale_color_manual(values = colors_palette) +
     geom_boxplot()
     }else{
-    p <- plot_richness(g_phyloseq_obj, x = x_axis_column, color = sample_type) +
+    p <- plot_richness(g_phyloseq_obj, x = sample_label, color = sample_type) +
     scale_color_manual(values = colors_palette) +
     geom_boxplot()
     }
@@ -74,7 +74,7 @@ p <- p + theme(axis.text.x = element_text(size=5))
 
 
 ## Save plot
-p.width <- 7 + 0.4*length(unique(metadata[[x_axis_column]]))
+p.width <- 7 + 0.4*length(unique(metadata[[sample_label]]))
 
 if (p.width >= 30){
    p.width <- 30}

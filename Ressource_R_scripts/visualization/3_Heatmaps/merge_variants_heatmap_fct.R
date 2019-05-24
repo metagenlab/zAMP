@@ -1,8 +1,8 @@
 ### Create a function
-merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE){
+merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE){
 
 
-  x_column <- rlang::sym(x_axis_column)
+  x_column <- rlang::sym(sample_label)
 
   ### In option, filter for a given grouping_columns. In both cases keep only lines with Abundance not equal to 0 to reduce the dataframe size
   
@@ -118,7 +118,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
     quantity_filtering_value <- rank_quantity_filtering_value
     ### Define the variables as dplyr wants them
     g_column <- rlang::sym(grouping_column)
-    x_column <- rlang::sym(x_axis_column)
+    x_column <- rlang::sym(sample_label)
     ### Generate the filtered dataframe 
     physeq_subset_df_filtered <- physeq_subset_df  %>% 
       group_by(!! g_column) %>%  ## group the dataframe by the grouping column
@@ -128,7 +128,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
       mutate(sumper = as.numeric(paste0(sum(per)))) %>% ## Sum the relative abundance of each OTU in each group
       ungroup %>%
       group_by(!!! list(g_column, x_column)) %>%  ## Group the dataframe for each by group and filling column
-      top_n(n = quantity_filtering_value*n_distinct(x_axis_column), wt = sumper) %>% ## Keep the x number of rows for each
+      top_n(n = quantity_filtering_value*n_distinct(sample_label), wt = sumper) %>% ## Keep the x number of rows for each
       ungroup
   }
   
@@ -139,7 +139,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
     print("Absolute_and_Rank based filtering")
     ### Define the variables as dplyr wants them
     g_column <- rlang::sym(grouping_column)
-    x_column<- rlang::sym(x_axis_column)
+    x_column<- rlang::sym(sample_label)
     ### Generate the filtered dataframe 
     ### Relative reads filtering
     physeq_subset_df_filtered <- physeq_subset_df  %>% 
@@ -150,7 +150,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
       mutate(sumper = as.numeric(paste0(sum(per)))) %>% ## Sum the relative abundance of each OTU in each group
       ungroup %>%
       group_by(!!! list(g_column, x_column)) %>%  ## Group the dataframe for each by group and filling column
-      top_n(n = rank_quantity_filtering_value*n_distinct(x_axis_column), wt = sumper) %>% ## Keep the x number of rows for each
+      top_n(n = rank_quantity_filtering_value*n_distinct(sample_label), wt = sumper) %>% ## Keep the x number of rows for each
       ungroup
     
     
@@ -179,17 +179,17 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
   ### Write the filtration table, without Abundance = 0 rows to reduce its size.
   physeq_subset_df_filtered %>%
     filter(Abundance>0) %>%
-    write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+    write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", sample_label, "_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
   
   ### Write the plotted table , without Abundance = 0 rows to reduce its size.
   plotted_df %>%
     filter(Abundance>0) %>%
-    write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+    write.table(file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", sample_label, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
   
   ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
   merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
     filter(Abundance>0)
-  write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+  write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", sample_label, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
   
   
   
@@ -265,7 +265,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
   
   ### Reorder the facet factor if later used for plotting
   if (isTRUE(facet_plot)){
-    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
+    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[sample_label]]))
   }
   else if (isFALSE(facet_plot)){
     print("No faceting")
@@ -276,7 +276,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
   
   ### Reoder the x_label_column for later if using horizontal barplot
   if (isTRUE(horizontal_barplot)){
-    threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
+    threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
   }
   else if (isFALSE(horizontal_barplot)){
     print("Vertical plotting")
@@ -312,14 +312,14 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
     
 
     ### Write this table in a external file
-    write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+    write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", sample_label, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
     
     ### No filtering 
     if (quantity_filtering_type != "nofiltering"){
   
     ### Merged rows that were filtered in previous step so that they are only on one line on the heatmaps
     g_column <- rlang::sym(grouping_column)
-    x_column<- rlang::sym(x_axis_column)
+    x_column<- rlang::sym(sample_label)
     f_column <- rlang::sym(facetting_column)
     filtered_OTU <- filtered_df_abs_i %>% 
       dplyr::filter(grepl("<", Species)) %>%
@@ -393,7 +393,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
         to_melt_df <- merged_filtered_OTU
         
         g_column <- rlang::sym(grouping_column)
-        x_column<- rlang::sym(x_axis_column)
+        x_column<- rlang::sym(sample_label)
         f_column <- rlang::sym(facetting_column)
         taxa_column <- rlang::sym(t)
         merged_taxa_df <- to_melt_df %>%
@@ -408,7 +408,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
       names(taxalabel) <- merged_taxa_df[[t]]
       
       ### Generate heatmap
-      heatmap <- ggplot(merged_taxa_df, aes(x = get(x_axis_column), y = get(t), fill = Abundance)) + 
+      heatmap <- ggplot(merged_taxa_df, aes(x = get(sample_label), y = get(t), fill = Abundance)) +
         theme_bw() +
         geom_tile(aes(fill=Abundance), show.legend=TRUE) +
         scale_fill_gradient(na.value = "white", low="#000033", high="#CCFF66") +
@@ -416,7 +416,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
         scale_color_manual(guide = FALSE, values = c("white", "black")) +
         theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
         scale_y_discrete(labels = taxalabel) +
-        labs(x= x_axis_column,  y = t)
+        labs(x= sample_label,  y = t)
       
       
       
@@ -435,7 +435,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping
       
       ### Save it
       ### Set the filename
-      filename_base <- (paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",facetting_column,"_" ,t))
+      filename_base <- (paste0(figures_save_dir,"/heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", sample_label, "_",facetting_column,"_" ,t))
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure

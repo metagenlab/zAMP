@@ -19,7 +19,7 @@ phyloseq_object <- snakemake@input[["phyloseq_object"]]
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
 
 ## Parameters
-x_axis_column <- snakemake@params[["x_axis_column"]]
+sample_label <- snakemake@params[["sample_label"]]
 sample_type <- snakemake@params[["sample_type"]]
 
 ## Load libraries

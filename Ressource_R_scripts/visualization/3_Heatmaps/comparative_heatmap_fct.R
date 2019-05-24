@@ -1,10 +1,10 @@
 
 ### Create a function
-comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by = TRUE, comparison, patient_ID){
+comparative_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by = TRUE, comparison, patient_ID){
 
   # Transform values in  dplyr format
   g_column <- rlang::sym(grouping_column)
-  x_column <- rlang::sym(x_axis_column)
+  x_column <- rlang::sym(sample_label)
 
 
   # In option, filter for a given grouping_columns.
@@ -128,13 +128,13 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     #### Write the table after table choice for relative of absolute value plotting , without Abundance = 0 rows to reduce its size.
     plotted_df %>%
       filter(Abundance>0) %>%
-      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", x_axis_column, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_", "u", "_all_", sample_label, "_plotted_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
     #### Write the table with values that passed the quantity filtering.
     physeq_subset_df_filtered %>%  ### To follow and control the process, write external .tsv tables
       filter(Abundance>0) %>%
-      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", sample_label,"_",t ,"_filtration_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
     ### Now we have a dataframe ("plotted_df") containing all values, with Abundance expressed in absolute reads number or relative quanity in %, and a dataframe containing the rows that have to be kept while the rest will be merged by tagging them with the same name
@@ -145,7 +145,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
     ### In another dataframe, keep the join of the under and above tables, before masking of the filtered taxa and without Abundance = 0 rows to reduce its size.
     merged_filtered_abs <- full_join(under_threshold_df,above_threshold_df) %>%
       filter(Abundance>0)
-    write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", x_axis_column, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+    write.table(merged_filtered_abs, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_all_", sample_label, "_merged_without_masking.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
     ### Rename taxa with < percent/reads abundance, defending of the filtering applied
     #### Define the filtering tag depending of the applied filtering
@@ -181,16 +181,16 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
 
     ### Reorder the facet factor if later used for plotting
     if (isTRUE(facet_plot)){
-      threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
+      threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[sample_label]]))
 
     }else if (isFALSE(facet_plot)){print("No faceting")
 
     }else {stop('"facet_plot" must be TRUE or FALSE')
     }
 
-    ### Reverse the x_axis_column column for later if using horizontal barplot
+    ### Reverse the sample_label column for later if using horizontal barplot
     if (isTRUE(horizontal_barplot)){
-      threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
+      threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
 
     } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
 
@@ -225,7 +225,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       }
 
       ### Write this table in a external file
-      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(filtered_df_abs_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", sample_label, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
       ### Filter the table for specific conditions comparing for presence of absence of taxa in given samples
       ### Simple filtering, comparing samples of interest (e.g spleen and liver) with related controls
@@ -253,7 +253,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
         stop('comparison must be "1Rule", "2Rules" or "0Rule" ')
       }
 
-      write.table(selected_by_comparison_df_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_Rules_filtered_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(selected_by_comparison_df_i, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", sample_label, "_Rules_filtered_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
       ### Keep only the OTU which passed filters
       select_filtered_df_abs_i <- semi_join(filtered_df_abs_i, selected_by_comparison_df_i, by ="OTU")
@@ -284,7 +284,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
         selected_col_wide <- reshape2::dcast(selected_col, sample_source ~ OTU)
         selected_col_wide[is.na(selected_col_wide)] <- 0
         rownames(selected_col_wide) <- selected_col_wide[,1]
-        selected_col_wide[[x_axis_column]] <- NULL
+        selected_col_wide[[sample_label]] <- NULL
         # sample_source_order = c("EC_Q", "liver", "spleen", "lungs", "water_Q", "EC_MN", "PCR_neg")
         row.order <- hclust(dist(selected_col_wide))$order # clustering
         col.order <- hclust(dist(t(selected_col_wide)))$order
@@ -305,7 +305,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       }
 
       #### Write the content of the plot table in a external file
-      write.table(select_filtered_df_abs_i_reord, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",x_axis_column, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
+      write.table(select_filtered_df_abs_i_reord, file = paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/Table/", taxonomic_filtering_rank, "_",taxonomic_filtering_value,"_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", t,"_",sample_label, "_abundancy_table.tsv"), append = FALSE, sep = "\t", eol = "\n", na = "NA", dec = ".", col.names = TRUE, row.names = FALSE)
 
 
       ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
@@ -313,7 +313,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
       names(taxalabel) <- select_filtered_df_abs_i[["OTU"]]
 
       ### Generate heatmap
-      heatmap <- ggplot(select_filtered_df_abs_i_reord, aes(x = get(x_axis_column), y = OTU, fill = Abundance)) +
+      heatmap <- ggplot(select_filtered_df_abs_i_reord, aes(x = get(sample_label), y = OTU, fill = Abundance)) +
         theme_bw() +
         geom_tile(aes(fill=Abundance), show.legend=TRUE) +
         scale_fill_gradient(na.value = "white", low="#000033", high="#CCFF66") +
@@ -322,7 +322,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
         theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
         scale_y_discrete(labels = taxalabel, drop = TRUE) +
         scale_x_discrete(drop = FALSE) +
-        labs(x= x_axis_column,  y = t)
+        labs(x= sample_label,  y = t)
 
 
       ### Turn heatmap horizontally
@@ -339,7 +339,7 @@ comparative_variants_heatmap_fct <- function(melted_dataframe, x_axis_column, gr
 
       ### Save it
       ### Set the filename
-      filename_base <- (paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", x_axis_column, "_",comparison,"_",facetting_column,"_" ,t, "_",order_by_))
+      filename_base <- (paste0(figures_save_dir,"/Comparative_heatmaps/", plotting, "/",filtering,"/", taxonomic_filtering_rank, "_",filtering, "u", quantity_filtering_value, "_",grouping_column, "_", i, "_", sample_label, "_",comparison,"_",facetting_column,"_" ,t, "_",order_by_))
       ### Print the filename to follow progress
       print(filename_base)
       ###Save the figure

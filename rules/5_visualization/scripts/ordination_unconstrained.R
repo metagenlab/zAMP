@@ -17,7 +17,7 @@ metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 output_path <- snakemake@output[["output1"]]
 
 ## Parameters
-# x_axis_column <- snakemake@params[["x_axis_column"]]
+# sample_label <- snakemake@params[["sample_label"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 sample_type <- snakemake@params[["sample_type"]]
