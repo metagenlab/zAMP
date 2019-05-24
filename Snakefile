@@ -3,27 +3,111 @@
 ### Generate the input sample list
 include: "rules/common_preprocessing/making_sample_dataset.rules"
 ### Functions to deal with the output list
-include: "rules/common_preprocessing/making_output_list_fcts.rules"
+include: "rules/output_definition/making_output_list_fcts.rules"
 ### List of output
-include: "rules/common_preprocessing/making_output_list_files.rules"
+include: "rules/output_definition/making_output_list_files.rules"
 
 
 ## Rules to call defined sets of output
+
+### Only QC of the reads
 rule QC:
     input: MultiQC
 
-rule light_output:
-    input: MultiQC + minimal_output
+### Light output, including count table, consensus sequences and taxonomic assignement
+def light_output():
+    output = MultiQC
+    output.append(light_output)
+    if "DADA2" in config["denoiser"]:
+        output.append("DADA2/2_denoised/DADA2_denoising_stats.tsv")
+    return(output)
 
-rule minimal_output:
-    input: MultiQC + minimal_output + minimal_diagnostic_plots
+rule light_output:
+    input: light_output()
+
+
+### Basic output, generated plots numbers, KRONA plots and rarefaction curve
+def basic_plots():
+    output = light_output()
+    output.append(basic_plots)
+    return(output)
+
+rule basic_output:
+    input: basic_plots()
+
+
+### Complete set of phyloseq, in option including transosed count table and metadata (wide to long)
+def phyloseq_output():
+    output = basic_plots()
+    output.append(phyloseq)
+    if config["transposed_tables"] == True:
+        output.append(transposed_output)
+    return(output)
 
 rule phyloseq_output:
-    input: phyloseq_output_list()
+    input: phyloseq_output()
+
+### Complete set of plots
+def plots_output()
+    output = basic_plots()
+    if config["Barplots"] == True:
+        output.append(barplots)
+    if config["Heatmaps"] == True:
+        output.append(barplots)
+    if config["Alpha_divs"] == True:
+        output.append(barplots)
+    if config["Distance_ordinations"] == True:
+        output.append(distance_ordinations)
+    if config["Constrained_ordinations"] == True:
+        output.append(constrained_ordinations)
+    if config["Unconstrained_ordinations"] == True:
+        output.append(unconstrained_ordinations)
+    return(output)
 
 rule plots_output:
-    input: plots_list()
+    input: plots_output()
 
+### Qiime2 outputs
+def Qiime2_outupt():
+    output = basic_plots()
+    if config["Qiime2_basic_output_visualization"] == True:
+        output.append(Qiime2_vis_qzv)
+    if config["Volatility"] == True:
+        output.append(Qiime2_volatility)
+    if config["ANCOM"] == True:
+        output.append(Qiime2_ANCOM)
+    if "Gradient" in config["Gneiss"]
+        output.append(Qiime2_Gneiss_correlation)
+    if "Phylogeny" in config["Gneiss"]
+        output.append(Qiime2_Gneiss_Phylogeny)
+    if "Clustering" in config["Gneiss"]
+        output.append(Qiime2_Gneiss_gradient)
+    return(output)
+
+rule plots_output:
+    input: Qiime2_outupt()
+
+### PICRUSt2 outputs
+def PICRUSt2():
+    output = basic_plots()
+    output.append(picrust2)
+    return(output)
+
+rule PICRUSt2_output:
+    input: Qiime2_outupt()
+
+### Rule all
+def rule_all_list():
+    output = basic_plots()
+    append.output(phyloseq_output())
+    append.output(plots_output())
+    append.output(Qiime2_outupt())
+    append.output(PICRUSt2())
+    return(output)
+
+rule all:
+    input:
+        rule_all_list(),
 
 
 ## Include the needed rules

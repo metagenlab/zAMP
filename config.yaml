@@ -53,7 +53,9 @@ transposed_tables: False # True to have transposed count table
 Barplots: True # or False
 Heatmaps: True # or False
 Alpha_divs: True # or False
-Ordinations: True # or False
+Distance_ordinations: True # or False
+Constrained_ordinations: True # or False
+Unconstrained_ordinations: True # or False
 
 ### General
 grouping_column: ["PatientID"] # Column in "local_samples" for which a plot will be generated for each value of.
@@ -85,14 +87,16 @@ separated_legend: TRUE #(or 'FALSE') # should the legend be separated
 
 
 ## Special Qiime2 outputs, in dev. ####################################################################################
+### Qiime2 Visualization information
+Qiime2_basic_output_visualization: True # or False
 ### Volatility plots https://docs.qiime2.org/2019.4/plugins/available/longitudinal/
-Volatility: FALSE
+Volatility: True # or Fase
 Qiime2_metadata: Metadata_q2.tsv ## Redifine a table with categories https://docs.qiime2.org/2019.4/tutorials/metadata/
 individual_id_column: ["patientID"]
 p_state_column: ["time"]
 
 ### ANCOM differential abundance stat. analysis
-ANCOM: TRUE
+ANCOM: True # or Fase
 ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
 
 ### Gneiss differential abundance stat. analysis https://docs.qiime2.org/2019.4/tutorials/gneiss/

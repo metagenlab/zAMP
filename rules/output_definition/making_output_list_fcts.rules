@@ -1,4 +1,5 @@
 
+## Set of functions generating a list that will be part of output paths based on the content of config file
 
 def get_grouping_key(column_of_interest):
 
@@ -50,21 +51,4 @@ def get_filtering_key(filtering):
 
     return(file_list)
 
-
-def phyloseq_output_list():
-    output = MultiQC + minimal_output + minimal_diagnostic_plots + phyloseq
-    if config["transposed_tables"] == True:
-        phyloseq.append(transposed_output)
-    return(output)
-
-
-def plots_list():
-    output = phyloseq_output_list()
-    if config["Barplots"] == True:
-        output.append(barplots)
-    if config["Heatmaps"] == True:
-        output.append(barplots)
-    if config["Alpha_divs"] == True:
-        output.append(barplots)
-    return(output)
-
+## Set of function generating a list of output from config

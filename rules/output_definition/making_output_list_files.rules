@@ -6,28 +6,30 @@ MultiQC.append("QC/multiqc_raw_reads_report.html")
 
 
 ### Light pipeline output
-minimal_output = expand("{denoiser}/2_denoised/dna-sequences.fasta", denoiser = config["denoiser"])
-minimal_output.append(expand("{denoiser}/2_denoised/count_table.txt", denoiser = config["denoiser"]))
-minimal_output.append(expand("{denoiser}/3_classified/rdp/{tax_DB}/dna-sequences_tax_assignments.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]))
-if "DADA2" in config["denoiser"]:
-        minimal_output.append(expand("DADA2/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]))
+light_output = expand("{denoiser}/2_denoised/dna-sequences.fasta", denoiser = config["denoiser"])
+light_output.append(expand("{denoiser}/2_denoised/count_table.txt", denoiser = config["denoiser"]))
+light_output.append(expand("{denoiser}/3_classified/rdp/{tax_DB}/dna-sequences_tax_assignments.qzv", denoiser = config["denoiser"], tax_DB = config["tax_DB"]))
+
+### DADA2 stat table
+DADA2_stats_tables = "DADA2/2_denoised/DADA2_denoising_stats.tsv"
 
 
 ### Basic evaluation plots
-minimal_diagnostic_plots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/reads/reads_plot_with_filtered.png",
+basic_plots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/reads/reads_plot_with_filtered.png",
                                  denoiser = config["denoiser"],
                                  tax_DB = config["tax_DB"])
-minimal_diagnostic_plots.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/rarefaction_curve.png",
+
+basic_plots.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/rarefaction_curve.png",
                                  denoiser = config["denoiser"],
                                  tax_DB = config["tax_DB"],
                                  rarefaction_value = get_rarefaction_key(config["rarefaction_value"])))
-minimal_diagnostic_plots.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/KRONA/{grouping_key}.html",
+
+basic_plots.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/KRONA/{grouping_key}.html",
                                  denoiser = config["denoiser"],
                                  tax_DB = config["tax_DB"],
                                  rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                                  grouping_key = get_grouping_key(config["grouping_column"])))
-if "DADA2" in config["denoiser"]:
-        minimal_diagnostic_plots.append(expand("DADA2/2_denoised/DADA2_denoising_stats.tsv", denoiser = config["denoiser"]))
+
 
 
 
@@ -51,7 +53,7 @@ phyloseq.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_val
                    filter_column_value = config["filter_column_value"],
                    filter_meta_column = config["filter_meta_column"]))
 
-### Transposed output
+### Transposed output tables
 ### Count-table transposed format
 transposed_output = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/physeq/{collapse_key}/3_filter_features/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}_features_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
@@ -96,6 +98,7 @@ transposed_output.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefa
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"]))
+
 
 ### Barplots
 barplots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/norarefaction/barplot/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
@@ -149,6 +152,7 @@ distance_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefact
             grouping_key = get_grouping_key(config["grouping_column"]),
             ordination_distance = config["ordination_distance"])
 
+
 ### Constrained ordination
 constrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/constrained/{ordination_method_constrained}/{grouping_key}_f_{ordination_factor}.png",
             denoiser = config["denoiser"],
@@ -161,6 +165,7 @@ constrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{raref
             ordination_method_constrained = config["ordination_method_constrained"],
             grouping_key = get_grouping_key(config["grouping_column"]),
             ordination_factor = config["ordination_factor"])
+
 
 ### Unconstrained ordination
 unconstrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination/{filter_tax_rank}_{filter_lineage}_taxfilt_{filter_column_value}_in_{filter_meta_column}/unconstrained/{ordination_method_unconstrained}/{grouping_key}.png",
@@ -332,4 +337,3 @@ picrust2 = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/p
                     tax_DB = config["tax_DB"],
                     rarefaction_value = get_rarefaction_key(config["rarefaction_value"])
                     )
-
