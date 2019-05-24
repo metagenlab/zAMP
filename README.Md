@@ -5,9 +5,9 @@
 ** version >5.3.0 installed and containing environement activaited **
 
 ## General use
-#+BEGIN_SRC sh
-snakemake --snakefile $pipeline_folder/Snakefile --use-conda --conda-prefix $pipeline_folder/miniconda3/ --cores 8 --configfile config.yaml --use-singularity -k
-#+END_SRC
+```
+snakemake --snakefile $pipeline_folder/Snakefile --use-conda --conda-prefix $pipeline_folder/miniconda3/ --cores 8 --configfile config.yaml --use-singularity -k <disered_output>
+```
 
 
 **where:
