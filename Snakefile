@@ -48,7 +48,7 @@ rule phyloseq_output:
     input: phyloseq_output()
 
 ### Complete set of plots
-def plots_output()
+def plots_output():
     output = basic_plots()
     if config["Barplots"] == True:
         output.append(barplots)
