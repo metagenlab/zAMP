@@ -1,8 +1,8 @@
 channels:
- - bioconda
- - conda-forge
- - hcc
+- bioconda
+- conda-forge
+- hcc
 dependencies:
- - qiime = 1.9.1
- - rdp-classifier = 2.2
- - vsearch = 2.9.1
+- qiime = 1.9.1
+- rdp-classifier = 2.2
+- vsearch
