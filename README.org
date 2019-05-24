@@ -1,12 +1,16 @@
+## Requirements:
+- miniconda3**
+** With export PATH="<path/to>/miniconda3/bin:$PATH" in .bashrc. * Careful: for some reason, it taxonomic assignment with Qiime fails if "" are missing * **
+- snakemake
+** version >5.3.0 installed and containing environement activaited **
 
-* General use
-
+## General use
 #+BEGIN_SRC sh
 snakemake --snakefile $pipeline_folder/Snakefile --use-conda --conda-prefix $pipeline_folder/miniconda3/ --cores 8 --configfile config.yaml --use-singularity -k
 #+END_SRC
 
 
-with:
+**where:
 
 /--use-singularity/ to allow the use of singularity, a system enabling the use of docker environements for certain rules
 
