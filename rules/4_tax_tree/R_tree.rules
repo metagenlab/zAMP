@@ -1,24 +1,13 @@
 rule create_tree_in_R :
     conda:
-        "../../envs/QIIME2-2019.04.yml"
+        "../../envs/Tree_making_R.yml"
     input:
-        "{tool}/2_denoised/rep-seqs.qza"
+        seqs_path = "{tool}/2_denoised/dna-sequences.fasta"
     output:
-        aligned = "{tool}/4_tree/aligned-rep-seqs.qza" ,
-        masked = "{tool}/4_tree/masked-aligned-rep-seqs.qza" ,
-        unrooted = "{tool}/4_tree/unrooted-tree.qza" ,
-        rooted = "{tool}/4_tree/rooted-tree.qza"
+        tree_path = "{tool}/4_tree/tree.nwk"
     log:
         logging_folder + "{tool}/4_tree/tree.txt"
     threads:
-        4
-    shell:
-        '''
-        qiime phylogeny align-to-tree-mafft-fasttree \
-          --p-n-threads {threads} \
-          --i-sequences {input[0]} \
-          --o-alignment {output[aligned]} \
-          --o-masked-alignment {output[masked]} \
-          --o-tree {output[unrooted]} \
-          --o-rooted-tree {output[rooted]}
-        '''
+        1
+    script:
+        "scripts/tree_in_r.R"

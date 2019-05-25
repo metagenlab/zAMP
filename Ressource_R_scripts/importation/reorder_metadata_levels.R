@@ -7,7 +7,7 @@
 #The level is set for two columns:
 #  - the grouping column, which will be used to group samples together on individual graphs
 #  - the filling column, which will be used to fill barplots of reads in different colors
-#  - the sample_label, which will be used as label in plots. It should be unique as SampleID but more descriptive or duplicated (e.g.), for instance if there is one per grouping_column.
+#  - the sample_label, which will be used as label in plots. It should be unique as Sample but more descriptive or duplicated (e.g.), for instance if there is one per grouping_column.
 #    By default, it is ordered by the order of other columns but can be set manually
 #  - the facetting_column, if it is intendend to create facets for a specific factors, creating one common graph but with multiple pannels
 

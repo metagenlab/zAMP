@@ -123,8 +123,6 @@ rule DADA2_filter_stats:
 
 
 
-
-
 ### Accessory rules to generate QC reports after q-score filtering. Not really used
 rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
