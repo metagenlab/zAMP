@@ -18,6 +18,6 @@ rule picrust2_custom_tree :
             -s {input[seqs]} \
             -i {input[table]} \
             -o {output}/output \
-            --threads {threads}
+            -p {threads}
         '''
 
