@@ -39,14 +39,13 @@ alignment <- AlignSeqs(seqs)
 phang.align <- phyDat(as(alignment, "matrix"), type="DNA")
 dm <- dist.ml(phang.align)
 treeNJ <- NJ(dm) # Note, tip order != sequence order
-fit = pml(treeNJ, data=phang.align)
+fit <- pml(treeNJ, data=phang.align)
 
 fitGTR <- update(fit, k=4, inv=0.2)
 fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
                     rearrangement = "stochastic", control = pml.control(trace = 0))
 
 bs <- bootstrap.pml(fitGTR, bs=100, optNni=TRUE, multicore=TRUE, control = pml.control(trace=0))
-plotBS(midpoint(fitJC$tree), bs, p = 50, type="p")
 
 ## Write tree
 write.tree(bs, file=tree_path)
