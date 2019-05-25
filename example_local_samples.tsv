@@ -1,9 +1,9 @@
 # Minimal columns description. Should be removed before use !
 # Table must be 'tsv' format, meaning tablute separated values.
 #
-# Columns description. All but the first one 'SampleID' can be renamed.
+# Columns description. All but the first one 'Sample' can be renamed.
 #
-## SampleID:
+## Sample:
 ### Samples identifier. Must contain only uniques values, that are NOT only numerical and
 ### which do not contains '-' or '.'. '_' are OK.
 ###
@@ -11,7 +11,7 @@
 ### names can be added in addition. An error will be thrown if not exactly one pair of reads in 'links/' matches each
 ### value contained in this columns.
 ### A'OldSampleName' column can be used to bypass this limitation. Then the content of this column will be used for
-### matching, and the samples will be be renamed by the content of 'SampleID' column.
+### matching, and the samples will be be renamed by the content of 'Sample' column.
 #
 #
 ## sample_label
@@ -33,7 +33,7 @@
 ### well by DADA2 which generate an error profile for each run.
 #
 #
-SampleID	sample_label    sample_group    sample_type   seq_run
+Sample	sample_label    sample_group    sample_type   seq_run
 S1111   sample_1    patient1    feces   run1
 MIX9B   sample_2	patient1    feces   run1
 MIX7B   sample_3	patient2    feces   run1
