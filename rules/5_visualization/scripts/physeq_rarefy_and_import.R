@@ -105,7 +105,7 @@ set.seed(1)
     ## Import all as phyloseq objects
     OTU <- otu_table(raref_cout_table, taxa_are_rows = TRUE)
     TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
-    META <- metadata %>% as.data.frame() %>% column_to_rownames("SampleID") %>% sample_data()
+    META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
 
     ## Sanity checks for consistent OTU names
     taxa_names(TAX)

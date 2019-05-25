@@ -254,7 +254,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
         x_column <- rlang::sym(sample_label)
         selected_col <- filtered_df_abs_i %>% select(c(get(sample_label),"OTU", "Abundance"))
         print("test1")
-        #selected_col_wide <- do.call(what = reshape2::dcast, args = c(selected_col, paste(SampleID ~ "OTU")), quote = FALSE)
+        #selected_col_wide <- do.call(what = reshape2::dcast, args = c(selected_col, paste(Sample ~ "OTU")), quote = FALSE)
         selected_col_wide <- reshape2::dcast(selected_col, sample_label ~ OTU)
           print("test2")
         selected_col_wide[is.na(selected_col_wide)] <- 0

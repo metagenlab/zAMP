@@ -15,20 +15,20 @@ phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 output_folder <- dirname(snakemake@output[["barplot"]])
 
 ## Parameters
-sample_label =snakemake@params[[ "sample_label"]]
+sample_label <- snakemake@params[[ "sample_label"]]
 grouping_column <- snakemake@params[[ "grouping_column"]]
-t_neg_PCR_sample_on_plots = snakemake@params[["t_neg_PCR_sample_on_plots"]]
-t_neg_PCR_group_column_value = snakemake@params[["t_neg_PCR_group_column_value"]]
-relative_or_absolute_filtering = snakemake@params[["relative_or_absolute_filtering"]]
-filtering_value = snakemake@params[["filtering_value"]]
-relative_or_absolute_plot = snakemake@params[["relative_or_absolute_plot"]]
-plotting_tax_ranks = snakemake@params[["plotting_tax_ranks"]]
-distinct_colors = snakemake@params[["distinct_colors"]]
-horizontal_barplot = snakemake@params[["horizontal_barplot"]]
-facet_plot = snakemake@params[["facet_plot"]]
-facetting_column = snakemake@params[["facetting_column"]]
-order_by_abundance = snakemake@params[["order_by_abundance"]]
-separated_legend = snakemake@params[["separated_legend"]]
+t_neg_PCR_sample_on_plots <-  snakemake@params[["t_neg_PCR_sample_on_plots"]]
+t_neg_PCR_group_column_value <-  snakemake@params[["t_neg_PCR_group_column_value"]]
+relative_or_absolute_filtering <-  snakemake@params[["relative_or_absolute_filtering"]]
+filtering_value <-  snakemake@params[["filtering_value"]]
+relative_or_absolute_plot <-  snakemake@params[["relative_or_absolute_plot"]]
+plotting_tax_ranks <-  snakemake@params[["plotting_tax_ranks"]]
+distinct_colors <-  snakemake@params[["distinct_colors"]]
+horizontal_barplot <-  snakemake@params[["horizontal_barplot"]]
+facet_plot <-  snakemake@params[["facet_plot"]]
+facetting_column <-  snakemake@params[["facetting_column"]]
+order_by_abundance <-  snakemake@params[["order_by_abundance"]]
+separated_legend <-  snakemake@params[["separated_legend"]]
 
 
 ## Load needed libraries
@@ -44,7 +44,7 @@ library(grid); packageVersion("grid")
 library(cowplot); packageVersion("cowplot")
 
 ## Load the melted phyloseq table
-melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
+melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
 
 ## Order the x axis as in the metadata_table
 #sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
@@ -289,7 +289,7 @@ print("test3")
 
                 #### Create the barplot
                     taxrank_barplot <- filtered_df_abs_i %>%
-                        ggplot(aes(x = get(sample_label), y = Abundance, fill = get(tax_ranks))) +
+                        ggplot(aes(x = sample_label, y = Abundance, fill = get(tax_ranks))) +
                         theme_bw() +
                         geom_col() +
                         #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars

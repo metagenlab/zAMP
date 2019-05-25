@@ -138,7 +138,7 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
   rarefaction_curve_data
 }
 
-rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
+rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
 summary(rarefaction_curve_data)
 
 
@@ -160,7 +160,7 @@ p <- ggplot(
     y = Alpha_diversity_mean,
     ymin = Alpha_diversity_mean - Alpha_diversity_sd,
     ymax = Alpha_diversity_mean + Alpha_diversity_sd,
-    colour = get(sample_type),
+    colour = sample_type,
     group = get("Sample"))) +
       labs(col = "Sample type") +
       geom_line(size = 0.2) +
