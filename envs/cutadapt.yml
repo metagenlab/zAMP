@@ -1,3 +1,4 @@
+name: cutadapt
 channels:
  - bioconda
 dependencies:

@@ -1,3 +1,4 @@
+name: DADA2
 channels:
  - bioconda
  - conda-forge

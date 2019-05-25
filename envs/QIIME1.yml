@@ -1,3 +1,4 @@
+name: QIIME1
 channels:
 - bioconda
 - conda-forge

@@ -1,3 +1,4 @@
+name: picrust2
 channels:
 - bioconda
 - biocore

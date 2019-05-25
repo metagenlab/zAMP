@@ -1,4 +1,4 @@
-#name: r_visualization
+name: r_visualization
 channels:
  - r
  - conda-forge
