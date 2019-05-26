@@ -14,7 +14,8 @@ sink(log, type="message")
 features_counts_table <- snakemake@input[["count_table"]]
 Metadata_table <- snakemake@input[["Metadata_table"]]
 taxonomy_table <- snakemake@input[["taxonomy_table"]]
-tax_tree <- snakemake@input[["tax_tree"]]
+# tax_tree <- snakemake@input[["tax_tree"]]
+rep_seqs <- snakemake@input[["rep_seqs"]]
 
 ## Ouput
 rarefied_phyloseq_path <- snakemake@output[["phyloseq_object"]]
@@ -32,6 +33,10 @@ library(tibble);packageVersion("tibble")
 library(tidyr);packageVersion("tidyr")
 library(readr);packageVersion("readr")
 library(phyloseq);packageVersion("phyloseq")
+library(Biostrings);packageVersion("Biostrings")
+library(DECIPHER);packageVersion("DECIPHER")
+library(phangorn);packageVersion("phangorn")
+
 
 
 ## Set seed for reproducibility
@@ -59,8 +64,12 @@ set.seed(1)
     metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
 
     ## Read taxonomic tree
-    print("reading taxonomic tree")
-    PHY <- read_tree(tax_tree)
+    #print("reading taxonomic tree")
+    #PHY <- read_tree(tax_tree)
+
+    ## Read representative sequences
+    print("importing representative sequences from fasta")
+    SEQS <- readDNAStringSet(rep_seqs)
 
     ## Read taxonomy table
     print("reading taxonomy table")
@@ -101,22 +110,37 @@ set.seed(1)
               print("table NA NOT remplaced by spaceholders")
               }
 
+    ## Build a phylogenetic tree based of the sequences
+
+    print("Starting phylogenetic tree")
+    names(SEQS) <- SEQS # This propagates to the tip labels of the tree
+    alignment <- AlignSeqs(SEQS, anchor=NA)
+
+    phang.align <- phyDat(as(alignment, "matrix"), type="DNA")
+    print("alignment")
+    dm <- dist.ml(phang.align)
+    treeNJ <- NJ(dm) # Note, tip order != sequence order
+    print("treeNJ")
+    fit <- pml(treeNJ, data=phang.align)
+
+    fitGTR <- update(fit, k=4, inv=0.2)
+    print("fitGTR 1")
+    fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
+                      rearrangement = "stochastic", control = pml.control(trace = 0))
+    print("fitGTR 2")
+    detach("package:phangorn", unload=TRUE)
+
+    print("finished tree")
 
     ## Import all as phyloseq objects
     OTU <- otu_table(raref_cout_table, taxa_are_rows = TRUE)
     TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
     META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
+    PHY <- phy_tree(fitGTR$tree)
 
-    ## Sanity checks for consistent OTU names
-    taxa_names(TAX)
-    #taxa_names(OTU)
-    taxa_names(PHY)
-    # Same sample names
-    sample_names(OTU)
-    sample_names(META)
 
     ## Finally merge!
-    phyloseq_obj <- phyloseq(OTU, TAX, META, PHY)
+    phyloseq_obj <- phyloseq(OTU, TAX, META, PHY, SEQS)
 
     ## Add alpha diversity values
 

@@ -32,3 +32,5 @@ dependencies:
  - bioconductor-microbiome
  # - bioconductor-genomeinfodbdata ## prevent a Conda bug with version 1.2.0
  - bioconductor-aldex2 = 1.14.1
+ - bioconductor-decipher = 2.10.0
+ - r-phangorn = 2.5.3
