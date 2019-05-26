@@ -15,7 +15,6 @@ rule to_Phyloseq_and_rarefy:
         count_table = "{tool}/2_denoised/count_table.txt",
         Metadata_table = config["local_samples"],
         taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
-        tax_tree = "{tool}/4_tree/tree.nwk",
         rep_seqs = "{tool}/2_denoised/dna-sequences.fasta"
     output:
         phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{rarefaction_value}/physeq/no_collapse/base.rds"
