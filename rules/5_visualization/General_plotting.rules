@@ -3,12 +3,12 @@ rule raw_to_filtered_reads_stats:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds",
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
-        raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.tsv"
+        raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/raw_to_filtered_reads_stats.tsv"
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/raw_to_filtered_reads_stats.txt"
     script:
         "scripts/raw_to_filtered_reads_stats.R"
 
@@ -17,16 +17,16 @@ rule reads_plot_with_filtered:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        raw_to_filtered_reads_stats_path = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/raw_to_filtered_reads_stats.tsv",
+        raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/raw_to_filtered_reads_stats.tsv",
         Metadata_table = config["local_samples"],
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
-        reads_plot_with_filtered = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/reads_plot_with_filtered.png"
+        reads_plot_with_filtered = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_filtered.png"
     params:
         grouping_column = config["grouping_column"],
         sample_label = config["sample_label"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/reads/reads_plot_with_filtered.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_filtered.txt"
     script:
         "scripts/reads_plots_with_filtration.R"
 
@@ -35,17 +35,36 @@ rule KRONA_plots:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_melted_table = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/base_melted.tsv"
+        phyloseq_melted_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base_melted.tsv"
     output:
-        output = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/KRONA/{grouping_column}/{grouping_col_value}.html"
+        output = "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA/{grouping_column}/{grouping_col_value}.html"
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
         sample_label = config["sample_label"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/{grouping_column}/{grouping_col_value}_KRONA.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/KRONA/{grouping_column}/{grouping_col_value}.txt"
     script:
         "scripts/KRONA_plots.R"
+
+
+
+rule rarefaction_curve:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtration_or_not}/{raref_or_not}/no_collapse/base.rds",
+        Metadata_table = config["local_samples"]
+    output:
+        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{raref_or_not}/{filtration_or_not}_rarefaction_curve.png"
+    params:
+        sample_type = config["sample_type"],
+        sample_label = config["sample_label"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{raref_or_not}/{filtration_or_not}_rarefaction_curve.txt"
+    script:
+        "scripts/rarefaction_curve.R"
+
 
 
 
@@ -81,10 +100,10 @@ rule barplot:
     singularity:
         "docker://valscherz/16srna:0.0.3-beta"
     input:
-        phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.plotting_tax_ranks) + "/2_filter_samples/{prefix1}_samples_melted.tsv"
+        phyloseq_melted_table = lambda wildcards: "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_tax_rank}_in_{filter_lineage}/norarefaction/" + barplot_levels(wildcards.plotting_tax_ranks) + "/base_melted.tsv"
     output:
-        barplot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
-        barplot_leg = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot_leg.png",
+        barplot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/barplot/{filter_tax_rank}_in_{filter_lineage}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.png",
+        barplot_leg = "{tool}/5_visualization/{classifier}/{db_taxonomy}/barplot/{filter_tax_rank}_in_{filter_lineage}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot_leg.png",
     params:
         sample_label = config["sample_label"],
         grouping_column = lambda wildcards: wildcards.grouping_column,
@@ -101,7 +120,7 @@ rule barplot:
         order_by_abundance = config["order_by_abundance"],
         separated_legend = config["separated_legend"],
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/barplot/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_barplot.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/barplot/{filter_tax_rank}_in_{filter_lineage}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}__barplot.txt",
     script:
         "scripts/barplot.R"
 
@@ -110,9 +129,9 @@ rule physeq_heatmap:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_melted_table = lambda wildcards: "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/" + barplot_levels(wildcards.plotting_tax_ranks) + "/2_filter_samples/{prefix1}_samples_melted.tsv"
+        phyloseq_melted_table = lambda wildcards: "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_tax_rank}_in_{filter_lineage}/norarefaction/" + barplot_levels(wildcards.plotting_tax_ranks) + "/base_melted.tsv"
     output:
-        heatmap = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/heatmaps/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.png",
+        heatmap = "{tool}/5_visualization/{classifier}/{db_taxonomy}/barplot/{filter_tax_rank}_in_{filter_lineage}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.png",
     params:
         sample_label = config["sample_label"],
         grouping_column = lambda wildcards: wildcards.grouping_column,
@@ -127,27 +146,26 @@ rule physeq_heatmap:
         facetting_column = config["facetting_column"],
         #order_by = config["order_by_abundance"],
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/heatmaps/{prefix1}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.txt",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/barplot/{filter_tax_rank}_in_{filter_lineage}/{relative_or_absolute_plot}/{grouping_column}/{grouping_col_value}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.txt",
     script:
         "scripts/heatmap.R"
-
 
 
 rule alpha_diversity:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/no_collapse/base_no_tree.rds",
         Metadata_table = config["local_samples"]
     output:
-        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.png",
+        alpha_plot = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filtered_or_not}/{grouping_column}_{grouping_col_value}_alpha_diversity.png",
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
         sample_label = config["sample_label"],
         sample_type = config["sample_type"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filter_rules}/{grouping_column}/{grouping_col_value}_alpha_divesity.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/alpha_diversity/{filtered_or_not}/{grouping_column}_{grouping_col_value}_alpha_diversity.txt"
     script:
         "scripts/alpha_diversity.R"
 
@@ -156,20 +174,20 @@ rule ordination_distance_based:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_tax_rank}_in_{filter_lineage}/{raref_or_not}/no_collapse/base_with_tree.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_distance_based/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.png",
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
         sample_label = config["sample_label"],
         sample_type = config["sample_type"],
         ordination_distance = lambda wildcards: wildcards.ordination_distance ,
-        ordination_method = lambda wildcards: wildcards.ordination_method_distance_based,
+        ordination_method = lambda wildcards: wildcards.ordination_method,
         ordination_factor = lambda wildcards: config["ordination_factor"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/distance_based/{ordination_method_distance_based}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.logs",
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_distance_based/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}_d_{ordination_distance}.txt",
     script:
         "scripts/ordination_distance_based.R"
 
@@ -178,10 +196,10 @@ rule ordination_unconstrained:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_tax_rank}_in_{filter_lineage}/{raref_or_not}/no_collapse/base_with_tree.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_unconstrained/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}.png",
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
@@ -190,7 +208,7 @@ rule ordination_unconstrained:
         ordination_method = lambda wildcards: wildcards.ordination_method,
         ordination_factor = lambda wildcards: config["ordination_factor"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/unconstrained/{ordination_method}/{grouping_column}/{grouping_col_value}_logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_unconstrained/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}.txt"
     script:
         "scripts/ordination_unconstrained.R"
 
@@ -199,10 +217,10 @@ rule ordination_constrained:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/physeq/no_collapse/2_filter_samples/{filter_rules}_samples.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_tax_rank}_in_{filter_lineage}/{raref_or_not}/no_collapse/base_with_tree.rds",
         Metadata_table = config["local_samples"]
     output:
-        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.png",
+        output1 = "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_unconstrained/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.png",
     params:
         grouping_column = lambda wildcards: wildcards.grouping_column,
         grouping_col_value = lambda wildcards: wildcards.grouping_col_value,
@@ -211,7 +229,7 @@ rule ordination_constrained:
         ordination_method = lambda wildcards: wildcards.ordination_method,
         ordination_factor = lambda wildcards: wildcards.ordination_factor
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination/{filter_rules}/constrained/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.logs.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{raref_or_not}/ordination_unconstrained/{filter_tax_rank}_in_{filter_lineage}/{ordination_method}/{grouping_column}/{grouping_col_value}_f_{ordination_factor}.txt"
     script:
         "scripts/ordination_constrained.R"
 

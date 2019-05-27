@@ -1,0 +1,240 @@
+## Set a rule order for ambiguous rules
+ruleorder: physeq_tax_filtering > physeq_rarefy
+ruleorder: Phyloseq_collapse_taxa > Phyloseq_transform_to_percent
+
+## Small function to extract numbers from rarefaction values
+import re
+def rafe_value_fct(wildcards):
+    if wildcards == "norarefaction":
+        value = "norarefaction"
+    else :
+        value = re.findall('\d+',wildcards)
+    return value
+
+
+# Import for the first time everything into a phyloseq object
+rule physeq_initial_import:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        count_table = "{tool}/2_denoised/count_table.txt",
+        Metadata_table = config["local_samples"],
+        taxonomy_table = "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
+        rep_seqs = "{tool}/2_denoised/dna-sequences.fasta",
+        tax_tree = "{tool}/4_tree/tree.nwk"
+    output:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds"
+    params:
+        viz_replace_empty_tax = config["viz_replace_empty_tax"]
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.txt"
+    script:
+        "scripts/physeq_initial_import.R"
+
+
+rule export_Phyloseq_object:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}.rds"
+    output:
+        tree_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/tree.tree",
+        meta_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/metadata_table.tsv",
+        taxonomy_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/dna-sequences_tax_assignments.txt",
+        OTU_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/count_table.txt",
+        filtered_rep_seq = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/filt_rep_seqs.fasta",
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/export.txt",
+    script:
+        "scripts/physeq_export.R"
+
+
+# Filter sequences based on taxonomic assignment
+rule physeq_tax_filtering:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds"
+    output:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.rds",
+        count_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/count_table.txt",
+        Metadata_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/metadata_table.tsv",
+        taxonomy_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/dna-sequences_tax_assignments.txt",
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/dna-sequences.fasta",
+    params:
+        filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
+        filter_lineage = lambda wildcards: wildcards.filter_lineage,
+        filter_out_tax_rank = config["filter_out_tax_rank"],
+        filter_out_lineage = config["filter_out_lineage"]
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.txt",
+    script:
+        "scripts/physeq_filter_taxa.R"
+
+
+rule physeq_rarefy:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/no_collapse/base.rds"
+    output:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/base.rds",
+        count_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/count_table.txt",
+        Metadata_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/metadata_table.tsv",
+        taxonomy_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/dna-sequences_tax_assignments.txt",
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/dna-sequences.fasta",
+    params:
+        rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value),
+        viz_replace_empty_tax = config["viz_replace_empty_tax"]
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/base.txt",
+    script:
+        "scripts/physeq_rarefy.R"
+
+
+
+rule force_all_upper_case_rep_seq_2 :
+    input:
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences.fasta",
+    output:
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.fasta",
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.txt",
+    shell:
+        '''
+        awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
+        '''
+
+
+rule import_rep_seq_to_QIIME2_2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.fasta",
+    output:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.qza"
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --output-path {output[0]} \
+        --type 'FeatureData[Sequence]'
+        '''
+
+
+# Build a new tree based on the filtered sequences
+rule create_tree_in_QIIME2_2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.qza"
+    output:
+        aligned = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/aligned-rep-seqs.qza" ,
+        masked = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/unrooted-tree.qza" ,
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.qza"
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-fasttree \
+          --p-n-threads {threads} \
+          --i-sequences {input[0]} \
+          --o-alignment {output[aligned]} \
+          --o-masked-alignment {output[masked]} \
+          --o-tree {output[unrooted]} \
+          --o-rooted-tree {output[rooted]}
+        '''
+
+rule export_QIIME2_tree_2:
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.qza"
+    output:
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.nwk"
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime tools export --input-path {input} --output-path $(dirname {output[0]})
+        '''
+
+
+rule physeq_new_tree:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.nwk",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
+    output:
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
+    script:
+        "scripts/physeq_initial_import.R"
+
+
+
+rule melt_Phyloseq_object_2:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
+    output:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv"
+    log:
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
+    script:
+        "scripts/physeq_melt_table.R"
+
+
+rule Phyloseq_collapse_taxa:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds"
+    output:
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.rds"
+    params:
+        collapse_level = lambda wildcards: wildcards.collapse_level,
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.txt"
+    script:
+        "scripts/physeq_collapse_taxa.R"
+
+
+rule Phyloseq_transform_to_percent:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        "{prefix}.rds"
+    output:
+        "{prefix}_trfs.rds",
+    log:
+        logging_folder + "{prefix}_trfs.txt",
+    script:
+        "scripts/physeq_pct_trsf.R"
+
+
+rule transpose_and_meta_count_table:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        count_table = "{prefix}/count_table.txt",
+        meta = "{prefix}/metadata_table.tsv"
+    output:
+        transposed_table = "{prefix}/count_table_transposed.txt",
+        merged_meta = "{prefix}/count_table_transposed_with_meta.txt"
+    priority:
+        1
+    log:
+        logging_folder + "{prefix}/count_table_transposed.log"
+    script:
+        "scripts/transpose_and_add_meta_count_table.R"
