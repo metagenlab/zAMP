@@ -339,7 +339,7 @@ Qiime2_Gneiss_gradient.append(expand("{denoiser}/5_visualization/rdp/{tax_DB}/no
             y_balances = list(range(1, 9))))
 
 ### Picrust2
-picrust2 = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/picrust/",
+picrust2 = expand("{denoiser}/6_picrust2/rdp/{tax_DB}/{rarefaction_value}/picrust/",
                     denoiser = config["denoiser"],
                     tax_DB = config["tax_DB"],
                     rarefaction_value = get_rarefaction_key(config["rarefaction_value"])
