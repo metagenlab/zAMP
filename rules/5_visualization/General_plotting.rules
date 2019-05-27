@@ -1,9 +1,11 @@
 
+
+
 rule raw_to_filtered_reads_stats:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds",
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
         raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/raw_to_filtered_reads_stats.tsv"
@@ -13,7 +15,22 @@ rule raw_to_filtered_reads_stats:
         "scripts/raw_to_filtered_reads_stats.R"
 
 
-rule reads_plot_with_filtered:
+rule raw_to_filtered_reads_stats_with_tax_filtering:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        read_filtering = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds",
+        taxonomic_filtering = lambda wildcards: "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.rds",
+        multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+    output:
+        raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_stats_with_{filter_lineage}_in_{filter_tax_rank}_filtered.tsv"
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_stats_with_{filter_lineage}_in_{filter_tax_rank}_filtered.txt"
+    script:
+        "scripts/raw_to_filtered_reads_stats_with_tax_filtering.R"
+
+
+rule raw_to_filtered_reads_plots:
     conda:
         "../../envs/r_visualization.yml"
     input:
@@ -29,6 +46,25 @@ rule reads_plot_with_filtered:
         logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_filtered.txt"
     script:
         "scripts/reads_plots_with_filtration.R"
+
+
+rule raw_to_filtered_reads_plots_with_tax:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_stats_with_{filter_lineage}_in_{filter_tax_rank}_filtered.tsv",
+        Metadata_table = config["local_samples"],
+        multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+    output:
+        reads_plot_with_filtered = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_{filter_lineage}_in_{filter_tax_rank}_filtered.png"
+    params:
+        grouping_column = config["grouping_column"],
+        sample_label = config["sample_label"]
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_plot_with_{filter_lineage}_in_{filter_tax_rank}_filtered.txt"
+    script:
+        "scripts/raw_to_filtered_reads_stats_with_tax_filtering.R"
+
 
 
 rule KRONA_plots:
@@ -48,7 +84,6 @@ rule KRONA_plots:
         "scripts/KRONA_plots.R"
 
 
-
 rule rarefaction_curve:
     conda:
         "../../envs/r_visualization.yml"
@@ -56,15 +91,14 @@ rule rarefaction_curve:
         phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtration_or_not}/{raref_or_not}/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
     output:
-        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{raref_or_not}/{filtration_or_not}_rarefaction_curve.png"
+        rarefaction_curve = "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve.png"
     params:
         sample_type = config["sample_type"],
         sample_label = config["sample_label"]
     log:
-        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{raref_or_not}/{filtration_or_not}_rarefaction_curve.txt"
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve.txt"
     script:
         "scripts/rarefaction_curve.R"
-
 
 
 

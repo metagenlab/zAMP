@@ -21,8 +21,8 @@ rule basic_output:
     input: basic_plots_list()
 
 ### Complete set of phyloseq, in option including transposed count table and metadata (wide to long)
-rule phyloseq_output:
-    input: phyloseq_output_list()
+#rule phyloseq_output:
+#    input: phyloseq_output_list()
 
 ### Complete set of plots
 rule plots_output:
@@ -55,5 +55,4 @@ include: "rules/4_physeq_post_processing/physeq_processing.rules"
 #include: "rules/5_visualization/Phyloseq.rules"
 include: "rules/5_visualization/General_plotting.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
-include: "rules/5_visualization/QIIME2_plugins.rules"
 include: "rules/PICRUSt2/picrust.rules"

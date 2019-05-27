@@ -17,12 +17,14 @@ tree_path <- snakemake@output[["tree_path"]]
 meta_path <- snakemake@output[["meta_path"]]
 taxonomy_path <- snakemake@output[["taxonomy_path"]]
 OTU_path  <- snakemake@output[["OTU_path"]]
+filtered_rep_seq  <- snakemake@output[["filtered_rep_seq"]]
 
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 library(dplyr);packageVersion("dplyr")
 library(tidyr);packageVersion("tidyr")
 library(stringr);packageVersion("stringr")
+library(Biostrings);packageVersion("Biostrings")
 
 ## Load the phyloseq phyloseq_object
 phyloseq_object <- readRDS(phyloseq_object)
@@ -45,5 +47,9 @@ write.table(taxa_df, taxonomy_path , sep="\t", quote=F, col.names = F)
 
 # Write the OTU table of the phyloseq object
 write.table(otu_table(phyloseq_object), OTU_path , sep="\t", quote=F)
+
+# Write the sequences
+writeXStringSet(refseq(phyloseq_object), filtered_rep_seq, append=FALSE,
+                compress=FALSE, format="fasta")
 
 

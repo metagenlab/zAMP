@@ -11,14 +11,14 @@ sink(log)
 sink(log, type="message")
 
 ## Input
-features_counts_table <- snakemake@input[["count_table"]]
+count_table <- snakemake@input[["count_table"]]
 Metadata_table <- snakemake@input[["Metadata_table"]]
 taxonomy_table <- snakemake@input[["taxonomy_table"]]
-# tax_tree <- snakemake@input[["tax_tree"]]
 rep_seqs <- snakemake@input[["rep_seqs"]]
+tax_tree <- snakemake@input[["tax_tree"]]
 
 ## Ouput
-rarefied_phyloseq_path <- snakemake@output[["phyloseq_object"]]
+phyloseq_object <- snakemake@output[["phyloseq_object"]]
 
 ## Parameters
 rarefy_value <- snakemake@params[["rarefaction_value"]]
@@ -34,8 +34,6 @@ library(tidyr);packageVersion("tidyr")
 library(readr);packageVersion("readr")
 library(phyloseq);packageVersion("phyloseq")
 library(Biostrings);packageVersion("Biostrings")
-library(DECIPHER);packageVersion("DECIPHER")
-library(phangorn);packageVersion("phangorn")
 
 
 
@@ -46,26 +44,15 @@ set.seed(1)
 
     ## Read count table
     print("reading count table")
-    count_table <- read.table(file = features_counts_table, header = TRUE, check.names=FALSE)
-
-        if (identical(rarefy_value, "norarefaction")){
-            print("norarefaction")
-            raref_cout_table <- count_table
-
-        }else if (is.numeric(as.numeric(rarefy_value))){
-            print(paste0("rarefaction at ", rarefy_value))
-            raref_cout_table <- t(as.data.frame(rrarefy(t(count_table), sample = as.numeric(rarefy_value))))
-        }else{
-            stop('Rarefaction value was neither "norarefaction" or a numeric value')
-        }
+    count_table <- read.table(file = count_table, header = TRUE, check.names=FALSE)
 
     ## Read sample_data
     print("reading metadata")
     metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
 
     ## Read taxonomic tree
-    #print("reading taxonomic tree")
-    #PHY <- read_tree(tax_tree)
+    print("reading taxonomic tree")
+    PHY <- read_tree(tax_tree)
 
     ## Read representative sequences
     print("importing representative sequences from fasta")
@@ -110,33 +97,11 @@ set.seed(1)
               print("table NA NOT remplaced by spaceholders")
               }
 
-    ## Build a phylogenetic tree based of the sequences
 
-    print("Starting phylogenetic tree")
-    names(SEQS) <- SEQS # This propagates to the tip labels of the tree
-    alignment <- AlignSeqs(SEQS, anchor=NA)
-
-    phang.align <- phyDat(as(alignment, "matrix"), type="DNA")
-    print("alignment")
-    dm <- dist.ml(phang.align)
-    treeNJ <- NJ(dm) # Note, tip order != sequence order
-    print("treeNJ")
-    fit <- pml(treeNJ, data=phang.align)
-
-    fitGTR <- update(fit, k=4, inv=0.2)
-    print("fitGTR 1")
-    fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
-                      rearrangement = "stochastic", control = pml.control(trace = 0))
-    print("fitGTR 2")
-    detach("package:phangorn", unload=TRUE)
-
-    print("finished tree")
-
-    ## Import all as phyloseq objects
-    OTU <- otu_table(raref_cout_table, taxa_are_rows = TRUE)
+    ## Format all
+    OTU <- otu_table(count_table, taxa_are_rows = TRUE)
     TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
     META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
-    PHY <- phy_tree(fitGTR$tree)
 
 
     ## Finally merge!
@@ -161,4 +126,4 @@ set.seed(1)
             sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div_1)
 
 # Write the phyloseq object
-saveRDS(object = phyloseq_obj, file = rarefied_phyloseq_path)
+saveRDS(object = phyloseq_obj, file = phyloseq_object)

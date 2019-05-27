@@ -11,7 +11,7 @@ sink(log, type="message")
 
 
 ## Input
-raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stats_path"]]
+raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stats"]]
 raw_to_filtered_reads_stats <- read.table(file = raw_to_filtered_reads_stats_path, sep = "\t", header = TRUE)
 metadata_path <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = metadata_path, sep = "\t", header = TRUE)
@@ -51,7 +51,7 @@ theme_set(theme_bw())
     #raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
 
-    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = get(sample_label), y = Count, fill = Reads)) +
+    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = sample_label, y = Count, fill = Reads)) +
         geom_col() +
         # scale_fill_manual(values = colors_palette) +
         labs(x= sample_label,  y ="Reads") +

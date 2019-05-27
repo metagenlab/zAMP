@@ -107,16 +107,6 @@ def Qiime2_output_list():
     output = basic_plots_list()
     if config["Qiime2_basic_output_visualization"] == True:
         output.append(Qiime2_vis_qzv)
-    if config["Volatility"] == True:
-        output.append(Qiime2_volatility)
-    if config["ANCOM"] == True:
-        output.append(Qiime2_ANCOM)
-    if "Gradient" in config["Gneiss"]:
-        output.append(Qiime2_Gneiss_correlation)
-    if "Phylogeny" in config["Gneiss"]:
-        output.append(Qiime2_Gneiss_Phylogeny)
-    if "Clustering" in config["Gneiss"]:
-        output.append(Qiime2_Gneiss_gradient)
     return(output)
 
 ### PICRUSt2 outputs

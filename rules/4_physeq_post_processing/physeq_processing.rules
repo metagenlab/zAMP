@@ -5,10 +5,10 @@ ruleorder: Phyloseq_collapse_taxa > Phyloseq_transform_to_percent
 ## Small function to extract numbers from rarefaction values
 import re
 def rafe_value_fct(wildcards):
-    if wildcards == "norarefaction":
-        value = "norarefaction"
-    else :
-        value = re.findall('\d+',wildcards)
+# if wildcards == "norarefaction":
+#    value = "norarefaction"
+# else :
+    value = re.findall('\d+',wildcards)
     return value
 
 
@@ -23,28 +23,28 @@ rule physeq_initial_import:
         rep_seqs = "{tool}/2_denoised/dna-sequences.fasta",
         tax_tree = "{tool}/4_tree/tree.nwk"
     output:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds"
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds"
     params:
         viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
-        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.txt"
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.txt"
     script:
         "scripts/physeq_initial_import.R"
 
 
-rule export_Phyloseq_object:
+rule physeq_export_object:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}.rds"
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}/{prefix2}.rds"
     output:
-        tree_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/tree.tree",
-        meta_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/metadata_table.tsv",
-        taxonomy_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/dna-sequences_tax_assignments.txt",
-        OTU_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/count_table.txt",
-        filtered_rep_seq = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/filt_rep_seqs.fasta",
+        tree_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/tree.tree",
+        meta_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/metadata_table.tsv",
+        taxonomy_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/dna-sequences_tax_assignments.txt",
+        OTU_path = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/count_table.txt",
+        filtered_rep_seq = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/dna-sequences.fasta",
     log:
-        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_export/export.txt",
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{prefix1}_{prefix2}_export/export.txt",
     script:
         "scripts/physeq_export.R"
 
@@ -54,13 +54,9 @@ rule physeq_tax_filtering:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/no_collapse/base.rds"
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds"
     output:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.rds",
-        count_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/count_table.txt",
-        Metadata_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/metadata_table.tsv",
-        taxonomy_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/dna-sequences_tax_assignments.txt",
-        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/dna-sequences.fasta",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
     params:
         filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
         filter_lineage = lambda wildcards: wildcards.filter_lineage,
@@ -76,18 +72,13 @@ rule physeq_rarefy:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/no_collapse/base.rds"
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/norarefaction/no_collapse/base.rds"
     output:
-        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/base.rds",
-        count_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/count_table.txt",
-        Metadata_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/metadata_table.tsv",
-        taxonomy_table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/dna-sequences_tax_assignments.txt",
-        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/dna-sequences.fasta",
+        phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.rds",
     params:
-        rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value),
-        viz_replace_empty_tax = config["viz_replace_empty_tax"]
+        rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value)
     log:
-        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{rarefaction_value}/no_collapse/base.txt",
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
     script:
         "scripts/physeq_rarefy.R"
 
@@ -95,11 +86,11 @@ rule physeq_rarefy:
 
 rule force_all_upper_case_rep_seq_2 :
     input:
-        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences.fasta",
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/dna-sequences.fasta",
     output:
-        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.fasta",
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/dna-sequences_all_UPPER.fasta",
     log:
-        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.txt",
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/dna-sequences_all_UPPER.txt",
     shell:
         '''
         awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
@@ -110,9 +101,9 @@ rule import_rep_seq_to_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/dna-sequences_all_UPPER.fasta",
+        rep_seqs = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/dna-sequences_all_UPPER.fasta",
     output:
-        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.qza"
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/rep-seqs.qza"
     log:
         logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.txt"
     shell:
@@ -129,12 +120,12 @@ rule create_tree_in_QIIME2_2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rep-seqs.qza"
+        "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/rep-seqs.qza"
     output:
-        aligned = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/aligned-rep-seqs.qza" ,
-        masked = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/masked-aligned-rep-seqs.qza" ,
-        unrooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/unrooted-tree.qza" ,
-        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.qza"
+        aligned = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/aligned-rep-seqs.qza" ,
+        masked = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/unrooted-tree.qza" ,
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/rooted-tree.qza"
     log:
         logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.txt"
     threads:
@@ -154,11 +145,11 @@ rule export_QIIME2_tree_2:
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/rooted-tree.qza"
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/rooted-tree.qza"
     output:
-        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.nwk"
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/tree.nwk"
     log:
-        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.txt"
+        logging_folder + "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/tree.txt"
     threads:
         4
     shell:
@@ -171,7 +162,7 @@ rule physeq_new_tree:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/tree.nwk",
+        rooted = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse_base_export/tree.nwk",
         phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
     output:
         phyloseq_object = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"

@@ -41,7 +41,7 @@ reads_counts_df_with_raw <- merge(multi_QC_report, reads_counts_df, by=c("Sample
 # Calculate the difference of reads between the raw and the filtered reads.
 reads_counts_df_with_raw <- mutate(reads_counts_df_with_raw, filtered = FastQC_mqc.generalstats.fastqc.total_sequences - TotalReads)
 
-# Keep to version of the table, one with the filtered reads in "Count" and one with the difference with the raw reads in the same count column.
+# Keep two version of the table, one with the filtered reads in "Count" and one with the difference with the raw reads in the same count column.
 reads_counts_df_raw_count_only <- reads_counts_df_with_raw %>% select(-"filtered") %>% rename("Count" = "TotalReads")
 reads_counts_df_raw_count_only$Reads <- "Maintained reads"
 reads_counts_df_raw_filtered_only <- reads_counts_df_with_raw %>% select(-"TotalReads") %>% rename("Count" = "filtered")
