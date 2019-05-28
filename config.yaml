@@ -81,6 +81,3 @@ separated_legend: TRUE #(or 'FALSE') # should the legend be separated
 ## Special Qiime2 outputs, in dev. ####################################################################################
 ### Qiime2 Visualization information
 Qiime2_basic_output_visualization: True # or False
-
-## Picrust ############################################################################################################
-PICRUST: True # use PICRUSt2 to predict genes content based on 16S rRNA taxonomic profiles. To be interpreted with caution. https://github.com/picrust/picrust2/wiki
