@@ -23,8 +23,6 @@ reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
 
 ## Parameters
 sample_label <- snakemake@params[["sample_label"]]
-grouping_column <- snakemake@params[["grouping_column"]]
-
 
 ## Load needed libaries
 library("phyloseq");packageVersion("phyloseq")
@@ -38,22 +36,32 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 theme_set(theme_bw())
 
 
-  ### Record data on the distribution of number of reads (useful later to scale plots axis)
-    smin <- min(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
-    print(smin)
-    smean <- mean(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
-    print(smean)
-    smax <- max(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
-    print(smax)
+    ### Record data on the distribution of number of reads (useful later to scale plots axis)
+        smin <- min(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
+        print(smin)
+        smean <- mean(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
+        print(smean)
+        smax <- max(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
+        print(smax)
 
-  ### Order the x axis as in the metadata_table
-    raw_to_filtered_reads_stats[[sample_label]] = factor(raw_to_filtered_reads_stats[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
-    #raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
+    ### Order the x axis as in the metadata_table
+        raw_to_filtered_reads_stats[[sample_label]] = factor(raw_to_filtered_reads_stats[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
+        #raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
+    ### Order the reads count in logical ordered
+        ordered_factors <- c("Tax filtered reads", "Reads processing", "Maintained reads")
+        raw_to_filtered_reads_stats$Reads <- factor(raw_to_filtered_reads_stats$Reads, ordered = TRUE, levels = ordered_factors)
 
-    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = sample_label, y = Count, fill = Reads)) +
+    ### Generate colors colors palette
+        getPalette <- colorRampPalette(brewer.pal(n=9, "Set3"))
+        ColList <- ordered_factors
+        ColPalette = getPalette(length(ColList))
+        names(ColPalette) = ColList
+        colors_palette <- ColPalette
+
+    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = get(sample_label), y = Count, fill = Reads)) +
         geom_col() +
-        # scale_fill_manual(values = colors_palette) +
+        scale_fill_manual(values = colors_palette) +
         labs(x= sample_label,  y ="Reads") +
         ggtitle(paste("Reads counts overall")) +
         scale_x_discrete(drop = TRUE) + # Keep all groups, included the ones with values. Alternative : (drop = FALSE)

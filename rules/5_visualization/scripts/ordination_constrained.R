@@ -15,7 +15,7 @@ Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
-output_path<- snakemake@output[["output1"]]
+output_path<- snakemake@output[["constrained_ordination"]]
 
 ## Parameters
 ordination_distance = snakemake@params[["ordination_distance"]]
@@ -60,7 +60,6 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
   
     if(nsamples(g_physeq_filtered)>3){
 
-
             # Calculate ordination
             #iMDS  <- do.call(ordinate, list(physeq = g_physeq_no_unassigned_phylum_bact_only, formula = paste0("~", ordination_factor), method = ordination_method))
             iMDS <- ordinate(physeq = g_physeq_filtered, formula = ~ get(ordination_factor), method = ordination_method)
@@ -75,6 +74,6 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
             ggsave(plot = p, filename = output_path)
 
     }else{
-
+        print("To few point to create ordination plot")
         file.create(file.path(output_path))
     }

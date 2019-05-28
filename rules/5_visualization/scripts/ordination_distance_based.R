@@ -14,11 +14,10 @@ Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
-output_path <- snakemake@output[["output1"]]
+output_path <- snakemake@output[["ordination"]]
 
 ## Parameters
 ordination_distance = snakemake@params[["ordination_distance"]]
-# sample_label <- snakemake@params[["sample_label"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_column
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]

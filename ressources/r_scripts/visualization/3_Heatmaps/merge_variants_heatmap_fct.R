@@ -213,48 +213,34 @@ merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_
   under_threshold_df$OTU<-as.character(under_threshold_df$OTU)
   
   ### Rename taxa with < percent/reads abundance, defending of the filtering applied
-  ### Relative filtering
-  if (quantity_filtering_type == "relative"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"%_abund")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"%_abund")
-  }
-  
-  ### Absolute filtering
-  else if (quantity_filtering_type == "absolute"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"reads")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"reads")
-  }
-  
-  ### Abundance rank of the taxa in the group filtering
-  else if (quantity_filtering_type == "rank"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value,"rank")
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value,"rank")
-  }  
-  
-  ### Absolute abundance  AND rank of the taxa in the group filtering
-  else if (quantity_filtering_type == "absolute_and_rank"){
-    under_threshold_df$Kingdom <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Phylum <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Class <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Order <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Family <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Genus <-paste("<_", quantity_filtering_value)
-    under_threshold_df$Species <-paste("<_", quantity_filtering_value)            }
+  ### Rename taxa with < percent/reads abundance, defending of the filtering applied
+      #### Define the filtering tag depending of the applied filtering
+          ##### Relative
+          if (relative_or_absolute_filtering == "relative"){
+              filtering_tag <-paste("Relative abund. <", filtering_value , "%")
+          }
+          ##### Absolute filtering
+          else if (relative_or_absolute_filtering == "absolute"){
+              filtering_tag <-paste("Absolute abund. <", filtering_value, "reads")
+          }
+
+          ##### No filtering
+          else if (relative_or_absolute_filtering == "nofiltering"){
+              filtering_tag <-paste("nofiltering")
+          }
+
+
+          if (relative_or_absolute_filtering != "nofiltering"){
+      #### Apply the filtering tag
+          under_threshold_df$Kingdom <-filtering_tag
+          under_threshold_df$Phylum <-filtering_tag
+          under_threshold_df$Class <-filtering_tag
+          under_threshold_df$Order <-filtering_tag
+          under_threshold_df$Family <-filtering_tag
+          under_threshold_df$Genus <-filtering_tag
+          under_threshold_df$Species <-filtering_tag
+          under_threshold_df$OTU <-filtering_tag
+      }
   
   
   ### Join the two dataframes, to put back all rows together, the ones above threshold keeping their original taxonomic identifier while the others are now grouped together
@@ -321,8 +307,9 @@ merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_
     g_column <- rlang::sym(grouping_column)
     x_column<- rlang::sym(sample_label)
     f_column <- rlang::sym(facetting_column)
+    t_rank <-  rlang::sym(facetting_column)
     filtered_OTU <- filtered_df_abs_i %>% 
-      dplyr::filter(grepl("<", Species)) %>%
+      dplyr::filter(grepl(filtering_tag, Species)) %>%
       group_by(!!(x_column), !!(g_column), !!(f_column)) %>%
       summarise(Abundance = sum(Abundance)) %>% 
       filter(Abundance > 0)

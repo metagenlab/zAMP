@@ -14,10 +14,10 @@ Metadata_table <- snakemake@input[["Metadata_table"]]
 metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
-output_path <- snakemake@output[["output1"]]
+output_path <- snakemake@output[["unconstrained_ordination"]]
 
 ## Parameters
-# sample_label <- snakemake@params[["sample_label"]]
+# x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
 grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 sample_type <- snakemake@params[["sample_type"]]
@@ -31,14 +31,10 @@ library("RColorBrewer"); packageVersion("RColorBrewer")
 library("rlang"); packageVersion("rlang")
 
 ## Set seed for reproducibility
-set.seed(100)
+set.seed(1)
 
 ## Load the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
-
-### Remove sequences not assigned at the phylum level
-#physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
-#physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
 ### Remove sample with abundance < 20
 physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
@@ -53,9 +49,12 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
     sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Keep only the data of the samples of interest
+
+    grouping_column
+    grouping_filter_column_value
+
     remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
     g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
-    
 
     if(nsamples(g_physeq_filtered)>3){
 
@@ -76,4 +75,3 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
     }else{
         file.create(file.path(output_path))
     }
-

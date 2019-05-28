@@ -24,17 +24,33 @@ def get_rarefaction_key(rarefaction_values):
     return(file_list)
 
 
-### Define taxonomic collapse levels from config
+# A small function to transform the collapse levels from the plotting ranks
 def get_taxa_collapse_level_key(collapse_level):
 
     file_list = []
-
     for i in set(collapse_level):
-        combined_values = expand("collap_{collapse_level}", collapse_level = i)
-        file_list = file_list + combined_values
+        if i == "OTU":
+            value = 'no_collapse'
+        elif i == "Species" :
+            value = 'collap_7'
+        elif i == "Genus" :
+            value = 'collap_6'
+        elif i == "Family" :
+            value = 'collap_5'
+        elif i == "Order" :
+            value = 'collap_4'
+        elif i == "Class" :
+            value = 'collap_4'
+        elif i == "Phylum" :
+            value = 'collap_3'
+        elif i == "Kingdom" :
+            value = 'collap_2'
+        else :
+            raise ValueError("Forbidden value in taxa level for barplots")
+        file_list.append(value)
     file_list = file_list + ["no_collapse"]
-
     return(file_list)
+
 
 ### Define abundance filtering from config
 def get_filtering_key(filtering):
@@ -90,9 +106,9 @@ def plots_output_list():
     if config["Barplots"] == True:
         output.append(barplots)
     if config["Heatmaps"] == True:
-        output.append(barplots)
+        output.append(heatmaps)
     if config["Alpha_divs"] == True:
-        output.append(barplots)
+        output.append(alpha_diversities)
     if config["Distance_ordinations"] == True:
         output.append(distance_ordinations)
     if config["Constrained_ordinations"] == True:

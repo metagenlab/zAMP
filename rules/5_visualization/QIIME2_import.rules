@@ -44,27 +44,29 @@ rule create_visualize_count_table_QIIME2 :
         --o-visualization {output[0]}
         '''
 
+
 rule force_all_upper_case_rep_seq :
     input:
-        "{tool}/2_denoised/dna-sequences.fasta"
+        rep_seqs = "{tool}/{prefix}/dna-sequences.fasta",
     output:
-        "{tool}/2_denoised/dna-sequences_all_UPPER.fasta"
+        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
     log:
-        logging_folder + "{tool}/dna-sequences_all_UPPER.txt"
+        logging_folder + "{tool}/{prefix}/dna-sequences_all_UPPER.txt",
     shell:
         '''
         awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
         '''
 
+
 rule import_rep_seq_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/2_denoised/dna-sequences_all_UPPER.fasta"
+        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
     output:
-        "{tool}/2_denoised/rep-seqs.qza"
+        "{tool}/{prefix}/rep-seqs.qza"
     log:
-        logging_folder + "{tool}/2_denoised/rep-seqs.txt"
+        logging_folder + "{tool}/{prefix}/rep-seqs.txt"
     shell:
         '''
         qiime tools import \
@@ -72,6 +74,48 @@ rule import_rep_seq_to_QIIME2 :
         --output-path {output[0]} \
         --type 'FeatureData[Sequence]'
         '''
+
+
+# Build a new tree based on the filtered sequences
+rule create_tree_in_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/{prefix}/rep-seqs.qza"
+    output:
+        aligned = "{tool}/{prefix}/aligned-rep-seqs.qza" ,
+        masked = "{tool}/{prefix}/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/{prefix}/unrooted-tree.qza" ,
+        rooted = "{tool}/{prefix}/rooted-tree.qza"
+    log:
+        logging_folder + "{tool}/{prefix}/rooted-tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-fasttree \
+          --p-n-threads {threads} \
+          --i-sequences {input[0]} \
+          --o-alignment {output[aligned]} \
+          --o-masked-alignment {output[masked]} \
+          --o-tree {output[unrooted]} \
+          --o-rooted-tree {output[rooted]}
+        '''
+
+rule export_QIIME2_tree:
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        rooted = "{tool}/{prefix}/rooted-tree.qza"
+    output:
+        rooted = "{tool}/{prefix}/tree.nwk"
+    log:
+        logging_folder + "{tool}/{prefix}/tree.txt"
+    shell:
+        '''
+        qiime tools export --input-path {input} --output-path $(dirname {output[0]})
+        '''
+
 
 rule create_visualize_rep_seq_QIIME2 :
     conda:

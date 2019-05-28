@@ -1,9 +1,9 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : Collapse taxa
+# Objective : Collapse the read for identical taxa at a given taxonomic level
 # Created by: valentinscherz
-# Created on: 26.10.18
+# Created on: 28.05.2019
 
-## Inspired from https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32
+
 ## Redirect R output
 log <- file(snakemake@log[[1]], open="wt")
 sink(log)
@@ -18,15 +18,18 @@ phyloseq_filtered_object <- snakemake@output[[1]]
 ## Parameters
 collapse_level <- snakemake@params[["collapse_level"]]
 
+
+
 ## Load needed libraries
 library(phyloseq);packageVersion("phyloseq")
 
 
-## Load the phyloseq object
+
+## Import the phyloseq object
 phyloseq_object <- readRDS(phyloseq_object)
 
+## Convert the taxonomic level to its name
 rank_names(phyloseq_object)[[as.numeric(collapse_level)]]
-
 
 ## Collapse taxa
 collapsed_physeq <- tax_glom(phyloseq_object, taxrank=rank_names(phyloseq_object)[[as.numeric(collapse_level)]], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))

@@ -45,7 +45,7 @@ reads_counts_df_with_raw <- mutate(reads_counts_df_with_raw, filtered = FastQC_m
 reads_counts_df_raw_count_only <- reads_counts_df_with_raw %>% select(-"filtered") %>% rename("Count" = "TotalReads")
 reads_counts_df_raw_count_only$Reads <- "Maintained reads"
 reads_counts_df_raw_filtered_only <- reads_counts_df_with_raw %>% select(-"TotalReads") %>% rename("Count" = "filtered")
-reads_counts_df_raw_filtered_only$Reads <- "Filtered"
+reads_counts_df_raw_filtered_only$Reads <- "Reads processing"
 
 # Bind the rows of the two just prepared tables
 melted_reads_count <- rbind(reads_counts_df_raw_count_only, reads_counts_df_raw_filtered_only)

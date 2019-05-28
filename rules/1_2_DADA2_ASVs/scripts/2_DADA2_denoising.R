@@ -1,7 +1,7 @@
 ## Redirect R output
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Input
 q_score_filtered_Fs <- snakemake@input[["q_score_filtered_Fs"]]

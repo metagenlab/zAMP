@@ -47,6 +47,7 @@ sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sa
 #physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
 #physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
 
+
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
  ColList = unique(metadata[[sample_type]])
@@ -70,6 +71,7 @@ sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sa
     geom_boxplot()
     }
 
+
 p <- p + theme(axis.text.x = element_text(size=5))
 
 
@@ -79,10 +81,10 @@ p.width <- 7 + 0.4*length(unique(metadata[[sample_label]]))
 if (p.width >= 30){
    p.width <- 30}
 
-ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png"),  plot = p, width = p.width, height = 4)
+ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_diversity.png"),  plot = p, width = p.width, height = 4)
 
 }else{
-    filename <- paste0(output_folder,"/",grouping_filter_column_value,"_alpha_divesity.png")
+    filename <- paste0(output_folder,"/",grouping_filter_column_value,"_alpha_diversity.png")
     print(paste("Create empty file", filename))
     file.create(file.path(filename))
 } #}
