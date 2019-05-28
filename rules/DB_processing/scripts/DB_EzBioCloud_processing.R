@@ -169,11 +169,17 @@ for (c_name in s2correct)
         new_species_name <- paste(species, collapse = "/")
         new_species_name_f <- paste(new_species_name, "(", nr_species,")", sep = "")
 
-        if (nr_species <= 8)
+        if (nr_species > 4)
+        {
+            new_species_name <- paste(new_genus_name,"sp.")
+            new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
+        }
+
+        if (nr_species <= 4)
         {
             species <- paste(unique(selected_tax_table[,7]), collapse = "/")
             new_species_name <- paste(species, collapse = "/")
-            new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
+            new_species_name_f <- paste(new_species_name, "(", nr_species,")", sep = "")
         }
         print(new_species_name_f)
     }
