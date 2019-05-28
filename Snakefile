@@ -38,14 +38,17 @@ rule plots_output:
     input: plots_output_list()
     priority: 45
 
+
+### Defaul rule all. Include all but PICRUSt2
+rule all:
+    input: rule_all_list()        
+   
+
 ### PICRUSt2 outputs
 rule PICRUSt2_output:
     input: PICRUSt2_list()
     priority: 0
 
-### Defaul rule all. Include all but PICRUSt2 and QIIME2 special outputs
-rule all:
-    input: rule_all_list()
 
 
 ## Include the pipeline rules
