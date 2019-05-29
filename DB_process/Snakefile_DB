@@ -3,4 +3,4 @@ include: "rules/DB_processing/EzBioCloud.rules"
 ## Run the function
 rule all:
     input:
-         workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_taxonomy.txt"
+         workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_taxonomy.txt"
