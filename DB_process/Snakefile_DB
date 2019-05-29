@@ -1,4 +1,4 @@
-include: "rules/DB_processing/EzBioCloud.rules"
+include: "DB_process/DB_processing/EzBioCloud.rules"
 
 ## Run the function
 rule all:
