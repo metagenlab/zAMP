@@ -1,4 +1,4 @@
-#name: r_visualization
+name: r_visualization
 channels:
  - r
  - conda-forge
@@ -13,7 +13,7 @@ dependencies:
  - r-dplyr = 0.7.6
  - r-scales = 1.0.0
  - r-reshape2 = 1.4.3
- - bioconductor-phyloseq = 1.24.2
+ - bioconductor-phyloseq = 1.26.1
  - r-RColorBrewer = 1.1.2
 # - r-randomcoloR = 1.1.0
  - r-tidyverse = 1.2.1
@@ -23,11 +23,12 @@ dependencies:
 # - bioconductor-psadd = 0.1.2
  - r-taxa = 0.3.1
  - r-rlang = 0.2.2
- - bioconductor-deseq2 = 1.20.0
+ - bioconductor-deseq2 = 1.22.1
  - r-gtools = 3.8.1
 # - r-decontam = 1.1.0
  - krona = 2.7
  - r-magrittr = 1.5
  - r-cowplot = 0.9.3
- - bioconductor-microbiome = 1.2.1
- - bioconductor-genomeinfodbdata = 1.1.0 ## prevent a Conda bug with version 1.2.0
+ - bioconductor-microbiome
+ # - bioconductor-genomeinfodbdata ## prevent a Conda bug with version 1.2.0
+ - bioconductor-aldex2 = 1.14.1

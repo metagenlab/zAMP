@@ -1,0 +1,12 @@
+name: tree_in_R
+channels:
+ - r
+ - conda-forge
+ - defaults
+ - bioconda
+ - biocore
+dependencies:
+ - r-base = 3.5.1
+ - bioconductor-decipher = 2.10.0
+ - r-phangorn = 2.5.3
+ - bioconductor-dada2 = 1.10.0

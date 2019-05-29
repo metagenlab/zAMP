@@ -1,0 +1,23 @@
+rule picrust2_custom_tree :
+    conda:
+        "../../envs/picrust2.yml"
+    input:
+        seqs = "{tool}/2_denoised/dna-sequences_all_UPPER.fasta",
+        table = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom"
+    output:
+        directory("{tool}/6_picrust2/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/picrust/")
+    log:
+        logging_folder + "{tool}/5_visualization/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt"
+    threads:
+        4
+    shell:
+        '''
+        picrust2_pipeline.py \
+            --in_traits COG,EC,KO,PFAM,TIGRFAM \
+            -s {input[seqs]} \
+            -i {input[table]} \
+            -o {output}/output \
+            -p {threads}
+        '''
+
+

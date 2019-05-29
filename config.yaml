@@ -1,81 +1,83 @@
-#mandatory, one of them or both
-sra_samples: example_sra_samples.tsv
-local_samples: Metadata.tsv
+## Dataset ############################################################################################################
+### Set input samples list. (Mandatory, one of them or both)
+sra_samples: example_sra_samples.tsv ## To access to Sequences Read Archive
+local_samples: Metadata.tsv ## Local analysis
 
-# Trimming
-forward_primer: CCTACGGGNGGCWGCAG
-reverse_primer: GACTACHVGGGTATCTAATCC
-DADA2_F_reads_length_trim: 280
-DADA2_R_reads_length_trim: 255
+### Metadata columns definition
+run_column: seq_run # Column identifying the sequencing run (sequencing error are learned for each run with DADA2)
+grouping_column: ["sample_group"] # Column for which a plot (e.g. KRONA page), will be generated for each value of.
+sample_label: sample_label # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique.
+sample_type: sample_source # Column in "local_samples" used to color points and fill plots.
+ordination_factor : sample_source # Column in "local_samples" used to for shapes of points in ordination.
+filter_meta_column: Sample # A column from which we could filter out samples
+filter_column_value: A549-PCR-neg-20180809 # Value of filtered out samples in this column
 
-# Filtering
-merged_min_length: 390
-merged_max_length: 500
-F_extected_error: 6
-R_extected_error: 6
+## Reads proccessing ##################################################################################################
+### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
+denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
 
-# Denoisier
-denoiser: ["vsearch", "DADA2"]
-run_column: seq_run
+### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
+forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
+reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
-# Database
-tax_DB: ["ezbiocloud_charlotte_merged", "ezbiocloud_charlotte_no_merge", "ezbiocloud_marta", "ezbiocloud_valentin"]
+### Length trimming of reads (after primer removal, for DADA2 approach only)
+DADA2_F_reads_length_trim: 280 # 280 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
+DADA2_R_reads_length_trim: 255 # 250 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
 
-# Rarefaction
-rarefaction_value: [10000,20000,50000,100000,200000,300000]
+### Quality-based filtering of reads (reads trimming, for DADA2 approach only)
+F_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
+R_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
 
-# Phyloseq processing
-viz_replace_empty_tax: TRUE
-filter_tax_rank: ["Kingdom"]
-filter_lineage: ["Bacteria"]
-filter_out_tax_rank: ["Phylum"]
-filter_out_lineage: ["Bacteria_phy"]
-filter_meta_column: ["sample_group"]
-filter_column_value: ["sample"]
-filter_features_subset_relative_or_absolute: "relative" #(or 'absolute')
-filter_features_subset_formula: sum(x > 3) > (0.2*length(x)) # or (sum(x) > 1) to keep what is above 1
-collapse_level: [2,3,4,5,6,7]
+### Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
+merged_min_length: 390 # from 390 to 400 for V3V4
+merged_max_length: 500 # from 450 to 500 for V3V4
 
-# Visualization
-grouping_column: [PatientID]
-x_axis_column: Sample
-sample_type: sample_source
+### Database used for taxonomic assignment
+tax_DB: ["ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
+
+
+## Reads post-processing ##############################################################################################
+### Rarefaction
+rarefaction_value: [10000,20000,300000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
+viz_replace_empty_tax: TRUE # "TRUE" is recommended to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc.... Otherwise they are left empty
+filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "Kingdom")
+filter_lineage: ["Bacteria"] # What value of filter_tax_rank we keep. (Usually "Bacteria")
+filter_out_tax_rank: ["Phylum"] # At which taxonomic rank we filter out. (Usually "Phylum")
+filter_out_lineage: ["Bacteria_phy"] # Which value of filter_out_tax_rank we filter out. (Usually "Bacteria_phy" to remove suspicious sequences assigned as Bacteria but which are probably not.
+transposed_tables: False # True to have transposed count table
+
+## Visualization ######################################################################################################
+### Select output
+Barplots: True # or False
+Heatmaps: True # or False
+Alpha_divs: True # or False
+Distance_ordinations: True # or False
+Constrained_ordinations: True # or False
+Unconstrained_ordinations: True # or False
+
+### Ordination parameters
+ordination_types: ["distance", "constrained", "unconstrained"]
 ordination_distance: ["unifrac", "wunifrac", "jsd", "bray", "jaccard", "chao"]
 ordination_method_distance_based: ["NMDS", "MDS", "PCoA"]
 ordination_method_constrained: ["DCA", "CCA", "RDA", "CAP", "DPCoA"]
 ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
-ordination_factor : sample_source
 
-# barplot
-Heatmap: True # or False
-Barplot: True # or False
-relative_or_absolute_baxplot: ["relative", "absolute"]
-relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"]
-relative_filtering_value: [10]
-absolute_filtering_value: [200]
-plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"]
-t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE')
-t_neg_PCR_group_column_value: "t_neg_PCR"
-distinct_colors: TRUE #(or 'FALSE')
-horizontal_barplot: TRUE #(or 'FALSE')
-facet_plot:  TRUE #(or 'FALSE')
-facetting_column: "extraction_method"
-order_by_abundance:  TRUE #(or 'FALSE')
-separated_legend: TRUE #(or 'FALSE')
+### Barplots and heatmaps parameters
+relative_or_absolute_baxplot: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
+relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
+relative_filtering_value: [1] # % for relative value based filtering.
+absolute_filtering_value: [200] # number of reads for absolute value based filtering
+plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
+t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
+t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
+distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors on barplots
+horizontal_barplot: TRUE #(or 'FALSE') # Turn horizontally the plots
+facet_plot:  TRUE #(or 'FALSE') # Create facet plots with ggplot2
+facetting_column: extraction_method # If facets, which column in "local_samples" concaints the information for facetting
+order_by_abundance:  TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
+separated_legend: TRUE #(or 'FALSE') # should the legend be separated
 
-# Volatility
-Volatility: TRUE
-with_type_table: Metadata_q2.tsv
-individual_id_column: ["patientID"]
-p_state_column: ["time"]
 
-#Qiime2 stat analysis
-ANCOM: TRUE
-ANCOM_factors: ["Subject_ID", "Test_day", "Condition_group"]
-
-Gneiss: ["Gradient", "Phylogeny", "Clustering"]
-Gneiss_gradient_clustering: ["Gneiss_gradient_clustering"]
-Gneiss_formula: Subject_ID + Test_day + Condition_group
-
-# Picrust
-PICRUST: True
+## Special Qiime2 outputs, in dev. ####################################################################################
+### Qiime2 Visualization information
+Qiime2_basic_output_visualization: True # or False

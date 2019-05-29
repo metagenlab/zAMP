@@ -1,3 +1,4 @@
+name: PANDAseq
 channels:
  - bioconda
 dependencies:

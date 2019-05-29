@@ -1,5 +1,6 @@
+name: MultiQC
 channels:
  - bioconda
  - conda-forge
 dependencies:
- - multiqc=1.6
+ - multiqc=1.7

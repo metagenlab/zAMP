@@ -1,5 +1,6 @@
+name: sra-tools
 channels:
  - bioconda
  - conda-forge
 dependencies:
- - sra-tools = 2.9.0=h470a237_1
+ - sra-tools = 2.9.0

@@ -1,3 +1,4 @@
+name: DADA2
 channels:
  - bioconda
  - conda-forge
@@ -7,5 +8,4 @@ dependencies:
   - bioconductor-DADA2=1.10.0
   - r-dplyr=0.7.6
   - bioconductor-phyloseq
-#  - bioconductor-biomformat=1.10.0
-# - libgcc-ng =7.2.0 #7.3.0 doesnt work
+

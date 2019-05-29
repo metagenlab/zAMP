@@ -1,5 +1,41 @@
-SampleName	LibraryLayout	Replicate	Group1
-MIX9A	paired	1	1
-MIX9B	paired	1	1
-MIX7B	paired	2	2
-MIX7A	paired	2	2
+# Minimal columns description. Should be removed before use !
+# Table must be 'tsv' format, meaning tablute separated values.
+#
+# Columns description. All but the first one 'Sample' can be renamed.
+#
+## Sample:
+### Samples identifier. Must contain only uniques values, that are NOT only numerical and
+### which do not contains '-' or '.'. '_' are OK.
+###
+### Shoud match what is before '_L001_R*_001.fastq.gz' in the reads. If not, an 'OldSampleName' column matching the read
+### names can be added in addition. An error will be thrown if not exactly one pair of reads in 'links/' matches each
+### value contained in this columns.
+### A'OldSampleName' column can be used to bypass this limitation. Then the content of this column will be used for
+### matching, and the samples will be be renamed by the content of 'Sample' column.
+#
+#
+## sample_label
+### Samples description. Should be unique but can be adapted to best describe the samples in plots, tables etc...
+#
+#
+## sample_group
+### Describe group of samples which should be group togheter in generated output. For instance, will create on KRONA
+### plot by value of this column (e.g. Patients IDs). We can also use this column to filter out unwanted values for
+### plotting (e.g. QC samples).
+#
+#
+## sample_type
+### Description of the type of samples, for instance the source of the sample.
+#
+#
+## seq_run
+### Should be not numerique only. Describe the sequencing run. Used to generate run specific MultiQC reports. Used as
+### well by DADA2 which generate an error profile for each run.
+#
+#
+Sample	sample_label    sample_group    sample_type   seq_run
+S1111   sample_1    patient1    feces   run1
+MIX9B   sample_2	patient1    feces   run1
+MIX7B   sample_3	patient2    feces   run1
+MIX10B  sample_4    patient2    feces   run1
+MIX7A   QC_1    QC  QC  run1

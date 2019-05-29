@@ -1,4 +1,5 @@
+name: KRONA
 channels:
  - bioconda
 dependencies:
- - krona = 2.7
+ - krona = 2.7.1
