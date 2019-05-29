@@ -29,8 +29,8 @@
 
 
 # Learn error rates
-    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread = TRUE, verbose = 1)
-    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread = TRUE, verbose = 1)
+    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread = snakemake@threads, verbose = 1)
+    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread = snakemake@threads, verbose = 1)
 
 # Write these error profiles
     saveRDS(object = errF, file = error_profile_F)
