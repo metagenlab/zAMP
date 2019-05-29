@@ -31,16 +31,16 @@ order_by_abundance <-  snakemake@params[["order_by_abundance"]]
 separated_legend <-  snakemake@params[["separated_legend"]]
 
 
+
 ## Load needed libraries
 library(ggplot2); packageVersion("ggplot2")
 library(dplyr); packageVersion("dplyr")
-library(phyloseq); packageVersion("phyloseq")
 library(RColorBrewer); packageVersion("RColorBrewer")
 library(randomcoloR); packageVersion("randomcoloR")
 library(data.table); packageVersion("data.table")
 library(forcats); packageVersion("forcats")
 library(rlang); packageVersion("rlang")
-library(grid); packageVersion("grid")
+#library(grid); packageVersion("grid")
 library(cowplot); packageVersion("cowplot")
 
 ## Load the melted phyloseq table
@@ -53,7 +53,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, sample_label, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -168,7 +168,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
             ### Reorder the facet factor if later used for plotting
                 if (isTRUE(facet_plot)){
                     #threshod_filtered_abs_no_zero[[facetting_column]] <- as.factor(threshod_filtered_abs_no_zero[[facetting_column]])
-                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[sample_label]]))
+                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
 
                 }else if (isFALSE(facet_plot)){print("No faceting")
 
@@ -176,9 +176,9 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                 }
 
 
-           ### Reverse the sample_label column for later if using horizontal barplot
+           ### Reverse the x_axis_column column for later if using horizontal barplot
                 if (isTRUE(horizontal_barplot)){
-                    threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
+                    threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
 
                 } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
 
@@ -261,13 +261,13 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
 
                 #### Create the barplot
                     taxrank_barplot <- filtered_df_abs_i %>%
-                        ggplot(aes(x = get(sample_label), y = Abundance, fill = get(tax_ranks))) +
+                        ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(tax_ranks))) +
                         theme_bw() +
                         geom_col() +
                         #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
                         theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
                         guides(fill = guide_legend(title = paste0(tax_ranks),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-                        labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level" )) + # axis and graph title
+                        #labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level" )) + # axis and graph title
                         scale_fill_manual(values = colors_palette) # colors as set previously
 
 
@@ -315,7 +315,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
 barplots_fct(
   melted_dataframe = melted_dataframe,
     grouping_column = grouping_column,
-    sample_label = sample_label,
+    x_axis_column = sample_label,
     t_neg_PCR_sample_on_plots = t_neg_PCR_sample_on_plots,
     t_neg_PCR_group_column_value = t_neg_PCR_group_column_value,
     relative_or_absolute_filtering = relative_or_absolute_filtering,

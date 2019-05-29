@@ -50,7 +50,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 ################################################################################
 ### Create a function
-    heatmap_fct <- function(melted_dataframe, sample_label, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -166,16 +166,16 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
             ### Reorder the facet factor if later used for plotting
                 if (isTRUE(facet_plot)){
                     #threshod_filtered_abs_no_zero[[facetting_column]] <- as.factor(threshod_filtered_abs_no_zero[[facetting_column]])
-                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[sample_label]]))
+                    threshod_filtered_abs_no_zero[[facetting_column]] <- fct_reorder(threshod_filtered_abs_no_zero[[facetting_column]], as.numeric(threshod_filtered_abs_no_zero[[x_axis_column]]))
 
                 }else if (isFALSE(facet_plot)){print("No faceting")
 
                 }else {stop('"facet_plot" must be TRUE or FALSE')
                 }
 
-           ### Reverse the sample_label column for later if using horizontal barplot
+           ### Reverse the x_axis_column column for later if using horizontal barplot
                 if (isTRUE(horizontal_barplot)){
-                    threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
+                    threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
 
                 } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
 
@@ -212,7 +212,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
             ### Merged rows that were filtered in previous step so that they are only on one line on the heatmaps
             g_column <- rlang::sym(grouping_column)
-            x_column<- rlang::sym(sample_label)
+            x_column<- rlang::sym(x_axis_column)
             f_column <- rlang::sym(facetting_column)
             filtered_OTU <- filtered_df_abs_i %>%
             dplyr::filter(grepl(filtering_tag, !! t_column)) %>%
@@ -259,7 +259,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 
       ### Generate heatmap
-      heatmap <- ggplot(merged_filtered_OTU, aes(x = get(sample_label), y = get(tax_ranks), fill = Abundance)) +
+      heatmap <- ggplot(merged_filtered_OTU, aes(x = get(x_axis_column), y = get(tax_ranks), fill = Abundance)) +
         theme_bw() +
         geom_tile(aes(fill=Abundance), show.legend=TRUE) +
         scale_fill_gradient(na.value = "white", low="#000033", high="#CCFF66") +
@@ -304,7 +304,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 heatmap_fct(
   melted_dataframe = melted_dataframe,
   grouping_column = grouping_column,
-  sample_label = sample_label,
+  x_axis_column = sample_label,
   t_neg_PCR_sample_on_plots = t_neg_PCR_sample_on_plots,
   t_neg_PCR_group_column_value = t_neg_PCR_group_column_value,
   relative_or_absolute_filtering = relative_or_absolute_filtering,

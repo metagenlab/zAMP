@@ -22,7 +22,7 @@ multi_QC_report <- read.table(multi_QC_report_path, header = T)
 reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
 
 ## Parameters
-sample_label <- snakemake@params[["sample_label"]]
+x_axis_column <- snakemake@params[["sample_label"]]
 
 ## Load needed libaries
 library("phyloseq");packageVersion("phyloseq")
@@ -45,7 +45,7 @@ theme_set(theme_bw())
         print(smax)
 
     ### Order the x axis as in the metadata_table
-        raw_to_filtered_reads_stats[[sample_label]] = factor(raw_to_filtered_reads_stats[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
+        raw_to_filtered_reads_stats[[x_axis_column]] = factor(raw_to_filtered_reads_stats[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
         #raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)
 
     ### Order the reads count in logical ordered
@@ -59,10 +59,11 @@ theme_set(theme_bw())
         names(ColPalette) = ColList
         colors_palette <- ColPalette
 
-    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = get(sample_label), y = Count, fill = Reads)) +
+
+    overall_reads_barplot <- ggplot(raw_to_filtered_reads_stats, aes(x = get(x_axis_column), y = Count, fill = Reads)) +
         geom_col() +
         scale_fill_manual(values = colors_palette) +
-        labs(x= sample_label,  y ="Reads") +
+        labs(x= x_axis_column,  y ="Reads") +
         ggtitle(paste("Reads counts overall")) +
         scale_x_discrete(drop = TRUE) + # Keep all groups, included the ones with values. Alternative : (drop = FALSE)
         scale_y_continuous(labels = scales::comma, limits = c(0,smax)) +

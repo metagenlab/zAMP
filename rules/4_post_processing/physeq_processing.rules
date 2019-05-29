@@ -99,7 +99,7 @@ rule physeq_new_tree:
 
 
 
-rule melt_Phyloseq_object_2:
+rule melt_Phyloseq_object:
     conda:
         "../../envs/physeq.yml"
     input:
