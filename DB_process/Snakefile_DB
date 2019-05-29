@@ -3,5 +3,5 @@ include: "/home/master_students/bin/microbiome16S_pipeline/DB_process/DB_process
 ## Run the function
 rule all:
     input:
-         workflow.basedir + "../data/ezbiocloud_201805_201905/EzBioCloud_V3V4_taxonomy.txt"
+         config["Output_folder"] + "EzBioCloud_V3V4_taxonomy.txt"
 
