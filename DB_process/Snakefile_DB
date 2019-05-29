@@ -1,4 +1,4 @@
-include: "/home/master_students/bin/microbiome16S_pipeline/DB_process/home/master_students/bin/microbiome16S_pipeline/DB_process/DB_processing/EzBioCloud.rules"
+include: "/home/master_students/bin/microbiome16S_pipeline/DB_process/DB_processing/EzBioCloud.rules"
 
 ## Run the function
 rule all:
