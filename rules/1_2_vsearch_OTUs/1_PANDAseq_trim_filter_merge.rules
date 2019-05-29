@@ -29,5 +29,6 @@ rule PANDAseq_trim_pair_reads:
         -G {log} \
         -w {output[paired_trimmed_reads]} \
         -B \
+	-T {threads}
         -N
         '''
