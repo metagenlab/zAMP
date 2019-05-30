@@ -10,9 +10,11 @@ rule assess_quality_paired_raw_reads_with_fastqc:
           "QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip",
     log:
         logging_folder + "QC/FastQC/raw_reads/{RUN}/{sample}_fastqc.txt"
+    threads: 
+        1
     shell:
         """
-        fastqc {input} -o $(dirname {output[0]}) &> {log}
+        fastqc -t {threads} {input} -o $(dirname {output[0]}) &> {log}
         """
 
 
