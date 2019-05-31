@@ -6,4 +6,4 @@ channels:
 dependencies:
 - qiime = 1.9.1
 - rdp-classifier = 2.2
-- vsearch
+- vsearch = 2.9.1
