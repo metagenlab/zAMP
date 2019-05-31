@@ -71,7 +71,6 @@ tax_filtered_reads_count[ ,c("reads_processing", "TotalReads_taxonomy")] <- list
 melted_reads_count <- rbind(final_reads_count, tax_filtered_reads_count)
 melted_reads_count <- rbind(melted_reads_count, processing_reads_count)
 
-save.image(file = file.path(dirname(raw_to_filtered_reads_stats), "test.Rdata"))
 
 # Write this table
 write.table(x = melted_reads_count, file = raw_to_filtered_reads_stats, sep = "\t", col.names = NA, row.names = TRUE)
