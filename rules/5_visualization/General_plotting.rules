@@ -38,7 +38,7 @@ rule raw_to_tax_filtered_reads_stats:
         "../../envs/r_visualization.yml"
     input:
         read_filtering = "{tool}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds",
-        taxonomic_filtering = lambda wildcards: "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
+        taxonomic_filtering = "{tool}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
         raw_to_filtered_reads_stats = "{tool}/5_visualization/{classifier}/{db_taxonomy}/reads/reads_stats_with_{filter_lineage}_in_{filter_tax_rank}_filtered.tsv"

@@ -31,7 +31,7 @@ multi_QC_report <- read.table(multi_QC_report_path, header = T)
 ## Create a table with the number of raw reads and filtered reads
 ### Raw reads
 multi_QC_report <- multi_QC_report %>% filter(grepl("R1", Sample)) %>% select(c("Sample","FastQC_mqc.generalstats.fastqc.total_sequences")) # keep only the total of raw sequences. Since it is already twice (R1, R2), keep only R1.
-multi_QC_report$Sample <- gsub(x=multi_QC_report$Sample, pattern = "_R1", replacement = "") # Remove the "_R1"
+multi_QC_report$Sample <- gsub(x=multi_QC_report$Sample, pattern = "_R1", replacement = "") # Remove the "_R1" in label
 
 ### Filtered reads
 filtered_reads_counts_df <- data.table(as(sample_data(read_filtering_physeq), "data.frame"), TotalReads_processing = sample_sums(read_filtering_physeq), keep.rownames = TRUE)
@@ -40,11 +40,11 @@ setnames(filtered_reads_counts_df, "rn", "Sample") # Rename the first column of 
 ### Taxonomically filtered reads
 tax_filtered_reads_counts_df <- data.table(as(sample_data(tax_filtering_physeq), "data.frame"), TotalReads_taxonomy = sample_sums(tax_filtering_physeq), keep.rownames = TRUE)
 setnames(tax_filtered_reads_counts_df, "rn", "Sample") # Rename the first column of this news dataframe -> Sample
-
+tax_filtered_reads_counts_df <- select(tax_filtered_reads_counts_df, c("TotalReads_taxonomy","Sample"))
 
 ### Join the columns of interest
 merged_columns <- merge(filtered_reads_counts_df, multi_QC_report, by=c("Sample"))
-merged_columns <- cbind(merged_columns, select(tax_filtered_reads_counts_df, TotalReads_taxonomy))
+merged_columns <- merge(merged_columns, tax_filtered_reads_counts_df, by = c("Sample"))
 
 ### Calculate the differences
 merged_columns$reads_processing <- merged_columns$FastQC_mqc.generalstats.fastqc.total_sequences - merged_columns$TotalReads_processing
@@ -70,6 +70,8 @@ tax_filtered_reads_count[ ,c("reads_processing", "TotalReads_taxonomy")] <- list
 #### Bind the rows of the two just prepared tables
 melted_reads_count <- rbind(final_reads_count, tax_filtered_reads_count)
 melted_reads_count <- rbind(melted_reads_count, processing_reads_count)
+
+save.image(file = file.path(dirname(raw_to_filtered_reads_stats), "test.Rdata"))
 
 # Write this table
 write.table(x = melted_reads_count, file = raw_to_filtered_reads_stats, sep = "\t", col.names = NA, row.names = TRUE)
