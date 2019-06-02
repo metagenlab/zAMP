@@ -102,7 +102,7 @@ phyloseq_obj <- phyloseq(OTU, TAX, META, PHY, SEQS)
 
 ## Compute alpha diversity indexes after this filtration
 ### Remove the previously computed values, in case
-#sample_data(phyloseq_obj) <- select(sample_data(phyloseq_obj), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
+sample_data(phyloseq_obj) <- select(sample_data(phyloseq_obj), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
 
 ### Add alpha diversity indexes to metadata
 alpha_div <- estimate_richness(physeq = phyloseq_obj, split = TRUE)
