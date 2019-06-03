@@ -16,8 +16,8 @@ EzBioCloud_V3V4_taxonomy_Qiime <- snakemake@output[["qiime"]]
 EzBioCloud_V3V4_all_taxonomy_Qiime <- snakemake@output[["qiime_all"]]
 
 ## Parameters
-4  <- snakemake@params[["numbers_of_species"]]
-2  <- snakemake@params[["numbers_of_genus"]]
+#4  <- snakemake@params[["numbers_of_species"]]
+#2  <- snakemake@params[["numbers_of_genus"]]
 
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
