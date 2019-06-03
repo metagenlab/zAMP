@@ -90,8 +90,8 @@ rule Taxonomy :
         tax = config["DBpath_tax"],
         uc = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
     output :
-        filtrated = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud1_V3V4_taxonomy.txt"),
-        all = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud1_V3V4_all_taxonomy.txt"),
+        filtrated = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_taxonomy.txt"),
+        all = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_all_taxonomy.txt"),
         qiime = workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_taxonomy.txt",
         qiime_all = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4_all_taxonomy.txt"
     log :
