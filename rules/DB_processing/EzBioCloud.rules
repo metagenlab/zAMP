@@ -88,7 +88,7 @@ rule Taxonomy :
         "../../envs/R_DB_processing.yml"
     input :
         tax = config["DBpath_tax"],
-        uc = workflow.basedir + "../data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
+        uc = workflow.basedir + "data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
     output :
         filtrated = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud1_V3V4_taxonomy.txt"),
         all = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud1_V3V4_all_taxonomy.txt"),
