@@ -7,3 +7,6 @@ forward_primer: CCTACGGGNGGCWGCAG
 reverse_primer: GACTACHVGGGTATCTAATCC
 length_max: 500
 
+# Filtering
+numbers_species: 4
+numbers_genus: 2
