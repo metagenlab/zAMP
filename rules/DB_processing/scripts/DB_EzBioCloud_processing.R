@@ -19,8 +19,6 @@ EzBioCloud_V3V4_all_taxonomy_Qiime <- snakemake@output[["qiime_all"]]
 numbers_species <- snakemake@params[["numbers_species"]]
 numbers_genus <- snakemake@params[["numbers_genus"]]
 
-print(numbers_species)
-print(numbers_genus)
 
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
