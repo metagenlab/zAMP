@@ -1,4 +1,4 @@
-include: "/home/master_students/bin/microbiome16S_pipeline/EzBioCloud.rules"
+include: "microbiome16S_pipeline/EzBioCloud.rules"
 
 ## Run the function
 rule all:
