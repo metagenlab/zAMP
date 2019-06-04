@@ -96,6 +96,9 @@ rule Taxonomy :
         qiime_all = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4_qiime_all_taxonomy.txt"
     log :
        workflow.basedir + "/data/ezbiocloud_201805_201905/log/EzBioCloud_V3V4_taxonomy.log"
+    params:
+        numbers_species = config["numbers_species"],
+        numbers_genus = config["numbers_genus"]
     threads :
         1
     script :
