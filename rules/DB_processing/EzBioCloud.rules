@@ -1,7 +1,7 @@
 
 rule Import_DB :
     conda :
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input :
         config["DBpath_seq"]
     output :
@@ -19,7 +19,7 @@ rule Import_DB :
 
 rule Extract_V3V4 :
     conda :
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input :
         workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_seq.qza"
     output :
@@ -44,7 +44,7 @@ rule Extract_V3V4 :
 
 rule Export :
    conda :
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
    input :
         workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloudV3V4_seq.qza"
    output :
@@ -62,7 +62,7 @@ rule Export :
 
 rule Vsearch :
     conda :
-        "../../envs/QIIME2-2019.01.yml"
+        "../../envs/QIIME2-2019.04.yml"
     input :
         workflow.basedir + "/data/ezbiocloud_201805_201905/dna-sequences.fasta"
     output :
