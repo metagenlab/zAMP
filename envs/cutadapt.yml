@@ -1,5 +1,6 @@
+name: cutadapt
 channels:
  - bioconda
 dependencies:
- - cutadapt = 1.18 = py35_0
+ - cutadapt = 2.3
 

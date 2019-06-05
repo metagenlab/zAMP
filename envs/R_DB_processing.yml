@@ -1,4 +1,4 @@
-#name: r_visualization
+name: DB_processing
 channels:
  - r
  - conda-forge

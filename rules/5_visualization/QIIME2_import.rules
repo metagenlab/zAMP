@@ -1,0 +1,169 @@
+rule create_biom_from_count_table :
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        count_table = "{prefix}/count_table.txt"
+    output:
+        biom_count = "{prefix}/otu_biom.biom"
+    log:
+        logging_folder + "{prefix}/otu_biom.txt"
+    script:
+        "scripts/create_biom_from_count_table.R"
+
+rule import_count_table_to_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{prefix}/otu_biom.biom"
+    output:
+        "{prefix}/count-table.qza"
+    log:
+        logging_folder + "{prefix}/count-table.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --type 'FeatureTable[Frequency]' \
+        --input-format BIOMV100Format \
+        --output-path {output[0]}
+        '''
+
+rule create_visualize_count_table_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{prefix}/count-table.qza"
+    output:
+        "{prefix}/count-table.qzv"
+    log:
+        logging_folder + "{prefix}.txt"
+    shell:
+        '''
+        qiime feature-table summarize \
+        --i-table {input[0]} \
+        --o-visualization {output[0]}
+        '''
+
+
+rule force_all_upper_case_rep_seq :
+    input:
+        rep_seqs = "{tool}/{prefix}/dna-sequences.fasta",
+    output:
+        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
+    log:
+        logging_folder + "{tool}/{prefix}/dna-sequences_all_UPPER.txt",
+    shell:
+        '''
+        awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
+        '''
+
+
+rule import_rep_seq_to_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
+    output:
+        "{tool}/{prefix}/rep-seqs.qza"
+    log:
+        logging_folder + "{tool}/{prefix}/rep-seqs.txt"
+    shell:
+        '''
+        qiime tools import \
+        --input-path {input[0]} \
+        --output-path {output[0]} \
+        --type 'FeatureData[Sequence]'
+        '''
+
+
+# Build a new tree based on the filtered sequences
+rule create_tree_in_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/{prefix}/rep-seqs.qza"
+    output:
+        aligned = "{tool}/{prefix}/aligned-rep-seqs.qza" ,
+        masked = "{tool}/{prefix}/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{tool}/{prefix}/unrooted-tree.qza" ,
+        rooted = "{tool}/{prefix}/rooted-tree.qza"
+    log:
+        logging_folder + "{tool}/{prefix}/rooted-tree.txt"
+    threads:
+        4
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-fasttree \
+          --p-n-threads {threads} \
+          --i-sequences {input[0]} \
+          --o-alignment {output[aligned]} \
+          --o-masked-alignment {output[masked]} \
+          --o-tree {output[unrooted]} \
+          --o-rooted-tree {output[rooted]}
+        '''
+
+rule export_QIIME2_tree:
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        rooted = "{tool}/{prefix}/rooted-tree.qza"
+    output:
+        rooted = "{tool}/{prefix}/tree.nwk"
+    log:
+        logging_folder + "{tool}/{prefix}/tree.txt"
+    shell:
+        '''
+        qiime tools export --input-path {input} --output-path $(dirname {output[0]})
+        '''
+
+
+rule create_visualize_rep_seq_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/2_denoised/rep-seqs.qza"
+    output:
+        "{tool}/2_denoised/rep-seqs.qzv"
+    log:
+        logging_folder + "{tool}/2_denoised/rep-seqs_qzv.txt"
+    shell:
+        '''
+        qiime feature-table tabulate-seqs \
+        --i-data {input[0]} \
+        --o-visualization {output[0]}
+        '''
+
+rule import_taxonomy_to_Qiime2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    output:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+    log:
+        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    shell:
+        '''
+        qiime tools import \
+         --type FeatureData[Taxonomy] \
+         --input-path {input[0]} \
+         --input-format HeaderlessTSVTaxonomyFormat \
+         --output-path {output[0]}
+        '''
+
+rule create_visualize_table_QIIME2 :
+    conda:
+        "../../envs/QIIME2-2019.04.yml"
+    input:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+    output:
+        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qzv"
+    log:
+        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+    shell:
+        '''
+        qiime metadata tabulate \
+            --m-input-file {input} \
+            --o-visualization {output}
+        '''
+

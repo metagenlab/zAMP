@@ -1,0 +1,141 @@
+
+
+## Set of functions generating a list that will be part of output paths based on the content of config file
+### define samples to keep
+def get_grouping_key(column_of_interest):
+
+    filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
+
+    file_list = []
+
+    for i in set(column_of_interest):
+        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(filtered_all_samples[i])))
+        file_list = file_list + combined_values
+    return(file_list)
+
+### Define rarefaction levels (values in config + no rarefaction)
+def get_rarefaction_key(rarefaction_values):
+    file_list = []
+    for i in set(rarefaction_values):
+        combined_values = expand("rarefaction_{rarefaction_values}", rarefaction_values = i)
+        file_list = file_list + combined_values
+    file_list = file_list + ["norarefaction"]
+
+    return(file_list)
+
+
+# A small function to transform the collapse levels from the plotting ranks
+def get_taxa_collapse_level_key(collapse_level):
+
+    file_list = []
+    for i in set(collapse_level):
+        if i == "OTU":
+            value = 'no_collapse'
+        elif i == "Species" :
+            value = 'collap_7'
+        elif i == "Genus" :
+            value = 'collap_6'
+        elif i == "Family" :
+            value = 'collap_5'
+        elif i == "Order" :
+            value = 'collap_4'
+        elif i == "Class" :
+            value = 'collap_4'
+        elif i == "Phylum" :
+            value = 'collap_3'
+        elif i == "Kingdom" :
+            value = 'collap_2'
+        else :
+            raise ValueError("Forbidden value in taxa level for barplots")
+        file_list.append(value)
+    file_list = file_list + ["no_collapse"]
+    return(file_list)
+
+
+### Define abundance filtering from config
+def get_filtering_key(filtering):
+
+    file_list = []
+
+    for i in set(filtering):
+        if i == "nofiltering" :
+            filt = ["nofiltering_0"]
+        elif i == "absolute" :
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
+        elif i == "relative" :
+            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
+        else :
+            raise ValueError("Forbidden value for filtering type")
+
+        file_list = file_list + filt
+
+    return(file_list)
+
+## Set of function to generate list of output from config
+
+
+### Light output, including count table, consensus sequences and taxonomic assignement
+def light_output_list():
+    output = []
+    output = MultiQC
+    output.append(light_output)
+    if "DADA2" in config["denoiser"]:
+        output.append("DADA2/2_denoised/DADA2_denoising_stats.tsv")
+    return(output)
+
+### Basic output, generated plots numbers, KRONA plots and rarefaction curve
+def basic_plots_list():
+    output = []
+    output = light_output_list()
+    output.append(basic_plots)
+    return(output)
+
+### Complete set of phyloseq, in option including transposed count table and metadata (wide to long)
+def phyloseq_output_list():
+    output = []
+    output = basic_plots_list()
+    output.append(phyloseq)
+    if config["transposed_tables"] == True:
+        output.append(transposed_output)
+    return(output)
+
+### Complete set of plots
+def plots_output_list():
+    output = []
+    output = basic_plots_list()
+    if config["Barplots"] == True:
+        output.append(barplots)
+    if config["Heatmaps"] == True:
+        output.append(heatmaps)
+    if config["Alpha_divs"] == True:
+        output.append(alpha_diversities)
+    if config["Distance_ordinations"] == True:
+        output.append(distance_ordinations)
+    if config["Constrained_ordinations"] == True:
+        output.append(constrained_ordinations)
+    if config["Unconstrained_ordinations"] == True:
+        output.append(unconstrained_ordinations)
+    return(output)
+
+### Qiime2 outputs
+def Qiime2_output_list():
+    output = []
+    output = basic_plots_list()
+    if config["Qiime2_basic_output_visualization"] == True:
+        output.append(Qiime2_vis_qzv)
+    return(output)
+
+### PICRUSt2 outputs
+def PICRUSt2_list():
+    output = []
+    output = basic_plots_list()
+    output.append(picrust2)
+    return(output)
+
+### Rule all, the default rule including all output
+def rule_all_list():
+    output = []
+    output.append(phyloseq_output_list())
+    output.append(plots_output_list())
+    output.append(Qiime2_vis_qzv)
+    return(output)
