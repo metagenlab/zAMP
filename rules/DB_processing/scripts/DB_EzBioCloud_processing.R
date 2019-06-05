@@ -16,7 +16,9 @@ EzBioCloud_V3V4_taxonomy_Qiime <- snakemake@output[["qiime"]]
 EzBioCloud_V3V4_all_taxonomy_Qiime <- snakemake@output[["qiime_all"]]
 
 ## Parameters
-# nom dans R <- snakemake@params[["nom dans params"]]
+numbers_species <- snakemake@params[["numbers_species"]]
+numbers_genus <- snakemake@params[["numbers_genus"]]
+
 
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
@@ -105,21 +107,21 @@ for (c_name in g2correct)
     nr_species <- length(unique(selected_tax_table[,7]))
 
     # If loop when we have the number of genus superior or equal to 2 and the number of species superior to 4, we replace the name of the species by the genus and sp.
-    if (nr_genus >= 2 & nr_species > 4)
+    if (nr_genus >= numbers_genus & nr_species > numbers_species)
     {
         new_species_name <- paste(new_genus_name,"sp.")
         new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
     }
 
     # If loop we have the number of species superior to 4, we replace the name of the species by the genus and sp.
-    if (nr_species > 4)
+    if (nr_species > numbers_species)
     {
 	      new_species_name <- paste(new_genus_name,"sp.")
 	      new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
     }
 
     # If Loop when we have the number of species less than or equal to 4, we make a filtrer to eliminate the unknowns and we keep the same names (if there are several that are joined by "/")
-    if ( nr_species <= 4)
+    if ( nr_species <= numbers_species)
     {
           species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE) # filter the values of the vector directly with grep
 	      new_species_name <- paste(unique(species),collapse = "/")
@@ -153,7 +155,7 @@ for (c_name in s2correct)
     nr_species <- length(unique(selected_tax_table[,7]))
 
     # when we do not find the symbol "_s" in the species names and that it is superior to 4, we put only the extension "sp."
-    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) > 4)
+    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) > numbers_species)
     {
         print("More than four with Species names")
         new_species_name <- paste(new_genus_name,"sp.")
@@ -162,20 +164,20 @@ for (c_name in s2correct)
     }
 
     # when we do not find the symbol "_s" in the species names and it is less than or equal to 4, we realize a filter then we glue the names of species one after the others separated by a "/"
-    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) <= 4)
+    if (length(grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE)) <= numbers_species)
     {
         print("Less than four with Species name")
         species <- grep("_s", unique(selected_tax_table[,7]),value = TRUE, invert = TRUE, ignore.case = TRUE) # filter the values of the vector directly with grep
         new_species_name <- paste(species, collapse = "/")
         new_species_name_f <- paste(new_species_name, "(", nr_species,")", sep = "")
 
-        if (nr_species > 4)
+        if (nr_species > numbers_species)
         {
             new_species_name <- paste(new_genus_name,"sp.")
             new_species_name_f <- paste(new_species_name, "(", nr_species, ")", sep = "")
         }
 
-        if (nr_species <= 4)
+        if (nr_species <= numbers_species)
         {
             species <- paste(unique(selected_tax_table[,7]), collapse = "/")
             new_species_name <- paste(species, collapse = "/")

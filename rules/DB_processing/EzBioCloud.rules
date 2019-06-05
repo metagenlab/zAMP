@@ -5,7 +5,7 @@ rule Import_DB :
     input :
         config["DBpath_seq"]
     output :
-        temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_seq.qza")
+        temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_seq.qza")
     threads :
         1
     shell :
@@ -21,9 +21,9 @@ rule Extract_V3V4 :
     conda :
         "../../envs/QIIME2-2019.01.yml"
     input :
-        workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_seq.qza"
+        workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_seq.qza"
     output :
-        temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloudV3V4_seq.qza")
+        temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloudV3V4_seq.qza")
     params :
         primer_forward = config["forward_primer"],
         primer_reverse = config["reverse_primer"],
@@ -46,9 +46,9 @@ rule Export :
    conda :
         "../../envs/QIIME2-2019.01.yml"
    input :
-        workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloudV3V4_seq.qza"
+        workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloudV3V4_seq.qza"
    output :
-        temp(workflow.basedir + "/data/ezbiocloud_charlotte/dna-sequences.fasta")
+        temp(workflow.basedir + "/data/ezbiocloud_201805_201905/dna-sequences.fasta")
    threads :
         1
    shell :
@@ -64,12 +64,12 @@ rule Vsearch :
     conda :
         "../../envs/QIIME2-2019.01.yml"
     input :
-        workflow.basedir + "/data/ezbiocloud_charlotte/dna-sequences.fasta"
+        workflow.basedir + "/data/ezbiocloud_201805_201905/dna-sequences.fasta"
     output :
-        fasta = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4.fasta",
-        uc = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4.uc"
+        fasta = workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4.fasta",
+        uc = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
     log :
-        workflow.basedir + "/data/ezbiocloud_charlotte/log/EzBioCloud_V3V4.log"
+        workflow.basedir + "/data/ezbiocloud_201805_201905/log/EzBioCloud_V3V4.log"
     threads :
         1
     shell :
@@ -88,14 +88,17 @@ rule Taxonomy :
         "../../envs/R_DB_processing.yml"
     input :
         tax = config["DBpath_tax"],
-        uc = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4.uc"
+        uc = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
     output :
-        filtrated = temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud1_V3V4_taxonomy.txt"),
-        all = temp(workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud1_V3V4_all_taxonomy.txt"),
-        qiime = workflow.basedir + "/data/ezbiocloud_charlotte/EzBioCloud_V3V4_taxonomy.txt",
-        qiime_all = workflow.basedir + "/data/ezbiocloud_charlotte/temp/EzBioCloud_V3V4_all_taxonomy.txt"
+        filtrated = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_taxonomy.txt"),
+        all = temp(workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_all_taxonomy.txt"),
+        qiime = workflow.basedir + "/data/ezbiocloud_201805_201905/EzBioCloud_V3V4_qiime_taxonomy.txt",
+        qiime_all = workflow.basedir + "/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4_qiime_all_taxonomy.txt"
     log :
-       workflow.basedir + "/data/ezbiocloud_charlotte/log/EzBioCloud_V3V4_taxonomy.log"
+       workflow.basedir + "/data/ezbiocloud_201805_201905/log/EzBioCloud_V3V4_taxonomy.log"
+    params:
+        numbers_species = config["numbers_species"],
+        numbers_genus = config["numbers_genus"]
     threads :
         1
     script :
