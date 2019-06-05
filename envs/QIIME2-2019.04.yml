@@ -1,4 +1,3 @@
-name: QIIME2
 channels:
 - qiime2/label/r2019.4
 - conda-forge
@@ -278,7 +277,7 @@ dependencies:
 - sip=4.19.8
 - six=1.12.0
 - sortmerna=2.0
-- sqlite=3.26.0
+- sqlite=3.28.0
 - statsmodels=0.9.0
 - tbb=2019.6
 - terminado=0.8.2
