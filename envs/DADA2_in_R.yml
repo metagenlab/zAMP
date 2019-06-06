@@ -9,4 +9,5 @@ dependencies:
   - r-dplyr=0.7.6
   - bioconductor-phyloseq
   - libgfortran
+  - ggplot
 
