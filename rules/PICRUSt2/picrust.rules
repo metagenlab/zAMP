@@ -5,11 +5,11 @@ rule picrust2_custom_tree :
         "../../envs/picrust2.yml"
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences_all_UPPER.fasta",
-        table = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom"
+        table = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom"
     output:
-        directory("{denoiser}/6_picrust2/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/picrust/")
+        directory("{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/")
     log:
-        logging_folder + "{denoiser}/5_visualization/{classifier}/{db_taxonomy}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt"
+        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt"
     threads:
         4
     shell:

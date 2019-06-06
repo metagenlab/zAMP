@@ -19,15 +19,15 @@ rule physeq_initial_import:
     input:
         count_table = "{denoiser}/2_denoised/count_table.txt",
         Metadata_table = config["local_samples"],
-        taxonomy_table = "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt",
+        taxonomy_table = "{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
         rep_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
         tax_tree = "{denoiser}/2_denoised/tree.nwk"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds"
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds"
     params:
         viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.txt"
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.txt"
     script:
         "scripts/physeq_initial_import.R"
 
@@ -54,16 +54,16 @@ rule physeq_tax_filtering:
     conda:
         "../../envs/physeq.yml"
     input:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/nofiltering/norarefaction/no_collapse/base.rds"
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds"
     output:
-        phyloseq_filtered_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
+        phyloseq_filtered_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
     params:
         filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
         filter_lineage = lambda wildcards: wildcards.filter_lineage,
         filter_out_tax_rank = config["filter_out_tax_rank"],
         filter_out_lineage = config["filter_out_lineage"]
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.txt",
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.txt",
     script:
         "scripts/physeq_filter_taxa.R"
 
@@ -72,13 +72,13 @@ rule physeq_rarefy:
     conda:
         "../../envs/physeq.yml"
     input:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/norarefaction/no_collapse/base.rds"
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/norarefaction/no_collapse/base.rds"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.rds",
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.rds",
     params:
         rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value)
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
     script:
         "scripts/physeq_rarefy.R"
 
@@ -88,12 +88,12 @@ rule physeq_new_tree:
     conda:
         "../../envs/physeq.yml"
     input:
-        new_tree = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
+        new_tree = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"
+        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
     script:
         "scripts/physeq_add_new_tree.R"
 
@@ -103,11 +103,11 @@ rule melt_Phyloseq_object:
     conda:
         "../../envs/physeq.yml"
     input:
-        "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
     output:
-        temp("{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv")
+        temp("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv")
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
     script:
         "scripts/physeq_melt_table.R"
 
@@ -117,13 +117,13 @@ rule Phyloseq_collapse_taxa:
     conda:
         "../../envs/physeq.yml"
     input:
-        "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds"
     output:
-        "{denoiser}/4_physeq/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.rds"
     params:
         collapse_level = lambda wildcards: wildcards.collapse_level,
     log:
-        logging_folder + "{denoiser}/5_visualization/{classifier}/{db_taxonomy}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.txt"
+        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.txt"
     script:
         "scripts/physeq_collapse_taxa.R"
 
