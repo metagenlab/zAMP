@@ -1,7 +1,7 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : DADA2 - Merge samples
+# Objective : Merge samples from the same RUN
 # Created by: valentinscherz
-# Created on: 03.01.19
+# Created on: 06.06.19
 # Modified from :https://benjjneb.github.io/dada2/bigdata_paired.html
 
 ## Redirect R output
@@ -26,6 +26,6 @@
     saveRDS(object = st.all, file = run_seq_table)
 
 ## Merge and write forward reads stats of the run
-        stats <- do.call("rbind", lapply(infer_stats, readRDS))
-        saveRDS(object = stats, file = run_stats)
+    stats <- do.call("rbind", lapply(infer_stats, readRDS))
+    saveRDS(object = stats, file = run_stats)
 

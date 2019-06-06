@@ -1,3 +1,5 @@
+### Obtain reads from SRA. Rest of the pipeline is designed only for paired-ends reads for now
+
 rule download_sra_single:
     conda:
         pipeline_path + "envs/sra-tools.yml"
@@ -19,7 +21,6 @@ rule download_sra_single:
             rm ${{cache_dir}}/sra/{wildcards.sample}.sra.cache
         fi
         """
-
 
 rule download_sra_paired:
     conda:

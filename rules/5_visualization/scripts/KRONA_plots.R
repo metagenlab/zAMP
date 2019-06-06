@@ -1,39 +1,35 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : KRONA plots
+# Objective : Create krona plots from melted phyloseq objects
 # Created by: valentinscherz
-# Created on: 26.10.18
+# Created on: 06.06.06
+# Adapted function https://rdrr.io/github/cpauvert/psadd/man/plot_krona.html.
+# This adapted version goes form the melted df instead of the phyloseq object in the original version of the function
 
-## Inspired from https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32
+
 ## Redirect R output
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
-phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
+    phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 
 ## Output
-output_folder <- snakemake@output[["output"]]
-output_folder <- (dirname(output_folder)[1])
+    output_folder <- snakemake@output[["output"]]
+    output_folder <- (dirname(output_folder)[1])
 
 ## Parameters
-sample_label <- snakemake@params[["sample_label"]]
-grouping_column <- snakemake@params[["grouping_column"]]
-grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
-
-print(sample_label)
-print(grouping_column)
-print(grouping_filter_column_value)
+    sample_label <- snakemake@params[["sample_label"]]
+    grouping_column <- snakemake@params[["grouping_column"]]
+    grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 
 ## Load needed library
-library(dplyr);packageVersion("dplyr")
+    library(dplyr);packageVersion("dplyr")
 
-## Adapted function https://rdrr.io/github/cpauvert/psadd/man/plot_krona.html.
-## This adapted version goes form the melted df instead of the phyloseq object in the original version of the function
-
+## Read data
 melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
 
-
+## Create KRONA
     df <- filter(melted_dataframe, melted_dataframe[[grouping_column]] == grouping_filter_column_value)
     df <- filter(df, df[["Abundance"]] != 0)
 

@@ -1,5 +1,6 @@
-## Define set of outputs as that will be called by function from the Snakefile
-## Import list of functions to handle the output
+## Define lits of outputs as that will be called by function from the Snakefile depending from the values in config.
+
+### Import list of functions to handle the output
 include: "make_output_list_fcts.rules"
 
 ### MultiQC
@@ -126,7 +127,7 @@ barplots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/barplots/{filter_line
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
                         plotting_tax_ranks = config["plotting_tax_ranks"])
 
-### Heatmap
+### Heatmaps
 heatmaps = expand("{denoiser}/5_visualization/rdp/{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{plotting_tax_ranks}_heatmap.pdf",
                         denoiser = config["denoiser"],
                         tax_DB = config["tax_DB"],
@@ -199,7 +200,7 @@ unconstrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rar
 
 
 ### Qiime2 output
-#### Qiime2 diagnostic output
+#### Qiime2 interactive visualization
 Qiime2_vis_qzv = expand("{denoiser}/2_denoised/dna-sequences.fasta",
                         denoiser = config["denoiser"])
 Qiime2_vis_qzv.append(expand("{denoiser}/2_denoised/count-table.qzv",

@@ -1,3 +1,5 @@
+## Here, PANDAseq is used to trim off the primers and merge the paired-ends sequences in one step
+
 rule PANDAseq_trim_pair_reads:
     conda:
         "../../envs/PANDAseq.yml"

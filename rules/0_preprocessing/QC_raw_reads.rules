@@ -1,3 +1,4 @@
+## Generate MultiQC reports
 
 rule assess_quality_paired_raw_reads_with_fastqc:
     conda:

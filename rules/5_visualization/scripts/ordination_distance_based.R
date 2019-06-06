@@ -1,60 +1,57 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : Distance PCA
+# Objective : Create PCA based on beta-diversity distance
 # Created by: valentinscherz
-# Created on: 19.11.18
+# Created on: 06.06.19
+
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
-phyloseq_object <- snakemake@input[["phyloseq_object"]]
-Metadata_table <- snakemake@input[["Metadata_table"]]
-metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
+    phyloseq_object <- snakemake@input[["phyloseq_object"]]
+    Metadata_table <- snakemake@input[["Metadata_table"]]
+    metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 
 ## Output
-output_path <- snakemake@output[["ordination"]]
+    output_path <- snakemake@output[["ordination"]]
 
 ## Parameters
-ordination_distance <- snakemake@params[["ordination_distance"]]
-grouping_column <- snakemake@params[["grouping_column"]]
-sample_type <- snakemake@params[["sample_type"]]
-ordination_factor <- snakemake@params[["ordination_factor"]]
-ordination_method <-   snakemake@params[["ordination_method"]]
+    ordination_distance <- snakemake@params[["ordination_distance"]]
+    grouping_column <- snakemake@params[["grouping_column"]]
+    sample_type <- snakemake@params[["sample_type"]]
+    ordination_factor <- snakemake@params[["ordination_factor"]]
+    ordination_method <-   snakemake@params[["ordination_method"]]
 
 ## Load needed libraries
-library("ggplot2"); packageVersion("ggplot2")
-library("phyloseq"); packageVersion("phyloseq")
-library("RColorBrewer"); packageVersion("RColorBrewer")
-library("rlang"); packageVersion("rlang")
+    library("ggplot2"); packageVersion("ggplot2")
+    library("phyloseq"); packageVersion("phyloseq")
+    library("RColorBrewer"); packageVersion("RColorBrewer")
+    library("rlang"); packageVersion("rlang")
 
 ## Set seed for reproducibility
-set.seed(100)
+    set.seed(100)
 
 ## Load the phyloseq object
-phyloseq_obj <- readRDS(phyloseq_object)
-
-
-### Remove sequences not assigned at the phylum level
-#physeq_bacteria_only <- subset_taxa(phyloseq_obj, Kingdom == "Bacteria")
-#physeq_no_unassigned_phylum_bact_only <- subset_taxa(physeq_bacteria_only, Phylum != "Bacteria_phy")
+    phyloseq_obj <- readRDS(phyloseq_object)
 
 ### Remove sample with abundance < 20
-physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
+    physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
 
 
-#### BrewerColors
- getPalette <- colorRampPalette(brewer.pal(n=8, "Dark2"))
- ColList <- unique(metadata[[sample_type]])
- ColPalette <- getPalette(length(ColList))
- names(ColPalette) <- ColList
- colors_palette <- ColPalette
- ### Order the x axis as in the metadata_table
+    #### BrewerColors
+     getPalette <- colorRampPalette(brewer.pal(n=8, "Dark2"))
+     ColList <- unique(metadata[[sample_type]])
+     ColPalette <- getPalette(length(ColList))
+     names(ColPalette) <- ColList
+    colors_palette <- ColPalette
+
+### Order the x axis as in the metadata_table
     # sample_data(physeq_filtered)[[sample_type]] <- factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
 ### Open pdf device
-pdf(file = output_path)
+    pdf(file = output_path)
 
 ### Loop for unique value in grouping_column
     for (i in unique(get_variable(physeq_filtered, grouping_column))){
@@ -87,8 +84,8 @@ pdf(file = output_path)
             print(p)
 
     }else{
-            print("To few point to create ordination plot")
-            #file.create(file.path(output_path))
+        print("To few point to create ordination plot")
+        #file.create(file.path(output_path))
     }
 }
 

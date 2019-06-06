@@ -1,5 +1,6 @@
 ## Dataset ############################################################################################################
 ### Set input samples list. (Mandatory, one of them or both)
+link_directory: links # links by default.
 sra_samples: example_sra_samples.tsv ## To access to Sequences Read Archive
 local_samples: Metadata.tsv ## Local analysis
 

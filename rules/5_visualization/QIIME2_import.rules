@@ -47,11 +47,11 @@ rule create_visualize_count_table_QIIME2 :
 
 rule force_all_upper_case_rep_seq :
     input:
-        rep_seqs = "{tool}/{prefix}/dna-sequences.fasta",
+        rep_seqs = "{denoiser}/{prefix}/dna-sequences.fasta",
     output:
-        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
+        rep_seqs = "{denoiser}/{prefix}/dna-sequences_all_UPPER.fasta",
     log:
-        logging_folder + "{tool}/{prefix}/dna-sequences_all_UPPER.txt",
+        logging_folder + "{denoiser}/{prefix}/dna-sequences_all_UPPER.txt",
     shell:
         '''
         awk '/^>/ {{print($0)}}; /^[^>]/ {{print(toupper($0))}}' {input[0]} > {output[0]}
@@ -62,11 +62,11 @@ rule import_rep_seq_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        rep_seqs = "{tool}/{prefix}/dna-sequences_all_UPPER.fasta",
+        rep_seqs = "{denoiser}/{prefix}/dna-sequences_all_UPPER.fasta",
     output:
-        "{tool}/{prefix}/rep-seqs.qza"
+        "{denoiser}/{prefix}/rep-seqs.qza"
     log:
-        logging_folder + "{tool}/{prefix}/rep-seqs.txt"
+        logging_folder + "{denoiser}/{prefix}/rep-seqs.txt"
     shell:
         '''
         qiime tools import \
@@ -81,14 +81,14 @@ rule create_tree_in_QIIME2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/{prefix}/rep-seqs.qza"
+        "{denoiser}/{prefix}/rep-seqs.qza"
     output:
-        aligned = "{tool}/{prefix}/aligned-rep-seqs.qza" ,
-        masked = "{tool}/{prefix}/masked-aligned-rep-seqs.qza" ,
-        unrooted = "{tool}/{prefix}/unrooted-tree.qza" ,
-        rooted = "{tool}/{prefix}/rooted-tree.qza"
+        aligned = "{denoiser}/{prefix}/aligned-rep-seqs.qza" ,
+        masked = "{denoiser}/{prefix}/masked-aligned-rep-seqs.qza" ,
+        unrooted = "{denoiser}/{prefix}/unrooted-tree.qza" ,
+        rooted = "{denoiser}/{prefix}/rooted-tree.qza"
     log:
-        logging_folder + "{tool}/{prefix}/rooted-tree.txt"
+        logging_folder + "{denoiser}/{prefix}/rooted-tree.txt"
     threads:
         4
     shell:
@@ -106,11 +106,11 @@ rule export_QIIME2_tree:
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        rooted = "{tool}/{prefix}/rooted-tree.qza"
+        rooted = "{denoiser}/{prefix}/rooted-tree.qza"
     output:
-        rooted = "{tool}/{prefix}/tree.nwk"
+        rooted = "{denoiser}/{prefix}/tree.nwk"
     log:
-        logging_folder + "{tool}/{prefix}/tree.txt"
+        logging_folder + "{denoiser}/{prefix}/tree.txt"
     shell:
         '''
         qiime tools export --input-path {input} --output-path $(dirname {output[0]})
@@ -121,11 +121,11 @@ rule create_visualize_rep_seq_QIIME2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/2_denoised/rep-seqs.qza"
+        "{denoiser}/2_denoised/rep-seqs.qza"
     output:
-        "{tool}/2_denoised/rep-seqs.qzv"
+        "{denoiser}/2_denoised/rep-seqs.qzv"
     log:
-        logging_folder + "{tool}/2_denoised/rep-seqs_qzv.txt"
+        logging_folder + "{denoiser}/2_denoised/rep-seqs_qzv.txt"
     shell:
         '''
         qiime feature-table tabulate-seqs \
@@ -137,11 +137,11 @@ rule import_taxonomy_to_Qiime2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+        "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
     output:
-        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+        "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     log:
-        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+        logging_folder + "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
     shell:
         '''
         qiime tools import \
@@ -155,11 +155,11 @@ rule create_visualize_table_QIIME2 :
     conda:
         "../../envs/QIIME2-2019.04.yml"
     input:
-        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
+        "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qza"
     output:
-        "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qzv"
+        "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.qzv"
     log:
-        logging_folder + "{tool}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
+        logging_folder + "{denoiser}/3_classified/{classifier}/{db_taxonomy}/dna-sequences_tax_assignments.txt"
     shell:
         '''
         qiime metadata tabulate \

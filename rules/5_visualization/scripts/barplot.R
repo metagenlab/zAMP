@@ -1,65 +1,60 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : Taxonomic barplots
+# Objective : Plot taxonomy barplots
 # Created by: valentinscherz
-# Created on: 11.02.19
+# Created on: 06.06.19
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
-phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
+    phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 
 ## Ouput
-output_path <- snakemake@output[["barplot"]]
+    output_path <- snakemake@output[["barplot"]]
 
 ## Parameters
-sample_label <- snakemake@params[["sample_label"]]
-grouping_column <- snakemake@params[[ "grouping_column"]]
-t_neg_PCR_sample_on_plots <-  snakemake@params[["t_neg_PCR_sample_on_plots"]]
-t_neg_PCR_group_column_value <-  snakemake@params[["t_neg_PCR_group_column_value"]]
-relative_or_absolute_filtering <-  snakemake@params[["relative_or_absolute_filtering"]]
-filtering_value <-  snakemake@params[["filtering_value"]]
-relative_or_absolute_plot <-  snakemake@params[["relative_or_absolute_plot"]]
-plotting_tax_ranks <-  snakemake@params[["plotting_tax_ranks"]]
-distinct_colors <-  snakemake@params[["distinct_colors"]]
-horizontal_barplot <-  snakemake@params[["horizontal_barplot"]]
-facet_plot <-  snakemake@params[["facet_plot"]]
-facetting_column <-  snakemake@params[["facetting_column"]]
-order_by_abundance <-  snakemake@params[["order_by_abundance"]]
-separated_legend <-  snakemake@params[["separated_legend"]]
-
-
+    sample_label <- snakemake@params[["sample_label"]]
+    grouping_column <- snakemake@params[[ "grouping_column"]]
+    t_neg_PCR_sample_on_plots <-  snakemake@params[["t_neg_PCR_sample_on_plots"]]
+    t_neg_PCR_group_column_value <-  snakemake@params[["t_neg_PCR_group_column_value"]]
+    relative_or_absolute_filtering <-  snakemake@params[["relative_or_absolute_filtering"]]
+    filtering_value <-  snakemake@params[["filtering_value"]]
+    relative_or_absolute_plot <-  snakemake@params[["relative_or_absolute_plot"]]
+    plotting_tax_ranks <-  snakemake@params[["plotting_tax_ranks"]]
+    distinct_colors <-  snakemake@params[["distinct_colors"]]
+    horizontal_barplot <-  snakemake@params[["horizontal_barplot"]]
+    facet_plot <-  snakemake@params[["facet_plot"]]
+    facetting_column <-  snakemake@params[["facetting_column"]]
+    order_by_abundance <-  snakemake@params[["order_by_abundance"]]
+    separated_legend <-  snakemake@params[["separated_legend"]]
 
 ## Load needed libraries
-library(ggplot2); packageVersion("ggplot2")
-library(dplyr); packageVersion("dplyr")
-library(RColorBrewer); packageVersion("RColorBrewer")
-library(randomcoloR); packageVersion("randomcoloR")
-library(data.table); packageVersion("data.table")
-library(forcats); packageVersion("forcats")
-library(rlang); packageVersion("rlang")
-library( ggpubr); packageVersion("ggpubr")
-library(cowplot); packageVersion("cowplot")
+    library(ggplot2); packageVersion("ggplot2")
+    library(dplyr); packageVersion("dplyr")
+    library(RColorBrewer); packageVersion("RColorBrewer")
+    library(randomcoloR); packageVersion("randomcoloR")
+    library(data.table); packageVersion("data.table")
+    library(forcats); packageVersion("forcats")
+    library(rlang); packageVersion("rlang")
+    library( ggpubr); packageVersion("ggpubr")
+    library(cowplot); packageVersion("cowplot")
 
 ## Load the melted phyloseq table
-melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
+    melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
 
 ## Order the x axis as in the metadata_table
-#sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-#sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
+    #sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+    #sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
 
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
-
-        # Import melted dataframe
-          physeq_subset_df <- melted_dataframe
+   barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Transform abundance on 100%
-          physeq_subset_norm_df <- physeq_subset_df  %>% # calculate % normalized Abundance
+          physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
               ungroup %>%
               dplyr::group_by(Sample) %>%
               dplyr::mutate(per=as.numeric(100*Abundance/sum(Abundance))) %>%
@@ -78,7 +73,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
               else if (relative_or_absolute_plot == "absolute"){
                   plotting <- "Absolute"
                   print("Absolute value plotting")
-                  plotted_df <- physeq_subset_df
+                  plotted_df <- melted_dataframe
               }else{stop('"relative_value_plotting" must be "relative" or "absolute"')
             }
             ## Define the taxa ranks whill will be plotted
@@ -111,7 +106,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                     else if (relative_or_absolute_filtering == "absolute"){
                         filtering <- "Absolute"
                         print("Absolute value based filtering")
-                        physeq_subset_df_filtered <- physeq_subset_df  %>%
+                        physeq_subset_df_filtered <- melted_dataframe  %>%
                             dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
                             dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                             #ungroup %>%
@@ -185,8 +180,6 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                 } else {stop('"horizontal_barplot" must be TRUE or FALSE')
                 }
 
- 
-
 
             ### Set colors palette
                 #### Brewer colors
@@ -237,7 +230,6 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                         }
 
 
-
                 #### Reorder by abundance
                     if (isTRUE(order_by_abundance)){
                         print("Ordered by abundance")
@@ -253,11 +245,8 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                     else { stop('"order_by_abundance" must be TRUE or FALSE')
                     }
 
-
-
-                #### Set the filtering_tabl at the top of the plot
+                #### Set the filtering_tag at the top of the plot
                     filtered_df_abs_i[[tax_ranks]] <- fct_relevel(filtered_df_abs_i[[tax_ranks]], filtering_tag, after = 0)
-
 
 
                 #### Create the barplot
@@ -270,8 +259,6 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                         guides(fill = guide_legend(title = paste0(tax_ranks),reverse = FALSE, keywidth = 0.5, keyheight = 0.5, ncol = 1)) + # settings of the legend
                         labs(x = x_axis_column,  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level", i)) + # axis and graph title
                         scale_fill_manual(values = colors_palette) # colors as set previously
-
-
 
 
                 #### In option, turn barplot horizontally
@@ -297,7 +284,6 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                         taxrank_barplot_no_leg <- taxrank_barplot
                     }
 
-
                     #### Save it
                         ##### Set the filename
                         # filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
@@ -316,24 +302,23 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
     }
 ################################################################################
 
-#save.image(file = file.path(output_folder, "rdebug.RData"))
 
 
 ## Run the function
-barplots_fct(
-  melted_dataframe = melted_dataframe,
-    grouping_column = grouping_column,
-    x_axis_column = sample_label,
-    t_neg_PCR_sample_on_plots = t_neg_PCR_sample_on_plots,
-    t_neg_PCR_group_column_value = t_neg_PCR_group_column_value,
-    relative_or_absolute_filtering = relative_or_absolute_filtering,
-    filtering_value = filtering_value,
-    relative_or_absolute_plot = relative_or_absolute_plot,
-    plotting_tax_ranks = plotting_tax_ranks,
-    output_path = output_path,
-    distinct_colors = distinct_colors,
-    horizontal_barplot = horizontal_barplot,
-    facet_plot = facet_plot,
-    facetting_column = facetting_column,
-    order_by_abundance = order_by_abundance,
-    separated_legend = separated_legend)
+    barplots_fct(
+      melted_dataframe = melted_dataframe,
+        grouping_column = grouping_column,
+        x_axis_column = sample_label,
+        t_neg_PCR_sample_on_plots = t_neg_PCR_sample_on_plots,
+        t_neg_PCR_group_column_value = t_neg_PCR_group_column_value,
+        relative_or_absolute_filtering = relative_or_absolute_filtering,
+        filtering_value = filtering_value,
+        relative_or_absolute_plot = relative_or_absolute_plot,
+        plotting_tax_ranks = plotting_tax_ranks,
+        output_path = output_path,
+        distinct_colors = distinct_colors,
+        horizontal_barplot = horizontal_barplot,
+        facet_plot = facet_plot,
+        facetting_column = facetting_column,
+        order_by_abundance = order_by_abundance,
+        separated_legend = separated_legend)

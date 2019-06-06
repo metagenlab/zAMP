@@ -1,3 +1,6 @@
+## Process trimmed sequences with DADA2 to correct errors and generate ASVs. Follows the "big data" protocol (https://benjjneb.github.io/dada2/bigdata.html)
+
+### Remove low quality and too short reads
 rule DADA2_q_filtering:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -21,7 +24,7 @@ rule DADA2_q_filtering:
     script:
         "scripts/1_DADA2_q_filtering.R"
 
-
+### Learn error profile of the runs
 rule DADA2_learn_errors:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -34,13 +37,13 @@ rule DADA2_learn_errors:
         error_profile_F_plot = "DADA2/2_denoised/{RUN}/error_profile_F_plot.png",
         error_profile_R_plot = "DADA2/2_denoised/{RUN}/error_profile_R_plot.png",
     log:
-        logging_folder + "DADA2/2_denoised/{RUN}/DADA2_2_error_profile.txt"
+        logging_folder + "DADA2/2_denoised/{RUN}/DADA2_learn_errors.txt"
     threads:
         4
     script:
         "scripts/2a_big_data_DADA2_learn_errors.R"
 
-
+### Infer error free sequences from the filtered reads and the runs error profiles
 rule DADA2_infer_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -55,7 +58,7 @@ rule DADA2_infer_ASV:
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
-        x_axis_filter_column_value = lambda wildcards: all_samples[config["sample_label"]][wildcards.sample]
+        x_column_value = lambda wildcards: all_samples[config["sample_label"]][wildcards.sample]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
     threads:
@@ -63,7 +66,7 @@ rule DADA2_infer_ASV:
     script:
         "scripts/2b_big_data_DADA2_infer_ASV.R"
 
-
+### Merge the ASVs determined from the different samples
 rule DADA2_merge_sample_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -80,8 +83,8 @@ rule DADA2_merge_sample_ASV:
     script:
         "scripts/2c_big_data_DADA2_merge_ASV.R"
 
-
-rule DADA2_merge_filter_chim:
+### Merge data from all run, filter out chimera and remove too short merged sequences
+rule DADA2_merge_runs_filter_chim:
     conda:
         "../../envs/DADA2_in_R.yml"
     input:
@@ -89,8 +92,11 @@ rule DADA2_merge_filter_chim:
     output:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
-        renamed = "DADA2/2_denoised/dna-sequences.fasta",
+        hashed_sequences = DADA2/2_denoised/dna-sequences_long_names.fasta",
+        hashed_count_table = "DADA2/2_denoised/count_table_long_names.txt",
+        rep_seqs = "DADA2/2_denoised/dna-sequences.fasta",
         count_table = "DADA2/2_denoised/count_table.txt",
+        length_histo = "DADA2/2_denoised/merged_reads_length.png"
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"
     params:
@@ -101,7 +107,7 @@ rule DADA2_merge_filter_chim:
     script:
         "scripts/2d_big_data_DADA2_merge_chimera.R"
 
-
+### Generate filtration stats
 rule DADA2_filter_stats:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -119,11 +125,10 @@ rule DADA2_filter_stats:
     priority:
         1
     script:
-        "scripts/3_big_data_DADA2_filtering_stats.R"
+        "scripts/2e_big_data_DADA2_filtering_stats.R"
 
 
-
-### Accessory rules to generate QC reports after q-score filtering. Not really used
+### Accessory rules to generate QC reports after q-score filtering. Not in regular use
 rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
         "../../envs/FastQC.yml"

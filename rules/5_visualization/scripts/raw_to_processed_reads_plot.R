@@ -1,35 +1,35 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : Raw to processed reads plot
+# Objective : Create a plots of reads passing processing
 # Created by: valentinscherz
-# Created on: 28.11.18
+# Created on: 06.06.19
 
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 
 ## Input
-raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stats"]]
-raw_to_filtered_reads_stats <- read.table(file = raw_to_filtered_reads_stats_path, sep = "\t", header = TRUE)
-metadata_path <- snakemake@input[["Metadata_table"]]
-metadata <- read.table(file = metadata_path, sep = "\t", header = TRUE)
-multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
-multi_QC_report <- read.table(multi_QC_report_path, header = T)
+    raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stats"]]
+    raw_to_filtered_reads_stats <- read.table(file = raw_to_filtered_reads_stats_path, sep = "\t", header = TRUE)
+    metadata_path <- snakemake@input[["Metadata_table"]]
+    metadata <- read.table(file = metadata_path, sep = "\t", header = TRUE)
+    multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
+    multi_QC_report <- read.table(multi_QC_report_path, header = T)
 
 ## Ouput
-reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
+    reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
 
 ## Parameters
-x_axis_column <- snakemake@params[["sample_label"]]
+    x_axis_column <- snakemake@params[["sample_label"]]
 
 ## Load needed libaries
-library("phyloseq");packageVersion("phyloseq")
-library("data.table");packageVersion("data.table")
-library("dplyr");packageVersion("dplyr")
-library("ggplot2");packageVersion("ggplot2")
-library("RColorBrewer"); packageVersion("RColorBrewer")
+    library("phyloseq");packageVersion("phyloseq")
+    library("data.table");packageVersion("data.table")
+    library("dplyr");packageVersion("dplyr")
+    library("ggplot2");packageVersion("ggplot2")
+    library("RColorBrewer"); packageVersion("RColorBrewer")
 
 
 ## Set theme

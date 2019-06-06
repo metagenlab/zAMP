@@ -1,3 +1,5 @@
+### Functions to generate logs
+
 from shutil import copyfile
 import sys
 import datetime

@@ -2,12 +2,17 @@
 ## Input/output
 ### Generate the input sample list
 include: "rules/0_preprocessing/make_sample_dataset.rules"
+### Include logging rules
+include: "logging.rules"
 ## Include list of callable outputs integrated in fuctions that will be called by the following rules
 include: "rules/0_preprocessing/make_output_list_files.rules"
 
 
 
 ## Rules to call defined sets of output. For each, we first generate a function calling the combined list of output. Then its is integrated in a easily callable rule
+### Defaul rule all. Include all but PICRUSt2
+rule all:
+    input: rule_all_list()
 ### Only QC of the reads
 rule QC:
     input: MultiQC
@@ -38,11 +43,6 @@ rule plots_output:
     input: plots_output_list()
     priority: 45
 
-
-### Defaul rule all. Include all but PICRUSt2
-rule all:
-    input: rule_all_list()        
-   
 
 ### PICRUSt2 outputs
 rule PICRUSt2_output:
