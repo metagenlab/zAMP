@@ -12,7 +12,7 @@ sink(log, type="message")
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 
 ## Ouput
-output_folder <- dirname(snakemake@output[["barplot"]])
+output_path <- snakemake@output[["barplot"]]
 
 ## Parameters
 sample_label <- snakemake@params[["sample_label"]]
@@ -40,7 +40,7 @@ library(randomcoloR); packageVersion("randomcoloR")
 library(data.table); packageVersion("data.table")
 library(forcats); packageVersion("forcats")
 library(rlang); packageVersion("rlang")
-#library(grid); packageVersion("grid")
+library( ggpubr); packageVersion("ggpubr")
 library(cowplot); packageVersion("cowplot")
 
 ## Load the melted phyloseq table
@@ -53,7 +53,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -211,7 +211,8 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                     }else{ print("distinct_colors must be TRUE or FALSE")
                     }
 
-  
+            ### Open pdf device
+            pdf(file = output_path)
 
             ### Loop for unique value in grouping_column
                 for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
@@ -265,10 +266,12 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
                         theme_bw() +
                         geom_col() +
                         #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                        theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
-                        guides(fill = guide_legend(title = paste0(tax_ranks),reverse = FALSE, keywidth = 1, keyheight = 1, ncol = 1)) + # settings of the legend
-                        #labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level" )) + # axis and graph title
+                        theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), legend.text=element_text(size=5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
+                        guides(fill = guide_legend(title = paste0(tax_ranks),reverse = FALSE, keywidth = 0.5, keyheight = 0.5, ncol = 1)) + # settings of the legend
+                        labs(x = x_axis_column,  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", tax_ranks,"level", i)) + # axis and graph title
                         scale_fill_manual(values = colors_palette) # colors as set previously
+
+
 
 
                 #### In option, turn barplot horizontally
@@ -297,15 +300,20 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
 
                     #### Save it
                         ##### Set the filename
-                            filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
+                        # filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
                         ##### Finally, save the figure
-                          ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 10, height = 7)
+                        #  ggsave(taxrank_barplot_no_leg, filename = paste0(filename_base, "_barplot.png"), width = 10, height = 7)
                         #### Extract the legend and save it
-                        leg <- get_legend(taxrank_barplot)
-                        ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
+                        leg <- as_ggplot(get_legend(taxrank_barplot))
+
+                        #ggsave(leg, filename = paste0(filename_base, "_barplot_leg.png"), width = 5, height = 10)
+                        print(taxrank_barplot_no_leg)
+                        print(leg)
 
 
-        }}
+        }
+        dev.off()
+    }
 ################################################################################
 
 #save.image(file = file.path(output_folder, "rdebug.RData"))
@@ -322,7 +330,7 @@ barplots_fct(
     filtering_value = filtering_value,
     relative_or_absolute_plot = relative_or_absolute_plot,
     plotting_tax_ranks = plotting_tax_ranks,
-    output_folder = output_folder,
+    output_path = output_path,
     distinct_colors = distinct_colors,
     horizontal_barplot = horizontal_barplot,
     facet_plot = facet_plot,

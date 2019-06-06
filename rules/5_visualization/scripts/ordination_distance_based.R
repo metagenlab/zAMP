@@ -17,11 +17,8 @@ metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
 output_path <- snakemake@output[["ordination"]]
 
 ## Parameters
-ordination_distance = snakemake@params[["ordination_distance"]]
+ordination_distance <- snakemake@params[["ordination_distance"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-grouping_column
-grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
-grouping_filter_column_value
 sample_type <- snakemake@params[["sample_type"]]
 ordination_factor <- snakemake@params[["ordination_factor"]]
 ordination_method <-   snakemake@params[["ordination_method"]]
@@ -46,23 +43,28 @@ phyloseq_obj <- readRDS(phyloseq_object)
 ### Remove sample with abundance < 20
 physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
 
-physeq_filtered
 
 #### BrewerColors
- getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
- ColList = unique(metadata[[sample_type]])
- ColPalette = getPalette(length(ColList))
- names(ColPalette) = ColList
+ getPalette <- colorRampPalette(brewer.pal(n=8, "Dark2"))
+ ColList <- unique(metadata[[sample_type]])
+ ColPalette <- getPalette(length(ColList))
+ names(ColPalette) <- ColList
  colors_palette <- ColPalette
-print(colors_palette)
  ### Order the x axis as in the metadata_table
     # sample_data(physeq_filtered)[[sample_type]] <- factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
-### Keep only the data of the samples of interest
-    remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
-    g_physeq_filtered <- prune_samples(remove_idx, physeq_filtered)
+### Open pdf device
+pdf(file = output_path)
 
-    if(nsamples(g_physeq_filtered)>2){
+### Loop for unique value in grouping_column
+    for (i in unique(get_variable(physeq_filtered, grouping_column))){
+        print(paste("Start plotting", grouping_column, i))
+
+    ### Keep only the data of the samples of interest
+        remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == i
+        g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
+
+        if(nsamples(g_physeq_filtered)>2){
 
           print(ordination_distance)
           # Calculate distance matrix
@@ -81,11 +83,13 @@ print(colors_palette)
             # Add title to each plot
             p <- p + ggtitle(paste(ordination_method, "on", ordination_distance, "distance"))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = output_path)
-
-
+            #ggsave(plot = p, filename = output_path)
+            print(p)
 
     }else{
-        file.create(file.path(output_path))
+            print("To few point to create ordination plot")
+            #file.create(file.path(output_path))
     }
+}
 
+dev.off()

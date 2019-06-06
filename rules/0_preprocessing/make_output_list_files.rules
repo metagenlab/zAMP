@@ -113,7 +113,7 @@ transposed_output.append(expand("{denoiser}/4_physeq/rdp/{tax_DB}/nofiltering/{r
 
 
 ### Barplots
-barplots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_barplot.png",
+barplots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{plotting_tax_ranks}_barplot.pdf",
                         denoiser = config["denoiser"],
                         tax_DB = config["tax_DB"],
                         rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -122,12 +122,12 @@ barplots = expand("{denoiser}/5_visualization/rdp/{tax_DB}/barplots/{filter_line
                         filter_column_value = config["filter_column_value"],
                         filter_meta_column = config["filter_meta_column"],
                         relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-                        grouping_key = get_grouping_key(config["grouping_column"]),
+                        grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
                         plotting_tax_ranks = config["plotting_tax_ranks"])
 
 ### Heatmap
-heatmaps = expand("{denoiser}/5_visualization/rdp/{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_key}_{filtering_key}_{plotting_tax_ranks}_heatmap.png",
+heatmaps = expand("{denoiser}/5_visualization/rdp/{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{plotting_tax_ranks}_heatmap.pdf",
                         denoiser = config["denoiser"],
                         tax_DB = config["tax_DB"],
                         rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -136,14 +136,14 @@ heatmaps = expand("{denoiser}/5_visualization/rdp/{tax_DB}/heatmaps/{filter_line
                         filter_column_value = config["filter_column_value"],
                         filter_meta_column = config["filter_meta_column"],
                         relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
-                        grouping_key = get_grouping_key(config["grouping_column"]),
+                        grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
                         plotting_tax_ranks = config["plotting_tax_ranks"])
 
 
 
 ### Alpha-diversity plot
-alpha_diversities = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/alpha_diversities/{filter_lineage}_in_{filter_tax_rank}/{grouping_key}_alpha_diversity.png",
+alpha_diversities = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/alpha_diversities/{filter_lineage}_in_{filter_tax_rank}/{grouping_column}_alpha_diversity.pdf",
                           denoiser = config["denoiser"],
                           tax_DB = config["tax_DB"],
                           rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -151,17 +151,11 @@ alpha_diversities = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction
                           filter_lineage = config["filter_lineage"],
                           filter_column_value = config["filter_column_value"],
                           filter_meta_column = config["filter_meta_column"],
-                          grouping_key = get_grouping_key(config["grouping_column"]))
-
-
-
-
-
-
+                          grouping_column = config["grouping_column"])
 
 
 ### Basic ordination
-distance_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_distance_based/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_distance_based}/{grouping_key}_{ordination_distance}_d_{ordination_factor}.png",
+distance_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_distance_based/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_distance_based}/{grouping_column}_{ordination_distance}_d_{ordination_factor}.pdf",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -170,14 +164,14 @@ distance_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefact
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
             ordination_method_distance_based = config["ordination_method_distance_based"],
-            grouping_key = get_grouping_key(config["grouping_column"]),
+            grouping_column = config["grouping_column"],
             ordination_distance = config["ordination_distance"],
             ordination_factor = config["ordination_factor"])
 
 
 
 ### Constrained ordination
-constrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_constrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_constrained}/{grouping_key}_c_{ordination_factor}.png",
+constrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_constrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_constrained}/{grouping_column}_c_{ordination_factor}.pdf",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -186,12 +180,12 @@ constrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{raref
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
             ordination_method_constrained = config["ordination_method_constrained"],
-            grouping_key = get_grouping_key(config["grouping_column"]),
+            grouping_column = config["grouping_column"],
             ordination_factor = config["ordination_factor"])
 
 
 ### Unconstrained ordination
-unconstrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_unconstrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_unconstrained}/{grouping_key}_u_{ordination_factor}.png",
+unconstrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rarefaction_value}/ordination_unconstrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_unconstrained}/{grouping_column}_u_{ordination_factor}.pdf",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -200,7 +194,7 @@ unconstrained_ordinations = expand("{denoiser}/5_visualization/rdp/{tax_DB}/{rar
             filter_column_value = config["filter_column_value"],
             filter_meta_column = config["filter_meta_column"],
             ordination_method_unconstrained = config["ordination_method_unconstrained"],
-            grouping_key = get_grouping_key(config["grouping_column"]),
+            grouping_column = config["grouping_column"],
             ordination_factor = config["ordination_factor"])
 
 

@@ -19,7 +19,6 @@ output_path <- snakemake@output[["unconstrained_ordination"]]
 ## Parameters
 # x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 sample_type <- snakemake@params[["sample_type"]]
 ordination_factor <- snakemake@params[["ordination_factor"]]
 ordination_method <-   snakemake@params[["ordination_method"]]
@@ -48,13 +47,16 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
  ### Order the x axis as in the metadata_table
     sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
 
-### Keep only the data of the samples of interest
+### Open pdf device
+pdf(file = output_path)
 
-    grouping_column
-    grouping_filter_column_value
+### Loop for unique value in grouping_column
+    for (i in unique(get_variable(physeq_filtered, grouping_column))){
+        print(paste("Start plotting", grouping_column, i))
 
-    remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == grouping_filter_column_value
-    g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
+    ### Keep only the data of the samples of interest
+        remove_idx <- as.character(get_variable(physeq_filtered, grouping_column)) == i
+        g_physeq_filtered = prune_samples(remove_idx, physeq_filtered)
 
     if(nsamples(g_physeq_filtered)>3){
 
@@ -68,10 +70,15 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
             # Add title to each plot
             p <- p + ggtitle(paste("Unconstrained", ordination_method))
             # Save the individual graph in a folder
-            ggsave(plot = p, filename = output_path)
+            #ggsave(plot = p, filename = output_path)
+            print(p)
 
 
 
     }else{
-        file.create(file.path(output_path))
+        print("To few point to create ordination plot")
+        #file.create(file.path(output_path))
     }
+}
+
+dev.off()

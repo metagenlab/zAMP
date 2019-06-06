@@ -12,7 +12,7 @@ sink(log, type="message")
 phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
 
 ## Ouput
-output_folder <- dirname(snakemake@output[["heatmap"]])
+output_path <- snakemake@output[["heatmap"]]
 
 ## Parameters
 sample_label =snakemake@params[[ "sample_label"]]
@@ -50,7 +50,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 ################################################################################
 ### Create a function
-    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_folder, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Import melted dataframe
           physeq_subset_df <- melted_dataframe
@@ -183,6 +183,9 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
                 }
 
 
+            ### Open pdf device
+            pdf(file = output_path)
+
             ### Loop for unique value in grouping_column
                 for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
                     print(paste("Start plotting", grouping_column, i))
@@ -286,13 +289,17 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
       ### Save it
       ### Set the filename
-      filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
+      #filename_base <- file.path(output_folder, paste(sep = "_", i, relative_or_absolute_filtering, filtering_value, plotting_tax_ranks))
       ### Print the filename to follow progress
-      print(filename_base)
+      #print(filename_base)
       ###Save the figure
-      ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 4.5, height = 7)
+      #ggsave(heatmap, filename = paste0(filename_base, "_heatmap.png"), width = 4.5, height = 7)
+      print(heatmap)
 
-      }}
+
+      }
+    dev.off()
+    }
 
 
 ################################################################################
@@ -311,7 +318,7 @@ heatmap_fct(
   filtering_value = filtering_value,
   relative_or_absolute_plot = relative_or_absolute_plot,
   plotting_tax_ranks = plotting_tax_ranks,
-  output_folder = output_folder,
+  output_path = output_path,
   horizontal_barplot = horizontal_barplot,
   facet_plot = facet_plot,
   facetting_column = facetting_column,
