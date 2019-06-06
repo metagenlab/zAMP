@@ -316,7 +316,7 @@ melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, se
     }
 ################################################################################
 
-#save.image(file = file.path(output_folder, "rdebug.RData"))
+save.image(file = file.path(output_folder, "rdebug.RData"))
 
 
 ## Run the function

@@ -40,11 +40,11 @@ def get_taxa_collapse_level_key(collapse_level):
         elif i == "Order" :
             value = 'collap_4'
         elif i == "Class" :
-            value = 'collap_4'
-        elif i == "Phylum" :
             value = 'collap_3'
-        elif i == "Kingdom" :
+        elif i == "Phylum" :
             value = 'collap_2'
+        elif i == "Kingdom" :
+            value = 'collap_1'
         else :
             raise ValueError("Forbidden value in taxa level for barplots")
         file_list.append(value)
