@@ -129,11 +129,11 @@ rule vsearch_count_occurences :
          logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
     shell:
         '''
-        vsearch --usearch_global {input["samples"]} \
+        vsearch --usearch_global {input[samples]} \
         -otutabout {output} \
         -id 0.97 \
         -strand plus \
-        --db {input["rep_seq"]} \
+        --db {input[rep_seq]} \
         2> {log}
         '''
 

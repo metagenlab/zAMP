@@ -1,10 +1,8 @@
 
 ## Input/output
-### Generate the input sample list
-include: "rules/0_preprocessing/make_sample_dataset.rules"
 ### Include logging rules
-include: "logging.rules"
-## Include list of callable outputs integrated in fuctions that will be called by the following rules
+include: "rules/0_preprocessing/logging.rules"
+## Include rules and functions to set input/output
 include: "rules/0_preprocessing/make_output_list_files.rules"
 
 

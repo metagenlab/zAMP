@@ -92,7 +92,7 @@ rule DADA2_merge_runs_filter_chim:
     output:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
-        hashed_sequences = DADA2/2_denoised/dna-sequences_long_names.fasta",
+        hashed_sequences = "DADA2/2_denoised/dna-sequences_long_names.fasta",
         hashed_count_table = "DADA2/2_denoised/count_table_long_names.txt",
         rep_seqs = "DADA2/2_denoised/dna-sequences.fasta",
         count_table = "DADA2/2_denoised/count_table.txt",
