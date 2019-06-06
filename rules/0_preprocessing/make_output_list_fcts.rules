@@ -1,7 +1,6 @@
+## Set of functions manipulating the sample list and the config file to generate the desired output
 
-
-## Set of functions generating a list that will be part of output paths based on the content of config file
-### define samples to keep
+### Define samples to keep
 def get_grouping_key(column_of_interest):
 
     filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
