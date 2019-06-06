@@ -116,11 +116,11 @@ def barplot_levels(wildcards):
     elif wildcards == "Order" :
         value = 'collap_4'
     elif wildcards == "Class" :
-        value = 'collap_4'
-    elif wildcards == "Phylum" :
         value = 'collap_3'
-    elif wildcards == "Kingdom" :
+    elif wildcards == "Phylum" :
         value = 'collap_2'
+    elif wildcards == "Kingdom" :
+        value = 'collap_1'
     else :
         raise ValueError("Forbidden value in taxa level for barplots")
 
