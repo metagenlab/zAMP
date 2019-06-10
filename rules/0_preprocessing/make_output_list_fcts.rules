@@ -198,7 +198,10 @@ def basic_plots_list():
 def phyloseq_output_list():
     output = []
     output = basic_plots_list()
-    output.append(phyloseq)
+    if config["phyloseq_output"] == True:
+        output.append(phyloseq)
+    if config["filtered_phyloseq_output"] == True:
+        output.append(phyloseq)
     if config["transposed_tables"] == True:
         output.append(transposed_output)
     return(output)

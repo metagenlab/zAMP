@@ -1,5 +1,5 @@
 ### Create a function
-merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE){
+merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "rank", "nofiltering", "absolute_and_rank"), absolute_quantity_filtering_value, relative_quantity_filtering_value, rank_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column, order_by_abundance = TRUE){
 
 
   x_column <- rlang::sym(sample_label)
@@ -261,14 +261,14 @@ merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_
   }
   
   ### Reoder the x_label_column for later if using horizontal barplot
-  if (isTRUE(horizontal_barplot)){
+  if (isTRUE(horizontal_plot)){
     threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
   }
-  else if (isFALSE(horizontal_barplot)){
+  else if (isFALSE(horizontal_plot)){
     print("Vertical plotting")
   }
   else {
-    stop('"horizontal_barplot" must be TRUE or FALSE')
+    stop('"horizontal_plot" must be TRUE or FALSE')
   }
   
   threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero
@@ -408,7 +408,7 @@ merge_variants_heatmap_fct <- function(melted_dataframe, sample_label, grouping_
       
       
       ### Turn heatmap horizontally
-      if (isTRUE(horizontal_barplot)){
+      if (isTRUE(horizontal_plot)){
         ### Reverse the order of the samples
         heatmap <- heatmap + coord_flip()
       }

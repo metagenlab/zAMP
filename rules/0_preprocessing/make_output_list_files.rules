@@ -54,11 +54,37 @@ basic_plots.append(expand("{denoiser}/5_visualization/rdp_{tax_DB}/KRONA/{groupi
 
 
 ### Phyloseq set of output
-#### not filtered
-phyloseq = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
+### Not filtered
+phyloseq = expand("{denoiser}/4_physeq/rdp_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
                    denoiser = config["denoiser"],
                    tax_DB = config["tax_DB"],
-                   collapse_key = get_taxa_collapse_level_key(config["plotting_tax_ranks"]),
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
+                   rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                   filter_column_value = config["filter_column_value"],
+                   filter_meta_column = config["filter_meta_column"])
+
+
+phyloseq.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
+                   denoiser = config["denoiser"],
+                   tax_DB = config["tax_DB"],
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
+                   rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                   filter_column_value = config["filter_column_value"],
+                   filter_meta_column = config["filter_meta_column"]))
+
+phyloseq.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_melted.tsv",
+                   denoiser = config["denoiser"],
+                   tax_DB = config["tax_DB"],
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
+                   rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                   filter_column_value = config["filter_column_value"],
+                   filter_meta_column = config["filter_meta_column"]))
+
+### Tax filtered
+phyloseq_filt = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
+                   denoiser = config["denoiser"],
+                   tax_DB = config["tax_DB"],
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
                    rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                    filter_tax_rank = config["filter_tax_rank"],
                    filter_lineage = config["filter_lineage"],
@@ -66,20 +92,20 @@ phyloseq = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_
                    filter_meta_column = config["filter_meta_column"])
 
 
-phyloseq = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
+phyloseq_filt.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
                    denoiser = config["denoiser"],
                    tax_DB = config["tax_DB"],
-                   collapse_key = get_taxa_collapse_level_key(config["plotting_tax_ranks"]),
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
                    rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                    filter_tax_rank = config["filter_tax_rank"],
                    filter_lineage = config["filter_lineage"],
                    filter_column_value = config["filter_column_value"],
-                   filter_meta_column = config["filter_meta_column"])
+                   filter_meta_column = config["filter_meta_column"]))
 
-phyloseq.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_melted.tsv",
+phyloseq_filt.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_melted.tsv",
                    denoiser = config["denoiser"],
                    tax_DB = config["tax_DB"],
-                   collapse_key = get_taxa_collapse_level_key(config["plotting_tax_ranks"]),
+                   collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
                    rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                    filter_tax_rank = config["filter_tax_rank"],
                    filter_lineage = config["filter_lineage"],
@@ -92,7 +118,7 @@ phyloseq.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{fi
 transposed_output = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
-            collapse_key = get_taxa_collapse_level_key(config["plotting_tax_ranks"]),
+            collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
@@ -104,7 +130,7 @@ transposed_output = expand("{denoiser}/4_physeq/rdp_{tax_DB}/{filter_lineage}_in
 transposed_output.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             tax_DB = config["tax_DB"],
-            collapse_key = get_taxa_collapse_level_key(config["plotting_tax_ranks"]),
+            collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
             rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
@@ -114,7 +140,7 @@ transposed_output.append(expand("{denoiser}/4_physeq/rdp_{tax_DB}/nofiltering/{r
 
 
 ### Barplots
-barplots = expand("{denoiser}/5_visualization/rdp_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{plotting_tax_ranks}_barplot.pdf",
+barplots = expand("{denoiser}/5_visualization/rdp_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{barplot_tax_ranks}_barplot.pdf",
                         denoiser = config["denoiser"],
                         tax_DB = config["tax_DB"],
                         rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -122,13 +148,13 @@ barplots = expand("{denoiser}/5_visualization/rdp_{tax_DB}/barplots/{filter_line
                         filter_lineage = config["filter_lineage"],
                         filter_column_value = config["filter_column_value"],
                         filter_meta_column = config["filter_meta_column"],
-                        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+                        relative_or_absolute_plot = config["relative_or_absolute_plotting"],
                         grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        plotting_tax_ranks = config["plotting_tax_ranks"])
+                        barplot_tax_ranks = config["barplot_tax_ranks"])
 
 ### Heatmaps
-heatmaps = expand("{denoiser}/5_visualization/rdp_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{plotting_tax_ranks}_heatmap.pdf",
+heatmaps = expand("{denoiser}/5_visualization/rdp_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{heatmap_tax_ranks}_heatmap.pdf",
                         denoiser = config["denoiser"],
                         tax_DB = config["tax_DB"],
                         rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
@@ -136,10 +162,10 @@ heatmaps = expand("{denoiser}/5_visualization/rdp_{tax_DB}/heatmaps/{filter_line
                         filter_lineage = config["filter_lineage"],
                         filter_column_value = config["filter_column_value"],
                         filter_meta_column = config["filter_meta_column"],
-                        relative_or_absolute_plot = config["relative_or_absolute_baxplot"],
+                        relative_or_absolute_plot = config["relative_or_absolute_plotting"],
                         grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        plotting_tax_ranks = config["plotting_tax_ranks"])
+                        heatmap_tax_ranks = config["heatmap_tax_ranks"])
 
 
 

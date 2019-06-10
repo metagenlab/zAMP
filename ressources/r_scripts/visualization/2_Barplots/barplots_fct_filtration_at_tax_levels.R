@@ -1,6 +1,6 @@
 
 ### Create a function
-barplots_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "nofiltering"), absolute_quantity_filtering_value, relative_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+barplots_fct <- function(melted_dataframe, sample_label, grouping_column, grouping_column_filtering = c(FALSE, TRUE), grouping_column_filtering_value, t_neg_PCR_sample_on_plots, t_neg_PCR_sample_grp_filter_column_value, taxonomic_filtering = c(TRUE, FALSE), taxonomic_filtering_rank = "Kingdom" , taxonomic_filtering_value = "Bacteria" ,  quantity_filtering_type = c("relative", "absolute", "nofiltering"), absolute_quantity_filtering_value, relative_quantity_filtering_value, plotting_value = c("relative", "absolute"), plotting_tax_ranks = "all", figures_save_dir, distinct_colors = TRUE, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
 # Transform values in  dplyr format
     g_column <- rlang::sym(grouping_column)
@@ -193,12 +193,12 @@ barplots_fct <- function(melted_dataframe, sample_label, grouping_column, groupi
             }
 
         ### Reverse the sample_label column for later if using horizontal barplot
-            if (isTRUE(horizontal_barplot)){
+            if (isTRUE(horizontal_plot)){
                 threshod_filtered_abs_no_zero[[sample_label]] <- fct_rev(threshod_filtered_abs_no_zero[[sample_label]])
 
-            } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
+            } else if (isFALSE(horizontal_plot)){print("Vertical plotting")
 
-            } else {stop('"horizontal_barplot" must be TRUE or FALSE')
+            } else {stop('"horizontal_plot" must be TRUE or FALSE')
             }
   
   
@@ -289,7 +289,7 @@ barplots_fct <- function(melted_dataframe, sample_label, grouping_column, groupi
 
 
             #### In option, turn barplot horizontally
-                if (isTRUE(horizontal_barplot)){
+                if (isTRUE(horizontal_plot)){
                     taxrank_barplot <- taxrank_barplot + coord_flip() ### Reverse the order of the samples
 
                 #### In option, create facet view

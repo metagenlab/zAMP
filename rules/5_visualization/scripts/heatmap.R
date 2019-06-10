@@ -23,7 +23,7 @@
     filtering_value = snakemake@params[["filtering_value"]]
     relative_or_absolute_plot = snakemake@params[["relative_or_absolute_plot"]]
     plotting_tax_ranks = snakemake@params[["plotting_tax_ranks"]]
-    horizontal_barplot = snakemake@params[["horizontal_barplot"]]
+    horizontal_plot = snakemake@params[["horizontal_plot"]]
     facet_plot = snakemake@params[["facet_plot"]]
     facetting_column = snakemake@params[["facetting_column"]]
     #order_by = snakemake@params[["order_by"]]
@@ -50,7 +50,7 @@
 
 ################################################################################
 ### Create a function
-    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, figures_leg_path, distinct_colors = TRUE, horizontal_barplot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    heatmap_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, figures_leg_path, distinct_colors = TRUE, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
         # Transform abundance on 100%
           physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
@@ -169,12 +169,12 @@
                 }
 
            ### Reverse the x_axis_column column for later if using horizontal barplot
-                if (isTRUE(horizontal_barplot)){
+                if (isTRUE(horizontal_plot)){
                     threshod_filtered_abs_no_zero[[x_axis_column]] <- fct_rev(threshod_filtered_abs_no_zero[[x_axis_column]])
 
-                } else if (isFALSE(horizontal_barplot)){print("Vertical plotting")
+                } else if (isFALSE(horizontal_plot)){print("Vertical plotting")
 
-                } else {stop('"horizontal_barplot" must be TRUE or FALSE')
+                } else {stop('"horizontal_plot" must be TRUE or FALSE')
                 }
 
 
@@ -267,7 +267,7 @@
 
 
       ### Turn heatmap horizontally
-      if (isTRUE(horizontal_barplot)){
+      if (isTRUE(horizontal_plot)){
         ### Reverse the order of the samples
         heatmap <- heatmap + coord_flip()
       }
@@ -307,7 +307,7 @@
       relative_or_absolute_plot = relative_or_absolute_plot,
       plotting_tax_ranks = plotting_tax_ranks,
       output_path = output_path,
-      horizontal_barplot = horizontal_barplot,
+      horizontal_plot = horizontal_plot,
       facet_plot = facet_plot,
       facetting_column = facetting_column,
       order_by = TRUE)

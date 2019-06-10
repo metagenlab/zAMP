@@ -13,6 +13,7 @@ ordination_factor : sample_source # Column in "local_samples" used to for shapes
 filter_meta_column: Sample # A column from which we could filter in samples
 filter_column_value: A549-PCR-neg-20180809 # Value of filtered in samples of this column
 
+
 ## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
 denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
@@ -45,7 +46,7 @@ filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "K
 filter_lineage: ["Bacteria"] # What value of filter_tax_rank we keep. (Usually "Bacteria")
 filter_out_tax_rank: ["Phylum"] # At which taxonomic rank we filter out. (Usually "Phylum")
 filter_out_lineage: ["Bacteria_phy"] # Which value of filter_out_tax_rank we filter out. (Usually "Bacteria_phy" to remove suspicious sequences assigned as Bacteria but which are probably not.
-transposed_tables: False # True to have transposed count table
+
 
 ## Visualization ######################################################################################################
 ### Select output
@@ -63,21 +64,36 @@ ordination_method_constrained: ["DCA", "CCA", "RDA", "CAP", "DPCoA"]
 ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
 
 ### Barplots and heatmaps parameters
-relative_or_absolute_baxplot: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
+#### Both
+relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
 relative_filtering_value: [1] # % for relative value based filtering.
 absolute_filtering_value: [200] # number of reads for absolute value based filtering
-plotting_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
-t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
-t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
-distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors on barplots
-horizontal_barplot: TRUE #(or 'FALSE') # Turn horizontally the plots
+horizontal_plot: TRUE #(or 'FALSE') # Turn horizontally the plots
 facet_plot:  TRUE #(or 'FALSE') # Create facet plots with ggplot2
 facetting_column: extraction_method # If facets, which column in "local_samples" concaints the information for facetting
 order_by_abundance:  TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
+t_neg_PCR_sample_on_plots: TRUE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
+t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
+
+#### Barplots
+barplot_tax_ranks: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
+distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors on barplots
 separated_legend: TRUE #(or 'FALSE') # should the legend be separated
 
+#### Heatmaps
+heatmap_tax_ranks: ["Genus", "Species", "OTU"] # taxonomic levels for plotting
 
-## Special Qiime2 outputs, in dev. ####################################################################################
+
+## Special outputs ##############################################################################################################
+### Phyloseq output for external plitting and analysis
+phyloseq_output: False # True to have a set of phyloseq objects and melted table for external plotting and analysis
+filtered_phyloseq_output: False # Same but tax filtered output
+phyloseq_tax_ranks: ["OTU"] # Which collapse level for phyloseq output
+transposed_tables: False # True to have transposed count table
+
 ### Qiime2 Visualization information
 Qiime2_basic_output_visualization: True # or False
+
+### Picrust
+PICRUST: False # use PICRUSt2 to predict genes content based on 16S rRNA taxonomic profiles. To be interpreted with caution. https://github.com/picrust/picrust2/wiki
