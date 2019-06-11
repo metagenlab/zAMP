@@ -15,7 +15,7 @@ rule assess_quality_paired_raw_reads_with_fastqc:
         1
     shell:
         """
-        fastqc -t {threads} {input} -o $(dirname {output[0]}) &> {log}
+        fastqc -t {threads} {input} --nogroup -o $(dirname {output[0]}) &> {log}
         """
 
 
