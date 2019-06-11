@@ -17,17 +17,17 @@
 ## Parameters
     sample_label <- snakemake@params[["sample_label"]]
     grouping_column <- snakemake@params[[ "grouping_column"]]
-    t_neg_PCR_sample_on_plots <-  snakemake@params[["t_neg_PCR_sample_on_plots"]]
-    t_neg_PCR_group_column_value <-  snakemake@params[["t_neg_PCR_group_column_value"]]
-    relative_or_absolute_filtering <-  snakemake@params[["relative_or_absolute_filtering"]]
-    filtering_value <-  snakemake@params[["filtering_value"]]
-    relative_or_absolute_plot <-  snakemake@params[["relative_or_absolute_plot"]]
-    plotting_tax_ranks <-  snakemake@params[["plotting_tax_ranks"]]
-    horizontal_plot <-  snakemake@params[["horizontal_plot"]]
-    facet_plot <-  snakemake@params[["facet_plot"]]
-    facetting_column <-  snakemake@params[["facetting_column"]]
-    order_by_abundance <-  snakemake@params[["order_by_abundance"]]
-    separated_legend <-  snakemake@params[["separated_legend"]]
+    t_neg_PCR_sample_on_plots <- snakemake@params[["t_neg_PCR_sample_on_plots"]]
+    t_neg_PCR_group_column_value <- snakemake@params[["t_neg_PCR_group_column_value"]]
+    relative_or_absolute_filtering <- snakemake@params[["relative_or_absolute_filtering"]]
+    filtering_value <- snakemake@params[["filtering_value"]]
+    relative_or_absolute_plot <- snakemake@params[["relative_or_absolute_plot"]]
+    plotting_tax_ranks <- snakemake@params[["plotting_tax_ranks"]]
+    horizontal_plot <- snakemake@params[["horizontal_plot"]]
+    facet_plot <- snakemake@params[["facet_plot"]]
+    facetting_column <- snakemake@params[["facetting_column"]]
+    order_by_abundance <- snakemake@params[["order_by_abundance"]]
+    separated_legend <- snakemake@params[["separated_legend"]]
 
 ## Load needed libraries
     library(ggplot2); packageVersion("ggplot2")
@@ -75,15 +75,15 @@
             label_ranks <- c("Phylum", "Species", "OTU")
         }
 
-
-
         ## Unquote factors
         g_column <- rlang::sym(grouping_column)
         x_column<- rlang::sym(x_axis_column)
-        f_column <- rlang::sym(facetting_column)
         t_column <-  rlang::sym(plotting_tax_ranks)
         l_ranks  <-  rlang::syms(label_ranks)
 
+        if (facet_plot == TRUE){
+           f_column <- rlang::sym(facetting_column)
+        }
 
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
@@ -178,10 +178,17 @@
             threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0)
 
         ## Regroup taxonomically identical rows
-        threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!(f_column), !!!(l_ranks)) %>%
+        if (facet_plot == TRUE){
+            threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
+            group_by(!!(x_column), !!(g_column), !!(f_column), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
+        }else{
+            threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
+            group_by(!!(x_column), !!(g_column), !!(t_column)) %>%
+            summarise(Abundance = sum(Abundance)) %>%
+            ungroup()
+        }
 
         ## Reorder the facet factor if later used for plotting
         if (isTRUE(facet_plot)){

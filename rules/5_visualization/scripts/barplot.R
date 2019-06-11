@@ -54,9 +54,12 @@
 
         ## Unquote factors
         g_column <- rlang::sym(grouping_column)
-        x_column<- rlang::sym(x_axis_column)
-        f_column <- rlang::sym(facetting_column)
-        t_column <-  rlang::sym(plotting_tax_ranks)
+        x_column <- rlang::sym(x_axis_column)
+        t_column <- rlang::sym(plotting_tax_ranks)
+
+        if (facet_plot == TRUE){
+           f_column <- rlang::sym(facetting_column)
+        }
 
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
@@ -151,10 +154,17 @@
             threshod_filtered_abs_no_zero <- filter(threshod_filtered_abs, threshod_filtered_abs$Abundance>0)
 
         ## Regroup taxonomically identical rows
-        threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
+        if (facet_plot == TRUE){
+            threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
             group_by(!!(x_column), !!(g_column), !!(f_column), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
+        }else{
+            threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
+            group_by(!!(x_column), !!(g_column), !!(t_column)) %>%
+            summarise(Abundance = sum(Abundance)) %>%
+            ungroup()
+        }
 
         ## Reorder the facet factor if later used for plotting
         if (isTRUE(facet_plot)){
