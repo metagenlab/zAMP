@@ -84,7 +84,7 @@ if "local_samples" in config.keys():
 
 if "sra_samples" in config.keys():
     sra_data = pandas.read_csv(config["sra_samples"], sep="\t", index_col=0).drop_duplicates()
-    all_sra_sample_names = "".join(list(local_data.index))
+    all_sra_sample_names = "".join(list(sra_data.index))
     if "(" in all_sra_sample_names or ")" in all_sra_sample_names or "_-_" in all_sra_sample_names:
         raise ValueError("Forbidden character in sample name in sra file")
     for i in sra_data.index:
