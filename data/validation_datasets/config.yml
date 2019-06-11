@@ -1,6 +1,6 @@
 ## Dataset ############################################################################################################
 ### Set input samples list. (Mandatory, one of them or both)
-sra_samples: validation_set.tsv ## To access to Sequences Read Archive
+sra_samples: data/validation_datasets/validation_set.tsv ## To access to Sequences Read Archive
 
 
 ### Metadata columns definition

@@ -59,10 +59,13 @@ RUN Rscript -e "install.packages('randomcoloR')"
 
 ### Clone github
 ARG GITHUB_AT
-RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
+
+RUN git clone --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
 
 ### Create all environments of the pipeline
-RUN snakemake microbiome16S_pipeline/Snakefile --use-conda --conda-prexifx /opt/conda/ --create-envs-only
+RUN ls microbiome16S_pipeline/data/validation_datasets
+
+RUN snakemake --snakefile microbiome16S_pipeline/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile microbiome16S_pipeline/data/validation_datasets/config.yml
 
 #ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
 
