@@ -86,7 +86,6 @@ heatmap_tax_ranks: ["Genus", "Species", "OTU"] # taxonomic levels for plotting
 
 ## Special outputs ##############################################################################################################
 ### Phyloseq output for external plitting and analysis
-phyloseq_output: True # True to have a set of phyloseq objects and melted table for external plotting and analysis
 filtered_phyloseq_output: True # Same but tax filtered output
 phyloseq_tax_ranks: ["OTU"] # Which collapse level for phyloseq output
 transposed_tables: True # True to have transposed count table
@@ -94,5 +93,3 @@ transposed_tables: True # True to have transposed count table
 ### Qiime2 Visualization information
 Qiime2_basic_output_visualization: True # or False
 
-### Picrust
-PICRUST: True # use PICRUSt2 to predict genes content based on 16S rRNA taxonomic profiles. To be interpreted with caution. https://github.com/picrust/picrust2/wiki

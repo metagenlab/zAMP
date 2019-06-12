@@ -201,8 +201,7 @@ def basic_plots_list():
 def phyloseq_output_list():
     output = []
     output = basic_plots_list()
-    if config["phyloseq_output"] == True:
-        output.append(phyloseq)
+    output.append(phyloseq)
     if config["filtered_phyloseq_output"] == True:
         output.append(phyloseq)
     if config["transposed_tables"] == True:
@@ -245,7 +244,6 @@ def PICRUSt2_list():
 ### Rule all, the default rule including all default output (not PICRUSt2, since long to compute)
 def rule_all_list():
     output = []
-    output.append(phyloseq_output_list())
     output.append(plots_output_list())
     output.append(Qiime2_vis_qzv)
     return(output)
