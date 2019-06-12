@@ -23,8 +23,8 @@ rule sra_convert_to_fastq_paired:
     input:
         "%s/ncbi/public/sra/{sample}.sra" % os.getenv("HOME"),
     output:
-        link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz",
-        link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz",
+         temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
+         temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
     log:
         "log/sra_download/{sample}_dump.txt",
     shell:
