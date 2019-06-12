@@ -26,7 +26,7 @@ rule sra_convert_to_fastq_paired:
          temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
          temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
     log:
-        "log/sra_download/{sample}_dump.txt",
+        logging_folder + "sra_download/{sample}_dump.txt",
     shell:
         """
         fastq-dump --split-3 --gzip --log-level 1 --disable-multithreading --minReadLen 0 --outdir $(dirname {output[0]}) {input[0]} &> {log}
@@ -40,7 +40,7 @@ rule sra_convert_to_fastq_single:
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:
-        "log/sra_download/{sample}_dump.txt"
+        logging_folder + "log/sra_download/{sample}_dump.txt"
     shell:
         """
         fastq-dump --gzip --outdir $(dirname {output[0]}) --log-level 0 --disable-multithreading --minReadLen 0 {wildcards.sample} &> {log}
