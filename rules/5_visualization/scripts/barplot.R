@@ -91,15 +91,17 @@
 
         ## Define grouping level for abundance-base filtering (Sample vs group of Samples)
         if (abundance_filtre_level == "Sample"){
-            abundance_sample <- rlang::sym(Sample)
-        } else (abundance_filtre_level == "Group"){
-            g_column <- rlang::sym(grouping_column)
+            abundance_sample <- rlang::sym("Sample")
+        } else if (abundance_filtre_level == "Group"){
+            abundance_sample <- rlang::sym(grouping_column)
+        } else {
+            stop('"abundance_filtre_level" must be "Sample" or "Group"')
         }
 
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
         ungroup %>%
-        dplyr::group_by(abundance_filtre_level) %>%
+        dplyr::group_by(Sample) %>%
         dplyr::mutate(per=as.numeric(100*Abundance/sum(Abundance))) %>%
         ungroup() %>%
         dplyr::select(-Abundance)  %>%
@@ -135,7 +137,7 @@
                 filtering_value <- filtering_value
                 print("Relative value based filtering")
                 physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
-                    dplyr::group_by(abundance_filtre_level, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::group_by(abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
                     dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
@@ -145,15 +147,15 @@
                 filtering <- "Absolute"
                 print("Absolute value based filtering")
                 physeq_subset_df_filtered <- melted_dataframe  %>%
-                    dplyr::group_by(abundance_filtre_level, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::group_by(abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
                     dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
             }
 
         ## Filter the plotted DF depending on if it is above or under the threshold
-        above_threshold_df <- semi_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "abundance_filtre_level")) ### In a dataframe, keep only the rows matching the filtered rowmanes
-        under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "abundance_filtre_level")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
+        above_threshold_df <- semi_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In a dataframe, keep only the rows matching the filtered rowmanes
+        under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
 
         ## Rename taxa with < percent/reads abundance, defending of the filtering applied
             ### Define the filtering tag depending of the applied filtering
