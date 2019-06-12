@@ -36,7 +36,7 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/bin/tini
 
 
-############################## Create USER, set useful variables ##############################
+############################## Create pipeline_user, set useful variables ##############################
 RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
 ENV pipeline_folder=${main}/microbiome16S_pipeline
@@ -45,7 +45,7 @@ ENV pipeline_folder=${main}/microbiome16S_pipeline
 RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
 RUN conda install snakemake=5.5.0
 
-############################## r-v8 dependancy, r-v8 and randomcoloR R package #######################
+##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
 ## libv8
 RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
 ## R-v8
@@ -53,8 +53,7 @@ RUN conda install -c dloewenstein r-v8
 ## randomcoloR
 RUN Rscript -e "install.packages('randomcoloR')"
 
-
-############################## Pipeline through github #######################
+############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 ## Clone the github
@@ -64,12 +63,12 @@ WORKDIR ${pipeline_folder}/data/analysis/validation_datasets
 
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile ${pipeline_folder}/data/validation_datasets/config.yml all PICRUSt2_output
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-## Here, we run the pipeline to test it, without PICRUST as output since it is computanionnaly very demanding
+## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
-#################### Set final access and working dir #####################
+#################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
 
 USER pipeline_user
