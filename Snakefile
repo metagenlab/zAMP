@@ -41,7 +41,6 @@ rule plots_output:
     input: plots_output_list()
     priority: 45
 
-
 ### PICRUSt2 outputs
 rule PICRUSt2_output:
     input: PICRUSt2_list()

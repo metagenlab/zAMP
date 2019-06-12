@@ -1,7 +1,7 @@
 ## Dataset ############################################################################################################
 ### Set input samples list. (Mandatory, one of them or both)
 link_directory: links/
-sra_samples: microbiome16S_pipeline/data/validation_datasets/validation_set.tsv ## To access to Sequences Read Archive
+sra_samples: validation_set.tsv ## To access to Sequences Read Archive
 
 
 ### Metadata columns definition
@@ -68,6 +68,7 @@ relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absol
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
 relative_filtering_value: [1] # % for relative value based filtering.
 absolute_filtering_value: [2000] # number of reads for absolute value based filtering
+abundance_filtre_level: ["Group"]
 horizontal_plot: TRUE #(or 'FALSE') # Turn horizontally the plots
 facet_plot: TRUE #(or 'FALSE') # Create facet plots with ggplot2
 facetting_column: sample_label # If facets, which column in "local_samples" concaints the information for facetting

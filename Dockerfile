@@ -36,8 +36,10 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/bin/tini
 
 
-############################## Create USER ##############################
+############################## Create USER, set useful variables ##############################
 RUN useradd -r -u 1080 pipeline_user
+ENV main=/home/pipeline_user
+ENV pipeline_folder=${main}/microbiome16S_pipeline
 
 ############################## Install Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
@@ -53,21 +55,25 @@ RUN Rscript -e "install.packages('randomcoloR')"
 
 
 ############################## Pipeline through github #######################
+## Call the access token to reach the private github repo
 ARG GITHUB_AT
+## Clone the github
+RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+## cd the validation directory
+WORKDIR ${pipeline_folder}/data/analysis/validation_datasets
 
-RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
+#################### Build environements of the pipeline #####################
+## Here, with "--create-envs-only", we only build the environements
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile ${pipeline_folder}/data/validation_datasets/config.yml all PICRUSt2_output
 
-RUN ls microbiome16S_pipeline/data/
+## Here, we run the pipeline to test it, without PICRUST as output since it is computanionnaly very demanding
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
-#################### Run the pipeline, which build the environements and test it at the same time #####################
-RUN ls microbiome16S_pipeline/data/validation_datasets/
-
-RUN snakemake --snakefile microbiome16S_pipeline/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile microbiome16S_pipeline/data/validation_datasets/config.yml
-
-#ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
-
+#################### Set final access and working dir #####################
 RUN chown -R pipeline_user ${main}/
 
 USER pipeline_user
+
+RUN mkdir ${main}/data/analysis/
 
 WORKDIR ${main}/data/analysis/
