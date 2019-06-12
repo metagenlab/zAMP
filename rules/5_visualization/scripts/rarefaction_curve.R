@@ -7,9 +7,9 @@
 # inspired from : https://github.com/joey711/phyloseq/issues/143
 
 ## Redirect R output to the log file
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 
 ## Input
