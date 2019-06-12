@@ -39,9 +39,8 @@ RUN chmod +x /usr/bin/tini
 ############################## Create USER ##############################
 RUN useradd -r -u 1080 pipeline_user
 
-RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
-
 ############################## Install Snakemake ##############################
+RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
 RUN conda install snakemake=5.5.0
 
 ############################## r-v8 dependancy, r-v8 and randomcoloR R package #######################
@@ -49,21 +48,19 @@ RUN conda install snakemake=5.5.0
 RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
 ## R-v8
 RUN conda install -c dloewenstein r-v8
-
 ## randomcoloR
-### Dependencies
 RUN Rscript -e "install.packages('randomcoloR')"
 
-#RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-#RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/lib/R/library/
 
-### Clone github
+############################## Pipeline through github #######################
 ARG GITHUB_AT
 
-RUN git clone --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
+RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
 
-### Create all environments of the pipeline
-RUN ls microbiome16S_pipeline/data/validation_datasets
+RUN ls microbiome16S_pipeline/data/
+
+#################### Run the pipeline, which build the environements and test it at the same time #####################
+RUN ls microbiome16S_pipeline/data/validation_datasets/
 
 RUN snakemake --snakefile microbiome16S_pipeline/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile microbiome16S_pipeline/data/validation_datasets/config.yml
 

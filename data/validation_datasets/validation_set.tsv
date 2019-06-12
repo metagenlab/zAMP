@@ -1,10 +1,10 @@
-Sample	sample_label	sample_group	sample_source	seq_run	study_name
-SRR9067116	Vaginal-16s-V3V4-Library42	Genital tract	Genital tract	UNIVERSITY OF CAPE TOWN	pipeline_validation
-SRR9067115	Vaginal-16s-V3V4-Library41	Genital tract	Genital tract	UNIVERSITY OF CAPE TOWN	pipeline_validation
-SRR9067114	Vaginal-16s-V3V4-Library48	Genital tract	Genital tract	UNIVERSITY OF CAPE TOWN	pipeline_validation
-SRR9067113	Vaginal-16s-V3V4-Library47	Genital tract	Genital tract	UNIVERSITY OF CAPE TOWN	pipeline_validation
-SRR7225910	Vaginal-16s-V3V4-Library46	Genital tract	Genital tract	UNIVERSITY OF CAPE TOWN	pipeline_validation
-SRR7225909	NE14	human biliary tract	human biliary tract	MEDICAL RESEARCH INSTITUTE FOR NANJING MILITARY COMMAND	pipeline_validation
-SRR7225908	A3D12	human biliary tract	human biliary tract	MEDICAL RESEARCH INSTITUTE FOR NANJING MILITARY COMMAND	pipeline_validation
-SRR7225907	NN15	human biliary tract	human biliary tract	MEDICAL RESEARCH INSTITUTE FOR NANJING MILITARY COMMAND	pipeline_validation
-SRR7225906	A2D9	human biliary tract	human biliary tract	MEDICAL RESEARCH INSTITUTE FOR NANJING MILITARY COMMAND	pipeline_validation
+Sample	sample_label	sample_group	sample_source	seq_run	study_name	LibraryLayout
+SRR9067116	Vaginal-16s-V3V4-Library42	Genital tract	Genital tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	paired
+SRR9067115	Vaginal-16s-V3V4-Library41	Genital tract	Genital tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	paired
+SRR9067114	Vaginal-16s-V3V4-Library48	Genital tract	Genital tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	paired
+SRR9067113	Vaginal-16s-V3V4-Library47	Genital tract	Genital tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	paired
+SRR7225910	Vaginal-16s-V3V4-Library46	Genital tract	Genital tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	paired
+SRR7225909	NE14	human biliary tract	human biliary tract	MEDICAL_RESEARCH_INSTITUTE_FOR_NANJING_MILITARY_COMMAND	pipeline_validation	paired
+SRR7225908	A3D12	human biliary tract	human biliary tract	MEDICAL_RESEARCH_INSTITUTE_FOR_NANJING_MILITARY_COMMAND	pipeline_validation	paired
+SRR7225907	NN15	human biliary tract	human biliary tract	MEDICAL_RESEARCH_INSTITUTE_FOR_NANJING_MILITARY_COMMAND	pipeline_validation	paired
+SRR7225906	A2D9	human biliary tract	human biliary tract	MEDICAL_RESEARCH_INSTITUTE_FOR_NANJING_MILITARY_COMMAND	pipeline_validation	paired

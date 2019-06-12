@@ -1,5 +1,6 @@
 ## Dataset ############################################################################################################
 ### Set input samples list. (Mandatory, one of them or both)
+link_directory: links/
 sra_samples: microbiome16S_pipeline/data/validation_datasets/validation_set.tsv ## To access to Sequences Read Archive
 
 
@@ -9,9 +10,8 @@ grouping_column: ["sample_group"] # Column for which a plot (e.g. KRONA page), w
 sample_label: sample_label # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique.
 sample_type: sample_source # Column in "local_samples" used to color points and fill plots.
 ordination_factor : sample_source # Column in "local_samples" used to for shapes of points in ordination.
-filter_meta_column: Sample # A column from which we could filter in samples
-study_name: pipeline_validation # Value of filtered in samples of this column
-
+filter_meta_column: study_name # A column from which we could filter in samples
+filter_column_value: pipeline_validation # Value of filtered in samples of this column
 
 ## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
