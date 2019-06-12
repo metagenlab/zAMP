@@ -14,8 +14,10 @@ rule QIIME1_assign_taxonomy:
         8
     shell:
         '''
-        #export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
-        #assign_path=$(which parallel_assign_taxonomy_rdp.py)
+        qiime
+        cat $CONDA_PREFIX ;
+        export RDP_JAR_PATH=$conda_prefix/bin/rdp_classifier-2.2.jar;
+        assign_path=$(which parallel_assign_taxonomy_rdp.py)
         parallel_assign_taxonomy_rdp.py \
           -i {input[0]} \
           -r {input[1]} \

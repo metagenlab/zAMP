@@ -61,6 +61,7 @@ RUN apt-get install -y libltdl7
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 ## Clone the github
+RUN ls
 RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## cd in the validation directory
