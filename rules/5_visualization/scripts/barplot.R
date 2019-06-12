@@ -29,6 +29,7 @@
     facetting_column <-  snakemake@params[["facetting_column"]]
     order_by_abundance <-  snakemake@params[["order_by_abundance"]]
     separated_legend <-  snakemake@params[["separated_legend"]]
+    abundance_filtre_level <- snakemake@params[["abundance_filtre_level"]]
 
 ## Load needed libraries
     library(ggplot2); packageVersion("ggplot2")
@@ -50,7 +51,7 @@
 ################################################################################
 
 ### Create a function
-    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
+    barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend, abundance_filtre_level = c("Sample", "Group")){
 
         ## Select Tax ranks needed for labelling
         if(plotting_tax_ranks == "Kingdom"){
@@ -88,10 +89,17 @@
            f_column <- rlang::sym(facetting_column)
         }
 
+        ## Define grouping level for abundance-base filtering (Sample vs group of Samples)
+        if (abundance_filtre_level == "Sample"){
+            abundance_sample <- rlang::sym(Sample)
+        } else (abundance_filtre_level == "Group"){
+            g_column <- rlang::sym(grouping_column)
+        }
+
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
         ungroup %>%
-        dplyr::group_by(Sample) %>%
+        dplyr::group_by(abundance_filtre_level) %>%
         dplyr::mutate(per=as.numeric(100*Abundance/sum(Abundance))) %>%
         ungroup() %>%
         dplyr::select(-Abundance)  %>%
@@ -127,8 +135,8 @@
                 filtering_value <- filtering_value
                 print("Relative value based filtering")
                 physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
-                    dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
-                    dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
+                    dplyr::group_by(abundance_filtre_level, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
 
@@ -137,15 +145,15 @@
                 filtering <- "Absolute"
                 print("Absolute value based filtering")
                 physeq_subset_df_filtered <- melted_dataframe  %>%
-                    dplyr::group_by(Sample, !!t_column) %>% # group the dataframe by Sample and taxa
-                    dplyr::mutate(sumper=as.numeric(sum(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
+                    dplyr::group_by(abundance_filtre_level, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
             }
 
         ## Filter the plotted DF depending on if it is above or under the threshold
-        above_threshold_df <- semi_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In a dataframe, keep only the rows matching the filtered rowmanes
-        under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "Sample")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
+        above_threshold_df <- semi_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "abundance_filtre_level")) ### In a dataframe, keep only the rows matching the filtered rowmanes
+        under_threshold_df <- anti_join(plotted_df, physeq_subset_df_filtered, by = c("OTU", "abundance_filtre_level")) ### In another dataframe, keep only the lines NOT matching the filtered rowmanes
 
         ## Rename taxa with < percent/reads abundance, defending of the filtering applied
             ### Define the filtering tag depending of the applied filtering
@@ -188,7 +196,7 @@
             ungroup()
         }else{
             threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!!(l_ranks), !!(t_column)) %>%
+            group_by(!!(x_column), !!(g_column), !!!(l_ranks),  !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
         }
@@ -341,4 +349,5 @@
         facet_plot = facet_plot,
         facetting_column = facetting_column,
         order_by_abundance = order_by_abundance,
-        separated_legend = separated_legend)
+        separated_legend = separated_legend,
+        abundance_filtre_level = abundance_filtre_level)
