@@ -153,6 +153,7 @@ rule barplots:
         facetting_column = config["facetting_column"],
         order_by_abundance = config["order_by_abundance"],
         separated_legend = config["separated_legend"],
+        abundance_filtre_level = config["abundance_filtre_level"]
     log:
         logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{relative_or_absolute_filtering}_{filtering_value}_{barplot_tax_ranks}_barplot.txt",
     script:
@@ -179,7 +180,8 @@ rule heatmaps:
         horizontal_plot = config["horizontal_plot"],
         facet_plot = config["facet_plot"],
         facetting_column = config["facetting_column"],
-        order_by_abundance = config["order_by_abundance"]
+        order_by_abundance = config["order_by_abundance"],
+        abundance_filtre_level = config["abundance_filtre_level"]
     log:
         logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{relative_or_absolute_filtering}_{filtering_value}_{plotting_tax_ranks}_heatmap.txt",
     script:
