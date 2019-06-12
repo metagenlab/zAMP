@@ -87,7 +87,7 @@
 
         ## Define grouping level for abundance-base filtering (Sample vs group of Samples)
 
-        
+
 
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance

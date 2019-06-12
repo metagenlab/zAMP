@@ -52,10 +52,37 @@
 ### Create a function
     barplots_fct <- function(melted_dataframe, x_axis_column, grouping_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filtering_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks = "all", output_path, distinct_colors = TRUE, horizontal_plot = FALSE, facet_plot = FALSE, facetting_column = NULL, order_by_abundance = TRUE, separated_legend){
 
+        ## Select Tax ranks needed for labelling
+        if(plotting_tax_ranks == "Kingdom"){
+            label_ranks <- c("Kingdom", "")
+        } else if(plotting_tax_ranks == "Phylum"){
+            label_ranks <- c("Kingdom", "Phylum")
+
+        } else if(plotting_tax_ranks == "Class"){
+            label_ranks <- c("Phylum", "Class")
+
+        } else if(plotting_tax_ranks == "Order"){
+            label_ranks <- c("Class", "Order")
+
+        } else if(plotting_tax_ranks == "Family"){
+            label_ranks <- c("Order", "Family")
+
+        } else if(plotting_tax_ranks == "Genus"){
+            label_ranks <- c("Family", "Genus")
+
+        } else if(plotting_tax_ranks == "Species"){
+            label_ranks <- c("Phylum", "Species")
+
+        } else if(plotting_tax_ranks == "OTU"){
+            label_ranks <- c("Species", "OTU")
+        }
+
+
         ## Unquote factors
         g_column <- rlang::sym(grouping_column)
         x_column <- rlang::sym(x_axis_column)
         t_column <- rlang::sym(plotting_tax_ranks)
+        l_ranks  <-  rlang::syms(label_ranks)
 
         if (facet_plot == TRUE){
            f_column <- rlang::sym(facetting_column)
@@ -156,12 +183,12 @@
         ## Regroup taxonomically identical rows
         if (facet_plot == TRUE){
             threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!(f_column), !!(t_column)) %>%
+            group_by(!!(x_column), !!(g_column), !!(f_column), !!!(l_ranks), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
         }else{
             threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!(t_column)) %>%
+            group_by(!!(x_column), !!(g_column), !!!(l_ranks), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
         }
@@ -245,12 +272,17 @@
             ### Set the filtering_tag at the top of the plot
             filtered_df_abs_i[[plotting_tax_ranks]] <- fct_relevel(filtered_df_abs_i[[plotting_tax_ranks]], filtering_tag, after = 0)
 
+            ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
+            taxalabel <- as.character(paste(toupper(substr(filtered_df_abs_i[[label_ranks[1]]],1 ,6)) , filtered_df_abs_i[[label_ranks[2]]], sep = ";"))
+            names(taxalabel) <- filtered_df_abs_i[[plotting_tax_ranks]]
+
             ### Create the barplot
             taxrank_barplot <- filtered_df_abs_i %>%
                 ggplot(aes(x = get(x_axis_column), y = Abundance, fill = get(plotting_tax_ranks))) +
                 theme_bw() +
                 geom_col() +
                 #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
+                scale_y_discrete(labels = taxalabel) +
                 theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), legend.text=element_text(size=5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
                 guides(fill = guide_legend(title = paste0(plotting_tax_ranks),reverse = FALSE, keywidth = 0.5, keyheight = 0.5, ncol = 1)) + # settings of the legend
                 labs(x = x_axis_column,  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", plotting_tax_ranks,"level", i)) + # axis and graph title
