@@ -52,7 +52,7 @@
 
         ## Select Tax ranks needed for labelling
         if(plotting_tax_ranks == "Kingdom"){
-            label_ranks <- "Kingdom"
+            label_ranks <- c("Kingdom", "")
         } else if(plotting_tax_ranks == "Phylum"){
             label_ranks <- c("Kingdom", "Phylum")
 
@@ -60,19 +60,19 @@
             label_ranks <- c("Phylum", "Class")
 
         } else if(plotting_tax_ranks == "Order"){
-            label_ranks <- c("Phylum", "Order")
+            label_ranks <- c("Class", "Order")
 
         } else if(plotting_tax_ranks == "Family"){
-            label_ranks <- c("Phylum", "Family")
+            label_ranks <- c("Order", "Family")
 
         } else if(plotting_tax_ranks == "Genus"){
-            label_ranks <- c("Phylum", "Family", "Genus")
+            label_ranks <- c("Family", "Genus")
 
         } else if(plotting_tax_ranks == "Species"){
             label_ranks <- c("Phylum", "Species")
 
         } else if(plotting_tax_ranks == "OTU"){
-            label_ranks <- c("Phylum", "Species", "OTU")
+            label_ranks <- c("Species", "OTU")
         }
 
         ## Unquote factors
@@ -84,6 +84,10 @@
         if (facet_plot == TRUE){
            f_column <- rlang::sym(facetting_column)
         }
+
+        ## Define grouping level for abundance-base filtering (Sample vs group of Samples)
+
+        
 
         ## Transform abundance on 100%
         physeq_subset_norm_df <- melted_dataframe  %>% # calculate % normalized Abundance
@@ -180,12 +184,12 @@
         ## Regroup taxonomically identical rows
         if (facet_plot == TRUE){
             threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!(f_column), !!(t_column)) %>%
+            group_by(!!(x_column), !!(g_column), !!(f_column), !!!(l_ranks), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
         }else{
             threshod_filtered_abs_no_zero <- threshod_filtered_abs_no_zero %>%
-            group_by(!!(x_column), !!(g_column), !!(t_column)) %>%
+            group_by(!!(x_column), !!(g_column), !!!(l_ranks), !!(t_column)) %>%
             summarise(Abundance = sum(Abundance)) %>%
             ungroup()
         }
@@ -246,7 +250,7 @@
             filtered_df_abs_i[[plotting_tax_ranks]] <- fct_relevel(filtered_df_abs_i[[plotting_tax_ranks]], filtering_tag, after = 0)
 
             ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
-            taxalabel <- as.character(paste(toupper(substr(filtered_df_abs_i[[label_ranks[1]]],1 ,5)) , filtered_df_abs_i[[label_ranks[2]]], filtered_df_abs_i[[label_ranks[3]]], sep = ";"))
+            taxalabel <- as.character(paste(toupper(substr(filtered_df_abs_i[[label_ranks[1]]],1 ,6)) , filtered_df_abs_i[[label_ranks[2]]], sep = ";"))
             names(taxalabel) <- filtered_df_abs_i[[plotting_tax_ranks]]
 
             ### Generate heatmap
@@ -258,7 +262,7 @@
                 scale_color_manual(guide = FALSE, values = c("white", "black")) +
                 theme(axis.text.x = element_text(angle = -90, vjust = 0.5, hjust = 0)) +
                 scale_y_discrete(labels = taxalabel) +
-                labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", plotting_tax_ranks,"level" ))
+                labs(x="Sample",  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", plotting_tax_ranks,"level", i))
 
                 #### In option, turn barplot horizontally
                 if (isTRUE(horizontal_plot)){
