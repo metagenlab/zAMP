@@ -1,77 +1,76 @@
 ## Install Ubuntu
 FROM ubuntu:16.04
 
-############################## Install miniconda environement, from miniconda2 Dockerfile ##############################
-#  $ docker build . -t continuumio/miniconda:latest -t continuumio/miniconda:4.5.11 -t continuumio/miniconda2:latest -t continuumio/miniconda2:4.5.11
-#  $ docker run --rm -it continuumio/miniconda2:latest /bin/bash
-#  $ docker push continuumio/miniconda:latest
-#  $ docker push continuumio/miniconda:4.5.11
-#  $ docker push continuumio/miniconda2:latest
-#  $ docker push continuumio/miniconda2:4.5.11
+############################## Install miniconda environement, from miniconda3 Dockerfile ##############################
+#  $ docker build . -t continuumio/miniconda3:latest -t continuumio/miniconda3:4.5.11
+#  $ docker run --rm -it continuumio/miniconda3:latest /bin/bash
+#  $ docker push continuumio/miniconda3:latest
+#  $ docker push continuumio/miniconda3:4.5.11
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
+ENV TZ Europe/Zurich
 
-RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
-    libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y tzdata && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
 
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN apt-get update --fix-missing && \
+    apt-get install -y wget bzip2 ca-certificates curl git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-RUN apt-get install -y curl grep sed dpkg && \
-    TINI_VERSION=`curl https://github.com/krallin/tini/releases/latest | grep -o "/v.*\"" | sed 's:^..\(.*\).$:\1:'` && \
-    curl -L "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
-    dpkg -i tini.deb && \
-    rm tini.deb && \
-    apt-get clean
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
+RUN chmod +x /usr/bin/tini
 
-#ENTRYPOINT [ "/usr/bin/tini", "--" ]
-#CMD [ "/bin/bash" ]
 
-############################## Install a default R ##############################
-RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list && \
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
-	apt install apt-transport-https && \
-    apt update && \
-	apt-get install r-base -y
-
-## Install a dependancy for the r-V8 package, itself needed for randomcoloR
-RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
-
-############################## Import definition of the conda environment ##############################
-COPY envs/r_visualization2.yml /tmp/r_visualization2.yml
-
-############################## Activate USER ##############################
+############################## Create USER ##############################
 RUN useradd -r -u 1080 pipeline_user
-RUN mkdir -p /home/pipeline_user
-RUN chown pipeline_user -R /home/pipeline_user
+
+RUN conda config --add channels defaults && conda config --add channels conda-forge && conda config --add channels bioconda
+
+############################## Install Snakemake ##############################
+RUN conda install snakemake=5.5.0
+
+############################## r-v8 dependancy, r-v8 and randomcoloR R package #######################
+## libv8
+RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
+## R-v8
+RUN conda install -c dloewenstein r-v8
+
+## randomcoloR
+### Dependencies
+RUN Rscript -e "install.packages('randomcoloR')"
+
+#RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
+#RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /opt/conda/lib/R/library/
+
+### Clone github
+ARG GITHUB_AT
+
+RUN git clone --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git
+
+### Create all environments of the pipeline
+RUN ls microbiome16S_pipeline/data/validation_datasets
+
+RUN snakemake --snakefile microbiome16S_pipeline/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile microbiome16S_pipeline/data/validation_datasets/config.yml
+
+#ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
+
+RUN chown -R pipeline_user ${main}/
+
 USER pipeline_user
 
-############################## Install conda env ##############################
-## Create the conda environement
-RUN conda env create -f /tmp/r_visualization2.yml -n r_visualization
-
-############################## Add the needed packages ##############################
-## Download the r-V8 package
-RUN wget https://cran.r-project.org/src/contrib/Archive/V8/V8_1.5.tar.gz -O /tmp/rv8.tar.gz
-
-## Install the package
-RUN R CMD INSTALL /tmp/rv8.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
-
-## Download the randomcoloR package
-RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-
-## Install the package
-RUN R CMD INSTALL /tmp/randomcoloR.tar.gz -l /home/pipeline_user/.conda/envs/r_visualization/lib/R/library/
-
-## Activate the r-visualiation
-ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
-WORKDIR /home/pipeline_user
-# RUN source activate r_visualization
-
-ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
+WORKDIR ${main}/data/analysis/
