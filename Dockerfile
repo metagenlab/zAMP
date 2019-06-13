@@ -61,7 +61,7 @@ RUN apt-get install -y libltdl7
 RUN conda install -c bioconda java-jdk
 
 #################### Install a dependancies for png plotting #############################
-RUN conda install -c anaconda libpng
+RUN apt-get install libcairo2-dev
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
@@ -77,7 +77,6 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-RUN conda install -c anaconda libpng-devel-cos6-x86_64
 
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
