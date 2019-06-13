@@ -61,7 +61,7 @@ RUN apt-get install -y libltdl7
 RUN conda install -c bioconda java-jdk
 
 #################### Install a dependancies for png plotting #############################
-RUN apt-get install libcairo2-dev
+RUN apt-get install libcairo2-dev -y
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
