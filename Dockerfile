@@ -57,11 +57,17 @@ RUN Rscript -e "install.packages('randomcoloR')"
 ##################### Install a PANDAseq dependancy ######################
 RUN apt-get install -y libltdl7
 
+######################### Install Java #########################
+RUN conda install -c bioconda java-jdk
+
+#################### Install a dependancies for png plotting #############################
+RUN conda install -c anaconda libpng
+
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
+
 ## Clone the github
-#RUN ls
 RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## cd in the validation directory
@@ -70,6 +76,8 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
+
+RUN conda install -c anaconda libpng-devel-cos6-x86_64
 
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
