@@ -47,7 +47,7 @@ RUN conda config --add channels defaults && conda config --add channels conda-fo
 RUN conda install snakemake=5.5.0
 
 ##################### Install a PANDAseq dependancy ######################
-RUN apt-get install -y libltdl7
+RUN apt-get update && apt-get install libltdl7 -y
 
 ######################### Install Java needed for Qiime assignement #########################
 RUN conda install -c bioconda java-jdk
@@ -69,18 +69,18 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
+RUN apt-get install gcc-multilib -y
+
+
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
 #### Activate the environement generated for plotting
-RUN conda activate /opt/conda/bceb012c
-## libv8
-RUN apt-get update && apt-get -y install libv8-dev libcurl4-openssl-dev
-## r-V8 package
-RUN wget https://cran.r-project.org/src/contrib/Archive/V8/V8_1.5.tar.gz -O /tmp/rv8.tar.gz
-RUN R CMD INSTALL /tmp/rv8.tar.gz
-
-## Download the randomcoloR package
+RUN apt-get install libv8-3.14-dev -y
+RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-RUN R CMD INSTALL /tmp/randomcoloR.tar.gz
+RUN wget https://anaconda.org/dloewenstein/r-v8/2.2/download/noarch/r-v8-2.2-mro351h29659fb_0.tar.bz2
+RUN tar xjf r-v8-2.2-mro351h29659fb_0.tar.bz2 -C /tmp/
+
+RUN /bin/bash -c 'source activate /opt/conda/bceb012c/ && R CMD INSTALL --configure-vars="INCLUDE_DIR=/tmp/include LIB_DIR=/tmp/lib" /tmp/rv8.tar.gz && R CMD INSTALL /tmp/randomcoloR.tar.gz '
 
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
