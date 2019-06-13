@@ -78,9 +78,10 @@ RUN apt-get install libv8-3.14-dev -y
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 RUN wget https://anaconda.org/dloewenstein/r-v8/2.2/download/noarch/r-v8-2.2-mro351h29659fb_0.tar.bz2
+
 RUN tar xjf r-v8-2.2-mro351h29659fb_0.tar.bz2 -C /tmp/
 
-RUN /bin/bash -c 'source activate /opt/conda/bceb012c/ && R CMD INSTALL --configure-vars="INCLUDE_DIR=/tmp/include LIB_DIR=/tmp/lib" /tmp/rv8.tar.gz && R CMD INSTALL /tmp/randomcoloR.tar.gz '
+RUN /bin/bash -c """source activate /opt/conda/bceb012c/ && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/tmp/include LIB_DIR=/tmp/lib\" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" """
 
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
