@@ -60,6 +60,8 @@ RUN apt-get install libcairo2-dev -y
 ARG GITHUB_AT
 
 ## Clone the github
+RUN ls
+
 RUN git clone --single-branch --branch dev https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## cd in the validation directory

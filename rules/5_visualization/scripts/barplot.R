@@ -6,7 +6,7 @@
 ## Redirect R output to the log file
     #log <- file(snakemake@log[[1]], open="wt")
     #sink(log)
-    3sink(log, type="message")
+    #sink(log, type="message")
 
 ## Input
     phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
