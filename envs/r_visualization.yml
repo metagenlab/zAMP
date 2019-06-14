@@ -32,3 +32,4 @@ dependencies:
  - bioconductor-microbiome
  # - bioconductor-genomeinfodbdata ## prevent a Conda bug with version 1.2.0
  - bioconductor-aldex2 = 1.14.1
+ - r r-rcpp = 0.12.18
