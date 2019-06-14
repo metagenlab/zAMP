@@ -4,9 +4,9 @@
 # Created on: 06.06.19
 
 ## Redirect R output to the log file
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
     phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
@@ -137,7 +137,7 @@
                 filtering_value <- filtering_value
                 print("Relative value based filtering")
                 physeq_subset_df_filtered <- physeq_subset_norm_df  %>%
-                    dplyr::group_by(abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::group_by(!!abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
                     dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
@@ -147,7 +147,7 @@
                 filtering <- "Absolute"
                 print("Absolute value based filtering")
                 physeq_subset_df_filtered <- melted_dataframe  %>%
-                    dplyr::group_by(abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
+                    dplyr::group_by(!!abundance_sample, !!t_column) %>% # group the dataframe by Sample and taxa
                     dplyr::mutate(sumper=as.numeric(mean(Abundance))) %>% # calculate the cumulative relative abundance of the taxa in the sample
                     dplyr::filter(sumper >= filtering_value) %>%# keep only the taxa above threshold.
                     ungroup
