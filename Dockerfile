@@ -74,6 +74,7 @@ RUN apt-get install gcc-multilib -y
 
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
 #### Activate the environement generated for plotting
+RUN apt-get install g++
 RUN apt-get install libv8-dev -y
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
