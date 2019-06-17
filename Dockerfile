@@ -35,7 +35,6 @@ ENV TINI_VERSION v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 
-
 ############################## Create pipeline_user, set useful variables ##############################
 RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
@@ -87,9 +86,6 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --c
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
-
 USER pipeline_user
-
-RUN mkdir ${main}/data/analysis/
-
+RUN mkdir -p ${main}/data/analysis/
 WORKDIR ${main}/data/analysis/
