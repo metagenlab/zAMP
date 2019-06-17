@@ -1,11 +1,13 @@
 
+## With the "--use-singularity" tag, run all the pipeline in the docker container
+singularity:
+    "docker://valscherz/amplicon_snakemake_pipeline:0.0.9-alpha"
+
 ## Input/output
 ### Include logging rules
 include: "rules/0_preprocessing/logging.rules"
 ## Include rules and functions to set input/output
 include: "rules/0_preprocessing/make_output_list_files.rules"
-
-
 
 ## Rules to call defined sets of output. For each, we first generate a function calling the combined list of output. Then its is integrated in a easily callable rule
 ### Defaul rule all. Include all but PICRUSt2
