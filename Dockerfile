@@ -69,24 +69,18 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-#RUN apt-get install gcc-multilib -y
 
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
-#### Activate the environement generated for plotting
-#RUN apt-get install make gcc g++ -y libv8-dev
+### Warning:
+#### - we need "libgcc-ng=7.2.0" installed in the environement for the R-V8 installation to work
+#### - libv8-dev must be installed and the containing path (--configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \") correctly pointed at
 
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-# RUN wget https://anaconda.org/dloewenstein/r-v8/2.2/download/noarch/r-v8-2.2-mro351h29659fb_0.tar.bz2
-
-# RUN tar xjf r-v8-2.2-mro351h29659fb_0.tar.bz2 -C /tmp/
+RUN /bin/bash -c """source activate /opt/conda/0cc3a470/ && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" """
 
 
-## Working but ugly
-#RUN /bin/bash -c """source activate /opt/conda/bceb012c/ && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/tmp/include LIB_DIR=/tmp/lib\" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" """
-## build working but rcpp errors
-RUN /bin/bash -c """source activate /opt/conda/0cc3a470/ && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" """
-
+#################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
