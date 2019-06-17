@@ -20,7 +20,6 @@ rule QIIME1_assign_taxonomy:
           -i {input[0]} \
           -r {input[1]} \
           -t {input[2]} \
-          -m rdp \
           -o $(dirname {output[0]}) \
           -c 0.5 \
           --rdp_max_memory 30000
