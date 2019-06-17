@@ -23,7 +23,7 @@ dependencies:
  - r-rlang = 0.2.2
  - bioconductor-deseq2 = 1.22.1
  - r-gtools = 3.8.1
- - r-decontam = 1.4.0
+ - bioconductor-decontam = 1.4.0
  - krona = 2.7
  - r-magrittr = 1.5
  - r-cowplot = 0.9.3
