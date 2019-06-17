@@ -1,5 +1,5 @@
 ## Install Ubuntu
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ############################## Install miniconda environement, from miniconda3 Dockerfile ##############################
 #  $ docker build . -t continuumio/miniconda3:latest -t continuumio/miniconda3:4.5.11
