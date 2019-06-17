@@ -20,7 +20,9 @@
     library(phyloseq);packageVersion("phyloseq")
 
 ## Reformat
-    asv_tab<-read.table(file = count_table)
-    otu<-as(otu_table(asv_tab, taxa_are_rows = TRUE),"matrix")
-    otu_biom<-make_biom(data=otu)
+    asv_tab <- read.table(file = count_table)
+    otu <- as(otu_table(asv_tab, taxa_are_rows = TRUE),"matrix")
+    otu_biom <- make_biom(data=otu)
+
+## Write
     write_biom(x = otu_biom, biom_file = biom_count)

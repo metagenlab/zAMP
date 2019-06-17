@@ -69,7 +69,6 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
 ### Warning:
 #### - we need "libgcc-ng=7.2.0" installed in the environement for the R-V8 installation to work
