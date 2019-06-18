@@ -89,3 +89,5 @@ RUN chown -R pipeline_user ${main}/
 USER pipeline_user
 RUN mkdir -p ${main}/data/analysis/
 WORKDIR ${main}/data/analysis/
+
+ENTRYPOINT [ "/bin/bash", "conda activate base"]
