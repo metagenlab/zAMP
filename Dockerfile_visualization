@@ -74,4 +74,4 @@ ENV PATH /home/pipeline_user/.conda/envs/r_visualization/bin:$PATH
 WORKDIR /home/pipeline_user
 # RUN source activate r_visualization
 
-ENTRYPOINT [ "/bin/bash", "source activate r_visualization" ]
+ENTRYPOINT [ "/bin/bash", "conda activate r_visualization" ]
