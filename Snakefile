@@ -2,6 +2,7 @@
 singularity:
     "docker://valscherz/amplicon_snakemake_pipeline:0.0.9-alpha"
 
+
 ## Input/output
 ### Include logging rules
 include: "rules/0_preprocessing/logging.rules"
