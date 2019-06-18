@@ -1,6 +1,5 @@
 ## Use Docker image with singularity, if "--use-singularity" is used in snakemake command
-singularity:
-    "docker://valscherz/amplicon_snakemake_pipeline:0.0.9-alpha"
+singularity: "docker://valscherz/amplicon_snakemake_pipeline:0.0.9-alpha"
 
 
 ## Input/output

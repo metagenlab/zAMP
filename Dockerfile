@@ -88,6 +88,6 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --c
 RUN chown -R pipeline_user ${main}/
 USER pipeline_user
 RUN mkdir -p ${main}/data/analysis/
-WORKDIR ${main}/data/analysis/
+RUN conda init bash
 
-# ENTRYPOINT [ "/bin/bash", "conda activate base"]
+#ENTRYPOINT [ "/bin/bash", "source ~/.bashrc" ]
