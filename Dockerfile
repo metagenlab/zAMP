@@ -82,13 +82,13 @@ RUN conda clean -a
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/bin/conda --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
 USER pipeline_user
 RUN mkdir -p ${main}/data/analysis/
 RUN conda init bash
+WORKDIR ${main}/data/analysis/
+ENTRYPOINT ["/bin/bash", "-c", "echo Hello, $name"]
 
-ENTRYPOINT [ "/usr/bin/tini", "--" ] 
-CMD [ "/bin/bash" ]
