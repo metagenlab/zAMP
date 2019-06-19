@@ -6,6 +6,8 @@ rule copy_fastq_paired_from_link:
     output:
         temp("raw_reads/{sample}_R1.fastq.gz"),
         temp("raw_reads/{sample}_R2.fastq.gz")
+    resources:
+        max_copy=1
     shell:
         """
         gzip -t {input[0]}
@@ -20,6 +22,8 @@ rule copy_fastq_single_from_link:
         lambda wildcards: link_directory + original_names[wildcards.sample]+ "." +read_naming[wildcards.sample][0]
     output:
         temp("raw_reads/{sample}_single.fastq.gz")
+    resources:
+        max_copy=1
     shell:
         """
         gzip -t {input[0]}

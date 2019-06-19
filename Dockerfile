@@ -66,7 +66,7 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 16 --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
 ### Warning:
@@ -82,7 +82,7 @@ RUN conda clean -a
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 16 --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/

@@ -10,6 +10,8 @@ rule download_sra:
         logging_folder + "samples/{sample}/sras/dump.txt"
     params:
         sra_dir = "$HOME/ncbi/public"
+    resources:
+        max_copy=1
     shell:
         """
         #cache_dir=$(vdb-config --cfg -o n | grep "/repository/user/main/public/root" | cut -f2 -d'=' | sed "s/\\"//g")
