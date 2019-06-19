@@ -1,13 +1,84 @@
-## Requirements:
-#### miniconda3
-_With export PATH="<path/to>/miniconda3/bin:$PATH" in .bashrc. *Careful: for some reason, taxonomic assignment with Qiime can fail is this pattern is not respected.*_
 
-#### snakemake
-_version >5.3.1 installed and containing environment activated_
+### Overview
+This is a comprehensive pipeline for 16S rRNA metagenomics integrating the best of many tools such as FASTQC, MultiQC, Qiime, rdp, EzBioCloud, Qiime2, vsearch, DADA2, phyloseq (ref to be added) in a Snakemake worflow. It includes all steps from .fastq recovery through symbolic links or SRA depository to generation of basic visualization plots, including quality control plots at different stages. 
+    
+  There are various ways to use the pipeline. The use of a defined Snakemake pipeline already enhance reproducibility (method 1). However, best reproducibility is reached when using Singularity (method 2) or Docker (method 3) container-based approach.
+  
+### Method 1 - Snakemake in conda environnements
+_Allows the best flexibility with modification of the pipeline_
 
-#### Singularity
-_Singularity is a system enabling the use of docker containers for per-rule environment [see Snakemake doc](https://snakemake.readthedocs.io/en/v5.4.0/snakefiles/deployment.html) when plotting is desired. It must be installed [as indicated here](https://www.sylabs.io/guides/3.0/user-guide.pdf). It is used here since R randomcoloR package, needed for plotting, is not available for Conda due to a missing dependancy, r-V8. ([See here for more about failure in building the package](https://github.com/conda-forge/staged-recipes/pull/6982]))._
+#### Requirements:
+##### Computer
+A linux machine would be the best,  however, should work as well on MacOSX (to be tested). At least 16Gb of RAM are needed, even more with larger datasets.
 
+_Tested with Ubuntu 18.04 with 4 CPUs and 32Gb of RAM_
+
+#### Cloned pipeline
+```
+git clone https://github.com/metagenlab/microbiome16S_pipeline.git
+```
+
+##### Miniconda3
+Installed [following developpers recommendations](https://docs.conda.io/en/latest/miniconda.html) and with relevent channels added runnning in a termal the following commands :
+```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+
+_Tested with version 4.6.14_
+
+##### Snakemake
+Installed by :
+```
+conda create -n snakemake snakemake=5.5.1
+```
+
+
+_Tested with version 5.5.1_
+
+##### Singularity (optional)
+_Singularity is a system enabling the use of docker containers for per-rule environment [see Snakemake doc](https://snakemake.readthedocs.io/en/v5.5.1/snakefiles/deployment.html). Library needed by the "barplots" rule cannot be installed through conda. As a workaround, we have built a Docker image which is runned by singularity when the "--use-singularity" flag is present in the snakemake command._
+   
+  
+  It must be installed [as indicated here](https://www.sylabs.io/guides/3.0/user-guide.pdf). 
+  
+  _Tested with version 3.0.1_
+  
+#### Use:
+##### With "Barplots: False" in config (no singularity):
+```
+snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix ${conda_path} --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+```
+
+##### With "Barplots: True" in config (incl. singularity):
+ ```
+snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix ${conda_path} --cores {threads_number} --configfile {config_file_name} --resources max_copy={max_number_of_files_copied_at_the_same_time} --use-singularity
+```
+ 
+  
+### Method 2 - In a Singularity container
+_Relatively easy to set-up and insuring reproducibility thanks to containerization. Here all what is needed to run the pipeline is already in a container and will be used to run the pipeline._
+#### Requirements:
+##### Computer
+As for Method 1 but here normally only for linux. However, an alpha version for Singularity exists for MacOS.
+
+##### Singularity
+As for Method 1
+
+#### Use:
+
+```
+## Run the contained interactively
+singularity run docker://valscherz/amplicon_snakemake_pipeline:0.0.9-beta
+
+## Run the pipeline
+snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+```
+  
+  
+  
+  
 ## General use
 ```
 snakemake --snakefile $pipeline_folder/Snakefile --use-conda --conda-prefix $pipeline_folder/miniconda3/ --cores 8 --configfile config.yaml --use-singularity -k <disered_output_rule>

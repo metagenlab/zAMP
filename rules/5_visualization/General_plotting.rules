@@ -132,6 +132,8 @@ def barplot_levels(wildcards):
 
 ### Plot taxonomic barplots
 rule barplots:
+    singularity:
+        "docker://valscherz/16srna:0.0.3-beta"
     conda:
         "../../envs/r_visualization.yml"
     input:
