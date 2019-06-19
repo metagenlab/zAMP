@@ -15,7 +15,7 @@ filter_column_value: pipeline_validation # Value of filtered in samples of this 
 
 ## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
-denoiser: ["vsearch"] # "vsearch", "DADA2" or both
+denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
