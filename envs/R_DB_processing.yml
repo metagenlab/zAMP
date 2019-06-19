@@ -1,12 +1,12 @@
 name: DB_processing
 channels:
- - r
  - conda-forge
+ - r
  - defaults
  - bioconda
  - biocore
 dependencies:
- - r-base = 3.5.1
+ - r-base=3.5.1
  - r-dplyr = 0.7.6
  - r-lattice = 0.20_35
  - r-stringr = 1.3.1

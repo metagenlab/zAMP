@@ -1,12 +1,12 @@
 name: physeq
 channels:
- - r
  - conda-forge
+ - r
  - defaults
  - bioconda
  - biocore
 dependencies:
- - r-base = 3.5.1
+ - r-base=3.5.1
  - bioconductor-phyloseq = 1.26.1
  - r-vegan = 2.5.2
  - r-dplyr = 0.7.6
