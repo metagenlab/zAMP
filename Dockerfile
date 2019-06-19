@@ -19,7 +19,7 @@ RUN echo $TZ > /etc/timezone && \
     apt-get clean
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y wget bzip2 ca-certificates curl git && \
+    apt-get install -y wget nano bzip2 ca-certificates curl git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
