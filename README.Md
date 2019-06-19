@@ -57,8 +57,9 @@ snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix ${
 ```
  
   
-### Method 2 - In a Singularity container
-_Relatively easy to set-up and insuring reproducibility thanks to containerization. Here all what is needed to run the pipeline is already in a container and will be used to run the pipeline._
+### Method 2 - With Singularity
+_Relatively easy to set-up and insuring reproducibility thanks to containerization. Here all what is needed to run the pipeline is a container. In fact, we are taking advantage of the abilify of Singularity to run the Docker container prepared for this pipeline, with the added benefits of solving the user access problems (see Method 3) and allowing the access to all local files._
+
 #### Requirements:
 ##### Computer
 As for Method 1 but here normally only for linux. However, an alpha version for Singularity exists for MacOS.
@@ -76,7 +77,26 @@ singularity run docker://valscherz/amplicon_snakemake_pipeline:0.0.9-beta
 snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
 ```
   
-  
+
+### Method 3 - With Docker
+##### Computer
+Should work on Windows, MacOS and Linux.
+_Tested on Linux_
+
+##### User settings: 
+Our Docker image is fit for a user called pipeline_user whose UID is 1080. It is advised to create this user on your computer before using the Docker image to run your analysis:
+
+```
+sudo useradd -G docker,sudo -u 1080 pipeline_user
+sudo mkdir /home/pipeline_user/
+sudo chown pipeline_user -R /home/pipeline_user/
+sudo passwd pipeline_user
+```
+
+Alternatively, you can run the Docker as root (--user root) but the created folders will belong to the root user of your computer.
+
+##### Docker
+Install the CE version following these [instructions](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for ubuntu. Also make sure you have created the docker group and that you can run docker without sudo following these [instruction](https://docs.docker.com/install/linux/linux-postinstall/). If you can't have access to the internet when inside a Docker container, apply those [changes](https://docs.docker.com/install/linux/linux-postinstall/#disable-dnsmasq).
   
   
 ## General use
