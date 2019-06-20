@@ -132,10 +132,8 @@ def barplot_levels(wildcards):
 
 ### Plot taxonomic barplots
 rule barplots:
-    singularity:
-        "docker://valscherz/16srna:0.0.3-beta"
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/barplots.yml"
     input:
         phyloseq_melted_table = lambda wildcards: "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/" + barplot_levels(wildcards.barplot_tax_ranks) + "/base_melted.tsv"
     output:
