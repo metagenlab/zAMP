@@ -1,8 +1,7 @@
 name: QIIME1
 channels:
-- conda-forge
-- bioconda
 - hcc
+- bioconda
 dependencies:
 - qiime = 1.9.1
 - rdp-classifier = 2.2

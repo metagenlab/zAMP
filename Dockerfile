@@ -49,7 +49,7 @@ RUN conda install snakemake=5.5.0
 RUN apt-get update && apt-get install libltdl7 -y
 
 ######################### Install Java needed for Qiime assignement #########################
-RUN conda install -c bioconda java-jdk
+RUN conda install java-jdk
 
 #################### Install a dependancy for png plotting #############################
 RUN apt-get install libcairo2-dev -y
