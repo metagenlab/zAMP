@@ -28,5 +28,5 @@ dependencies:
  - r-cowplot = 0.9.3
  - bioconductor-microbiome
  - bioconductor-aldex2 = 1.14.1
-
+ - libgcc-ng = 7.2.0 
 ## In addition, we install randomcoloR through R. Indeed, it is not on conda due to missing dependancies (r-v8)
