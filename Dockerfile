@@ -43,7 +43,7 @@ ENV pipeline_folder=${main}/microbiome16S_pipeline
 
 ############################## Install Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge && conda config --set channel_priority strict
-RUN conda install snakemake=5.5.0
+RUN conda install snakemake=5.5.1
 
 ##################### Install a PANDAseq dependancy ######################
 RUN apt-get update && apt-get install libltdl7 -y
