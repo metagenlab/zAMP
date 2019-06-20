@@ -1,7 +1,7 @@
 name: QIIME1
 channels:
-- bioconda
 - conda-forge
+- bioconda
 - hcc
 dependencies:
 - qiime = 1.9.1

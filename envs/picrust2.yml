@@ -1,6 +1,5 @@
 name: picrust2
 channels:
 - bioconda
-- biocore
 dependencies:
 - picrust2=2.1.4_b

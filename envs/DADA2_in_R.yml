@@ -1,7 +1,7 @@
 name: DADA2
 channels:
- - bioconda
  - conda-forge
+ - bioconda
 dependencies:
   - r-base=3.5.1
   - r-devtools = 1.13.6
