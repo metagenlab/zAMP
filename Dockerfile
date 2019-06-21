@@ -75,11 +75,12 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 #### - Due to conda dependacies definition and incombatility between "libgcc-ng = 7.2.0" needed by R-V8 to build and this build, we cannot the "build=*_1007" in the env definition. However, this build prevent "cannot access ldpath error". Hences, we install it after the facts.
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-RUN /bin/bash -c """source activate /opt/conda/4c16c4f0 && conda install fortran-compiler && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007]"""
+RUN /bin/bash -c """source activate /opt/conda/4c16c4f0 && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\""""
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
+RUN apt-get autoremove -y
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
