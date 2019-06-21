@@ -10,4 +10,5 @@ dependencies:
   - bioconductor-phyloseq = 1.26.1
   - libgfortran
   - ggplot
+  - r-rcppparallel==4.4.1[build=*_1001] # prevent dada2 error in build
 
