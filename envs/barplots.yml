@@ -16,6 +16,7 @@ dependencies:
  - r-rlang
  - r-cowplot = 0.9.3
  - libgcc-ng = 7.2.0
+ - r-cluster
  - r-rtsne
 ## In addition, we install randomcoloR through R. Indeed, it is not on conda due to missing dependancies (r-v8)
 
