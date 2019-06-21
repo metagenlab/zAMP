@@ -5,7 +5,7 @@ channels:
  - bioconda
  - biocore
 dependencies:
- - r-base==3.5.1
+ - r-base==3.5.1[build=*_1007]
  - r-devtools = 1.13.6
  - r-ggplot2 = 3.1.0
  - r-dplyr = 0.7.6
@@ -15,7 +15,8 @@ dependencies:
  - r-ggpubr = 0.1.8
  - r-rlang
  - r-cowplot = 0.9.3
- - libgcc-ng = 7.2.0 
+ - fortran-compiler=1.0.1
+ - libgcc-ng
 ## In addition, we install randomcoloR through R. Indeed, it is not on conda due to missing dependancies (r-v8)
- 
+
 
