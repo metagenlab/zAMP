@@ -79,7 +79,8 @@ RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp
 ## Recover the env of interest
 ENV barplots_env $(basename $(grep \"name: barplots\" /opt/conda/*.yaml | cut -d: -f1) .yaml)
 ## Update the env with need dependancies and randomcoloR
-RUN /bin/bash -c """source activate /opt/conda/${barplots_env}  && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\""""
+RUN ls
+RUN /bin/bash -c """source activate /opt/conda/${barplots_env}  && conda install libgcc-ng=7.2.0 r-cluster && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 
 ################# Clean unnecessary packages ###################
