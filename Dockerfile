@@ -73,9 +73,13 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 #### - we need "libgcc-ng=7.2.0" installed in the environement for the R-V8 installation to work
 #### - libv8-dev must be installed and the containing path (--configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \") correctly pointed at
 #### - Due to conda dependacies definition and incombatility between "libgcc-ng = 7.2.0" needed by R-V8 to build and this build, we cannot the "build=*_1007" in the env definition. However, this build prevent "cannot access ldpath error". Hences, we install it after the facts.
+## Download packages
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-RUN /bin/bash -c """source activate /opt/conda/4c16c4f0 && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\""""
+## Recover the env of interest
+ENV barplots_env $(basename $(grep \"name: barplots\" /opt/conda/*.yaml | cut -d: -f1) .yaml)
+## Update the env with need dependancies and randomcoloR
+RUN /bin/bash -c """source activate /opt/conda/${barplots_env}  && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\""""
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 
 ################# Clean unnecessary packages ###################
