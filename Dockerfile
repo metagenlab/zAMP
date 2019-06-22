@@ -96,5 +96,5 @@ USER pipeline_user
 RUN mkdir -p ${main}/data/analysis/
 RUN conda init bash
 WORKDIR ${main}/data/analysis/
-ENTRYPOINT ["/bin/bash", "-c", "echo Hello"]
+ENTRYPOINT ["/bin/bash"]
 
