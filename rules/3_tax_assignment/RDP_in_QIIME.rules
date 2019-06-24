@@ -22,6 +22,7 @@ rule QIIME1_assign_taxonomy:
           -t {input[2]} \
           -o $(dirname {output[0]}) \
           -c 0.5 \
+          -O {threads} \
           --rdp_max_memory 30000
            >> {log[0]}
         '''
