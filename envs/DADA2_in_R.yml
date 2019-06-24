@@ -10,5 +10,4 @@ dependencies:
   - bioconductor-phyloseq = 1.26.1
   - libgfortran
   - ggplot
-  - r-rcppparallel==4.4.3[build=*_1] # for build testing
-
+  - r-rcppparallel = 4.4.3
