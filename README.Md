@@ -60,7 +60,7 @@ Singularity is a system enabling the use of singularity or docker containers. It
 singularity run docker://valscherz/amplicon_snakemake_pipeline:0.0.9-beta
 
 ## Run the pipeline from into the cointainer.
-snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time} mem_mb = {available_memory}
 ```
 
 
