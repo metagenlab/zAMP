@@ -82,7 +82,7 @@ RUN apt-get autoremove -y
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 8 --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
