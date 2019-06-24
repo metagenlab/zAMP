@@ -46,7 +46,7 @@ RUN conda config --add channels defaults && conda config --add channels bioconda
 RUN conda install snakemake=5.5.1 java-jdk
 
 ######### Install PANDAseq (libltdl7) and r-v8 (libv8-dev) dependances, and a package required for png plotting  (libcairo2) ##########
-RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
+RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
