@@ -1,8 +1,8 @@
 name: r_visualization
 channels:
  - conda-forge
- - defaults
  - bioconda
+ - defaults
  - biocore
 dependencies:
  - r-base==3.5.1[build=*_1007] # specific version correcting "can't access ldpath" error
@@ -28,3 +28,4 @@ dependencies:
  - r-cowplot = 0.9.3
  - bioconductor-microbiome
  - bioconductor-aldex2 = 1.14.1
+ - _r-mutex = 1.0.0[build=*anacondar_1]
