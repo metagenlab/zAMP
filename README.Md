@@ -49,7 +49,7 @@ As for Method 1 but here normally only for linux. However, an alpha version for 
 _Tested with Ubuntu 18.04 with 4 CPUs and 32Gb of RAM_
 
 ##### Singularity
-Singularity is a system enabling the use of singularity or docker containers. It should be installed [as indicated here](https://www.sylabs.io/guides/3.0/user-guide.pdf). (Installation through apt or conda could also work be should be tested.)
+Singularity is a system enabling the use of singularity or docker containers. It should be installed [as indicated here](https://sylabs.io/guides/3.1/user-guide/quick_start.html#quick-installation-steps). Alternatively, it can be [installed through Conda](https://anaconda.org/conda-forge/singularity). However, in this last case, one need to adapt the file ownership and access rights as indicated [here](https://github.com/conda-forge/singularity-feedstock/blob/master/recipe/post-link.sh).  
   
   _Tested with version 3.0.1_
 
@@ -67,7 +67,7 @@ snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use
 ### Method 3 - With Docker
 ##### Computer
 Should work on Windows, MacOS and Linux.
-_Tested on Linux_
+_Tested on Linux and Windows 10_
 
 ##### User settings: 
 Our Docker image is fitted for a user called "pipeline_user" whose UID is 1080. It is advised to create this user on your computer before using the Docker image to run your analysis:
