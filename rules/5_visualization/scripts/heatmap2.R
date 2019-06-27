@@ -219,7 +219,7 @@
         }
 
         ## Open pdf device
-        pdf(file = output_path, width = 15, height = 15)
+        pdf(file = output_path, width = 7, height = 7)
 
         ## Loop over unique value in grouping_column
         for (i in unique(threshod_filtered_abs_no_zero[[grouping_column]])) {
