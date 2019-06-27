@@ -2,7 +2,7 @@
 ### Overview
 This is a comprehensive pipeline for 16S rRNA metagenomics integrating in a Snakemake worflow the best of many tools such as FASTQC, MultiQC, Qiime, rdp, EzBioCloud, Qiime2, vsearch, DADA2, phyloseq (ref to be added). It includes all steps from local .fastq or SRA depository to generation of basic visualization plots, including quality control plots of intermediate steps. 
     
-There are various ways to use the pipeline, with their pros and conds regarding fiability and flexbility. Use of a defined Snakemake pipeline and conda environments is already a good way to insure reproducibility (Method 1). However, better even reproducibility and avoidance of softwares compatibility issues can be reached thanks to the use of containers, either with Singularity (Method 2, recommended) or Docker (Method 3).
+There are various ways to use the pipeline, with their pros and cons regarding fiability and flexbility. Use of a defined Snakemake pipeline and conda environments is already a good way to insure reproducibility (Method 1). However, better even reproducibility and avoidance of softwares compatibility issues can be reached thanks to the use of containers, either with Singularity (Method 2, recommended) or Docker (Method 3).
   
 ### Method 1 - Snakemake with conda environnements
 _Allows the best flexibility, with possibility to easily modify and personalize the pipeline. However, there are risks of errors or results inconsistency due to changes in versions. Furthermore, the "barplots" option in config must be set on "False", or the randomcolorR package muste installed manually and made avaible in the "barplots" environements, since this package in required by the Barplots rule but is not available in conda_
@@ -49,7 +49,7 @@ As for Method 1 but here normally only for linux. However, an alpha version for 
 _Tested with Ubuntu 18.04 with 4 CPUs and 32Gb of RAM_
 
 ##### Singularity
-Singularity is a system enabling the use of singularity or docker containers. It should be installed [as indicated here](https://www.sylabs.io/guides/3.0/user-guide.pdf). (Installation through apt or conda could also work be should be tested.)
+Singularity is a system enabling the use of singularity or docker containers. It should be installed [as indicated here](https://sylabs.io/guides/3.1/user-guide/quick_start.html#quick-installation-steps). Alternatively, it can be [installed through Conda](https://anaconda.org/conda-forge/singularity). However, in this last case, one need to adapt the file ownership and access rights as indicated [here](https://github.com/conda-forge/singularity-feedstock/blob/master/recipe/post-link.sh).  
   
   _Tested with version 3.0.1_
 
@@ -57,17 +57,17 @@ Singularity is a system enabling the use of singularity or docker containers. It
 
 ```
 ## Run the contained interactively
-singularity run docker://valscherz/amplicon_snakemake_pipeline:0.0.9-beta
+singularity run docker://metagenlab/amplicon_pipeline:v.0.9.6-beta
 
 ## Run the pipeline from into the cointainer.
-snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time} mem_mb = {available_memory}
 ```
 
 
 ### Method 3 - With Docker
 ##### Computer
 Should work on Windows, MacOS and Linux.
-_Tested on Linux_
+_Tested on Linux and Windows 10_
 
 ##### User settings: 
 Our Docker image is fitted for a user called "pipeline_user" whose UID is 1080. It is advised to create this user on your computer before using the Docker image to run your analysis:
@@ -87,7 +87,7 @@ Install the CE version following these [instructions](https://docs.docker.com/in
   
 #### Use
 ```
-docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind valscherz/amplicon_snakemake_pipeline:0.0.9-beta
+docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.6-beta
 ```
 and then
 ```
@@ -96,7 +96,7 @@ snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use
 or directly
 
 ```
-docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind valscherz/amplicon_snakemake_pipeline:0.0.9-beta \ sh -c 'snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.6-beta \ sh -c 'snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
 ```
 
 

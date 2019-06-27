@@ -41,18 +41,12 @@ ENV main=/home/pipeline_user
 WORKDIR $main
 ENV pipeline_folder=${main}/microbiome16S_pipeline
 
-############################## Install Snakemake ##############################
+########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-RUN conda install snakemake=5.5.1
+RUN conda install snakemake=5.5.1 java-jdk conda=4.6.14
 
-##################### Install a PANDAseq dependancy ######################
-RUN apt-get update && apt-get install libltdl7 -y
-
-######################### Install Java needed for Qiime assignement #########################
-RUN conda install java-jdk
-
-#################### Install a dependancy for png plotting #############################
-RUN apt-get install libcairo2-dev -y
+######### Install PANDAseq (libltdl7) and r-v8 (libv8-dev) dependances, and a package required for png plotting  (libcairo2) ##########
+RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
@@ -79,7 +73,7 @@ RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp
 ## Recover the env of interest
 ENV barplots_env $(basename $(grep '"'name: barplots'"' /opt/conda/*.yaml | cut -d: -f1) .yaml)
 ## Update the env with need dependancies and randomcoloR
-RUN /bin/bash -ce """source activate /opt/conda/${barplots_env}  && apt-get install libv8-dev -y && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
+RUN /bin/bash -ce """source activate /opt/conda/${barplots_env} && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 
 ################# Clean unnecessary packages ###################
