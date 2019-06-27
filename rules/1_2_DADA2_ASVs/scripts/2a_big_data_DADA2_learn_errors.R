@@ -35,6 +35,6 @@
     png(error_plot_F)
     plotErrors(errF, nominalQ=TRUE)
     png(error_plot_R)
-    plotErrors(errF, nominalQ=TRUE)
+    plotErrors(errR, nominalQ=TRUE)
 
     dev.off()
