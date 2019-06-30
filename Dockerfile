@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 ARG GITHUB_AT
 
 ## Clone the github
-RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+RUN git clone --single-branch --brach v.0.9.7-beta https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## cd in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
@@ -70,10 +70,9 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 ## Download packages
 RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
-## Recover the env of interest
-ENV barplots_env $(basename $(grep '"'name: barplots'"' /opt/conda/*.yaml | cut -d: -f1) .yaml)
-## Update the env with need dependancies and randomcoloR
-RUN /bin/bash -ce """source activate /opt/conda/${barplots_env} && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
+
+## Recover the specific env by its name and update the env with randomcoloR
+RUN export barplots_env=$(basename $(grep "name: barplots" /opt/conda/*.yaml | cut -d: -f1) .yaml) && /bin/bash -ce """source activate /opt/conda/${barplots_env} && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 
 ################# Clean unnecessary packages ###################
@@ -82,7 +81,7 @@ RUN apt-get autoremove -y
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 4 --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 50 --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
