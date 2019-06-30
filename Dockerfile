@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 ARG GITHUB_AT
 
 ## Clone the github
-RUN git clone --single-branch --brach v.0.9.7-beta https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+RUN git clone --single-branch --branch v.0.9.7-beta https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## cd in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
