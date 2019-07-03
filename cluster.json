@@ -1,10 +1,9 @@
-
 {
     "__default__" :
     {
         "queue"     : "normal",
-        "n_cores"     : "1",
-        "memory     : "4000",
+        "n_cores"   : "1",
+        "memory"    : "4000",
         "name"      : "JOBNAME.{rule}.{wildcards}",
         "output"    : "logs/{rule}.{wildcards}.out",
         "error"     : "logs/{rule}.{wildcards}.err",
@@ -41,7 +40,7 @@
 
     "QIIME1_assign_taxonomy" :
     {
-        "memory"    : "32000",
+        "memory"    : "40000",
         "n_cores"     :  1
     },
 
