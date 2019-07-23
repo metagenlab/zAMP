@@ -46,8 +46,8 @@ rule  Quality_Control :
     shell :
          '''
         qiime quality-control evaluate-seqs \
-        --i-query-sequences {input[Amplicons]} \
-        --i-reference-sequences {input[Query]} \
+        --i-query-sequences {input[Query]} \
+        --i-reference-sequences {input[Amplicons]} \
         --o-visualization {output}
          '''
 
