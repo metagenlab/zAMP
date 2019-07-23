@@ -46,8 +46,8 @@ rule PICRUSt2_output:
     input: PICRUSt2_list()
     priority: 0
 
-rule Quality_Control:
-    input : expand("{sample}_eval_seqs_test.qzv", sample = config["sample"])
+rule QualityControl:
+    input : expand("QualityControl/{sample}_eval_seqs_test.qzv", sample = config["sample"])
     priority : 17
 
 
@@ -64,4 +64,4 @@ include: "rules/4_post_processing/physeq_processing.rules"
 include: "rules/5_visualization/General_plotting.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/PICRUSt2/picrust.rules"
-include: "rules/amplicons_reference.rules"
+include: "rules/Qiime_QualityControl/amplicons_reference.rules"
