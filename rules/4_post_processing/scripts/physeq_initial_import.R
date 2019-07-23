@@ -96,8 +96,10 @@ OTU <- otu_table(count_table, taxa_are_rows = TRUE)
 TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
 META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
 
+
 ## Merge all in a phyloseq object
 phyloseq_obj <- phyloseq(OTU, TAX, META, PHY, SEQS)
+
 
 
 ## Compute alpha diversity indexes after this filtration

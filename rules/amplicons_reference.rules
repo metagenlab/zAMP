@@ -1,0 +1,53 @@
+
+rule Import_ReferenceSequences :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        "/media/master_students/DATA/labbooks/Charlotte/20190722_snakemake_DB/amplicons_reference_seq.fasta"
+    output :
+        "/QualityControl/Amplicons_reference_seq.qza"
+    threads :
+        1
+    shell :
+         '''
+        qiime tools import \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output} 
+        '''
+
+rule Import_QuerySequences :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
+    output :
+        "/QualityControl/{sample}_query_seq.qza"
+    threads :
+        1
+    shell :
+         '''
+        qiime tools export \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output} 
+        '''
+
+rule  Quality_Control :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        Amplicons = "/QualityControl/Amplicons_reference_seq.qza",
+        Query = "/QualityControl/{sample}_query_seq.qza"
+    output :
+        "/QualityControl/{sample}_eval_seqs_test.qzv"
+    threads :
+        1
+    shell :
+         '''
+        qiime quality-control evaluate-seqs \
+        --i-query-sequences {input[Amplicons]} \
+        --i-reference-sequences {input[Query]} \
+        --o-visualization {output}
+         '''
+
