@@ -47,7 +47,7 @@ rule PICRUSt2_output:
     priority: 0
 
 rule QualityControl:
-    input : expand("QualityControl/{sample}_eval_seqs_test.qzv", sample = config["sample"])
+    input : expand("QualityControl/{methode}_{sample}_eval_seqs_test.qzv", sample = config["sample"], methode = ["DADA2", "vsearch"])
     priority : 17
 
 
