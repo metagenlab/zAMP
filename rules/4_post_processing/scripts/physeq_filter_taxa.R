@@ -32,6 +32,7 @@ phyloseq_obj <- readRDS(phyloseq_object)
 ## Filter taxa
 filtered_taxa <- subset_taxa(phyloseq_obj, get(tax_rank) == as.character(lineage))
 filtered_taxa <- subset_taxa(filtered_taxa, get(filter_out_tax_rank) != as.character(filter_out_lineage))
+filtered_taxa <- prune_taxa(taxa_sums(filtered_taxa) > 0, filtered_taxa) ## Removes taxa not at least present in one sample
 
 ## Recompute alpha diversity indexes after this filtration
 ### Remove the previously computed values

@@ -31,6 +31,7 @@ library(Biostrings);packageVersion("Biostrings")
 
 ## Import the phyloseq phyloseq_object
 phyloseq_obj <- readRDS(phyloseq_object)
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes taxa not at least present in one sample
 
 ## Write the tree of the phyloseq object
 tree <- phy_tree(phyloseq_obj)

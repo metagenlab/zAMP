@@ -124,6 +124,9 @@ colnames(alpha_div_1) <- paste0(colnames(alpha_div_1), ("_min_1"))
 #### Again bind this new column
 sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div_1)
 
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes taxa not at least present in one sample
+
+
 
 ## Write the phyloseq object
 saveRDS(object = phyloseq_obj, file = phyloseq_object)
