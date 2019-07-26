@@ -42,6 +42,10 @@ rule file_DADA2 :
         rep_seqs = "QualityControl/DADA2_{sample}_sequence.fasta"
     threads :
         1
+    params :
+        sample = lambda wildcards : wildcards.sample
+    log:
+        logging_folder + "QualityControl/DADA2_{sample}_sequence.txt"
     script :
         "scripts/create_file_DADA2.R"
 
@@ -50,7 +54,7 @@ rule Import_DADA2_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.04.yml"
     input :
-        "QualityControl/DADA2_{sample}_sequence.fasta"
+        rep_seqs = "QualityControl/DADA2_{sample}_sequence.fasta"
     output :
         "QualityControl/DADA2_{sample}_query_seq.qza"
     threads :
@@ -59,7 +63,7 @@ rule Import_DADA2_QuerySequences :
          '''
         qiime tools import \
         --type 'FeatureData[Sequence]' \
-        --input-path {input} \
+        --input-path {input[rep_seqs]} \
         --output-path {output} 
         '''
 

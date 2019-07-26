@@ -3,18 +3,26 @@
     sink(log)
     sink(log, type="message")
 
-
 ## Input
     DADA2_seq <- snakemake@input[["DADA2_seq"]]
 
 ## Output
     rep_seqs <- snakemake@output[["rep_seqs"]]
 
+# Parameters
+    sample <- snakemake@params[["sample"]]
+    print(sample)
+
+# Load needed libraries
+    library(dada2); packageVersion("dada2")
+    library(Rcpp); packageVersion("Rcpp")
+
+
 # Reading the file
     DADA2 <- readRDS(DADA2_seq)
 
 # Export reads
-    seqs <- DADA2$`20180718_MOCK_MN_Illumina`$sequence
+    seqs <- DADA2[[sample]][["sequence"]]
 
     ## giving our seq headers more manageable names (ASV_1, ASV_2...)
     asv_headers <- vector(length(seqs), mode="character")
