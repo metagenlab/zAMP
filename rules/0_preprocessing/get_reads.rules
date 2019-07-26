@@ -10,10 +10,10 @@ rule copy_fastq_paired_from_link:
         max_copy=1
     shell:
         """
-        gzip -t {input[0]}
-        gzip -t {input[1]}
         cp {input[0]} {output[0]}
         cp {input[1]} {output[1]}
+        gzip -t {output[0]}
+        gzip -t {output[1]}
         """
 
 
