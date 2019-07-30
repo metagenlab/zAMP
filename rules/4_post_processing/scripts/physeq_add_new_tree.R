@@ -25,6 +25,7 @@ library(phyloseq);packageVersion("phyloseq")
 
 ## Read the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes taxa not at least present in one sample
 
 ## Read the new tree
 PHY <- read_tree(new_tree)

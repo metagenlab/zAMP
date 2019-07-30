@@ -23,6 +23,7 @@ library(phyloseq);packageVersion("phyloseq")
 
 ## Import the physeq object
 phyloseq_obj <- readRDS(phyloseq_object)
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes taxa not at least present in one sample
 
 ### Melt the physeq objet into a dataframe with one row per feature.id and per sample
 physeq_df <- psmelt(phyloseq_obj)

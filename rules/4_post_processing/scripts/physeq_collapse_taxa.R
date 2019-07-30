@@ -33,6 +33,8 @@ rank_names(phyloseq_object)[[as.numeric(collapse_level)]]
 
 ## Collapse taxa
 collapsed_physeq <- tax_glom(phyloseq_object, taxrank=rank_names(phyloseq_object)[[as.numeric(collapse_level)]], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+collapsed_physeq <- prune_taxa(taxa_sums(collapsed_physeq) > 0, collapsed_physeq) ## Removes taxa not at least present in one sample
+
 
 # Write the new phyloseq object
 saveRDS(object = collapsed_physeq, file = phyloseq_filtered_object)

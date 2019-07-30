@@ -23,6 +23,7 @@ library(phyloseq);packageVersion("phyloseq")
 
 ## Import the phyloseq phyloseq_object
 phyloseq_obj <- readRDS(phyloseq_object)
+phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes taxa not at least present in one sample
 
 ### Transform counts into % of samples
 trans <- transform_sample_counts(phyloseq_obj, function(x) 100 * x / sum(x))
