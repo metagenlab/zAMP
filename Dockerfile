@@ -43,7 +43,7 @@ ENV pipeline_folder=${main}/microbiome16S_pipeline
 
 ########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-RUN conda install snakemake=5.5.1 java-jdk conda=4.6.14
+RUN conda install snakemake=5.5.4 java-jdk perl-bioperl conda=4.6.14
 
 ######### Install PANDAseq (libltdl7) and r-v8 (libv8-dev) dependances, and a package required for png plotting  (libcairo2) ##########
 RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
@@ -74,6 +74,11 @@ RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp
 ## Recover the specific env by its name and update the env with randomcoloR
 RUN export barplots_env=$(basename $(grep "name: barplots" /opt/conda/*.yaml | cut -d: -f1) .yaml) && /bin/bash -ce """source activate /opt/conda/${barplots_env} && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
 RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
+
+## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
+RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
+ENV PATH="/opt/simulate_PCR:${PATH}"
+
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
