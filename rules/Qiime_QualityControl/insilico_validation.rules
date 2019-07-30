@@ -5,12 +5,10 @@ import re
 
 
 rule decompress_assemblies:
-    conda:
-        "../../envs/simulate_reads.yml"
     input:
-        "InSilico/assembly_gz/{sample}.fna.gz"
+        'assembly_gz/{sample}.fna.gz'
     output:
-        "InSilico/assembly_fna/{sample}.fna"
+        'assembly_gz/{sample}.fna'
     shell:
         "zcat {input[0]} > {output[0]}"
 
@@ -31,11 +29,19 @@ rule print_primers_to_files :
         '''
 
 
+def list_samples(wildcards):
+    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    table=pd.read_csv(checkpoint_output,delimiter='\t')
+    acc=list(table['AssemblyNames'])
+    expd=expand('assembly_gz/{sample}.fna',sample=acc)
+    return expd
+
+
 rule Extract_V3V4 :
     singularity :
         "docker://metagenlab/amplicon_pipeline:v.0.9.7-beta"
     input :
-        "InSilico/assembly_fna/Primers.fasta"
+        list_samples,
         "InSilico/assembly_fna/{sample}.fna"
     output :
         "InSilico/PCR/{sample}.fna"
@@ -63,12 +69,6 @@ rule Extract_V3V4 :
          '''
 
 
-def list_samples(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
-    table=pd.read_csv(checkpoint_output,delimiter='\t')
-    acc=list(table['AssemblyNames'])
-    expd=expand('InSilico/PCR/{sample}_derep.fasta',sample=acc)
-    return expd
 
 
 ### Combine all extracted sequences in one big fasta
