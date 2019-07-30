@@ -1,0 +1,138 @@
+subworkflow assembly_finder:
+    workdir :
+        config["assembly_finder_workdir"]
+    snakefile :
+        "../assembly_finder/Snakefile"
+    configfile :
+        config["assembly_finder_config"]
+
+rule Import :
+    conda :
+     "../../envs/QIIME2-2019.04.yml"
+    input :
+        assembly_finder("merged_assemblies.fna")
+    output :
+        "InSilico/2_denoised/merged_assemblies.qza"
+    threads :
+        1
+    shell :
+         '''
+        qiime tools import \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output} 
+        '''
+
+rule Extract_V3V4 :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        "InSilico/2_denoised/merged_assemblies.qza"
+    output :
+        "InSilico/2_denoised/merged_assemblies_V3V4.qza"
+    params:
+        primer_forward = config["forward_primer"],
+        primer_reverse = config["reverse_primer"],
+        length = config["length_max"]
+    threads :
+        1
+    shell :
+         '''
+        qiime feature-classifier extract-reads \
+        --i-sequences {input} \
+        --p-f-primer {params[primer_forward]} \
+        --p-r-primer {params[primer_reverse]} \
+        --p-trunc-len {params[length]} \
+        --o-reads {output} 
+         '''
+
+rule Export_Extract_V3V4 :
+   conda :
+        "../../envs/QIIME2-2019.04.yml"
+   input :
+        "InSilico/2_denoised/merged_assemblies_V3V4.qza"
+   output :
+        "InSilico/2_denoised/full_dna-sequences.fasta"
+   threads :
+        1
+   shell :
+         '''
+        qiime tools export \
+        --input-path {input} \
+        --output-path $(dirname {output}) && mv $(dirname {output})/dna-sequences.fasta {output}
+        '''
+
+rule Dereplication :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        "InSilico/2_denoised/full_dna-sequences.fasta"
+    output :
+        fasta = "InSilico/2_denoised/dna-sequences.fasta",
+        count = "InSilico/2_denoised/count_table.txt"
+    threads :
+        1
+    log :
+        "InSilico/2_denoised/log/fasta_count.log"
+    shell :
+         '''
+        vsearch \
+        --derep_fulllength {input} \
+        --output {output[fasta]} \
+        --uc {output[count]} \
+        2> {log}
+         '''
+
+
+rule insilico_count_occurences :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        samples = assembly_finder("assembly_gz/{sample}.fna"),
+        rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
+    output:
+        "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
+    log:
+         "InSilico/2_denoised/countOTUs/{sample}_count_table.log"
+    shell:
+        '''
+        vsearch --usearch_global {input[samples]} \
+        -otutabout {output} \
+        -id 0.97 \
+        -strand plus \
+        --db {input[rep_seq]} \
+        2> {log}
+        '''
+
+rule compile_in_silico_metadata_table :
+    input:
+        assembly_finder('table_combined.tsv')
+    output:
+        "InSilico/metadata_table.tsv",
+    log:
+        "InSilico/metadata_table.log"
+    shell:
+        '''
+        vsearch --usearch_global {input[samples]} \
+        -otutabout {output} \
+        -id 0.97 \
+        -strand plus \
+        --db {input[rep_seq]} \
+        2> {log}
+        '''
+
+
+### Format count table from vsearch
+rule create_insilico_count_table :
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        count_table_samples = expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt", sample = list(reads_local.keys()))
+    output:
+        count_table = "InSilico/2_denoised/count_table.txt"
+    log:
+        "InSilico/2_denoised/count_table.log"
+    script:
+        "scripts/create_count_table_from_vsearch.R"
+
+
