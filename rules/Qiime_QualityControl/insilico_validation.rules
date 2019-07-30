@@ -1,154 +1,159 @@
 
 
-def parse_summary_tb(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
-    tb=pd.read_csv(checkpoint_output,delimiter='\t')
-    filenames=tb['AssemblyNames']
-    expd=expand('assembly_gz/{sample}.fna.gz',sample=filenames)
-    return expd
-
+import pandas as pd
+import re
 
 
 rule decompress_assemblies:
-    conda: '../../envs/simulate_reads.yml'
-
-    input: 'InSilico/assembly_gz/{sample}.fna.gz'
-
-    output: 'InSilico/assembly_fna/{sample}.fna'
-
-    shell: 'zcat {input[0]} > {output[0]}'
-
-
-rule concat_scaffolds:
-    input: 'InSilico/assembly_fna/{sample}.fna'
-
-    output: temp('InSilico/concat/{sample}.fna')
-
-    shell: "sed '1!{{/^>/d;}}' {input[0]} > {output[0]}"
+    conda:
+        "../../envs/simulate_reads.yml"
+    input:
+        "InSilico/assembly_gz/{sample}.fna.gz"
+    output:
+        "InSilico/assembly_fna/{sample}.fna"
+    shell:
+        "zcat {input[0]} > {output[0]}"
 
 
-
-
-
-rule Import :
-    conda :
-     "../../envs/QIIME2-2019.04.yml"
-    input :
-        assembly_finder("assembly_gz/{sample}.fna")
-    output :
-        "InSilico/2_denoised/{sample}_sequences.qza"
-    threads :
-        1
-    shell :
-         '''
-        qiime tools import \
-        --type 'FeatureData[Sequence]' \
-        --input-path {input} \
-        --output-path {output} 
+rule print_primers_to_files :
+    output:
+        "InSilico/assembly_fna/Primers.fasta"
+    params:
+        forward = config["forward_primer"],
+        reverse = config["reverse_primer"]
+    shell:
         '''
+        printf \
+        ">Forward|F 
+        {params[0]}
+        >Right|R
+        {params[1]}" >> {output}
+        '''
+
 
 rule Extract_V3V4 :
-    conda :
-        "../../envs/QIIME2-2019.04.yml"
+    singularity :
+        "docker://metagenlab/amplicon_pipeline:v.0.9.7-beta"
     input :
-        "InSilico/2_denoised/{sample}_sequences.qza"
+        "InSilico/assembly_fna/Primers.fasta"
+        "InSilico/assembly_fna/{sample}.fna"
     output :
-        "InSilico/2_denoised/{sample}_V3V4.qza"
+        "InSilico/PCR/{sample}.fna"
     params:
-        primer_forward = config["forward_primer"],
-        primer_reverse = config["reverse_primer"],
-        length = config["length_max"]
+        min_length = config["merged_min_length"],
+        max_length = config["merged_max_length"],
     threads :
         1
     shell :
-         '''
-        qiime feature-classifier extract-reads \
-        --i-sequences {input} \
-        --p-f-primer {params[primer_forward]} \
-        --p-r-primer {params[primer_reverse]} \
-        --p-trunc-len {params[length]} \
-        --o-reads {output} 
+        '''
+        simulate_PCR \
+            -primers {input[0]} \
+            -db {input[1]} \
+            -minlen {params[0]} \
+            -maxlen {params[1]} \
+            -mm 3 \
+            -mux 0 \
+            -num_threads 4 \
+            -max_target_seqs 1000000000 \
+            -word_size 4 \
+            -evalue 100000000 \
+            -genes 1 \
+            -extract_amp 1 \
+            -3prime 2 && mv {input[0]}.{input[1]}.amplicons.fasta {output}
          '''
 
-rule Export_Extract_V3V4 :
-   conda :
-        "../../envs/QIIME2-2019.04.yml"
-   input :
-        "InSilico/2_denoised/{sample}_V3V4.qza"
-   output :
-        "InSilico/2_denoised/full_dna-sequences.fasta"
-   threads :
-        1
-   shell :
-         '''
-        qiime tools export \
-        --input-path {input} \
-        --output-path $(dirname {output}) && mv $(dirname {output})/dna-sequences.fasta {output}
+
+def list_samples(wildcards):
+    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    table=pd.read_csv(checkpoint_output,delimiter='\t')
+    acc=list(table['AssemblyNames'])
+    expd=expand('InSilico/PCR/{sample}_derep.fasta',sample=acc)
+    return expd
+
+
+### Combine all extracted sequences in one big fasta
+rule merge_all_in_one_fasta:
+    input:
+        list_samples
+    output:
+        temp("InSilico/1c_derep/merged_all.fasta")
+    shell:
+        '''
+        cat {input} >> {output}
         '''
 
-rule Dereplication :
-    conda :
-        "../../envs/QIIME2-2019.04.yml"
-    input :
-        "InSilico/2_denoised/full_{sample}_dna-sequences.fasta"
-    output :
-        fasta = "InSilico/2_denoised/{sample}_dna-sequences.fasta",
-        count = "InSilico/2_denoised/{sample}_count_table.txt"
-    threads :
-        1
-    log :
-        "InSilico/2_denoised/log/{sample}_fasta_count.log"
-    shell :
-         '''
-        vsearch \
-        --derep_fulllength {input} \
-        --output {output[fasta]} \
-        --uc {output[count]} \
-        2> {log}
-         '''
-rule merge_fasta:
-    input:
-        assembly_finder("parse_summary_tb")
-    output:
-        "InSilico/2_denoides/merged_assemblies.fasta"
-    shell:
-        """
-        cat {input} > {output}
-        """
 
-
-rule insilico_count_occurences :
+### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
+rule InSilico_derepicate_all:
     conda:
         "../../envs/QIIME1.yml"
     input:
-        samples = "InSilico/2_denoised/{sample}_dna-sequences.fasta",
-        rep_seq = "InSilico/2_denoides/merged_assemblies.fasta"
+        "InSilico/1c_derep/merged_all.fasta"
+    output:
+        "InSilico/2_denoised/dna-sequences.fasta"
+    log:
+         logging_folder + "InSilico/1c_all_merged_sequences/dereplicate_all.txt"
+    shell:
+        '''
+        vsearch --derep_fulllength {input} \
+                --sizeout \
+                --minuniquesize 2 \
+                --output {output} \
+                2> {log}
+        '''
+
+
+### Count the number of occurences of the representative sequences in the samples.
+rule InSilico_count_occurences :
+    conda:
+        "../../envs/QIIME1.yml"
+    input:
+        samples = list_samples,
+        rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
     output:
         "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
     log:
-         "InSilico/2_denoised/countOTUs/{sample}_count_table.log"
+         logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.txt"
     shell:
         '''
         vsearch --usearch_global {input[samples]} \
         -otutabout {output} \
-        -id 0.97 \
+        -id 1 \
         -strand plus \
         --db {input[rep_seq]} \
         2> {log}
         '''
 
 
-### Format count table from vsearch
-rule create_insilico_count_table :
+def list_samples_counts(wildcards):
+    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    table=pd.read_csv(checkpoint_output,delimiter='\t')
+    acc=list(table['AssemblyNames'])
+    expd=expand('InSilico/PCR/{sample}_count_table.txt',sample=acc)
+    return expd
+
+
+### Format count table from InSilico
+rule create_InSilico_count_table :
     conda:
         "../../envs/r_visualization.yml"
     input:
-        count_table_samples = expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt", sample = list(reads_local.index))
+        list_samples_counts
     output:
         count_table = "InSilico/2_denoised/count_table.txt"
     log:
-        "InSilico/2_denoised/count_table.log"
+        logging_folder +  "InSilico/2_denoised/count_table.txt"
     script:
-        "../../rules/1_2_vsearch_OTUs/scripts/create_count_table_from_vsearch.R"
+        "scripts/create_count_table_from_insilico.R"
+
+
+
+
+
+
+
+
+
+
 
 

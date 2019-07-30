@@ -1,22 +1,5 @@
 include: config["assembly_finder_Snakefile"]
 
-import pandas
-import re
-
-def get_in_silco_sample(input_table):
-    print(input_table)
-    all_samples=pandas.DataFrame()
-    sras_ext = {}
-    reads_sra = {}
-    reads_local = {}
-    original_names = {}
-    local_data = pandas.read_csv(input_table, sep="\t", index_col=0)
-    local_data.index = [str(x) for x in local_data.index]
-    all_local_sample_names =  "".join(list(local_data.index))
-    return(local_data)
-
-reads_local = get_in_silco_sample(assembly_finder_table)
-
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/logging.rules"
@@ -29,6 +12,6 @@ include: "rules/PICRUSt2/picrust.rules"
 include: "rules/Qiime_QualityControl/insilico_validation.rules"
 
 
-rule all:
+rule insilico_validation:
     input:
         expand ("InSilico/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments.txt" , tax_DB = config["tax_DB"])
