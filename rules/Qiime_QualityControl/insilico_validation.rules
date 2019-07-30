@@ -104,30 +104,13 @@ rule insilico_count_occurences :
         2> {log}
         '''
 
-rule compile_in_silico_metadata_table :
-    input:
-        assembly_finder('table_combined.tsv')
-    output:
-        "InSilico/metadata_table.tsv",
-    log:
-        "InSilico/metadata_table.log"
-    shell:
-        '''
-        vsearch --usearch_global {input[samples]} \
-        -otutabout {output} \
-        -id 0.97 \
-        -strand plus \
-        --db {input[rep_seq]} \
-        2> {log}
-        '''
-
 
 ### Format count table from vsearch
 rule create_insilico_count_table :
     conda:
         "../../envs/r_visualization.yml"
     input:
-        count_table_samples = expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt", sample = list(reads_local.keys()))
+        count_table_samples = expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt", sample = list(reads_local.index))
     output:
         count_table = "InSilico/2_denoised/count_table.txt"
     log:

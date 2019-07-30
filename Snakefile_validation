@@ -7,27 +7,23 @@ subworkflow assembly_finder:
         config["assembly_finder_config"]
 
 
-rule import_table:
-    input: assembly_finder('table_combined.tsv')
+assembly_finder_table = assembly_finder('table_combined.tsv')
 
 import pandas
 import re
 
 def get_in_silco_sample(input_table):
-    input_table = assembly_finder('table_combined.tsv')
     all_samples=pandas.DataFrame()
     sras_ext = {}
     reads_sra = {}
     reads_local = {}
     original_names = {}
-    local_data = pandas.read_csv(assembly_finder('table_combined.tsv'), sep="\t", index_col=0)
+    local_data = pandas.read_csv(input_table, sep="\t", index_col=0)
     local_data.index = [str(x) for x in local_data.index]
     all_local_sample_names =  "".join(list(local_data.index))
     return(local_data)
 
-reads_local = get_in_silco_sample(rules.import_table.input)
-original_names = reads_local
-
+reads_local = get_in_silco_sample(assembly_finder_table)
 
 
 ## Include the pipeline rules
@@ -43,5 +39,4 @@ include: "rules/Qiime_QualityControl/insilico_validation.rules"
 
 rule all:
     input:
-        import_table,
         expand ("InSilico/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments.txt" , tax_DB = config["tax_DB"])
