@@ -1,18 +1,10 @@
-subworkflow assembly_finder:
-    workdir :
-        config["assembly_finder_workdir"]
-    snakefile :
-        "../assembly_finder/Snakefile"
-    configfile :
-        config["assembly_finder_config"]
-
-
-assembly_finder_table = assembly_finder('table_combined.tsv')
+include: config["assembly_finder_Snakefile"]
 
 import pandas
 import re
 
 def get_in_silco_sample(input_table):
+    print(input_table)
     all_samples=pandas.DataFrame()
     sras_ext = {}
     reads_sra = {}

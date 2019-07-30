@@ -1,10 +1,34 @@
-subworkflow assembly_finder:
-    workdir :
-        config["assembly_finder_workdir"]
-    snakefile :
-        "../assembly_finder/Snakefile"
-    configfile :
-        config["assembly_finder_config"]
+
+
+def parse_summary_tb(wildcards):
+    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    tb=pd.read_csv(checkpoint_output,delimiter='\t')
+    filenames=tb['AssemblyNames']
+    expd=expand('assembly_gz/{sample}.fna.gz',sample=filenames)
+    return expd
+
+
+
+rule decompress_assemblies:
+    conda: '../../envs/simulate_reads.yml'
+
+    input: 'InSilico/assembly_gz/{sample}.fna.gz'
+
+    output: 'InSilico/assembly_fna/{sample}.fna'
+
+    shell: 'zcat {input[0]} > {output[0]}'
+
+
+rule concat_scaffolds:
+    input: 'InSilico/assembly_fna/{sample}.fna'
+
+    output: temp('InSilico/concat/{sample}.fna')
+
+    shell: "sed '1!{{/^>/d;}}' {input[0]} > {output[0]}"
+
+
+
+
 
 rule Import :
     conda :
