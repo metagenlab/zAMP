@@ -60,6 +60,7 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
+RUN conda config --set restore_free_channel true
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
 ##################### Install r-v8 dependancy, r-v8 and randomcoloR R package, used for plotting ######################
