@@ -78,7 +78,7 @@ RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
-
+RUN perl -MCPAN -e 'install Bio::SeqIO'
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
