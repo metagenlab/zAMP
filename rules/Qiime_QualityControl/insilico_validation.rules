@@ -8,59 +8,57 @@ rule decompress_assemblies:
     input:
         'assembly_gz/{sample}.fna.gz'
     output:
-        'assembly_gz/{sample}.fna'
+        temp('assembly_gz/{sample}.fna')
     shell:
         "zcat {input[0]} > {output[0]}"
 
 
 rule print_primers_to_files :
     output:
-        "InSilico/assembly_fna/Primers.fasta"
+        "InSilico/PCR/Primers.fasta"
     params:
         forward = config["forward_primer"],
         reverse = config["reverse_primer"]
     shell:
         '''
         printf \
-        ">Primer-F 
-        {params[0]}
-        >Primer-R
-        {params[1]}" >> {output}
+        ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
         '''
 
 
-def list_samples(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
-    table=pd.read_csv(checkpoint_output,delimiter='\t')
-    acc=list(table['AssemblyNames'])
-    expd=expand('assembly_gz/{sample}.fna',sample=acc)
-    return expd
-
 
 rule Extract_V3V4 :
-    conda:
-        "../../envs/PCR_in_silico.yml"
+    conda :
+        "../../envs/simulate_PCR.yml"
     input :
-        list_samples,
-        "InSilico/assembly_fna/Primers.fasta",
+        "InSilico/PCR/Primers.fasta",
+        "assembly_gz/{sample}.fna"
     output :
-        "InSilico/PCR/{sample}_extracted_amplicons.fna"
+        "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
     params:
         min_length = config["merged_min_length"],
         max_length = config["merged_max_length"],
-        mismatch = config["mismatch"],
-        kmer = config["kmer"]
+
     threads :
         1
     shell :
         '''
-        primer_finder.py supremacy \
-        -p $(dirname {output}) \
-        -s {input[0]} \
-        -pf {input[1]} \
-        -n {threads} \
-        -m {params[mismatch]} \
-        -k {params[kmer]}
+        cp {input[1]} $(dirname {output[0]}) && \
+        cd $(dirname {output[0]}) && \
+        simulate_PCR \
+            -primers ../../../{input[0]} \
+            -db $(basename {input[1]}) \
+            -minlen 390 \
+            -maxlen 600 \
+            -mm 3 \
+            -mux 0 \
+            -num_threads {threads} \
+            -max_target_seqs 1000000000 \
+            -word_size 4 \
+            -evalue 100000000 \
+            -genes 1 \
+            -extract_amp 1 \
+            -3prime 2
          '''
 
 
@@ -68,7 +66,7 @@ def list_amplicons(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
-    expd=expand('InSilico/PCR/{sample}_extracted_amplicons.fna',sample=acc)
+    expd=expand("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",sample=acc)
     return expd
 
 #primer enlever
@@ -79,7 +77,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons
     output:
-        temp("InSilico/1c_derep/merged_all.fasta")
+        "InSilico/1c_derep/merged_all.fasta"
     shell:
         '''
         cat {input} >> {output}
@@ -106,12 +104,21 @@ rule InSilico_derepicate_all:
         '''
 
 
+def list_samples(wildcards):
+    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    table=pd.read_csv(checkpoint_output,delimiter='\t')
+    acc=list(table['AssemblyNames'])
+    expd=expand('assembly_gz/{sample}.fna',sample=acc)
+    return expd
+
+
+
 ### Count the number of occurences of the representative sequences in the samples.
 rule InSilico_count_occurences :
     conda:
         "../../envs/QIIME1.yml"
     input:
-        samples = list_samples,
+        samples = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
         rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
     output:
         "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
