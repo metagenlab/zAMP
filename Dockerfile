@@ -67,7 +67,6 @@ RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
-RUN simulate_PCR
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
