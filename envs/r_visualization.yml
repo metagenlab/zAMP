@@ -28,3 +28,4 @@ dependencies:
  - r-cowplot = 0.9.3
  - bioconductor-microbiome
  - bioconductor-aldex2 = 1.14.1
+ - r-randomcolor
