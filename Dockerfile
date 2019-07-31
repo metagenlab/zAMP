@@ -66,6 +66,7 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN apt-get install libgd-dev -y && conda install conda=4.6.14 perl-padwalker perl-bioperl
+RUN simulate_PCR
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
