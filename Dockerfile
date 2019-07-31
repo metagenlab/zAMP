@@ -65,7 +65,7 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
-RUN apt-get install libgd-dev -y && conda install conda=4.6.14 perl-lwp-simple 
+RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
 RUN simulate_PCR
 
