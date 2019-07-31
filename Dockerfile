@@ -68,7 +68,7 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 #### - libv8-dev must be installed and the containing path (--configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \") correctly pointed at
 #### - Due to conda dependacies definition and incombatility between "libgcc-ng = 7.2.0" needed by R-V8 to build and this build, we cannot the "build=*_1007" in the env definition. However, this build prevent "cannot access ldpath error". Hences, we install it after the facts.
 ## Download packages
-RUN wget https://cran.r-project.org/src/contrib/V8_2.2.tar.gz -O /tmp/rv8.tar.gz
+RUN wget https://cran.r-project.org/src/contrib/V8_2.3.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 
 ## Recover the specific env by its name and update the env with randomcoloR
