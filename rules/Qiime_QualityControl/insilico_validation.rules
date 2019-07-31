@@ -22,9 +22,9 @@ rule print_primers_to_files :
     shell:
         '''
         printf \
-        ">Forward|F 
+        ">Primer -F 
         {params[0]}
-        >Right|R
+        >Primer -R
         {params[1]}" >> {output}
         '''
 
@@ -38,11 +38,12 @@ def list_samples(wildcards):
 
 
 rule Extract_V3V4 :
-    singularity :
-        "docker://metagenlab/amplicon_pipeline:v.0.9.7-beta"
+    conda:
+        "../../in_silico_PCR/.travis.yml"
     input :
         list_samples,
-        "InSilico/assembly_fna/Primers.fasta"
+        "InSilico/assembly_fna/Primers.fasta",
+        "assembly_gz/{sample}.fna"
     output :
         "InSilico/PCR/{sample}_extracted_amplicons.fna"
     params:
@@ -52,20 +53,10 @@ rule Extract_V3V4 :
         1
     shell :
         '''
-        simulate_PCR \
-            -primers {input[0]} \
-            -db {input[1]} \
-            -minlen {params[0]} \
-            -maxlen {params[1]} \
-            -mm 3 \
-            -mux 0 \
-            -num_threads 4 \
-            -max_target_seqs 1000000000 \
-            -word_size 4 \
-            -evalue 100000000 \
-            -genes 1 \
-            -extract_amp 1 \
-            -3prime 2 && ({input[0]}.{input[1]}.amplicons.fasta {output}
+        primer_finder.py supremacy \
+        -p {output}
+        -s {input[1]}
+        -pf {input[2]} 
          '''
 
 
