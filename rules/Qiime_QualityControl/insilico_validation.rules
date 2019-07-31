@@ -22,9 +22,9 @@ rule print_primers_to_files :
     shell:
         '''
         printf \
-        ">Primer -F 
+        ">Primer-F 
         {params[0]}
-        >Primer -R
+        >Primer-R
         {params[1]}" >> {output}
         '''
 
@@ -39,24 +39,28 @@ def list_samples(wildcards):
 
 rule Extract_V3V4 :
     conda:
-        "../../in_silico_PCR/.travis.yml"
+        "../../envs/PCR_in_silico.yml"
     input :
         list_samples,
         "InSilico/assembly_fna/Primers.fasta",
-        "assembly_gz/{sample}.fna"
     output :
         "InSilico/PCR/{sample}_extracted_amplicons.fna"
     params:
         min_length = config["merged_min_length"],
         max_length = config["merged_max_length"],
+        mismatch = config["mismatch"],
+        kmer = config["kmer"]
     threads :
         1
     shell :
         '''
         primer_finder.py supremacy \
-        -p {output}
-        -s {input[1]}
-        -pf {input[2]} 
+        -p $(dirname {output}) \
+        -s {input[0]} \
+        -pf {input[1]} \
+        -n {threads} \
+        -m {params[mismatch]} \
+        -k {params[kmer]}
          '''
 
 
@@ -128,7 +132,7 @@ def list_samples_counts(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
-    expd=expand('InSilico/PCR/{sample}_count_table.txt',sample=acc)
+    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt",sample=acc)
     return expd
 
 

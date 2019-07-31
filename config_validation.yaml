@@ -1,7 +1,3 @@
-
-
-
-
 ################ Validation config
 assembly_finder_workdir: /media/valentinscherz/3ce435d3-0466-48fa-a124-e6ebcb6ec8bf/labbooks/Valentin/Metagenomics_projects/83_VALTAX16S_201806/20190730_in_silico_validation/assembly_finder
 assembly_finder_config: config_assembly_finder.yaml
@@ -45,3 +41,4 @@ Rank_to_filter_by: 'No'
 #and rank their assemblies according to assembly status and Refseq category.
 
 assembly_finder_Snakefile: '/home/valentinscherz/assembly_finder/Snakefile'
+in_silico_PCR: '/home/master_student/bin/microbiome16S_pipeline/in_silico_PCR/setup.py'

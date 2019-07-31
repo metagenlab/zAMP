@@ -1,6 +1,4 @@
 include: config["assembly_finder_Snakefile"]
-include: config["in_silico_PCR"]
-
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/logging.rules"
