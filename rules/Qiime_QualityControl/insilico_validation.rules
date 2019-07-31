@@ -76,10 +76,11 @@ def list_amplicons(wildcards):
     expd=expand('InSilico/PCR/{sample}_extracted_amplicons.fna',sample=acc)
     return expd
 
+#primer enlever
 
 
 ### Combine all extracted sequences in one big fasta
-rule merge_all_in_one_fasta:
+rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons
     output:
