@@ -79,7 +79,7 @@ RUN rm /tmp/randomcoloR.tar.gz
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
-RUN apt-get install libgd-dev &&  cpanm GD && cpanm 'XML::DOM::XPath' --force && cpanm Bio::SeqIO
+RUN apt-get install libgd-dev -y &&  cpanm GD && cpanm 'XML::DOM::XPath' --force && cpanm Bio::SeqIO
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
