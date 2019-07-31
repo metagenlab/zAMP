@@ -18,6 +18,8 @@ dependencies:
 # - libgcc-ng = 7.2.0
  - r-cluster
  - r-rtsne
+ - libv8 
+ - r-v8 
 ## In addition, we install randomcoloR through R. Indeed, it is not on conda due to missing dependancies (r-v8)
 
 
