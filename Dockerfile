@@ -68,12 +68,13 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 #### - libv8-dev must be installed and the containing path (--configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \") correctly pointed at
 #### - Due to conda dependacies definition and incombatility between "libgcc-ng = 7.2.0" needed by R-V8 to build and this build, we cannot the "build=*_1007" in the env definition. However, this build prevent "cannot access ldpath error". Hences, we install it after the facts.
 ## Download packages
-RUN wget https://cran.r-project.org/src/contrib/V8_2.3.tar.gz -O /tmp/rv8.tar.gz
+#RUN wget https://cran.r-project.org/src/contrib/V8_2.3.tar.gz -O /tmp/rv8.tar.gz
 RUN wget https://cran.r-project.org/src/contrib/randomcoloR_1.1.0.tar.gz -O /tmp/randomcoloR.tar.gz
 
 ## Recover the specific env by its name and update the env with randomcoloR
-RUN export barplots_env=$(basename $(grep "name: barplots" /opt/conda/*.yaml | cut -d: -f1) .yaml) && /bin/bash -ce """source activate /opt/conda/${barplots_env} && R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
-RUN rm /tmp/rv8.tar.gz /tmp/randomcoloR.tar.gz
+#&& R CMD INSTALL --configure-vars=\"INCLUDE_DIR=/usr/include/ LIB_DIR=/usr/lib/ \" /tmp/rv8.tar.gz &&
+RUN export barplots_env=$(basename $(grep "name: barplots" /opt/conda/*.yaml | cut -d: -f1) .yaml) && /bin/bash -ce """source activate /opt/conda/${barplots_env} && Rscript -e \"install.packages('randomcoloR', repos = 'https://stat.ethz.ch/CRAN/')\" && conda install r-base==3.5.1[build=*_1007] """
+RUN rm /tmp/randomcoloR.tar.gz
 
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
