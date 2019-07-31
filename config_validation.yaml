@@ -1,7 +1,5 @@
 ################ Validation config
-assembly_finder_workdir: /media/valentinscherz/3ce435d3-0466-48fa-a124-e6ebcb6ec8bf/labbooks/Valentin/Metagenomics_projects/83_VALTAX16S_201806/20190730_in_silico_validation/assembly_finder
-assembly_finder_config: config_assembly_finder.yaml
-assembly_finder_Snakefile: /home/valentinscherz/assembly_finder/Snakefile
+assembly_finder_Snakefile: /home/master_students/bin/assembly_finder/Snakefile
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
@@ -10,6 +8,8 @@ reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 ### Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
 merged_min_length: 390 # from 390 to 400 for V3V4
 merged_max_length: 500 # from 450 to 500 for V3V4
+mismatch: 3 #0 - 3 mismatch 
+kmer: ["5"] #Default is 55,77,99,127  
 
 ### Database used for taxonomic assignment
 tax_DB: ["ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
@@ -34,11 +34,11 @@ Refseq_assemblies: True
 
 ##Parameters for the filtering function
 
-Rank_to_filter_by: 'No'
+Rank_to_filter_by: 'None'
 #None: Assemblies are ranked by their assembly status (complete or not)
 #and Refseq category (reference, representative ...)
 #If you want to filter by species, set this parameter to 'species'. The filtering function will list all unique species
 #and rank their assemblies according to assembly status and Refseq category.
 
-assembly_finder_Snakefile: '/home/valentinscherz/assembly_finder/Snakefile'
-in_silico_PCR: '/home/master_student/bin/microbiome16S_pipeline/in_silico_PCR/setup.py'
+
+
