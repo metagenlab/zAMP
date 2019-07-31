@@ -2,5 +2,4 @@ name: simualte_PCR
 channels:
  - bioconda
 dependencies:
-  - blast-legacy=2.2.26-2
-  -
+  - blast=2.6.0
