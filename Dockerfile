@@ -57,7 +57,7 @@ ARG GITHUB_AT
 RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## Clone assembly_finder github, a set of scripts developped by @idfarbanecha, used to download assembly for In silico validation of the pipeline
-RUN git clone --single-branch --branch d2a4186bc58a6db907d321cc5bae989dc6f383d4 https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
+RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 ## cd in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
