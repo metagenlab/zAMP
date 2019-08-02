@@ -20,7 +20,6 @@ tax_tree <- snakemake@input[["tax_tree"]]
 phyloseq_object <- snakemake@output[["phyloseq_object"]]
 
 ## Parameters
-rarefy_value <- snakemake@params[["rarefaction_value"]]
 replace_empty_tax <- snakemake@params[["viz_replace_empty_tax"]]
 
 

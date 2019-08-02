@@ -26,7 +26,6 @@ rule print_primers_to_files :
         '''
 
 
-
 rule Extract_V3V4 :
     conda :
         "../../envs/simulate_PCR.yml"
@@ -38,7 +37,10 @@ rule Extract_V3V4 :
     params:
         min_length = config["merged_min_length"],
         max_length = config["merged_max_length"],
-
+        mismatch = config["mismatch"],
+        threeprime = config["threeprime"]
+    log :
+        logging_folder + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.log",
     threads :
         1
     shell :
@@ -48,9 +50,10 @@ rule Extract_V3V4 :
         simulate_PCR \
             -primers ../../../{input[0]} \
             -db $(basename {input[1]}) \
-            -minlen 390 \
-            -maxlen 600 \
-            -mm 3 \
+            -minlen {params.min_length} \
+            -maxlen {params.max_length} \
+            -mm {params.mismatch} \
+            -3prime {params.threeprime} \
             -mux 0 \
             -num_threads {threads} \
             -max_target_seqs 1000000000 \
@@ -58,15 +61,50 @@ rule Extract_V3V4 :
             -evalue 100000000 \
             -genes 1 \
             -extract_amp 1 \
-            -3prime 2
+            >> ../../../{log}
+            
          '''
+
+
+
+## Remove primers from sequences
+
+rule cutadapt_trim_for_In_silico:
+    conda:
+        "../../envs/cutadapt.yml"
+    input:
+        raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+    output:
+        trimmed_reads = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
+    log:
+        logging_folder + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt"
+    params:
+        forward_primer = config["forward_primer"],
+        reverse_primer = config["reverse_primer"]
+    threads:
+        1
+    shell:
+        '''
+        cutadapt \
+        --cores {threads} \
+        --error-rate 0.1 \
+        --times 1 \
+        --overlap 3 \
+        -o {output[trimmed_reads]} \
+        -b '{params[forward_primer]}' \
+        -b '{params[reverse_primer]}' \
+        --match-read-wildcards \
+        {input[raw_reads]} >> {log}
+        '''
+
+
 
 
 def list_amplicons(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
-    expd=expand("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",sample=acc)
+    expd=expand("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",sample=acc)
     return expd
 
 #primer enlever
@@ -97,19 +135,10 @@ rule InSilico_derepicate_all:
     shell:
         '''
         vsearch --derep_fulllength {input} \
-                --sizeout \
                 --minuniquesize 2 \
                 --output {output} \
                 2> {log}
         '''
-
-
-def list_samples(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
-    table=pd.read_csv(checkpoint_output,delimiter='\t')
-    acc=list(table['AssemblyNames'])
-    expd=expand('assembly_gz/{sample}.fna',sample=acc)
-    return expd
 
 
 
@@ -118,7 +147,7 @@ rule InSilico_count_occurences :
     conda:
         "../../envs/QIIME1.yml"
     input:
-        samples = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+        samples = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
         rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
     output:
         "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
@@ -148,7 +177,7 @@ rule create_InSilico_count_table :
     conda:
         "../../envs/r_visualization.yml"
     input:
-        list_samples_counts
+        count_table_samples = list_samples_counts
     output:
         count_table = "InSilico/2_denoised/count_table.txt"
     log:
@@ -157,6 +186,23 @@ rule create_InSilico_count_table :
         "scripts/create_count_table_from_insilico.R"
 
 
+
+### Create a table to compare tax assignment
+rule In_silico_tax_compare:
+    conda:
+        "../../envs/physeq.yml"
+    input:
+        count_table = "InSilico/2_denoised/count_table.txt",
+        Metadata_table = "table_combined.tsv",
+        taxonomy_table = "InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
+    output:
+        output_table = "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv"
+    params:
+        viz_replace_empty_tax = config["viz_replace_empty_tax"]
+    log:
+        logging_folder + "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.log"
+    script:
+        "scripts/In_silico_tax_comparison.R"
 
 
 
