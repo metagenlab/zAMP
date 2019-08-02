@@ -40,6 +40,7 @@ RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
 WORKDIR $main
 ENV pipeline_folder=${main}/microbiome16S_pipeline
+ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
@@ -52,7 +53,6 @@ RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 
-<<<<<<< HEAD
 ## Clone the pipeline github
 RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
@@ -66,13 +66,11 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && rm simulate_PCR.tar.gz && rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
-
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
@@ -80,7 +78,8 @@ RUN apt-get autoremove -y
 
 #################### Run the pipeline to test it #####################
 ## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores 50 --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+ARG TEST_CPU
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
@@ -89,4 +88,3 @@ RUN mkdir -p ${main}/data/analysis/
 RUN conda init bash
 WORKDIR ${main}/data/analysis/
 ENTRYPOINT ["/bin/bash"]
-
