@@ -40,6 +40,7 @@ RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
 WORKDIR $main
 ENV pipeline_folder=${main}/microbiome16S_pipeline
+ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
@@ -52,8 +53,11 @@ RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 
-## Clone the github
+## Clone the pipeline github
 RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+
+## Clone assembly_finder github, a set of scripts developped by @idfarbanecha, used to download assembly for In silico validation of the pipeline
+RUN git clone --single-branch --branch d2a4186bc58a6db907d321cc5bae989dc6f383d4 https://github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 ## cd in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
@@ -63,7 +67,7 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
-RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
+RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  cp /opt/simulate_PCR/code/simulate_PCR /opt/simulate_PCR &&rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
