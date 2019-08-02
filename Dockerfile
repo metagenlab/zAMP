@@ -78,9 +78,11 @@ RUN conda clean -a
 RUN apt-get autoremove -y
 
 #################### Run the pipeline to test it #####################
-## Here, we run the pipeline to test it, without PICRUST as output since it is computationally very demanding
+## Run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 ARG TEST_CPU
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
+## Test the insilico validation
+RUN snakemake --snakefile ${assembly_finder_folder}/Snakefile_validation --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config_in_silico.yml insilico_validation
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
