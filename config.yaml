@@ -12,8 +12,7 @@ sample_type: sample_source # Column in "local_samples" used to color points and 
 ordination_factor : sample_source # Column in "local_samples" used to for shapes of points in ordination.
 filter_meta_column: Sample # A column from which we could filter in samples
 filter_column_value: A549-PCR-neg-20180809 # Value of filtered in samples of this column
-amplicons_refpath_seq: "/media/master_students/DATA/labbooks/Charlotte/20190722_snakemake_DB/amplicons_reference_seq.fasta"  # File path amplicons_reference_seq.fasta
-sample: ['20180718_MOCK_MN_Illumina','20180718_MOCK_MN_Qiagen'] # Mock community sample in local_sample
+
 
 ## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs

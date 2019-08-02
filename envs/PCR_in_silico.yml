@@ -1,6 +1,0 @@
-name: sra-tools
-channels:
- - bioconda
- - adamkoziol
-dependencies:
- -  in_silico_pcr = 0.0.2.2
