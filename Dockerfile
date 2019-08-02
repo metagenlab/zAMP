@@ -67,7 +67,7 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
 ## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
-RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  cp /opt/simulate_PCR/code/simulate_PCR /opt/simulate_PCR &&rm simulate_PCR.tar.gz
+RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && rm simulate_PCR.tar.gz &6 rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
