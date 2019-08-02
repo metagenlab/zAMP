@@ -1,0 +1,47 @@
+
+################ Validation config ################
+assembly_finder_Snakefile: /home/master_students/bin/assembly_finder/Snakefile
+
+### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
+forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
+reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
+
+### Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
+merged_min_length: 390 # from 390 to 400 for V3V4
+merged_max_length: 500 # from 450 to 500 for V3V4
+mismatch: 3 #0 - 3 mismatch
+threeprime: 2 # Number of match at the 3' end for a hit to be considered
+#kmer: ["5"] #Default is 55,77,99,127
+
+### Database used for taxonomic assignment
+tax_DB: ["ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
+
+
+########### Assembly finder config ################
+
+input_table_path: 'input_table.tsv'
+
+NCBI_key: '6dce38824889f62e188a25ae35c52a083c08'
+
+NCBI_email: 'valentin.scherz@chuv.ch'
+
+##Parameters for search_assemblies function
+#This set of parameters is to search all possible assemblies
+complete_assemblies: False
+reference_assemblies: False
+representative_assemblies: False
+exclude_from_metagenomes: True
+Genbank_assemblies: True
+Refseq_assemblies: True
+
+
+##Parameters for the filtering function
+
+Rank_to_filter_by: 'None'
+#None: Assemblies are ranked by their assembly status (complete or not)
+#and Refseq category (reference, representative ...)
+#If you want to filter by species, set this parameter to 'species'. The filtering function will list all unique species
+#and rank their assemblies according to assembly status and Refseq category.
+
+
+
