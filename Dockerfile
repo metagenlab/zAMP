@@ -46,8 +46,8 @@ ENV assembly_finder_folder=${main}/assembly_finder
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
 RUN conda install snakemake=5.5.4 java-jdk perl-bioperl conda=4.6.14
 
-######### Install PANDAseq (libltdl7) and r-v8 (libv8-dev) dependances, and a package required for png plotting  (libcairo2) ##########
-RUN apt-get update && apt-get install libltdl7 libv8-dev libcairo2-dev -y
+######### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ##########
+RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
@@ -66,16 +66,12 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
 
-## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
+## Install a patched version of simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && rm simulate_PCR.tar.gz && rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9
 ENV PATH="/opt/simulate_PCR:${PATH}"
 RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
-
-## Install simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
-RUN wget --quiet https://sourceforge.net/projects/simulatepcr/files/simulate_PCR-v1.2.tar.gz/download -O simulate_PCR.tar.gz && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR && rm simulate_PCR.tar.gz
 ENV PATH="/opt/simulate_PCR:${PATH}"
-
 
 ################# Clean unnecessary packages ###################
 RUN conda clean -a
