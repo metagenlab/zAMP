@@ -135,7 +135,7 @@ rule InSilico_derepicate_all:
     shell:
         '''
         vsearch --derep_fulllength {input} \
-                --minuniquesize 2 \
+                --minuniquesize 1 \
                 --output {output} \
                 2> {log}
         '''
