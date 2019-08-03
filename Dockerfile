@@ -80,7 +80,7 @@ RUN apt-get autoremove -y
 #################### Run the pipeline to test it #####################
 ARG TEST_CPU
 ## Test the insilico validation
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile onfig_in_silico.yml insilico_validation
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile config_in_silico.yml insilico_validation
 ## Run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile config.yml all
 
