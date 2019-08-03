@@ -27,8 +27,6 @@ rule print_primers_to_files :
 
 
 rule Extract_V3V4 :
-    conda :
-        "../../envs/simulate_PCR.yml"
     input :
         "InSilico/PCR/Primers.fasta",
         "assembly_gz/{sample}.fna"
