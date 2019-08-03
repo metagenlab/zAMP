@@ -54,7 +54,7 @@ RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9
 ENV PATH="/opt/simulate_PCR:${PATH}"
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
 ENV PATH="/opt/simulate_PCR:${PATH}"
-
+RUN chmod +x /opt/simulate_PCR/simulate_PCR
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
@@ -77,7 +77,6 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefi
 #################### Run the pipeline to test it #####################
 ARG TEST_CPU
 ## Test the insilico validation
-RUN chmod +x /opt/simulate_PCR/simulate_PCR
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile config_in_silico.yml insilico_validation
 ## Run the pipeline to test it, without PICRUST as output since it is computationally very demanding
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile config.yml all
