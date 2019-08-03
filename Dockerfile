@@ -82,7 +82,7 @@ RUN apt-get autoremove -y
 ARG TEST_CPU
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config.yml all
 ## Test the insilico validation
-RUN snakemake --snakefile ${assembly_finder_folder}/Snakefile_validation --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config_in_silico.yml insilico_validation
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources max_copy=1 --use-conda --conda-prefix /opt/conda/ --configfile ${pipeline_folder}/data/validation_datasets/config_in_silico.yml insilico_validation
 
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
