@@ -54,13 +54,13 @@ Heatmaps: True # or False
 Alpha_divs: True # or False
 Distance_ordinations: True # or False
 Constrained_ordinations: True # or False
-Unconstrained_ordinations: True # or False
+Unconstrained_ordinations: False # or False
 
 ### Ordination parameters
 ordination_distance: ["unifrac", "bray", "jaccard"]
 ordination_method_distance_based: ["NMDS", "MDS"]
 ordination_method_constrained: ["DPCoA"]
-ordination_method_unconstrained: ["DCA"]
+ordination_method_unconstrained: ""
 
 ### Barplots and heatmaps parameters
 #### Both
