@@ -44,7 +44,7 @@ ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-RUN conda install snakemake=5.5.4 java-jdk perl-bioperl conda=4.6.14
+RUN conda install snakemake=5.5.4 java-jdk perl-bioperl perl-lwp-simple conda=4.6.14
 
 ########################### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
 RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
@@ -52,7 +52,6 @@ RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
 ## Set in path a patched version of simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && rm simulate_PCR.tar.gz && rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9
 ENV PATH="/opt/simulate_PCR:${PATH}"
-RUN conda install conda=4.6.14 perl-lwp-simple 
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
 ENV PATH="/opt/simulate_PCR:${PATH}"
 
