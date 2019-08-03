@@ -42,9 +42,9 @@ WORKDIR $main
 ENV pipeline_folder=${main}/microbiome16S_pipeline
 ENV assembly_finder_folder=${main}/assembly_finder
 
-########################### Install java (needed for Qiime tax assignemnt) and Snakemake ##############################
+########################### Install java (needed for Qiime tax assignemnt), blast and perl (for simulate_PCR) and Snakemake ##############################
 RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-RUN conda install snakemake=5.5.4 java-jdk perl-bioperl perl-lwp-simple conda=4.6.14
+RUN conda install snakemake=5.5.4 java-jdk perl-bioperl perl-lwp-simple blast=2.6.0 conda=4.6.14
 
 ########################### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
 RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
