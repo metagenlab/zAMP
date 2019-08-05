@@ -45,9 +45,9 @@ ENV assembly_finder_folder=${main}/assembly_finder
 RUN conda config --add channels defaults && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
-    conda install snakemake=5.5.4 perl-lwp-simple conda=4.6.14 
+    conda install snakemake=5.5.4 java-jdk perl-lwp-simple conda=4.6.14 
     
-# java-jdk perl-bioperl
+#perl-bioperl
 
 ########################### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
 RUN apt-get update && \
@@ -72,7 +72,7 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 ARG GITHUB_AT
 
 ## Clone the pipeline and assembly_finder, developped by @idfarbanecha
-RUN git clone --single-branch --branch v.0.9.8-beta https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
     git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 ## Get in the validation directory
