@@ -86,11 +86,11 @@ RUN conda clean -a
 RUN apt-get autoremove -y
 
 #################### Set final access rights and working dir #####################
-RUN chown -R pipeline_user ${main}/
 USER pipeline_user
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/DTDs
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/XSDs
 ENV HOME ${main}
 RUN conda init bash
+RUN chown -R pipeline_user ${main}/
 WORKDIR ${main}/data/analysis/
 ENTRYPOINT ["/bin/bash"]
