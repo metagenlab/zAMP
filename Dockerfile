@@ -88,7 +88,9 @@ RUN apt-get autoremove -y
 #################### Set final access rights and working dir #####################
 RUN chown -R pipeline_user ${main}/
 USER pipeline_user
-RUN mkdir -p ${main}/data/analysis/
+RUN mkdir -p ${main}/data/analysis/Bio/Entrez/DTDs/ ${main}/data/analysis/Bio/Entrez/XSDs/ 
+RUN mkdir -p ${main}/.config/biopyhton/
+ENV HOME ${main}
 RUN conda init bash
 WORKDIR ${main}/data/analysis/
 ENTRYPOINT ["/bin/bash"]
