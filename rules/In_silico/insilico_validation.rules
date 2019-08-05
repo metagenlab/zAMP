@@ -34,6 +34,7 @@ rule Extract_V3V4 :
         "assembly_gz/{sample}.fna"
     output :
         "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+        temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
     params:
         min_length = config["merged_min_length"],
         max_length = config["merged_max_length"],
@@ -45,11 +46,10 @@ rule Extract_V3V4 :
         1
     shell :
         '''
-        cp {input[1]} $(dirname {output[0]}) && \
         cd $(dirname {output[0]}) && \
         simulate_PCR \
             -primers ../../../{input[0]} \
-            -db $(basename {input[1]}) \
+            -db {input[1]) \
             -minlen {params.min_length} \
             -maxlen {params.max_length} \
             -mm {params.mismatch} \
@@ -62,8 +62,7 @@ rule Extract_V3V4 :
             -genes 1 \
             -extract_amp 1 \
             >> ../../../{log}
-            
-         '''
+          '''
 
 
 
@@ -75,7 +74,7 @@ rule cutadapt_trim_for_In_silico:
     input:
         raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
     output:
-        trimmed_reads = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
+        trimmed_reads = temp("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta"),
     log:
         logging_folder + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt"
     params:
@@ -98,8 +97,6 @@ rule cutadapt_trim_for_In_silico:
         '''
 
 
-
-
 def list_amplicons(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
@@ -115,7 +112,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons
     output:
-        "InSilico/1c_derep/merged_all.fasta"
+        temp("InSilico/1c_derep/merged_all.fasta")
     shell:
         '''
         cat {input} >> {output}
@@ -139,7 +136,6 @@ rule InSilico_derepicate_all:
                 --output {output} \
                 2> {log}
         '''
-
 
 
 ### Count the number of occurences of the representative sequences in the samples.
