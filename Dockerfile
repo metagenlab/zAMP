@@ -61,7 +61,7 @@ RUN chmod +x /opt/simulate_PCR/simulate_PCR
 ARG GITHUB_AT
 
 ## Clone the pipeline github
-RUN git clone --single-branch --branch v.0.9.8-5 https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+RUN git clone --single-branch --branch v.0.9.8 https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## Clone assembly_finder github, a set of scripts developped by @idfarbanecha, used to download assembly for In silico validation of the pipeline
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
