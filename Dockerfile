@@ -11,11 +11,12 @@ ENV PATH /opt/conda/bin:$PATH
 ENV TZ Europe/Zurich
 
 ########################### Install system libraries, PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
-RUN echo $TZ > /etc/timezone && \
-    apt-get update && apt-get install -y wget bzip2 ca-certificates curl git libltdl7 libcairo2-dev tzdata && \
+RUN echo $TZ > /etc/timezone &&\
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&\
+    apt-get update && \
+    apt-get install -y wget bzip2 ca-certificates curl git libltdl7 libcairo2-dev tzdata && \
+    dpkg-reconfigure -f noninteractive tzdata && \
     rm /etc/localtime && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata && \    
     apt-get clean && \
     apt-get autoremove -y && \    
     rm -rf /var/lib/apt/lists/*
