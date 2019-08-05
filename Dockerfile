@@ -61,7 +61,7 @@ RUN chmod +x /opt/simulate_PCR/simulate_PCR
 ARG GITHUB_AT
 
 ## Clone the pipeline github
-RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+RUN git clone --single-branch --branch v.0.9.8-5 https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
 
 ## Clone assembly_finder github, a set of scripts developped by @idfarbanecha, used to download assembly for In silico validation of the pipeline
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
@@ -86,12 +86,13 @@ RUN conda clean -a
 RUN apt-get autoremove -y
 
 #################### Set final access rights and working dir #####################
+RUN chown pipeline_user:pipeline_user ${main}
 USER pipeline_user
-RUN chown -R pipeline_user ${main}/
+RUN mkdir -p ${main}/data/analysis
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/DTDs
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/XSDs
 ENV HOME ${main}
 RUN conda init bash
-RUN chown -R pipeline_user ${main}/
 WORKDIR ${main}/data/analysis/
 ENTRYPOINT ["/bin/bash"]
+

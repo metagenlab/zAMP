@@ -57,7 +57,7 @@ Singularity is a system enabling the use of singularity or docker containers. It
 
 ```
 ## Run the contained interactively
-singularity run docker://metagenlab/amplicon_pipeline:v.0.9.7-beta
+singularity -e -H /home/pipeline_user/ docker://metagenlab/amplicon_pipeline:v.0.9.8-1-beta
 
 ## Run the pipeline from into the cointainer.
 snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time} mem_mb = {available_memory}
@@ -86,8 +86,9 @@ Install the CE version following these [instructions](https://docs.docker.com/in
   
   
 #### Use
+_Connected as pipeline_user :_ 
 ```
-docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.7-beta
+docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.8-1-beta
 ```
 and then
 ```
@@ -96,7 +97,7 @@ snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use
 or directly
 
 ```
-docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.7-beta \ sh -c 'snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
+docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/analysis/,type=bind metagenlab/amplicon_pipeline:v.0.9.8-1-beta \ sh -c 'snakemake --snakefile /home/pipeline_user/microbiome16S_pipeline/Snakefile --use-conda --conda-prefix /opt/conda/ --cores {threads_number} --configfile {config_file_path} --resources max_copy={max_number_of_files_copied_at_the_same_time}
 ```
 
 
