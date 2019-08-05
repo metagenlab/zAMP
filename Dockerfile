@@ -12,7 +12,7 @@ ENV TZ Europe/Zurich
 
 ########################### Install system libraries, PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
 RUN echo $TZ > /etc/timezone && \
-    apt-get update && apt-get install -y tzdata wget bzip2 ca-certificates curl git libltdl7 libcairo2-dev && \
+    apt-get update && apt-get install -y wget bzip2 ca-certificates curl git libltdl7 libcairo2-dev tzdata && \
     rm /etc/localtime && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \    
