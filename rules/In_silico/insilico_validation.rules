@@ -49,7 +49,7 @@ rule Extract_V3V4 :
         cd $(dirname {output[0]}) && \
         simulate_PCR \
             -primers ../../../{input[0]} \
-            -db {input[1]) \
+            -db {input[1]} \
             -minlen {params.min_length} \
             -maxlen {params.max_length} \
             -mm {params.mismatch} \
