@@ -10,16 +10,14 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV TZ Europe/Zurich
 
+########################### Install system libraries, PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
 RUN echo $TZ > /etc/timezone && \
-    apt-get update && apt-get install -y tzdata && \
+    apt-get update && apt-get install -y tzdata wget bzip2 ca-certificates curl git install libltdl7 libcairo2-dev && \
     rm /etc/localtime && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata && \
-    apt-get clean
-
-RUN apt-get update --fix-missing && \
-    apt-get install -y wget bzip2 ca-certificates curl git && \
+    dpkg-reconfigure -f noninteractive tzdata && \    
     apt-get clean && \
+    apt-get autoremove -y && \    
     rm -rf /var/lib/apt/lists/*
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -48,11 +46,6 @@ RUN conda config --add channels defaults && \
     conda install snakemake=5.5.4 java-jdk perl-lwp-simple conda=4.6.14 
     
 #perl-bioperl
-
-########################### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
-RUN apt-get update && \
-    apt-get install libltdl7 libcairo2-dev -y && \
-    apt-get autoremove -y
 
 ## Set in path a patched version of simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && \
