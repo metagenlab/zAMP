@@ -156,9 +156,9 @@ rule InSilico_count_occurences :
          logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.txt"
     shell:
         '''       
-        if [ -s "$_file" ]
+        if [ -s "{input[samples]}" ]
         then
-            echo "$_file has some data." && \
+            echo "{input[samples]} has some data." && \
             vsearch --usearch_global {input[samples]} \
                 -otutabout {output} \
                 -id 1 \
@@ -166,7 +166,7 @@ rule InSilico_count_occurences :
                 --db {input[rep_seq]}
                 # do something as file has data
         else
-            echo "$_file is empty." && \
+            echo "{input[samples]} is empty." && \
             touch {output}
             # do something as file is empty
         fi      
