@@ -1,4 +1,3 @@
-## Install Ubuntu
 FROM ubuntu:18.04
 
 ############################## Install miniconda environement, from miniconda3 Dockerfile ##############################
@@ -19,7 +18,7 @@ RUN echo $TZ > /etc/timezone && \
     apt-get clean
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y wget nano bzip2 ca-certificates curl git && \
+    apt-get install -y wget bzip2 ca-certificates curl git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -43,30 +42,40 @@ ENV pipeline_folder=${main}/microbiome16S_pipeline
 ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt), blast and perl (for simulate_PCR) and Snakemake ##############################
-RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-RUN conda install snakemake=5.5.4 java-jdk perl-bioperl perl-lwp-simple conda=4.6.14
+RUN conda config --add channels defaults && \
+    conda config --add channels bioconda && \
+    conda config --add channels conda-forge && \
+    conda install snakemake=5.5.4 perl-lwp-simple conda=4.6.14 
+    
+# java-jdk perl-bioperl
 
 ########################### Install PANDAseq (libltdl7) dependencies and a package required for png plotting  (libcairo2) ###########################
-RUN apt-get update && apt-get install libltdl7 libcairo2-dev -y
+RUN apt-get update && \
+    apt-get install libltdl7 libcairo2-dev -y && \
+    apt-get autoremove -y
 
 ## Set in path a patched version of simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
-RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && mkdir /opt/simulate_PCR && tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && rm simulate_PCR.tar.gz && rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9
+RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && \
+    mkdir /opt/simulate_PCR && \
+    tar xzf simulate_PCR.tar.gz -C /opt/simulate_PCR &&  \
+    mv /opt/simulate_PCR/updated_simulate_PCR-0.9.9/code/simulate_PCR /opt/simulate_PCR && \
+    rm simulate_PCR.tar.gz && \
+    rm -R /opt/simulate_PCR/updated_simulate_PCR-0.9.9 && \
+    chmod +x /opt/simulate_PCR/simulate_PCR
+
 ENV PATH="/opt/simulate_PCR:${PATH}"
 ENV PERL5LIB="/opt/conda/lib/site_perl/5.26.2"
 ENV PATH="/opt/simulate_PCR:${PATH}"
-RUN chmod +x /opt/simulate_PCR/simulate_PCR
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 
-## Clone the pipeline github
-RUN git clone --single-branch --branch v.0.9.8 https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder
+## Clone the pipeline and assembly_finder, developped by @idfarbanecha
+RUN git clone --single-branch --branch v.0.9.8 https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+    git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
-## Clone assembly_finder github, a set of scripts developped by @idfarbanecha, used to download assembly for In silico validation of the pipeline
-RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
-
-## cd in the validation directory
+## Get in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
 
 #################### Build environements of the pipeline #####################
@@ -83,14 +92,13 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resou
 
 ################# Clean unnecessary packages, after validation runs because one environement is still made during run due to checkpoints ###################
 RUN conda clean -a
-RUN apt-get autoremove -y
 
-#################### Set final access rights and working dir #####################
+#################### Set final access rights, variables and work dir #####################
 RUN chown pipeline_user:pipeline_user ${main}
 USER pipeline_user
-RUN mkdir -p ${main}/data/analysis
-RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/DTDs
-RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/XSDs
+RUN mkdir -p ${main}/data/analysis \
+    ${main}/.config/biopython/Bio/Entrez/DTDs \
+    ${main}/.config/biopython/Bio/Entrez/XSDs
 ENV HOME ${main}
 RUN conda init bash
 WORKDIR ${main}/data/analysis/
