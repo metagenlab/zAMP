@@ -1,20 +1,20 @@
 #!/bin/bash
-_file={input[samples]}
-[ $# -eq 0 ] && {{ echo "Usage: $0 filename"; exit 1; }}
-[ ! -f "$_file" ] && {{ echo "Error: $0 file not found."; exit 2; }}
+_file=$0
+_db=$1
+_out=$2
 
 if [ -s "$_file" ]
 then
     echo "$_file has some data." && \
-    vsearch --usearch_global {input[samples]} \
-        -otutabout {output} \
+    vsearch --usearch_global $0 \
+        -otutabout $2 \
         -id 1 \
         -strand plus \
-        --db {input[rep_seq]}
+        --db $1
         # do something as file has data
 else
     echo "$_file is empty." && \
-    touch {input[samples]}
+    touch $0
     # do something as file is empty
 fi
 2> {log}

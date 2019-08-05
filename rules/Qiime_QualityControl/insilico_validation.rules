@@ -154,8 +154,10 @@ rule InSilico_count_occurences :
         "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
     log:
          logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.txt"
-    script:
-        "scripts/vsearch_count_otus.sh"
+    shell:
+        '''
+        sh scripts/vsearch_count_otus.sh" {input[samples]} {input[rep_seq]} {output}
+        '''
 
 
 
