@@ -87,6 +87,7 @@ RUN apt-get autoremove -y
 
 #################### Set final access rights and working dir #####################
 USER pipeline_user
+RUN chown -R pipeline_user ${main}/
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/DTDs
 RUN mkdir -p ${main}/.config/biopython/Bio/Entrez/XSDs
 ENV HOME ${main}
