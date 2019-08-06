@@ -23,7 +23,6 @@
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
 
-
 ## Read data
     seqs <- read.fasta(ref_seqs)
 

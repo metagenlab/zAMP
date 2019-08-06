@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+   # log <- file(snakemake@log[[1]], open="wt")
+   # sink(log)
+   # sink(log, type="message")
 
 ## Input
     ref_seqs <- snakemake@input[["ref_seqs"]]
@@ -22,6 +22,7 @@
     library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
+    library(seqinr);packageVersion("seqinr")
 
 ## Read data
     tax_table <- read.table(file=ref_tax, sep="\t", stringsAsFactors=FALSE)
