@@ -45,8 +45,8 @@ rename.fasta <- function(infile = NULL, ref_table,
     #fasta <- read.fasta(infile)
     fastaFile <- readDNAStringSet(infile)
     seq.name = names(fastaFile)
-    sequence = paste(fastaFile)
-    fasta <- data.frame(seq.name, sequence)
+    seq.text = paste(fastaFile)
+    fasta <- data.frame(seq.name, seq.text)
 
 
     ## Convert the input ref to dataframe

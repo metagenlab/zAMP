@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
     seqs <- snakemake@input[["seqs"]]
@@ -28,20 +28,20 @@
     fastaFile <- readDNAStringSet(seqs)
     seq.name = names(fastaFile)
     sequence = paste(fastaFile)
-    seqs_table <- data.frame(seq.name, sequence)
+    fasta <- data.frame(seq.name, sequence)
 
 ## Format seqs
-    seq_table <- as.character(seqs$seq.text)
-    names(seq_table) <- make.unique(seqs$seq.name)
+    seq_table <- as.character(fasta$sequence)
+    names(seq_table) <- as.character(fasta$seq.name)
 
 ## Assign taxonomy
     taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Genus, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus"), multithread=TRUE, tryRC = TRUE, minBoot = 50, verbose = TRUE)
 
-    taxa_species <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
+    taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
 
 
 ## Format an write output
-    taxa_table <- data.frame(cbind(Row.Names = rownames(taxa_species), taxa_species))
+    taxa_table <- data.frame(cbind(Row.Names = rownames(taxa), taxa))
     taxa_table$Row.Names<-NULL
     taxa_table <- taxa_table %>% unite(taxonomy, c("Kingdom","Phylum","Class","Order","Family","Genus","Species"), sep = ";", remove = TRUE)
     taxa_table <- data.frame(cbind(Row.Names = rownames(taxa_table), taxa_table))
