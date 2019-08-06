@@ -132,6 +132,7 @@ rule InSilico_derepicate_all:
         '''
         vsearch --derep_fulllength {input} \
                 --minuniquesize 1 \
+                --relabel OTU_ \
                 --output {output} \
                 2> {log}
         '''
