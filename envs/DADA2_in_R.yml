@@ -10,3 +10,4 @@ dependencies:
   - bioconductor-phyloseq = 1.26.1
   - libgfortran
   - ggplot
+  - r-phytools
