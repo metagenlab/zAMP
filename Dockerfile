@@ -37,7 +37,7 @@ RUN chmod +x /usr/bin/tini
 RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
 WORKDIR $main
-ENV pipeline_folder=${main}/microbiome16S_pipeline
+ENV ls =${main}/microbiome16S_pipeline
 ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt), Snakemake and Simulate_PCR dependancies ##############################
@@ -71,7 +71,7 @@ COPY ./envs $pipeline_folder/envs/
 COPY ./ressources $pipeline_folder/ressources/
 COPY ./rules $pipeline_folder/rules/
 COPY ./README* ./
-COPY ./Snakefile* ./$pipeline_folder/
+COPY ./Snakefile* $pipeline_folder/
 RUN echo $GITHUB_AT
 
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
