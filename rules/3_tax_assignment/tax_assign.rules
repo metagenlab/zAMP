@@ -60,9 +60,9 @@ rule dada2_assign_taxonomy_rdp:
         King_to_Genus = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Genus.txt",
         Genus_species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_Genus_species.txt"
     output:
-        "{denoiser}/3_classified/rdpdada2_{tax_DB}/dna-sequences_tax_assignments.txt",
+        "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt",
     log:
-        logging_folder + "{denoiser}/3_classified/rdpdada2_{tax_DB}/dna-sequences_tax_assignments.log"
+        logging_folder + "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.log"
     threads:
         4
     resources:
