@@ -6,10 +6,10 @@ rule QIIME1_assign_taxonomy_rdp:
         workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4.fasta",
         workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy.txt"
     output:
-        "{denoiser}/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments.txt",
-        "{denoiser}/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments.log"
+        "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt",
+        "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.log"
     log:
-        logging_folder + "{denoiser}/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments_log.txt"
+        logging_folder + "{denoiser}/3_classified/qiime_rdp_{tax_DB}/dna-sequences_tax_assignments_log.txt"
     threads:
         1
     resources:
