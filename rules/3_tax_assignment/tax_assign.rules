@@ -56,7 +56,7 @@ rule dada2_assign_taxonomy_rdp:
         "../../envs/DADA2_in_R.yml"
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
-        #King_to_Species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Species.txt",
+        King_to_Species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Species.txt",
         King_to_Genus = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Genus.txt",
         Genus_species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_Genus_species.txt"
     output:

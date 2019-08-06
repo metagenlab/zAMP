@@ -11,7 +11,7 @@
 
 ## Input
     seqs <- snakemake@input[["seqs"]]
-    #King_to_Species <- snakemake@input[["King_to_Species"]]
+    King_to_Species <- snakemake@input[["King_to_Species"]]
     King_to_Genus <- snakemake@input[["King_to_Genus"]]
     Genus_species <- snakemake@input[["Genus_species"]]
 
@@ -35,9 +35,10 @@
     names(seq_table) <- as.character(fasta$seq.name)
 
 ## Assign taxonomy
-    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Genus, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus"), multithread=TRUE, tryRC = TRUE, minBoot = 50, verbose = TRUE)
+    print("Assigning")
+    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Species, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus", "Species"), multithread=4, tryRC = TRUE, minBoot = 50, verbose = TRUE)
 
-    taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
+    #taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
 
 
 ## Format an write output
