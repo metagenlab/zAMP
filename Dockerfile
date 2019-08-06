@@ -62,7 +62,7 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
-#ARG GITHUB_AT
+ARG GITHUB_AT
 #ARG VERSION
 
 ## Clone the pipeline and assembly_finder, developped by @idfarbanecha
@@ -73,8 +73,6 @@ COPY ./ressources/ $pipeline_folder
 COPY ./rules $pipeline_folder
 COPY ./README* ./
 COPY ./Snakefile* ./
-
-
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 
