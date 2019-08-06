@@ -19,10 +19,9 @@
     tax <- snakemake@output[["tax"]]
 
 ## Load needed libraries
-
     library(dada2);packageVersion("dada2")
-    library(dplyr);packageVersion(dplyr)
-    library(tidyr);packageVersion(tidyr)
+    library(dplyr);packageVersion("dplyr")
+    library(tidyr);packageVersion("tidyr")
 
 
 ## Read data
