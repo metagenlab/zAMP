@@ -66,13 +66,14 @@ ARG GITHUB_AT
 
 ## Clone the pipeline and assembly_finder, developped by @idfarbanecha
 #RUN git clone --single-branch --branch $VERSION https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+RUN pwd
 COPY ./data $pipeline_folder/data/
 COPY ./envs $pipeline_folder/envs/
 COPY ./ressources $pipeline_folder/ressources/
 COPY ./rules $pipeline_folder/rules/
 COPY ./README* ./
 COPY ./Snakefile* $pipeline_folder/
-RUN echo $GITHUB_AT
+RUN echo "$GITHUB_AT"
 
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
