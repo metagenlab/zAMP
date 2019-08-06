@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+    #log <- file(snakemake@log[[1]], open="wt")
+    #sink(log)
+    #sink(log, type="message")
 
 ## Input
     seqs <- snakemake@input[["seqs"]]
@@ -43,9 +43,10 @@
 
 ## Format an write output
     taxa_table <- data.frame(cbind(Row.Names = rownames(taxa), taxa))
-    taxa_table$Row.Names<-NULL
     taxa_table <- taxa_table %>% unite(taxonomy, c("Kingdom","Phylum","Class","Order","Family","Genus","Species"), sep = ";", remove = TRUE)
     taxa_table <- data.frame(cbind(Row.Names = rownames(taxa_table), taxa_table))
     taxa_table$Row.Names<-NULL
-    write.table(taxa_table, tax , sep="\t", quote=F, col.names = F)
+    print(taxa_table)
+
+    write.table(x = taxa_table, file = tax , sep="\t", quote=F, col.names = F)
 
