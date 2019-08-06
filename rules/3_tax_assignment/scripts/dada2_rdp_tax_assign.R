@@ -5,15 +5,15 @@
 
 
 ## Redirect R output to the log file
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+    #log <- file(snakemake@log[[1]], open="wt")
+    #sink(log)
+    #sink(log, type="message")
 
 ## Input
-    ref_seqs <- snakemake@input[["ref_seqs"]]
+    seqs <- snakemake@input[["seqs"]]
     #King_to_Species <- snakemake@input[["King_to_Species"]]
-    King_to_Genus <- snakemake@intput[["King_to_Genus"]]
-    Genus_species <- snakemake@intput[["Genus_species"]]
+    King_to_Genus <- snakemake@input[["King_to_Genus"]]
+    Genus_species <- snakemake@input[["Genus_species"]]
 
 ## Output
     tax <- snakemake@output[["tax"]]
@@ -24,11 +24,10 @@
     library(tidyr);packageVersion("tidyr")
 
 ## Read data
-    seqs <- read.fasta(ref_seqs)
-    fastaFile <- readDNAStringSet(ref_seqs)
+    fastaFile <- readDNAStringSet(seqs)
     seq.name = names(fastaFile)
     sequence = paste(fastaFile)
-    seqs <- data.frame(seq.name, sequence)
+    seqs_table <- data.frame(seq.name, sequence)
 
 ## Format seqs
     seq_table <- as.character(seqs$seq.text)
