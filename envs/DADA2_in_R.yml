@@ -11,4 +11,3 @@ dependencies:
   - libgfortran
   - ggplot
   - r-tidyr
-  - r-seqinr

@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-   # log <- file(snakemake@log[[1]], open="wt")
-   # sink(log)
-   # sink(log, type="message")
+   log <- file(snakemake@log[[1]], open="wt")
+   sink(log)
+   sink(log, type="message")
 
 ## Input
     ref_seqs <- snakemake@input[["ref_seqs"]]
@@ -22,7 +22,7 @@
     library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
-    library(seqinr);packageVersion("seqinr")
+    library(Biostrings);packageVersion("Biostrings")
 
 ## Read data
     tax_table <- read.table(file=ref_tax, sep="\t", stringsAsFactors=FALSE)
@@ -42,7 +42,13 @@
 
 rename.fasta <- function(infile = NULL, ref_table,
                          outfile = "renamed.fasta"){
-    fasta <- read.fasta(infile)
+    #fasta <- read.fasta(infile)
+    fastaFile <- readDNAStringSet(infile)
+    seq.name = names(fastaFile)
+    sequence = paste(fastaFile)
+    fasta <- data.frame(seq.name, sequence)
+
+
     ## Convert the input ref to dataframe
     ## usually the file was obtained by
     ## save the result of get.names.fasta to a csv file.
