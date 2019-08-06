@@ -12,4 +12,4 @@ docker build https://$GITHUBAT@github.com/metagenlab/microbiome16S_pipeline.git#
     -f ./Dockerfile \
     --build-arg GITHUB_AT=$GITHUB_AT
 
-docker build -f ./validation.Docker . --build-arg VERSION=$_VERSION --build-arg GITHUB_AT=$_GITHUB_AT TEST_CPU=$_CPU
+docker build -f ./validation.Docker . --build-arg VERSION=$VERSION --build-arg GITHUB_AT=$GITHUB_AT TEST_CPU=$CPU
