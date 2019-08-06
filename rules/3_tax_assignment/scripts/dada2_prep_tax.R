@@ -21,7 +21,6 @@
 ## Load needed libraries
 
     library(dada2);packageVersion("dada2")
-    library(phylotools);packageVersion(phylotools)
     library(dplyr);packageVersion(dplyr)
     library(tidyr);packageVersion(tidyr)
 
