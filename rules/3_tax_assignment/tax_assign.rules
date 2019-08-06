@@ -46,7 +46,7 @@ rule dada2_prep_tax_db:
     threads:
         1
     script:
-        "dada2_rdp_tax_assig.R"
+        "scripts/dada2_prep_tax.R"
 
 
 
@@ -68,5 +68,5 @@ rule dada2_assign_taxonomy_rdp:
     resources:
         mem_mb=30000
     script:
-        "dada2_rdp_tax_assig.R"
+        "scripts/dada2_rdp_tax_assign.R"
 
