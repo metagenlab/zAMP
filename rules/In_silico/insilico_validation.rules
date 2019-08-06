@@ -164,8 +164,7 @@ rule InSilico_count_occurences :
             echo "{input[samples]} is empty." && \
             touch {output}
             # do something as file is empty
-        fi \
-        2> {log}        
+        fi 2> {log}        
         '''
 
 
