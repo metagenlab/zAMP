@@ -47,7 +47,7 @@ rule Extract_V3V4 :
         cd $(dirname {output[0]}) && \
         simulate_PCR \
             -primers ../../../{input[0]} \
-            -db {input[1]} \
+            -db ../../../{input[1]} \
             -minlen {params.min_length} \
             -maxlen {params.max_length} \
             -mm {params.mismatch} \
@@ -60,6 +60,7 @@ rule Extract_V3V4 :
             -genes 1 \
             -extract_amp 1 \
             >> ../../../{log}
+
           '''
 
 
@@ -163,7 +164,8 @@ rule InSilico_count_occurences :
             echo "{input[samples]} is empty." && \
             touch {output}
             # do something as file is empty
-        fi      
+        fi \ 
+        2> {log}        
         '''
 
 
