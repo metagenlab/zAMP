@@ -36,7 +36,7 @@ merged_min_length: 390 # from 390 to 400 for V3V4
 merged_max_length: 500 # from 450 to 500 for V3V4
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
+tax_DB: ["ezbiocloud.marta"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
 
 
 ## Reads post-processing ##############################################################################################

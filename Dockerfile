@@ -64,8 +64,7 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 
-## Clone the pipeline and assembly_finder, developped by @idfarbanecha
-#RUN git clone --single-branch --branch $VERSION https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+## Clone the pipeline files and assembly_finder, developped by @idfarbanecha
 COPY ./data /home/pipeline_user/microbiome16S_pipeline/data/
 COPY ./envs /home/pipeline_user/microbiome16S_pipeline/envs/
 COPY ./ressources /home/pipeline_user/microbiome16S_pipeline/ressources/

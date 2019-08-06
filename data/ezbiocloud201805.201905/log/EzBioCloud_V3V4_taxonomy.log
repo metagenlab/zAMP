@@ -1,5 +1,5 @@
-[1] "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud_201805/ezbiocloud_id_taxonomy.txt"
-[1] "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud_201805_201905/temp/EzBioCloud_V3V4.uc"
+[1] "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/ezbiocloud_id_taxonomy.txt"
+[1] "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805.201905/temp/EzBioCloud_V3V4.uc"
 
 Attachement du package : ‘dplyr’
 

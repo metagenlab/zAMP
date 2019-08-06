@@ -14,7 +14,7 @@ threeprime: 2 # Number of match at the 3' end for a hit to be considered
 
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud_valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
+tax_DB: ["ezbiocloud.marta"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
 
 ### Processing for comparison of taxonomic assignment
 viz_replace_empty_tax: TRUE

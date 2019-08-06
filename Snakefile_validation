@@ -2,7 +2,7 @@ include: config["assembly_finder_Snakefile"]
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/logging.rules"
-include: "rules/3_tax_assignment/RDP_in_QIIME.rules"
+include: "rules/3_tax_assignment/tax_assign.rules.rules"
 #include: "rules/4_post_processing/physeq_processing.rules"
 #include: "rules/5_visualization/General_plotting.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
