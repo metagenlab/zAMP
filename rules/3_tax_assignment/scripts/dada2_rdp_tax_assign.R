@@ -25,6 +25,10 @@
 
 ## Read data
     seqs <- read.fasta(ref_seqs)
+    fastaFile <- readDNAStringSet(ref_seqs)
+    seq.name = names(fastaFile)
+    sequence = paste(fastaFile)
+    seqs <- data.frame(seq.name, sequence)
 
 ## Format seqs
     seq_table <- as.character(seqs$seq.text)
