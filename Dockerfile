@@ -66,8 +66,10 @@ ARG GITHUB_AT
 ARG VERSION
 
 ## Clone the pipeline and assembly_finder, developped by @idfarbanecha
-RUN git clone --single-branch --branch $VERSION https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
-    git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
+#RUN git clone --single-branch --branch $VERSION https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+COPY
+RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
+
 
 ## Get in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
