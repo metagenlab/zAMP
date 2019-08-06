@@ -37,7 +37,7 @@ RUN chmod +x /usr/bin/tini
 RUN useradd -r -u 1080 pipeline_user
 ENV main=/home/pipeline_user
 WORKDIR $main
-ENV ls =${main}/microbiome16S_pipeline
+ENV pipeline_folder=${main}/microbiome16S_pipeline
 ENV assembly_finder_folder=${main}/assembly_finder
 
 ########################### Install java (needed for Qiime tax assignemnt), Snakemake and Simulate_PCR dependancies ##############################
