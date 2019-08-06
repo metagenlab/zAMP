@@ -22,6 +22,7 @@
     library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
+    library(Biostrings);packageVersion("Biostrings")
 
 ## Read data
     fastaFile <- readDNAStringSet(seqs)
