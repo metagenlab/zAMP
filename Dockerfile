@@ -40,13 +40,12 @@ WORKDIR $main
 ENV pipeline_folder=${main}/microbiome16S_pipeline
 ENV assembly_finder_folder=${main}/assembly_finder
 
-########################### Install java (needed for Qiime tax assignemnt), blast and perl (for simulate_PCR) and Snakemake ##############################
+########################### Install java (needed for Qiime tax assignemnt), Snakemake and Simulate_PCR dependancies ##############################
 RUN conda config --add channels defaults && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
-    conda install snakemake=5.5.4 java-jdk perl-lwp-simple conda=4.6.14 
+    conda install snakemake=5.5.4 blast=2.9.0 perl-lwp-simple perl-bioperl java-jdk conda=4.6.14 
     
-#perl-bioperl
 
 ## Set in path a patched version of simulate PCR, DOI: 10.1186/1471-2105-15-237 for amplicons validation
 RUN wget --quiet https://github.com/metagenlab/updated_simulate_PCR/archive/v0.9.9.tar.gz -O simulate_PCR.tar.gz && \

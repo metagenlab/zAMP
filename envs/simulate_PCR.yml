@@ -1,5 +1,0 @@
-name: simualte_PCR
-channels:
- - bioconda
-dependencies:
-  - blast=2.6.0
