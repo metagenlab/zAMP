@@ -63,9 +63,10 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 ############################## Get the pipeline through github #######################
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
+ARG VERSION
 
 ## Clone the pipeline and assembly_finder, developped by @idfarbanecha
-RUN git clone --single-branch --branch master https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
+RUN git clone --single-branch --branch $VERSION https://$GITHUB_AT@github.com/metagenlab/microbiome16S_pipeline.git $pipeline_folder && \
     git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 ## Get in the validation directory
@@ -74,17 +75,8 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config_in_silico.yml insilico_validation && \
-    snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output
-
-#################### Run the pipeline to test it #####################
-ARG TEST_CPU
-## Test the insilico validation
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile config_in_silico.yml insilico_validation
-## Run the pipeline to test it, without PICRUST as output since it is computationally very demanding
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile config.yml all
-
-################# Clean unnecessary packages, after validation runs because one environement is still made during run due to checkpoints ###################
-RUN conda clean -a
+    snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile config.yml all PICRUSt2_output && \
+    conda clean -a
 
 #################### Set final access rights, variables and work dir #####################
 RUN chown pipeline_user:pipeline_user ${main}
