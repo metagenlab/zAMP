@@ -72,6 +72,8 @@ COPY ./ressources $pipeline_folder/ressources/
 COPY ./rules $pipeline_folder/rules/
 COPY ./README* ./
 COPY ./Snakefile* ./$pipeline_folder/
+RUN echo $GITHUB_AT
+
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
 
 
