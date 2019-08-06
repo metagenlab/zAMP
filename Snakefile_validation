@@ -13,6 +13,6 @@ include: "rules/In_silico/insilico_validation.rules"
 
 rule insilico_validation:
     input:
-        expand("InSilico/3_classified/rdp_{tax_DB}/dna-sequences_tax_assignments.txt" , tax_DB = config["tax_DB"]),
+        expand("InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt" , classifier = config["classifier"], tax_DB = config["tax_DB"]),
         "InSilico/2_denoised/count_table.txt",
-        expand("InSilico/3_classified/rdp_{tax_DB}/InSilico_compare_tax.tsv", tax_DB = config["tax_DB"])
+        expand("InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv", classifier = config["classifier"], tax_DB = config["tax_DB"])
