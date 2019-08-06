@@ -29,3 +29,44 @@ rule QIIME1_assign_taxonomy_rdp:
            >> {log[0]}
         '''
 
+
+
+rule dada2_prep_tax_db:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        ref_seqs = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4.fasta",
+        ref_tax = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy.txt"
+    output:
+        King_to_Species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Species.txt",
+        King_to_Genus = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Genus.txt",
+        Genus_species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_Genus_species.txt"
+    log:
+        workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_dada2_prep.log"
+    threads:
+        1
+    script:
+        "dada2_rdp_tax_assig.R"
+
+
+
+
+rule dada2_assign_taxonomy_rdp:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
+        #King_to_Species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Species.txt",
+        King_to_Genus = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_King_to_Genus.txt",
+        Genus_species = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_Genus_species.txt"
+    output:
+        "{denoiser}/3_classified/rdpdada2_{tax_DB}/dna-sequences_tax_assignments.txt",
+    log:
+        logging_folder + "{denoiser}/3_classified/rdpdada2_{tax_DB}/dna-sequences_tax_assignments.log"
+    threads:
+        4
+    resources:
+        mem_mb=30000
+    script:
+        "dada2_rdp_tax_assig.R"
+
