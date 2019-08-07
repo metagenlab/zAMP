@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+    #log <- file(snakemake@log[[1]], open="wt")
+    #sink(log)
+    #sink(log, type="message")
 
 ## Input
     seqs <- snakemake@input[["seqs"]]
@@ -36,7 +36,12 @@
 
 ## Assign taxonomy
     print("Assigning")
+    head(seq_table, 10)
+    head(King_to_Genus, 10)
+
     taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Genus, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus"), multithread=4, tryRC = TRUE, minBoot = 50, verbose = TRUE)
+
+    head(Genus_species, 10)
 
     taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
 
