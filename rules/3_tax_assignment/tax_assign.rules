@@ -69,3 +69,51 @@ rule dada2_assign_taxonomy_rdp:
     script:
         "scripts/dada2_rdp_tax_assign.R"
 
+
+rule decipher_prep_fasta:
+    conda:
+        "../../envs/decipher.yml"
+    input:
+        ref_tax = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy.txt",
+        ref_seqs = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4.fasta",
+    output:
+        decipher_seqs = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher.fasta",
+    log:
+        workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_fasta.log"
+    threads:
+        1
+    script:
+        "scripts/decipher_prep_tax.R"
+
+
+rule decipher_train_tax:
+    conda:
+        "../../envs/decipher.yml"
+    input:
+        decipher_seqs = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher.fasta"
+    output:
+        trained_tax = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_trained_tax.rds",
+        training_plot = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_trained_plot.pdf",
+    log:
+        workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_tax_tree.log",
+    threads:
+        1
+    script:
+        "scripts/decipher_train_tax.R"
+
+
+rule decipher_tax_assign:
+    conda:
+        "../../envs/decipher.yml"
+    input:
+        tax_tree = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_tax_tree.txt",
+        decipher_seqs = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher.fasta",
+    output:
+        trained_tax = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_trained_tax.txt",
+        training_plot = workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_trained_plot.pdf",
+    log:
+        workflow.basedir + "/data/{tax_DB}/EzBioCloud_V3V4_taxonomy_decipher_tax_tree.log",
+    threads:
+        1
+    script:
+        "scripts/decipher_assign_tax.R"
