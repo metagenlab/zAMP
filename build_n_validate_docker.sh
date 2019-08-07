@@ -17,3 +17,5 @@ docker build https://$GITHUBAT@github.com/metagenlab/microbiome16S_pipeline.git#
     -f ./validation.Dockerfile \
     --build-arg VERSION=$VERSION \
     --build-arg TEST_CPU=$CPU
+
+docker push metagenlab/amplicon_pipeline:$VERSION
