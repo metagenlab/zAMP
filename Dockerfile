@@ -89,7 +89,6 @@ ARG TEST_CPU
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile config_in_silico.yml insilico_validation
 
 
-
 #################### Set final access rights, variables and work dir #####################
 RUN chown pipeline_user:pipeline_user ${main}
 USER pipeline_user
