@@ -10,7 +10,8 @@ echo $3
 docker build https://$GITHUBAT@github.com/metagenlab/microbiome16S_pipeline.git#$VERSION \
     -t metagenlab/amplicon_pipeline:$VERSION \
     -f ./Dockerfile \
-    --build-arg GITHUB_AT=$GITHUBAT
+    --build-arg GITHUB_AT=$GITHUBAT \
+    --build-arg TEST_CPU=$CPU
 
 docker build https://$GITHUBAT@github.com/metagenlab/microbiome16S_pipeline.git#$VERSION \
     -f ./validation.Docker . \
