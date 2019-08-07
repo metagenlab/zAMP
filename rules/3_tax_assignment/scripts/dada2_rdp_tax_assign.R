@@ -5,9 +5,9 @@
 
 
 ## Redirect R output to the log file
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Input
     seqs <- snakemake@input[["seqs"]]
@@ -36,14 +36,16 @@
 
 ## Assign taxonomy
     print("Assigning")
-    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Genus, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus"), multithread=4, tryRC = TRUE, minBoot = 50, verbose = TRUE)
-    taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
+    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Species, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus", "Species"), multithread=TRUE, tryRC = TRUE, minBoot = 50, verbose = TRUE, outputBootstraps = TRUE)
+    #taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
+    # Not working for some reason
 
 ## Format an write output
-    taxa_table <- data.frame(cbind(Row.Names = rownames(taxa), taxa))
-    taxa_table <- taxa_table %>% unite(taxonomy, c("Kingdom","Phylum","Class","Order","Family","Genus","Species"), sep = ";", remove = TRUE)
-    taxa_table <- data.frame(cbind(Row.Names = rownames(taxa_table), taxa_table))
-    taxa_table$Row.Names<-NULL
+    taxa_table <- data.frame(taxa)
+    taxa_table <- data.frame(cbind(Row.Names = names(rownames(unlist(taxa$tax))), taxa_table))
+    taxa_table <- taxa_table %>% unite(taxonomy, starts_with(match = "tax."), sep = ";", remove = TRUE)
+    taxa_table <- taxa_table %>% unite(boot, starts_with(match = "boot"), sep = ";", remove = TRUE)
 
-    write.table(x = taxa_table, file = tax , sep="\t", quote=F, col.names = F)
+    #taxa_table$Row.Names<-NULL
+    write.table(taxa_table, tax, row.names = FALSE, sep = "\t", col.names = FALSE, quote = FALSE)
 
