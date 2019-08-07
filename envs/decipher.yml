@@ -1,0 +1,7 @@
+name: barplots
+channels:
+ - bioconda
+dependencies:
+ - r-base==3.5.1
+ - bioconductor-decipher==2.12.0
+

@@ -1,5 +1,5 @@
 ################ Validation config ################
-assembly_finder_Snakefile: /home/pipeline_user/assembly_finder/Snakefile
+assembly_finder_Snakefile: /home/valentinscherz/assembly_finder/Snakefile
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
