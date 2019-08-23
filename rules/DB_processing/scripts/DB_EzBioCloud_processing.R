@@ -19,13 +19,17 @@ EzBioCloud_V3V4_all_taxonomy_Qiime <- snakemake@output[["qiime_all"]]
 numbers_species <- snakemake@params[["numbers_species"]]
 numbers_genus <- snakemake@params[["numbers_genus"]]
 
+
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
 library(lattice);packageVersion("lattice")
 library(stringr);packageVersion("stringr")
 library(forcats);packageVersion("forcats")
 
+
+
 ## First changes to files obtained by qiime like eliminating what we do not need
+
 # Recovery of the taxonomy table is a file in Qiime format
 # to divide the string when this symbol is found ;
 EzBio_tax <- read.delim(EzBio_tax1, header=FALSE, as.is = TRUE, colClasses = "character", strip.white = TRUE)
@@ -129,7 +133,7 @@ for (c_name in g2correct)
     # retrieve and get new genus names and new species names
     new_entry <- c(selected_tax_table[1,1:5],new_genus_name,new_species_name_f)
     new_entry_all <- c(selected_tax_table[1,1:5],new_genus_name,new_species_name_all)
-    new_selected_tax_tble <- matrix(rep(new_entry,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
+    new_selected_tax_table <- matrix(rep(new_entry,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
     new_selected_tax_table_all <- matrix(rep(new_entry_all,nrow(selected_tax_table)),nrow=nrow(selected_tax_table),ncol = 7,byrow = TRUE)
 
     # link the taxonomic list with the accession number
@@ -215,6 +219,7 @@ for(xx in 1:7)
 # table of Bacteria
 Bacteria_tax_table_cluster <- cbind(cluster_rep_sq[names(B_tax_split)],Bacteria_tax_table_cluster)
 
+
 ## Create a function
 # Replacement of the first genus in the species column, where there are several species present but when there are two genera, the species is not modified
 Double_genus <- function(Raw_table)
@@ -239,6 +244,7 @@ Bacteria_tax_table_cluster[,8] <- apply(X = Bacteria_tax_table_cluster, MARGIN =
 Archaea_c_names <- cluster_rep_sq[unique(Archaea_clusters_table[,1])]
 Archaea_tax_table_cluster <- cbind(Archaea_c_names,tax_table[Archaea_c_names,])
 
+
 # create tĥe new table who regroup the table Bacteria, the table Archaea and the table with unique number accession
 tax_table_cluster_singletons <- cbind(singleton_clusters_rep_seq,tax_table[singleton_clusters_rep_seq,])
 tax_table_V3V4 <- rbind(Bacteria_tax_table_cluster,Archaea_tax_table_cluster,tax_table_cluster_singletons)
@@ -253,8 +259,11 @@ tax_collapsed <- apply(EzBioCloud_V3V4_tax[,2:8],1,paste,collapse=";")
 new_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_collapsed)
 write.table(x = new_tax, file = EzBioCloud_V3V4_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
 
+
+
 ## grouping tables and conditions to get a table with all the parameters
 #version with all species names
+
 # The same method as for the « version with four species » except that we use the file containing all the names and not the file sort and we do not realize the replacement of a genus in the column of the species when there are several kinds and species
 
 Bacteria_tax_table_cluster_all <- matrix(ncol=7,nrow=length(unique(Bacteria_clusters_table[,1])))
@@ -283,5 +292,4 @@ EzBioCloud_V3V4_all_tax <- read.csv(file = EzBioCloud_V3V4_all_taxonomy, as.is =
 tax_all_collapsed <- apply(EzBioCloud_V3V4_all_tax[,2:8],1,paste,collapse=";")
 new_all_tax <- cbind(EzBioCloud_V3V4_tax[,1],tax_all_collapsed)
 write.table(x = new_all_tax, file = EzBioCloud_V3V4_all_taxonomy_Qiime ,quote = FALSE, sep="\t",row.names = FALSE ,col.names = FALSE)
-
 
