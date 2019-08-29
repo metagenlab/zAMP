@@ -1,0 +1,11 @@
+vsearch v2.7.0_linux_x86_64, 376.6GB RAM, 112 cores
+https://github.com/torognes/vsearch
+
+Reading file /home/valentinscherz/bin/microbiome16S_pipeline/data/Silva132.201908/dna-sequences.fasta 100%
+158750035 nt in 380381 seqs, min 53, max 500, avg 417
+Dereplicating 100%
+Sorting 100%
+320511 unique sequences, avg cluster 1.2, median 1, max 657
+Writing output file 100%
+Writing uc file, first part 100%
+Writing uc file, second part 100%

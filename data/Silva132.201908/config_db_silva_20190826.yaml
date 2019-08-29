@@ -1,0 +1,16 @@
+#localisation of database
+DBpath_seq: "/home/valentinscherz/bin/microbiome16S_pipeline/data/Silva132.201908/original_files/Silva_132_release/SILVA_132_QIIME_release/rep_set/rep_set_all/99/silva132_99.fna"
+DBpath_tax: "/home/valentinscherz/bin/microbiome16S_pipeline/data/Silva132.201908/original_files/Silva_132_release/SILVA_132_QIIME_release/taxonomy/taxonomy_all/99/majority_taxonomy_7_levels.txt"
+
+## Output
+output_dir: "Silva132.201908"
+
+#trimming
+forward_primer: CCTACGGGNGGCWGCAG
+reverse_primer: GACTACHVGGGTATCTAATCC
+length_max: 500
+
+#Filtering
+numbers_species: 4
+numbers_genus: 2
+
