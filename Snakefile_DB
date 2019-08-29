@@ -1,7 +1,6 @@
-include: "rules/DB_processing/EzBioCloud.rules"
+include: "rules/DB_processing/DB_preprocessing.rules"
 
 ## Run the function
 rule all:
     input:
-         workflow.basedir + "/data/ezbiocloud201805.201905/EzBioCloud_V3V4_taxonomy.txt"
-
+         workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_taxonomy.txt"

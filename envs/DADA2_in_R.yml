@@ -3,11 +3,9 @@ channels:
  - conda-forge
  - bioconda
 dependencies:
-  - r-base==3.5.1[build=*_1007] # specific version correcting "can't access ldpath" error
-  - r-devtools = 1.13.6
-  - bioconductor-DADA2=1.10.0
-  - r-dplyr=0.7.6
-  - bioconductor-phyloseq = 1.26.1
+  - r-base
+  - bioconductor-DADA2=1.12.1
+  - r-dplyr
   - libgfortran
   - ggplot
   - r-tidyr

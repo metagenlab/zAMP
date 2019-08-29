@@ -1,7 +1,7 @@
 
 rule Import_ReferenceSequences :
     conda :
-        "../../envs/QIIME2-2019.04.yml"
+        "../../envs/QIIME2-2019.07.yml"
     input :
         config["amplicons_refpath_seq"]
     output :
@@ -18,7 +18,7 @@ rule Import_ReferenceSequences :
 
 rule Import_Vsearch_QuerySequences :
     conda :
-        "../../envs/QIIME2-2019.04.yml"
+        "../../envs/QIIME2-2019.07.yml"
     input :
         "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
     output :
@@ -52,7 +52,7 @@ rule file_DADA2 :
 
 rule Import_DADA2_QuerySequences :
     conda :
-        "../../envs/QIIME2-2019.04.yml"
+        "../../envs/QIIME2-2019.07.yml"
     input :
         rep_seqs = "QualityControl/DADA2_{sample}_sequence.fasta"
     output :
@@ -69,7 +69,7 @@ rule Import_DADA2_QuerySequences :
 
 rule  Quality_Control :
     conda :
-        "../../envs/QIIME2-2019.04.yml"
+        "../../envs/QIIME2-2019.07.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
         Query = "QualityControl/{methode}_{sample}_query_seq.qza"

@@ -18,6 +18,9 @@
 ## Output
     tax <- snakemake@output[["tax"]]
 
+## Parameters
+    cpu <- snakemake@threads
+
 ## Load needed libraries
     library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
@@ -36,7 +39,7 @@
 
 ## Assign taxonomy
     print("Assigning")
-    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Species, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus", "Species"), multithread=TRUE, tryRC = TRUE, minBoot = 50, verbose = TRUE, outputBootstraps = TRUE)
+    taxa <- assignTaxonomy(seqs = seq_table, refFasta = King_to_Species, taxLevels = c("Kingdom","Phylum","Class","Order","Family","Genus", "Species"), multithread=cpu, tryRC = TRUE, minBoot = 50, verbose = TRUE, outputBootstraps = TRUE)
     #taxa <- addSpecies(taxtab = taxa, refFasta = Genus_species, verbose=TRUE, allowMultiple = TRUE, tryRC = TRUE)
     # Not working for some reason
 

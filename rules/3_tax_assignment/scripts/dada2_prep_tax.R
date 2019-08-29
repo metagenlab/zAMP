@@ -32,10 +32,15 @@
     King_to_genus <- split_tax_table
     King_to_genus$Species <- NULL
     King_to_genus <- King_to_genus %>% unite(taxonomy, c("Kingdom","Phylum","Class","Order","Family","Genus"), sep = ";", remove = TRUE)
+    King_to_genus$taxonomy <- paste0(King_to_genus$taxonomy, ";")
+
+    King_to_species <- tax_table
+    King_to_species$V2 <- paste0(King_to_species$V2, ";")
 
     genus_species <- split_tax_table
     genus_species <- genus_species %>% unite(taxonomy, c("V1", "Genus", "Species"), sep = " ", remove = FALSE) %>% select(-c("Kingdom","Phylum","Class","Order","Family", "Genus","Species"))
     genus_species <- genus_species[,c(2,1)]
+
 
 
 ## Define a function taken from phylotools https://github.com/cran/phylotools/blob/master/R/rename.fasta.R
@@ -73,6 +78,6 @@ rename.fasta <- function(infile = NULL, ref_table,
 
 
 ## Write data
-    rename.fasta(infile = ref_seqs, ref_table = tax_table, outfile = King_to_Species)
+    rename.fasta(infile = ref_seqs, ref_table = King_to_species, outfile = King_to_Species)
     rename.fasta(infile = ref_seqs, ref_table = King_to_genus, outfile = King_to_Genus)
     rename.fasta(infile = ref_seqs, ref_table = genus_species, outfile = Genus_species)
