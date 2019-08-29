@@ -43,8 +43,6 @@
     library(stringr);packageVersion("stringr")
 
 
-### Train dataset
-    seqs_path <- "EzBioCloud_V3V4_decipher.fasta"
 # read the sequences into memory
     seqs <- readDNAStringSet(decipher_seqs)
 

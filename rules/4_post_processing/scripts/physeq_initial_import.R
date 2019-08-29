@@ -55,7 +55,7 @@ print("reading taxonomy table")
 taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 
     ### Convert the table into a tabular split version
-    taxonomy_table<-taxonomy_table %>% as.tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
+    taxonomy_table<-taxonomy_table %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
 
     ### Replace the not properly named headers into proper ones
     colnames(taxonomy_table)[colnames(taxonomy_table)=="V1"] <- "Feature.ID"

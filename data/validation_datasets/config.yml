@@ -15,7 +15,7 @@ filter_column_value: pipeline_validation # Value of filtered in samples of this 
 
 ## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
-denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
+denoiser: ["vsearch"] # "vsearch", "DADA2" or both
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
@@ -34,8 +34,8 @@ merged_min_length: 390 # from 390 to 400 for V3V4
 merged_max_length: 500 # from 450 to 500 for V3V4
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud201805.201905"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
-classifier: ["qiimerdp", "dada2rdp"]
+tax_DB: ["Silva132.201908","ezbiocloud201805.201908"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
+classifier: ["qiimerdp", "dada2rdp","decipher"]
 
 
 ## Reads post-processing ##############################################################################################

@@ -1,13 +1,13 @@
 name: physeq
 channels:
  - conda-forge
- - defaults
  - bioconda
  - biocore
+ - defaults
 dependencies:
- - r-base==3.5.1[build=*_1007] # specific version correcting "can't access ldpath" error # specific version correcting "can't access ldpath" error
- - bioconductor-phyloseq = 1.26.1
- - r-vegan = 2.5.2
- - r-dplyr = 0.7.6
- - r-tidyverse = 1.2.1
- - r-stringr = 1.3.1
+ - r-base # specific version correcting "can't access ldpath" error # specific version correcting "can't access ldpath" error
+ - bioconductor-phyloseq = 1.28.0
+ - r-vegan
+ - r-dplyr
+ - r-tidyverse
+ - r-stringr

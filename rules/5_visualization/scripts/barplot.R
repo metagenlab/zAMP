@@ -292,11 +292,10 @@
                 theme_bw() +
                 geom_col() +
                 #scale_x_discrete(labels = x_labels, drop = TRUE) + # Set false to keep empty bars
-                scale_y_discrete(labels = taxalabel) +
                 theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5), legend.text=element_text(size=5), plot.title = element_text(hjust = 0.5)) + # axis and title settings
                 guides(fill = guide_legend(title = paste0(plotting_tax_ranks),reverse = FALSE, keywidth = 0.5, keyheight = 0.5, ncol = 1)) + # settings of the legend
                 labs(x = x_axis_column,  y = paste(plotting, "abundance"), title = paste("Taxonomic composition", plotting_tax_ranks,"level", i)) + # axis and graph title
-                scale_fill_manual(values = colors_palette) # colors as set previously
+                scale_fill_manual(values = colors_palette, labels = taxalabel) # colors as set previously
 
 
                 #### In option, turn barplot horizontally

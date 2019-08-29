@@ -1,20 +1,20 @@
-User manual DB processing :
+## DB processing :
 
-Snakemake is a workflow management system. We use it to create data analysis pipelines, so such as the implementation of the database.
+Preparation of reference databases for our amplicon-based metagenomic snakemake pipeline is here embedded as an ad-hoc snakemake pipeline. It takes as input a reference database containing a fasta file (sequences) and a taxonomy file (corresponding taxonomy) in the Qiime format. 
 
+**This ad-hoc reference database preparation pipeline relies on  :**
+ - A dedicated snakefile (Snakefile_DB) to run this ad-hoc pipeline.
+ - Configuration file (config_DB.yaml) to point at the input and output paths and defines parameter for amplicons extraction and taxonomy formatting. 
 
-For that, 5 files are created (the rules with EzBioCloud.rules; for the script R the file DB_EzBioCloud_processing.R; the parameters of configuration with config_DB.yaml; the file containing the addition of the various rules Snakefile_DB and the environment necessary for the execution of the R script thanks to the R_DB_processing.yml file).
-
-The file "EzBioCloud.rules" will allow to execute the command lines and scripts of the download of the database to the recovery of the processed database. This pipeline will generate some log and output files which are mostly future input files for the next step. The last files obtained are the results of the extraction of the V3 - V4 regions and of the dereplication and the taxonomic assembly according to the sequence numbers.
-
-A file "config_DB.yaml" allowing to have the parameters of some data and the localization, path of the basic files (download of the database EzBioCloud). This file must be in the directory where the snakemake command is run in the "microbiome16S_pipeline" directory.
-
-
-When a database update is done :
-- You only have to change the two basic files who is in microbiome16S_pipeline/data/ezbiocloud.  
-- Leave the following code separately if the names of these files are different from the previous ones you have to change them so that it matches to the system can easily find them in the rules file "EzBioCloud.rules" and config_DB.yaml.
+In brief, through the few rules in "EzBioCloud.rules", we will import the taxonomy and sequences in Qiime2 ".qza" format, and extract the region targeted by the PCR primers defined in the config file using Qiime2 "qiime feature-classifier extract-reads" function. Then, the sequences will be dereplicated (to keep only unique sequences) using vsearch. Following dereplication, taxonomy description will be merged to describe the different taxa that could correspond to a given sequences. A parameter in config allows to define up to how many Genus/Species names will merged. If there are more taxa matching a sequence, then a spaceholder (".sp") will be used. The number of taxa matching a specific taxonomic ID will also be written. 
 
 
-
-The DB_processing command is :
-snakemake --snakefile $pipeline_folder/Snakefile_DB --use-conda --conda-prefix $pipeline_folder/miniconda3/  --cores 1  --configfile config_DB.yaml     
+**To compile a new database :**
+- Create a new directory in "/data" using "{dbname}{version}.{preparationyearmonth}
+- In this directory, include a Readme.Md file describing the origin of the reference database.
+- Locate the fasta, taxonomy files and the desired output path (just created directory) in configfile. 
+- Run the following command from the just created directory.
+``` 
+snakemake --snakefile $pipeline_folder/Snakefile_DB --use-conda --conda-prefix $condaprefix --cores 1  --configfile config_DB.yaml     
+```
+- Add to git the output fasta and taxonomy as well as the configfile, the generated logs and the Readme describing the origin of the database to enable traceability. 

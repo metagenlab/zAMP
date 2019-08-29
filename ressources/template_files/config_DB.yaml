@@ -1,6 +1,9 @@
 #localisation of database
-DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/EzBioCloud_V3V4.fasta"
-DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/EzBioCloud_V3V4_taxonomy.txt"
+DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta"
+DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt"
+
+## Output
+output_dir: "EzBioCloud_version"
 
 #trimming
 forward_primer: CCTACGGGNGGCWGCAG

@@ -2,5 +2,5 @@ name: cutadapt
 channels:
  - bioconda
 dependencies:
- - cutadapt = 2.3
+ - cutadapt = 2.4
 

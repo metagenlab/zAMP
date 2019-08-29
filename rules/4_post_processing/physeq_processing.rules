@@ -27,7 +27,7 @@ rule physeq_initial_import:
     params:
         viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.txt"
+        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/initial_import.txt"
     script:
         "scripts/physeq_initial_import.R"
 

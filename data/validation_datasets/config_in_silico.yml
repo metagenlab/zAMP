@@ -1,5 +1,5 @@
 ################ Validation config ################
-assembly_finder_Snakefile: /home/valentinscherz/assembly_finder/Snakefile
+assembly_finder_Snakefile: /home/pipeline_user/assembly_finder/Snakefile
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
@@ -13,7 +13,7 @@ threeprime: 2 # Number of match at the 3' end for a hit to be considered
 
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud201805.201905", "ezbiocloud201805", "ezbiocloud.marta", "ezbiocloud.valentin"] # must be the name of the folder containing files named "EzBioCloud_V3V4.fasta" and "EzBioCloud_V3V4_taxonomy.txt" in /data/. Can be multiple.
+tax_DB: ["ezbiocloud201805.201905", "ezbiocloud201805", "ezbiocloud.marta", "ezbiocloud.valentin"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
 classifier: ["qiimerdp", "dada2rdp"]
 
 ### Processing for comparison of taxonomic assignment
