@@ -1,0 +1,104 @@
+
+rule Import_DB :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        config["DBpath_seq"]
+    output :
+        temp(workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza")
+    threads :
+        1
+    shell :
+         '''
+        qiime tools import \
+        --type 'FeatureData[Sequence]' \
+        --input-path {input} \
+        --output-path {output} 
+        '''
+
+
+rule Extract_amp :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza"
+    output :
+        temp(workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza")
+    params :
+        primer_forward = config["forward_primer"],
+        primer_reverse = config["reverse_primer"],
+        length = config["length_max"]
+    threads :
+        1
+    shell :
+         '''
+        qiime feature-classifier extract-reads \
+        --i-sequences {input} \
+        --p-f-primer {params[primer_forward]} \
+        --p-r-primer {params[primer_reverse]} \
+        --p-trunc-len {params[length]} \
+        --o-reads {output} 
+        '''
+
+
+
+rule Export :
+   conda :
+        "../../envs/QIIME2-2019.04.yml"
+   input :
+        workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza"
+   output :
+        temp(workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta")
+   threads :
+        1
+   shell :
+         '''
+        qiime tools export \
+        --input-path {input} \
+        --output-path $(dirname {output}) 
+        '''
+
+
+
+rule Vsearch :
+    conda :
+        "../../envs/QIIME2-2019.04.yml"
+    input :
+        workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta"
+    output :
+        fasta = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp.fasta",
+        uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"
+    log :
+        workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.log"
+    threads :
+        1
+    shell :
+         '''
+        vsearch \
+        --derep_fulllength {input} \
+        --output {output[fasta]} \
+        --uc {output[uc]} \
+        2> {log}
+        '''
+
+
+
+rule Taxonomy :
+    conda :
+        "../../envs/R_DB_processing.yml"
+    input :
+        tax = config["DBpath_tax"],
+        uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"
+    output :
+        formatted_tax = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_taxonomy.txt",
+        all = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_all_taxonomy.txt",
+        problematic = workflow.basedir + "/data/" + config["output_dir"] + "/log/probematic_taxa.txt"
+    log :
+       workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp_taxonomy.log"
+    params:
+        numbers_species = config["numbers_species"],
+        numbers_genus = config["numbers_genus"]
+    threads :
+        1
+    script :
+        "scripts/DB_tax_formatting.R"
