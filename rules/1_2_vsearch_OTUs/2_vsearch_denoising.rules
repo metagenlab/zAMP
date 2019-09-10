@@ -1,11 +1,19 @@
 ## vsearch generate 97% identity OTUs.
 
+## Define trimmed or not trimmed input (for read already trimmed)
+def vsearch_trim_input():
+    if config['Trim_primers'] == True :
+        return ["vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"]
+    else : 
+        return ["vsearch/1b_q_score_filtered_paired/{sample}_paired.fasta"]
+    
+  
 ### Keep only once indentical sequences and keep score of their prevalence.
 rule vsearch_dereplicate_samples:
     conda:
         "../../envs/QIIME1.yml"
     input:
-        "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
+        vsearch_trim_input()
     output:
         temp("vsearch/1c_derep/{sample}_derep.fasta")
     log:
