@@ -4,9 +4,9 @@
 
 def DADA2_trim_input():
     if config['Trim_primers'] == True :
-        return [R1_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", R2_list = "DADA2/1a_trimmed_primers/{sample}_trimmed_R2_fastq.gz"]
+        return ["DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", "DADA2/1a_trimmed_primers/{sample}_trimmed_R2_fastq.gz"]
     else : 
-        return [R1_list = "raw_reads/{sample}_R1.fastq.gz", R2_list = "raw_reads/{sample}_R2.fastq.gz"]
+        return ["raw_reads/{sample}_R1.fastq.gz", "raw_reads/{sample}_R2.fastq.gz"]
 
 
 ### Remove low quality and too short reads
