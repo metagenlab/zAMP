@@ -10,8 +10,8 @@
     sink(log, type="message")
 
 ## Input
-    fnFs <- snakemake@input[["R1_list"]]
-    fnRs <- snakemake@input[["R2_list"]]
+    fnFs <- snakemake@input[[1]]
+    fnRs <- snakemake@input[[2]]
 
 ## Output
     q_score_filtered_F <- snakemake@output[["q_score_filtered_F"]]
