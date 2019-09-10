@@ -28,10 +28,13 @@ rule vsearch_dereplicate_samples:
                 2> {log}
         '''
 
+
+
+
 ### Combine all dereplicated sequences in one big fasta
 rule merge_all_in_one_fasta:
     input:
-        expand("vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta", sample=list(read_naming.keys())),
+        expand(vsearch_trim_input(), sample=list(read_naming.keys())),
     output:
         temp("vsearch/1c_derep/merged_all.fasta")
     shell:
