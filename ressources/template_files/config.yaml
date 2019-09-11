@@ -20,6 +20,7 @@ sample: ['20180718_MOCK_MN_Illumina','20180718_MOCK_MN_Qiagen'] # Mock community
 denoiser: ["vsearch", "DADA2"] # "vsearch", "DADA2" or both
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
+Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
