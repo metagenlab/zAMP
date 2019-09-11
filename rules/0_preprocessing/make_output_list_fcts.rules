@@ -247,5 +247,4 @@ def rule_all_list():
     output.append(plots_output_list())
     output.append(Qiime2_vis_qzv)
     output.append(phyloseq_output_list())
-    print(output)
     return(output)
