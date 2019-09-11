@@ -18,6 +18,7 @@ filter_column_value: pipeline_validation # Value of filtered in samples of this 
 denoiser: ["vsearch"] # "vsearch", "DADA2" or both
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
+Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
