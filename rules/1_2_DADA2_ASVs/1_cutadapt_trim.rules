@@ -1,6 +1,7 @@
 ## Remove primers from sequences
 
 from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
 
 rule cutadapt_trim_for_DADA2:
     conda:
@@ -16,8 +17,8 @@ rule cutadapt_trim_for_DADA2:
     params:
         forward_primer = config["forward_primer"],
         reverse_primer = config["reverse_primer"],
-        forward_primer_compl = forward_primer.reverse_complement(),
-        reverse_primer_compl = reverse_primer.reverse_complement(),
+        forward_primer_compl = Seq.reverse_complement(Seq(config["forward_primer"], IUPAC.ambiguous_dna)),
+        reverse_primer_compl = Seq.reverse_complement(Seq(config["reverse_primer"], IUPAC.ambiguous_dna))
     threads:
         1
     shell:
