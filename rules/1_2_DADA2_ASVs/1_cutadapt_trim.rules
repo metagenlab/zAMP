@@ -24,21 +24,21 @@ rule cutadapt_trim_for_DADA2:
         1
     shell:
         '''
-	echo "{params[amplicon_type]}" ; \
-	if ('"'{params[amplicon_type]}'"'='"'ITS'"')  
-	then
-		cutadapt \
-		--cores {threads} \
-		--error-rate 0.1 \
-		--times 1 \
-		--overlap 3 \
-		-o {output[R1_trimmed_reads]} \
-		-p {output[R2_trimmed_reads]} \
-		-g '{params[forward_primer]}' -a '{params[reverse_primer_compl]}' \
-		-G '{params[reverse_primer]}' -A '{params[forward_primer_compl]}' \
-		--match-read-wildcards \
-		{input[R1_raw_reads]} \
-		{input[R2_raw_reads]} >> {log}
+	    echo "{params[amplicon_type]}" ; \
+	    if [{params[amplicon_type]} = 'ITS']  
+	    then
+            cutadapt \
+            --cores {threads} \
+            --error-rate 0.1 \
+            --times 1 \
+            --overlap 3 \
+            -o {output[R1_trimmed_reads]} \
+            -p {output[R2_trimmed_reads]} \
+            -g '{params[forward_primer]}' -a '{params[reverse_primer_compl]}' \
+            -G '{params[reverse_primer]}' -A '{params[forward_primer_compl]}' \
+            --match-read-wildcards \
+            {input[R1_raw_reads]} \
+            {input[R2_raw_reads]} >> {log}
 
         else
             echo "16S" \
