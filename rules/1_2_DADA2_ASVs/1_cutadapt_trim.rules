@@ -15,6 +15,7 @@ rule cutadapt_trim_for_DADA2:
     log:
         logging_folder + "{denoiser}/1a_trimmed_primers/{sample}_trimmed.txt"
     params:
+        amplicon_type = config["ITS_or_16S"],
         forward_primer = config["forward_primer"],
         reverse_primer = config["reverse_primer"],
         forward_primer_compl = Seq.reverse_complement(Seq(config["forward_primer"], IUPAC.ambiguous_dna)),
@@ -23,21 +24,21 @@ rule cutadapt_trim_for_DADA2:
         1
     shell:
         '''
-        if [ "{config["ITS_or_16S"]}" = "ITS" ]
-        then
-            echo "ITS" \
-            cutadapt \
-            --cores {threads} \
-            --error-rate 0.1 \
-            --times 1 \
-            --overlap 3 \
-            -o {output[R1_trimmed_reads]} \
-            -p {output[R2_trimmed_reads]} \
-            -g '{params[forward_primer]}' -a '{params[reverse_primer_compl]}' \
-            -G '{params[reverse_primer]}' -A '{params[forward_primer_compl]}' \
-            --match-read-wildcards \
-            {input[R1_raw_reads]} \
-            {input[R2_raw_reads]} >> {log}
+	echo "{params[amplicon_type]}" ; \
+	if ('"'{params[amplicon_type]}'"'='"'ITS'"')  
+	then
+		cutadapt \
+		--cores {threads} \
+		--error-rate 0.1 \
+		--times 1 \
+		--overlap 3 \
+		-o {output[R1_trimmed_reads]} \
+		-p {output[R2_trimmed_reads]} \
+		-g '{params[forward_primer]}' -a '{params[reverse_primer_compl]}' \
+		-G '{params[reverse_primer]}' -A '{params[forward_primer_compl]}' \
+		--match-read-wildcards \
+		{input[R1_raw_reads]} \
+		{input[R2_raw_reads]} >> {log}
 
         else
             echo "16S" \
