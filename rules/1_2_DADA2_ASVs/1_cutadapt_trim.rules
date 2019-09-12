@@ -1,8 +1,5 @@
 ## Remove primers from sequences
 
-from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
-
 rule cutadapt_trim_for_DADA2:
     conda:
         "../../envs/cutadapt.yml"
@@ -18,15 +15,17 @@ rule cutadapt_trim_for_DADA2:
         amplicon_type = config["ITS_or_16S"],
         forward_primer = config["forward_primer"],
         reverse_primer = config["reverse_primer"],
-        forward_primer_compl = Seq.reverse_complement(Seq(config["forward_primer"], IUPAC.ambiguous_dna)),
-        reverse_primer_compl = Seq.reverse_complement(Seq(config["reverse_primer"], IUPAC.ambiguous_dna))
     threads:
         1
-    shell:
+    run:
         '''
-	    echo "{params[amplicon_type]}" ; \
-	    if [{params[amplicon_type]} = 'ITS']  
-	    then
+        from Bio.Seq import Seq
+        from Bio.Alphabet import IUPAC
+
+	    if params.amplicon_type == 'ITS' 
+            forward_primer_compl = Seq.reverse_complement(Seq(params.forward_primer, IUPAC.ambiguous_dna)),
+            reverse_primer_compl = Seq.reverse_complement(Seq(params.reverse_primer, IUPAC.ambiguous_dna))
+            shell("
             cutadapt \
             --cores {threads} \
             --error-rate 0.1 \
@@ -34,14 +33,15 @@ rule cutadapt_trim_for_DADA2:
             --overlap 3 \
             -o {output[R1_trimmed_reads]} \
             -p {output[R2_trimmed_reads]} \
-            -g '{params[forward_primer]}' -a '{params[reverse_primer_compl]}' \
-            -G '{params[reverse_primer]}' -A '{params[forward_primer_compl]}' \
+            -g '{params[forward_primer]}' -a '{reverse_primer_compl}' \
+            -G '{params[reverse_primer]}' -A '{forward_primer_compl}' \
             --match-read-wildcards \
             {input[R1_raw_reads]} \
             {input[R2_raw_reads]} >> {log}
+            ")
 
         else
-            echo "16S" \
+            shell("
             cutadapt \
             --cores {threads} \
             --error-rate 0.1 \
@@ -54,6 +54,5 @@ rule cutadapt_trim_for_DADA2:
             --match-read-wildcards \
             {input[R1_raw_reads]} \
             {input[R2_raw_reads]} >> {log}
-
-        fi
+            ")
         '''
