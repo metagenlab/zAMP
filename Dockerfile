@@ -90,7 +90,7 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --use-conda --
 
 ## Run the insilico validation pipeline. It allows to create compiled versions of reference databases with root privileges
 ARG TEST_CPU
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile config_in_silico.yml insilico_validation
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile 16S_config_in_silico.yml insilico_validation
 
 
 #################### Set final access rights, variables and work dir #####################
