@@ -33,7 +33,7 @@ R_extected_error: 6 # 6 recommended, increase if too much reads are filtered out
 
 ### Taxonomic assignment ##############################################################################################
 ### Reference database
-tax_DB: ["Silva132.201908","ezbiocloud201805.201908"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
+tax_DB: ["Silva132.201908","ezbiocloud201805.201909"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
 ### Taxonimc classifier.
 classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", "dada2rdp","decipher"
 
