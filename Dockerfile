@@ -65,7 +65,7 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 ARG GITHUB_AT
 
 ## Clone the pipeline files and assembly_finder, developped by @idfarbanecha
-COPY ./data/ezbiocloud201805.201905 /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201905
+COPY ./data/ezbiocloud201805.201909 /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
 COPY ./data/ezbiocloud201805 /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
 COPY ./data/Silva132.201908 /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
 COPY ./data/unite201902 /home/pipeline_user/microbiome16S_pipeline/data/unite201902
