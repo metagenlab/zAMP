@@ -158,10 +158,10 @@ formatted_tax <- multiple_tax %>%
 
                         TRUE ~ case_when(# Same as for Genus, only that here we also indicate the Genus in Species.
                                         n_distinct(Genus) > 1 ~ case_when(n_distinct(Species) <= n_species ~ paste0(paste(unique(Genus), unique(Species), collapse = "/"), "(", n_distinct(Species), ")"),
-                                                                           n_distinct(Species) > n_species ~ paste0(paste(unique(Genus), collapse = "/"), "sp.(", n_distinct(Species),")"),
+                                                                           n_distinct(Species) > n_species ~ paste0(paste(unique(Genus), collapse = "/"), " ","sp.(", n_distinct(Species),")"),
                                                                             ),
                                          TRUE ~ case_when(n_distinct(Species) <= n_species ~ paste0(paste(unique(Genus), collapse = ""), " ", paste(unique(Species), collapse = "/"), "(", n_distinct(Species), ")"),
-                                                                                            n_distinct(Species) > n_species ~ paste0(paste(unique(Genus), collapse = "/"), "sp.(", n_distinct(Species),")")
+                                                                                            n_distinct(Species) > n_species ~ paste0(paste(unique(Genus), collapse = "/"), " ", "sp.(", n_distinct(Species),")")
                                                                                             )
                                                                             )
                 ),

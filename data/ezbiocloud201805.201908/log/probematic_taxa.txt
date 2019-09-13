@@ -1,2 +1,0 @@
-clust_id,clust_rep,new_Kingdom,new_Phylum,new_Class,new_Order,new_Family,new_Genus,new_Species,problematic_tax
-735,140220,Bacteria,Proteobacteria,Alphaproteobacteria,Sphingomonadales,Sphingomonadaceae/Erythrobacteraceae,Blastomonas/Altererythrobacter,BlastomonasAltererythrobacter marina/halimionae(2),Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
