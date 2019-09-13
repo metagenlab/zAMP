@@ -1,1 +1,0 @@
-/home/valentinscherz/bin/miniconda3/envs/snakemake/bin/snakemake --snakefile /home/valentinscherz/bin/microbiome16S_pipeline/Snakefile --cores 40 --resources max_copy=4 --use-conda --conda-prefix /home/valentinscherz/bin/miniconda3/ --configfile config_db_ezbiocloud20190913.yaml all -k

@@ -2,10 +2,10 @@ vsearch v2.7.0_linux_x86_64, 376.6GB RAM, 112 cores
 https://github.com/torognes/vsearch
 
 Reading file /home/valentinscherz/bin/microbiome16S_pipeline/data/ezbiocloud201805.201909/dna-sequences.fasta 100%
-26735896 nt in 64481 seqs, min 107, max 500, avg 415
+26730362 nt in 64472 seqs, min 107, max 500, avg 415
 Dereplicating 100%
 Sorting 100%
-61660 unique sequences, avg cluster 1.0, median 1, max 82
+61651 unique sequences, avg cluster 1.0, median 1, max 82
 Writing output file 100%
 Writing uc file, first part 100%
 Writing uc file, second part 100%
