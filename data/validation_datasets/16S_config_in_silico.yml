@@ -23,7 +23,7 @@ viz_replace_empty_tax: TRUE
 
 ########### Assembly finder config ################
 
-input_table_path: 'input_table_insilico.tsv'
+input_table_path: '16S_input_table_insilico.tsv'
 
 NCBI_key: '6dce38824889f62e188a25ae35c52a083c08'
 NCBI_email: 'valentin.scherz@chuv.ch'
