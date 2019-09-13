@@ -1,46 +1,44 @@
-## Dataset ############################################################################################################
+## Reads proccessing ##################################################################################################
 ### Set input samples list. (Mandatory, one of them or both)
 link_directory: links/
-sra_samples: validation_set.tsv ## To access to Sequences Read Archive
+sra_samples: 16S_validation_set.tsv ## To access to Sequences Read Archive
 
-
-### Metadata columns definition
+### Sample processing metadata definition
 run_column: seq_run # Column identifying the sequencing run (sequencing error are learned for each run with DADA2)
-grouping_column: ["sample_group"] # Column for which a plot (e.g. KRONA page), will be generated for each value of.
-sample_label: sample_label # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique.
-sample_type: sample_source # Column in "local_samples" used to color points and fill plots.
-ordination_factor : sample_source # Column in "local_samples" used to for shapes of points in ordination.
-filter_meta_column: study_name # A column from which we could filter in samples
-filter_column_value: pipeline_validation # Value of filtered in samples of this column
+filter_meta_column: study_name # Column from which we filte samples
+filter_column_value: pipeline_validation # Value of this column for which we keep samples
 
-## Reads proccessing ##################################################################################################
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
-denoiser: ["vsearch"] # "vsearch", "DADA2" or both
+denoiser: ["vsearch","DADA2"] # "vsearch", "DADA2" or both. For ITS (see below) only DADA2 has been tested.
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
+ITS_or_16S: 16S # ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.
+min_overlap: 20 # Min overlap of the reads for paired-end reads merging
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
-### Length trimming of reads (after primer removal, for DADA2 approach only)
-DADA2_F_reads_length_trim: 280 # 280 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
-DADA2_R_reads_length_trim: 255 # 250 recommended to remove low quality ends of R2. Must be < than read_length - trimmed_primer_length
-
-### Quality-based filtering of reads (reads trimming, for DADA2 approach only)
-F_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
-R_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
-
-### Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
+### Merged sequences length-based filtering
 merged_min_length: 390 # from 390 to 400 for V3V4
 merged_max_length: 500 # from 450 to 500 for V3V4
 
-### Database used for taxonomic assignment
+### DADA2 specific settings ###########################################################################################
+#### Trim reads based on length. Reads shorter than this length are trimmed.
+DADA2_F_reads_length_trim: 280 # 280 recommended to remove low quality ends of R1. Must be < than read_length - trimmed_primer_length
+DADA2_R_reads_length_trim: 255 # 250 recommended to remove low quality ends of R2. Must be < than read_length - trimmed_primer_length
+
+### Filter reads based on number of expected errors after trimming
+F_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
+R_extected_error: 6 # 6 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only
+
+### Taxonomic assignment ##############################################################################################
+### Reference database
 tax_DB: ["Silva132.201908","ezbiocloud201805.201908"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
-classifier: ["qiimerdp", "dada2rdp","decipher"]
+### Taxonimc classifier.
+classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", "dada2rdp","decipher"
 
 
 ## Reads post-processing ##############################################################################################
-### Rarefaction
 rarefaction_value: [10000,20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
 viz_replace_empty_tax: TRUE # "TRUE" is recommended to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc.... Otherwise they are left empty
 filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "Kingdom")
@@ -48,43 +46,43 @@ filter_lineage: ["Bacteria"] # What value of filter_tax_rank we keep. (Usually "
 filter_out_tax_rank: ["Phylum"] # At which taxonomic rank we filter out. (Usually "Phylum")
 filter_out_lineage: ["Bacteria_phy"] # Which value of filter_out_tax_rank we filter out. (Usually "Bacteria_phy" to remove suspicious sequences assigned as Bacteria but which are probably not.
 
-
 ## Visualization ######################################################################################################
 ### Select output
 Barplots: True # or False
 Heatmaps: True # or False
 Alpha_divs: True # or False
+alpha_metrics: ["Shannon", "Simpson", "InvSimpson", "Chao1"]
 Distance_ordinations: True # or False
 Constrained_ordinations: True # or False
 Unconstrained_ordinations: False # or False
 
-### Ordination parameters
-ordination_distance: ["unifrac", "bray", "jaccard"]
-ordination_method_distance_based: ["NMDS", "MDS"]
-ordination_method_constrained: ["DPCoA"]
-ordination_method_unconstrained: ""
+### Visualization general settings
+grouping_column: ["sample_group"] # Column for which a plot will be generated for each value of.
+sample_label: sample_label # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)
+facet_plot: TRUE #(or 'FALSE') # Create facet plots with ggplot2 (alpha diversity, barplots and heatmaps).
+facetting_column: sample_label # If facets, which column in "local_samples" contains the information for facetting
+color_factor: sample_source # Column in "local_samples" used to color points and fill plots (alpha diversity, ordination)
+shape_factor : sample_source # Column in "local_samples" used to for shapes of points (ordination)
 
 ### Barplots and heatmaps parameters
-#### Both
+tax_ranks: ["Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
 relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
 relative_filtering_value: [1] # % for relative value based filtering.
 absolute_filtering_value: [2000] # number of reads for absolute value based filtering
 abundance_filtre_level: ["Group"]
 horizontal_plot: TRUE #(or 'FALSE') # Turn horizontally the plots
-facet_plot: TRUE #(or 'FALSE') # Create facet plots with ggplot2
-facetting_column: sample_label # If facets, which column in "local_samples" concaints the information for facetting
 order_by_abundance: TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
 t_neg_PCR_sample_on_plots: FALSE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
 t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
+distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors (barplots)
+separated_legend: TRUE #(or 'FALSE') # should the legend be separated( barplots)
 
-#### Barplots
-barplot_tax_ranks: ["Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
-distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors on barplots
-separated_legend: TRUE #(or 'FALSE') # should the legend be separated
-
-#### Heatmaps
-heatmap_tax_ranks: ["Genus", "Species", "OTU"] # taxonomic levels for plotting
+#### Ordination parameters
+ordination_distance: ["unifrac", "bray", "jaccard"]
+ordination_method_distance_based: ["NMDS", "MDS"]
+ordination_method_constrained: ["DPCoA"]
+ordination_method_unconstrained: ""
 
 
 ## Special outputs ##############################################################################################################

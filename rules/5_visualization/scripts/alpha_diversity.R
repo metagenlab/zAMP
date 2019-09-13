@@ -10,11 +10,8 @@
     sink(log)
     sink(log, type="message")
 
-
 ## Input
-    phyloseq_object <- snakemake@input[["phyloseq_object"]]
-    Metadata_table <- snakemake@input[["Metadata_table"]]
-    metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE)
+    metadata <- snakemake@input[["metadata"]]
 
 ## Ouput
     alpha_plot <- snakemake@output[["alpha_plot"]]
@@ -22,75 +19,57 @@
 ## Parameters
     sample_label <- snakemake@params[["sample_label"]]
     grouping_column <- snakemake@params[["grouping_column"]]
-    sample_type <- snakemake@params[["sample_type"]]
-    grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
-    print(grouping_filter_column_value)
+    color_factor <- snakemake@params[["color_factor"]]
+    alpha_metric <- snakemake@params[["alpha_metric"]]
+    facet_plot <- snakemake@params[["facet_plot"]]
+    facetting_column <- snakemake@params[["facetting_column"]]
 
 
 ## Load needed libraries
     library("ggplot2"); packageVersion("ggplot2")
-    library("phyloseq"); packageVersion("phyloseq")
-    library("data.table"); packageVersion("data.table")
-    library("RColorBrewer"); packageVersion("RColorBrewer")
 
-## Load the phyloseq object
-    phyloseq_obj <- readRDS(phyloseq_object)
+
+## Load the data
+    metadata_table <- read.table(file = metadata, sep = "\t", header = TRUE)
 
 ## Order the x axis as in the metadata_table
-    sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
-    sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
+    #sample_data(phyloseq_obj)[[color_factor]] = factor(sample_data(phyloseq_obj)[[color_factor]], levels = unique(metadata[[color_factor]]), ordered = TRUE)
+    #sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
 
-
-#### BrewerColors
-     getPalette = colorRampPalette(brewer.pal(n=8, "Accent"))
-     ColList = unique(metadata[[sample_type]])
-     ColPalette = getPalette(length(ColList))
-     names(ColPalette) = ColList
-     colors_palette <- ColPalette
 
 ### Open pdf device
     pdf(file = alpha_plot)
 
 ### Loop for unique value in grouping_column
-    for (i in unique(get_variable(phyloseq_obj, grouping_column))){
-        print(paste("Start plotting", grouping_column, i))
+    #for (i in unique(metadata_table[[grouping_column]])){
 
         ### Keep only the data of the samples of interest
-            remove_idx <- as.character(get_variable(phyloseq_obj, grouping_column)) == i
-            g_phyloseq_obj <- prune_samples(remove_idx, phyloseq_obj)
+        #metadata_i <- metadata_table[metadata_table[[grouping_column]]==i,]
 
+        p <- ggplot(metadata_table, aes(x=get(grouping_column), y=get(alpha_metric), color = get(color_factor))) +
+          geom_boxplot() +
+          theme_bw() +
+          theme(axis.text.x = element_text(angle = 90, hjust = 1, size=5)) +
+          #facet_grid(~storage_time, drop = TRUE, scales = "free_x") +
+          xlab(label = sample_label) +
+          ylab(label = alpha_metric)+
+          labs(color = color_factor) +
+          ggtitle(paste(grouping_column, alpha_metric, "alpha diversity" ))
 
-        if(nsamples(g_phyloseq_obj)>0){
-            if (sample_label == "Sample"){
-            ## Plot
-            p <- plot_richness(g_phyloseq_obj, color = sample_type) +
-            scale_color_manual(values = colors_palette) +
-            geom_boxplot()
-            }else{
-            p <- plot_richness(g_phyloseq_obj, x = sample_label, color = sample_type) +
-            scale_color_manual(values = colors_palette) +
-            geom_boxplot()
-            }
+        if (isTRUE(facet_plot)){
+            p <- p + facet_grid(~ get(facetting_column), scales = "free_x", drop = TRUE)
 
-
-        p <- p + theme(axis.text.x = element_text(size=5))
-
+        }
 
         ## Save plot
-        p.width <- 7 + 0.4*length(unique(metadata[[sample_label]]))
+        p.width <- 7 + 0.4*length(unique(metadata_table[[grouping_column]]))
 
         if (p.width >= 30){
            p.width <- 30}
 
          print(p)
 
-        #ggsave(filename = paste0(output_folder,"/",grouping_filter_column_value,"_alpha_diversity.png"),  plot = p, width = p.width, height = 4)
-
-        }else{
-            #filename <- paste0(output_folder,"/",grouping_filter_column_value,"_alpha_diversity.png")
-            print(paste("Create empty file", filename))
-            #file.create(file.path(filename))
-            }}
+    #    }
 
   dev.off()
 

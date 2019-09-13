@@ -20,7 +20,7 @@ rule Import_Vsearch_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        "vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"
+        "vsearch/1b_trimmed_paired/{sample}_trimmed_paired.fasta"
     output :
         "QualityControl/vsearch_{sample}_query_seq.qza"
     threads :

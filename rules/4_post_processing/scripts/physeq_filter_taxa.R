@@ -36,10 +36,13 @@ filtered_taxa <- prune_taxa(taxa_sums(filtered_taxa) > 0, filtered_taxa) ## Remo
 
 ## Recompute alpha diversity indexes after this filtration
 ### Remove the previously computed values
-sample_data(filtered_taxa) <- select(sample_data(filtered_taxa), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
+#sample_data(filtered_taxa) <- select(sample_data(filtered_taxa), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Fisher, Observed_min_1))
+drop <- c("Observed", "Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Fisher", "Observed_min_1")
+sample_data(filtered_taxa) <- sample_data(filtered_taxa)[,!(names(sample_data(filtered_taxa)) %in% drop)]
+
 
 ### Add alpha diversity indexes to metadata
-alpha_div <- estimate_richness(physeq = filtered_taxa, split = TRUE)
+alpha_div <- estimate_richness(physeq = filtered_taxa, split = TRUE, c("Observed", "Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson"))
 sample_data(filtered_taxa) <- cbind(sample_data(filtered_taxa),alpha_div)
 
 

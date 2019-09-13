@@ -3,9 +3,16 @@
 ## Define trimmed or not trimmed input (for read already trimmed)
 def vsearch_trim_input():
     if config['Trim_primers'] == True :
-        return ["vsearch/1b_q_score_filtered_paired/{sample}_trimmed_paired.fasta"]
+        return ["vsearch/1b_trimmed_paired/{sample}_trimmed_paired.fasta"]
     else : 
-        return ["vsearch/1b_q_score_filtered_paired/{sample}_paired.fasta"]
+        return ["vsearch/1b_paired/{sample}_paired.fasta"]
+
+
+def DADA2_trim_input():
+    if config['Trim_primers'] == True :
+        return ["DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", "DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz"]
+    else :
+        return ["raw_reads/{sample}_R1.fastq.gz", "raw_reads/{sample}_R2.fastq.gz"]
     
   
 ### Keep only once indentical sequences and keep score of their prevalence.

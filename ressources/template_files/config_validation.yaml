@@ -4,6 +4,8 @@ assembly_finder_Snakefile: /home/master_students/bin/assembly_finder/Snakefile
 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
+ITS_or_16S: ITS # ITS or 16S, affect the trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.
+min_overlap: 5 # Min overlap of the reads for paired-end reads merging
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 

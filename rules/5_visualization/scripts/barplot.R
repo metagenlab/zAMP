@@ -22,7 +22,7 @@
     relative_or_absolute_filtering <-  snakemake@params[["relative_or_absolute_filtering"]]
     filtering_value <-  snakemake@params[["filtering_value"]]
     relative_or_absolute_plot <-  snakemake@params[["relative_or_absolute_plot"]]
-    plotting_tax_ranks <-  snakemake@params[["barplot_tax_ranks"]]
+    plotting_tax_ranks <-  snakemake@params[["tax_ranks"]]
     distinct_colors <-  snakemake@params[["distinct_colors"]]
     horizontal_plot <-  snakemake@params[["horizontal_plot"]]
     facet_plot <-  snakemake@params[["facet_plot"]]

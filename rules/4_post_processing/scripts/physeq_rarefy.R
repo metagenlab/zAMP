@@ -46,7 +46,7 @@ sample_data(phyloseq_obj) <- sample_data(phyloseq_obj)[,!(names(sample_data(phyl
 
 
 ### Add alpha diversity indexes to metadata
-alpha_div <- estimate_richness(physeq = phyloseq_obj, split = TRUE)
+alpha_div <- estimate_richness(physeq = phyloseq_obj, split = TRUE, c("Observed", "Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson"))
 sample_data(phyloseq_obj) <- cbind(sample_data(phyloseq_obj),alpha_div)
 
 ### In addition, add the Observed over 1% metric

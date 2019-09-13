@@ -45,7 +45,7 @@
     melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
 
 ## Order the x axis as in the metadata_table
-#sample_data(phyloseq_obj)[[sample_type]] = factor(sample_data(phyloseq_obj)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+#sample_data(phyloseq_obj)[[color_factor]] = factor(sample_data(phyloseq_obj)[[color_factor]], levels = unique(metadata[[color_factor]]), ordered = TRUE)
 #sample_data(phyloseq_obj)[[sample_label]] = factor(sample_data(phyloseq_obj)[[sample_label]], levels = unique(metadata[[sample_label]]), ordered = TRUE)
 
 ################################################################################

@@ -19,8 +19,8 @@ output_path <- snakemake@output[["unconstrained_ordination"]]
 ## Parameters
 # x_axis_column <- snakemake@params[["x_axis_column"]]
 grouping_column <- snakemake@params[["grouping_column"]]
-sample_type <- snakemake@params[["sample_type"]]
-ordination_factor <- snakemake@params[["ordination_factor"]]
+color_factor <- snakemake@params[["color_factor"]]
+shape_factor <- snakemake@params[["shape_factor"]]
 ordination_method <-   snakemake@params[["ordination_method"]]
 
 ## Load needed libraries
@@ -40,12 +40,12 @@ physeq_filtered<- prune_samples(sample_sums(phyloseq_obj)>20, phyloseq_obj)
 
 #### BrewerColors
  getPalette = colorRampPalette(brewer.pal(n=8, "Dark2"))
- ColList = unique(metadata[[sample_type]])
+ ColList = unique(metadata[[color_factor]])
  ColPalette = getPalette(length(ColList))
  names(ColPalette) = ColList
  colors_palette <- ColPalette
  ### Order the x axis as in the metadata_table
-    sample_data(physeq_filtered)[[sample_type]] = factor(sample_data(physeq_filtered)[[sample_type]], levels = unique(metadata[[sample_type]]), ordered = TRUE)
+    sample_data(physeq_filtered)[[color_factor]] = factor(sample_data(physeq_filtered)[[color_factor]], levels = unique(metadata[[color_factor]]), ordered = TRUE)
 
 ### Open pdf device
 pdf(file = output_path)
@@ -64,9 +64,9 @@ pdf(file = output_path)
           iMDS  <- ordinate(g_physeq_filtered, method = ordination_method)
           ## Make plot
             # Create plot, store as temp variable, p
-            p <- plot_ordination(g_physeq_filtered, iMDS, color = sample_type, shape = ordination_factor) +
+            p <- plot_ordination(g_physeq_filtered, iMDS, color = color_factor, shape = shape_factor) +
               scale_color_manual(values = colors_palette) +
-              geom_point(size=4) + stat_ellipse(aes(group = get(sample_type), color = get(sample_type)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
+              geom_point(size=4) + stat_ellipse(aes(group = get(color_factor), color = get(color_factor)),linetype = 2, type = "t") ## Will be needed which variable comes here. Could also be grouping_column
             # Add title to each plot
             p <- p + ggtitle(paste("Unconstrained", ordination_method))
             # Save the individual graph in a folder

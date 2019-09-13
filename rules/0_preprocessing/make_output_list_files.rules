@@ -153,7 +153,7 @@ transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofil
 
 
 ### Barplots
-barplots = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{barplot_tax_ranks}_barplot.pdf",
+barplots = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{tax_ranks}_barplot.pdf",
                         denoiser = config["denoiser"],
                         classifier = config["classifier"],
                         tax_DB = config["tax_DB"],
@@ -165,10 +165,10 @@ barplots = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{fi
                         relative_or_absolute_plot = config["relative_or_absolute_plotting"],
                         grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        barplot_tax_ranks = config["barplot_tax_ranks"])
+                        tax_ranks = config["tax_ranks"])
 
 ### Heatmaps
-heatmaps = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{heatmap_tax_ranks}_heatmap.pdf",
+heatmaps = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{tax_ranks}_heatmap.pdf",
                         denoiser = config["denoiser"],
                         classifier = config["classifier"],
                         tax_DB = config["tax_DB"],
@@ -180,12 +180,12 @@ heatmaps = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/heatmaps/{fi
                         relative_or_absolute_plot = config["relative_or_absolute_plotting"],
                         grouping_column = config["grouping_column"],
                         filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        heatmap_tax_ranks = config["heatmap_tax_ranks"])
+                        tax_ranks = config["tax_ranks"])
 
 
 
 ### Alpha-diversity plot
-alpha_diversities = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/alpha_diversities/{filter_lineage}_in_{filter_tax_rank}/{grouping_column}_alpha_diversity.pdf",
+alpha_diversities = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/alpha_diversities/{filter_lineage}_in_{filter_tax_rank}/{grouping_column}_{alpha_diversity}.pdf",
                           denoiser = config["denoiser"],
                           classifier = config["classifier"],
                           tax_DB = config["tax_DB"],
@@ -194,11 +194,12 @@ alpha_diversities = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{ra
                           filter_lineage = config["filter_lineage"],
                           filter_column_value = config["filter_column_value"],
                           filter_meta_column = config["filter_meta_column"],
-                          grouping_column = config["grouping_column"])
+                          grouping_column = config["grouping_column"],
+                          alpha_diversity = config["alpha_metrics"])
 
 
 ### Basic ordination
-distance_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_distance_based/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_distance_based}/{grouping_column}_{ordination_distance}_d_{ordination_factor}.pdf",
+distance_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_distance_based/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_distance_based}/{grouping_column}_{ordination_distance}_d_{shape_factor}.pdf",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
             tax_DB = config["tax_DB"],
@@ -210,12 +211,12 @@ distance_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/
             ordination_method_distance_based = config["ordination_method_distance_based"],
             grouping_column = config["grouping_column"],
             ordination_distance = config["ordination_distance"],
-            ordination_factor = config["ordination_factor"])
+            shape_factor = config["shape_factor"])
 
 
 
 ### Constrained ordination
-constrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_constrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_constrained}/{grouping_column}_c_{ordination_factor}.pdf",
+constrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_constrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_constrained}/{grouping_column}_c_{shape_factor}.pdf",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
             tax_DB = config["tax_DB"],
@@ -226,11 +227,11 @@ constrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_D
             filter_meta_column = config["filter_meta_column"],
             ordination_method_constrained = config["ordination_method_constrained"],
             grouping_column = config["grouping_column"],
-            ordination_factor = config["ordination_factor"])
+            shape_factor = config["shape_factor"])
 
 
 ### Unconstrained ordination
-unconstrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_unconstrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_unconstrained}/{grouping_column}_u_{ordination_factor}.pdf",
+unconstrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_unconstrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_unconstrained}/{grouping_column}_u_{shape_factor}.pdf",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
             tax_DB = config["tax_DB"],
@@ -241,7 +242,7 @@ unconstrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax
             filter_meta_column = config["filter_meta_column"],
             ordination_method_unconstrained = config["ordination_method_unconstrained"],
             grouping_column = config["grouping_column"],
-            ordination_factor = config["ordination_factor"])
+            shape_factor = config["shape_factor"])
 
 
 ### Qiime2 output

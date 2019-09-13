@@ -23,6 +23,7 @@
     sample_name <- snakemake@params[["sample_name"]]
     run <- snakemake@params[["run"]]
     x_column_value <- snakemake@params[["x_column_value"]]
+    min_overlap <- snakemake@params[["min_overlap"]]
 
 ## Load needed libraries
     library(dada2); packageVersion("dada2")
@@ -51,7 +52,7 @@
         derepR <- derepFastq(q_score_filtered_R, verbose = TRUE)
         ddR <- dada(derepR, err=errR, multithread = snakemake@threads, verbose = 1, pool = FALSE, selfConsist = TRUE)
     ## Merge
-        merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = 20, maxMismatch = 0)
+        merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = min_overlap, maxMismatch = 0)
         mergers[[sample_name]] <- merger
 
 ## Save the dereplicated, corrected and merged sequences for this sample

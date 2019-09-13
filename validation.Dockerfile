@@ -12,4 +12,6 @@ RUN cp ${pipeline_folder}/data/validation_datasets/config.yml ./ && \
     cp ${pipeline_folder}/data/validation_datasets/validation_set.tsv ./
 
 ## Run the pipeline to test it
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile config.yml all PICRUSt2_output
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile 16S_config.yml all
+
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile ITS_config.yml all

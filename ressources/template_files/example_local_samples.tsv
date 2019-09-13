@@ -24,7 +24,7 @@
 ### plotting (e.g. QC samples).
 #
 #
-## sample_type
+## color_factor
 ### Description of the type of samples, for instance the source of the sample.
 #
 #
@@ -33,7 +33,7 @@
 ### well by DADA2 which generate an error profile for each run.
 #
 #
-Sample	sample_label    sample_group    sample_type   seq_run
+Sample	sample_label    sample_group    color_factor   seq_run
 S1111   sample_1    patient1    feces   run1
 MIX9B   sample_2	patient1    feces   run1
 MIX7B   sample_3	patient2    feces   run1

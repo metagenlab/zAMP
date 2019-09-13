@@ -19,7 +19,7 @@ phyloseq_object <- snakemake@input[["phyloseq_object"]]
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
 
 ## Parameters
-sample_type <- snakemake@params[["sample_type"]]
+color_factor <- snakemake@params[["color_factor"]]
 
 ## Load libraries
 library('phyloseq')
@@ -159,7 +159,7 @@ p <- ggplot(
     y = Alpha_diversity_mean,
     ymin = Alpha_diversity_mean - Alpha_diversity_sd,
     ymax = Alpha_diversity_mean + Alpha_diversity_sd,
-    colour = get(sample_type),
+    colour = get(color_factor),
     group = get("Sample"))) +
       labs(col = "Sample type") +
       geom_line(size = 0.2) +
