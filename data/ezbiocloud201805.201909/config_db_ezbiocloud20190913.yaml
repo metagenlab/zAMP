@@ -1,16 +1,3 @@
-#localisation of database
-DBpath_seq: "/home/valentinscherz/bin/microbiome16S_pipeline/data/ezbiocloud201805.201909/original_files/EzBioCloud_16S_database_for_QIIME/ezbiocloud_qiime_full.fasta"
-DBpath_tax: "/home/valentinscherz/bin/microbiome16S_pipeline/data/ezbiocloud201805.201909/original_files/EzBioCloud_16S_database_for_QIIME/ezbiocloud_id_taxonomy.txt"
-
-
-## Output
-output_dir: "ezbiocloud201805.201909"
-
-#trimming
-forward_primer: CCTACGGGNGGCWGCAG
-reverse_primer: GACTACHVGGGTATCTAATCC
-length_max: 500
-
-#Filtering
-numbers_species: 4
-numbers_genus: 2
+version https://git-lfs.github.com/spec/v1
+oid sha256:5ff3a1e27b73748cb0ff82b2f1f8f34a289e807f3a0d9969a77d288adaefc134
+size 558
