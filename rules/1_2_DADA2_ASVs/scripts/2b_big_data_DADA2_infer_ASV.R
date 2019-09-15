@@ -24,6 +24,7 @@
     run <- snakemake@params[["run"]]
     x_column_value <- snakemake@params[["x_column_value"]]
     min_overlap <- snakemake@params[["min_overlap"]]
+    print(paste("min_overlap is :", min_overlap))
 
 ## Load needed libraries
     library(dada2); packageVersion("dada2")

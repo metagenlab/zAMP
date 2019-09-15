@@ -14,7 +14,7 @@ denoiser: ["vsearch","DADA2"] # "vsearch", "DADA2" or both. For ITS (see below) 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
 ITS_or_16S: 16S # ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.
-min_overlap: 20 # Min overlap of the reads for paired-end reads merging
+min_overlap: "20" # Min overlap of the reads for paired-end reads merging
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
