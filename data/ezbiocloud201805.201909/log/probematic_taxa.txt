@@ -1,2 +1,3 @@
-clust_id,clust_rep,new_Kingdom,new_Phylum,new_Class,new_Order,new_Family,new_Genus,new_Species,problematic_tax
-735,140220,Bacteria,Proteobacteria,Alphaproteobacteria,Sphingomonadales,Sphingomonadaceae/Erythrobacteraceae,Blastomonas/Altererythrobacter,BlastomonasAltererythrobacter marina/halimionae(2),Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
+version https://git-lfs.github.com/spec/v1
+oid sha256:8e382518f207aa964a79130094b4f02f9d150b9ce142233c090f140ea10be28b
+size 351

@@ -1,3 +1,3 @@
-EzBioCloud for Qiime DB, release 2018.05, downloaded from "https://www.ezbiocloud.net/resources/16s_download" on 2019/08/26
-
-Yoon, S. H., Ha, S. M., Kwon, S., Lim, J., Kim, Y., Seo, H. and Chun, J. (2017). Introducing EzBioCloud: A taxonomically united database of 16S rRNA and whole genome assemblies. Int J Syst Evol Microbiol. 67:1613-1617.
+version https://git-lfs.github.com/spec/v1
+oid sha256:349d18ee979027b6abc307c2128791a58b28fe32d6e7e29449582d89f081e889
+size 344
