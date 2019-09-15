@@ -331,10 +331,6 @@
     }
 ################################################################################
 
-melted_dataframe
-
-
-
 ## Run the function
     barplots_fct(
       melted_dataframe = melted_dataframe,
