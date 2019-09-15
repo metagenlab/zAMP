@@ -14,7 +14,7 @@ denoiser: ["vsearch","DADA2"] # "vsearch", "DADA2" or both. For ITS (see below) 
 ### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
 Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
 ITS_or_16S: 16S # ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.
-min_overlap: "20" # Min overlap of the reads for paired-end reads merging
+min_overlap: 20 # Min overlap of the reads for paired-end reads merging
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
 
@@ -65,14 +65,14 @@ color_factor: sample_source # Column in "local_samples" used to color points and
 shape_factor : sample_source # Column in "local_samples" used to for shapes of points (ordination)
 
 ### Barplots and heatmaps parameters
-tax_ranks: ["Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
+tax_ranks: ["Family", "Genus", "Species"] # taxonomic levels for plotting
 relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
-relative_filtering_value: [1] # % for relative value based filtering.
+relative_filtering_value: [0.2] # % for relative value based filtering.
 absolute_filtering_value: [2000] # number of reads for absolute value based filtering
-abundance_filtre_level: ["Group"]
+abundance_filtre_level: ["Sample"]
 horizontal_plot: TRUE #(or 'FALSE') # Turn horizontally the plots
-order_by_abundance: TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
+order_by_abundance: FALSE #(or 'FALSE') # Are the taxa to be ordered by abundace
 t_neg_PCR_sample_on_plots: FALSE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
 t_neg_PCR_group_column_value: "t_neg_PCR" # To add negative samples, must be the values of the negative samples in the "grouping_column" indicated above
 distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct colors (barplots)

@@ -192,7 +192,7 @@ rule alpha_diversity:
     conda:
         "../../envs/r_visualization.yml"
     input:
-        metadata = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/no_collapse/base_with_tree_trfs_export/metadata_table.tsv",
+        metadata = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/no_collapse/base_with_tree_export/metadata_table.tsv",
     output:
         alpha_plot = "{denoiser}/5_visualization/{classifier}_{tax_DB}/{raref_or_not}/alpha_diversities/{filtered_or_not}/{grouping_column}_{alpha_diversity}.pdf",
     params:
