@@ -11,11 +11,9 @@ docker build . \
     -t metagenlab/amplicon_pipeline:$VERSION \
     -f ./Dockerfile \
     --build-arg GITHUB_AT=$GITHUBAT \
-    --build-arg TEST_CPU=$CPU
-
+    --build-arg TEST_CPU=$CPU && \
 docker build . \
     -f ./Dockerfile.validation \
     --build-arg VERSION=$VERSION \
-    --build-arg TEST_CPU=$CPU
-
+    --build-arg TEST_CPU=$CPU && \
 docker push metagenlab/amplicon_pipeline:$VERSION
