@@ -66,30 +66,31 @@ ARG GITHUB_AT
 
 ## Add cleaned ezbiolcoud201805 db. 
 ### ezbiocloud2018
-COPY ./data/ezbiocloud201805/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-COPY ./data/ezbiocloud201805/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
+COPY ./data/ezbiocloud201805/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805/
+COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805/
+COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805/
+COPY ./data/ezbiocloud201805/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805/
 
 ### ezbiocloud2018.201909
-COPY ./data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/config_db_ezbiocloud20190913.yaml /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909/
+COPY ./data/ezbiocloud201805.201909/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909/
+COPY ./data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909/
+COPY ./data/ezbiocloud201805.201909/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909/
+COPY ./data/ezbiocloud201805.201909/config_db_ezbiocloud20190913.yaml /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909/
 
 ### ezbiocloudSilva132.201908
-COPY ./data/Silva132.201908/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-COPY ./data/Silva132.201908/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-COPY ./data/Silva132.201908/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-COPY ./data/Silva132.201908/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-COPY ./data/Silva132.201908/config_db_silva_20190826.yaml /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+COPY ./data/Silva132.201908/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908/
+COPY ./data/Silva132.201908/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908/
+COPY ./data/Silva132.201908/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908/
+COPY ./data/Silva132.201908/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908/
+COPY ./data/Silva132.201908/config_db_silva_20190826.yaml /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908/
 
 ### unite201902
-COPY ./data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-COPY ./data/ezbiocloud201805.201909/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/unite201902/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/unite201902/
+COPY ./data/unite201902/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/unite201902/
+COPY ./data/unite201902/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/unite201902/
+COPY ./data/unite201902/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/unite201902/
+
 COPY ./data/validation_datasets /home/pipeline_user/microbiome16S_pipeline/data/validation_datasets
 COPY ./envs /home/pipeline_user/microbiome16S_pipeline/envs/
 COPY ./ressources /home/pipeline_user/microbiome16S_pipeline/ressources/
