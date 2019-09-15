@@ -14,7 +14,7 @@ ENV TZ Europe/Zurich
 RUN echo $TZ > /etc/timezone &&\
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&\
     apt-get update && \
-    apt-get install -y wget bzip2 ca-certificates curl git libltdl7 libcairo2-dev tzdata && \
+    apt-get install -y wget bzip2 ca-certificates curl git git-lfs libltdl7 libcairo2-dev tzdata && \
     dpkg-reconfigure -f noninteractive tzdata && \
     rm /etc/localtime && \
     apt-get clean && \
@@ -64,38 +64,32 @@ ENV PATH="/opt/simulate_PCR:${PATH}"
 ## Call the access token to reach the private github repo
 ARG GITHUB_AT
 
-### Recover the databases stored thourgh github lfs and therefore not availabe trough "COPY" from the Docker build current env.
-#### For each, we add the basic RDP format ("DB_amp.fasta"/DB_amp_taxonomy.txt")
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/DB_amp.fasta /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/DB_taxonomy.txt /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/DADA2_DB_amp_taxonomy_King_to_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/DADA2_DB_amp_taxonomy_King_to_Genus.txt /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/Silva132.201908/DADA2_DB_amp_taxonomy_Genus_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+## Add cleaned ezbiolcoud201805 db. 
+### ezbiocloud2018
+COPY ./data/ezbiocloud201805/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
+COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
+COPY ./data/ezbiocloud201805/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
+COPY ./data/ezbiocloud201805/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
 
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/DB_amp.fasta /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/DB_taxonomy.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_King_to_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_King_to_Genus.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_Genus_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+### ezbiocloud2018.201909
+COPY ./data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/config_db_ezbiocloud20190913.yaml /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
 
+### ezbiocloudSilva132.201908
+COPY ./data/Silva132.201908/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+COPY ./data/Silva132.201908/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+COPY ./data/Silva132.201908/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+COPY ./data/Silva132.201908/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
+COPY ./data/Silva132.201908/config_db_silva_20190826.yaml /home/pipeline_user/microbiome16S_pipeline/data/Silva132.201908
 
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/DB_amp.fasta /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/DB_taxonomy.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/DADA2_DB_amp_taxonomy_King_to_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/DADA2_DB_amp_taxonomy_King_to_Genus.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/ezbiocloud201805/DADA2_DB_amp_taxonomy_Genus_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805
-
-
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/DB_amp.fasta /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/DB_taxonomy.txt /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/DADA2_DB_amp_taxonomy_King_to_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/DADA2_DB_amp_taxonomy_King_to_Genus.txt /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-ADD https://github.com/metagenlab/microbiome16S_pipeline/raw/master/data/unite201912/DADA2_DB_amp_taxonomy_Genus_Species.txt /home/pipeline_user/microbiome16S_pipeline/data/unite201912
-
+### unite201902
+COPY ./data/ezbiocloud201805.201909/DADA2_DB_amp_taxonomy_* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/DB_amp* /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
+COPY ./data/ezbiocloud201805.201909/Readme.Md /home/pipeline_user/microbiome16S_pipeline/data/ezbiocloud201805.201909
 COPY ./data/validation_datasets /home/pipeline_user/microbiome16S_pipeline/data/validation_datasets
 COPY ./envs /home/pipeline_user/microbiome16S_pipeline/envs/
 COPY ./ressources /home/pipeline_user/microbiome16S_pipeline/ressources/
@@ -103,8 +97,10 @@ COPY ./rules /home/pipeline_user/microbiome16S_pipeline/rules/
 COPY ./README* /home/pipeline_user/microbiome16S_pipeline/
 COPY ./Snakefile* /home/pipeline_user/microbiome16S_pipeline/
 
+
 ## Clone the pipeline files and assembly_finder, developped by @idfarbanecha
 RUN git clone --single-branch --branch v0.1.1-alpha https://$GITHUB_AT@github.com/metagenlab/assembly_finder.git $assembly_finder_folder
+
 
 ## Get in the validation directory
 WORKDIR ${pipeline_folder}/data/validation_datasets
@@ -119,6 +115,7 @@ RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --use-conda --
 ARG TEST_CPU
 RUN snakemake --snakefile ${pipeline_folder}/Snakefile_validation --cores $TEST_CPU --resources ncbi_requests=2 --use-conda --conda-prefix /opt/conda/ --configfile 16S_config_in_silico.yml insilico_validation
 
+
 #################### Set final access rights, variables and work dir #####################
 RUN chown pipeline_user:pipeline_user ${main}
 USER pipeline_user
@@ -129,4 +126,3 @@ ENV HOME ${main}
 RUN conda init bash
 WORKDIR ${main}/data/analysis/
 ENTRYPOINT ["/bin/bash"]
-
