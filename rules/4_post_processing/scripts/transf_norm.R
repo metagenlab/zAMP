@@ -26,6 +26,7 @@ library("phyloseq");packageVersion("phyloseq")
 library("ALDEx2");packageVersion("ALDEx2")
 library("vegan");packageVersion("vegan")
 library("edgeR");packageVersion("edgeR")
+library("metagenomeSeq");packageVersion("metagenomeSeq")
 
 ## Import phyloseq
 physeq <- (readRDS(phyloseq_object))
