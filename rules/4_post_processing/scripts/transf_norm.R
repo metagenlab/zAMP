@@ -15,7 +15,8 @@ phyloseq_object <- snakemake@input[["phyloseq_object"]]
 phyloseq_norm <- snakemake@output[["phyloseq_norm"]]
 
 ## Parameters
-normalization <- snakemake@params[["normalization"]]
+#lower all normalization to ease matching
+normalization <- tolower(snakemake@params[["normalization"]])
 min_abundance <- snakemake@params[["min_abundance_value"]]
 min_prevalence <- snakemake@params[["min_prevalence_value"]]
 
