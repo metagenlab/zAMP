@@ -154,9 +154,9 @@ rule physeq_filter_norm_transf:
     output:
         phyloseq_norm = "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.rds",
     params:
-        normalization_value = lambda wildcards: rafe_value_fct(wildcards.norm_value),
-        min_abundance_value = lambda wildcards: rafe_value_fct(wildcards.abund_value),
-        min_prevalence_value = lambda wildcards: rafe_value_fct(wildcards.prev_value),
+        normalization =  lambda wildcards: wildcards.norm_value,
+        min_abundance_value =  lambda wildcards: wildcards.abund_value,
+        min_prevalence_value =  lambda wildcards: wildcards.prev_value,
     log:
         logging_folder + "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.txt",
     script:

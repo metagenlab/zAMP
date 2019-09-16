@@ -19,6 +19,7 @@ phyloseq_norm <- snakemake@output[["phyloseq_norm"]]
 normalization <- tolower(snakemake@params[["normalization"]])
 min_abundance <- snakemake@params[["min_abundance_value"]]
 min_prevalence <- snakemake@params[["min_prevalence_value"]]
+print(paste("normalization setting is", normalization))
 
 ## Load needed libraries
 library("phyloseq");packageVersion("phyloseq")

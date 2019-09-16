@@ -32,9 +32,12 @@ set.seed(1)
 ## Import the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
 
-## Rarefy the count table
-otu_table(phyloseq_obj) <- t(rrarefy(t(otu_table(phyloseq_obj)), sample = as.numeric(rarefy_value)))
 
+print("start raref")
+## Rarefy the count table
+t(otu_table(phyloseq_obj))
+otu_table(phyloseq_obj) <- t(rrarefy(t(otu_table(phyloseq_obj)), sample = as.numeric(rarefy_value)))
+print("stop raref)
 
 ## Compute alpha diversity indexes after this rarefaction
 ### Remove the previously computed values, in case
