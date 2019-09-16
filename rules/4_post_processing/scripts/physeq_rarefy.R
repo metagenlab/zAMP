@@ -35,7 +35,6 @@ phyloseq_obj <- readRDS(phyloseq_object)
 
 print("start raref")
 ## Rarefy the count table
-t(otu_table(phyloseq_obj))
 otu_table(phyloseq_obj) <- t(rrarefy(t(otu_table(phyloseq_obj)), sample = as.numeric(rarefy_value)))
 print("stop raref)
 

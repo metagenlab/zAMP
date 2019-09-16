@@ -75,6 +75,10 @@ if (normalization == "clr"){
   reads_trfs <- data.frame(z$counts)
   reads_trfs[reads_trfs==0.5] <- 0
 
+} else if (normalization == "none"){
+  print('No normalization (normalization = "none"')
+  reads_trfs <- OTU
+
 }else{
   stop(paste('"normalization" was', normalization, '.Must be one of : "clr", "pct", "css", "tmm", "total", "max", "freq", "normalize", "range", "pa", "chi.square", "hellinger" or "log", ')) 
 }
