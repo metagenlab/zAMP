@@ -40,7 +40,7 @@ vegan_methods <- c("total", "max", "freq", "normalize", "range", "pa", "chi.squa
 ## CLR with Aldex2 (modified form https://bioconductor.org/packages/devel/bioc/vignettes/ALDEx2/inst/doc/ALDEx2_vignette.pdf)
 if (normalization == "clr"){
   print("clr normalization by ALDEx2")
-  aldex_obj <- aldex.clr(reads = OTU)
+  aldex_obj <- ALDEx2::aldex.clr(reads = OTU)
   reads_trfs <- aldex_obj@reads
   reads_trfs[reads_trfs==0.5] <- 0
 
@@ -51,24 +51,24 @@ if (normalization == "clr"){
 
 ## Percent normalization with basic R
 }else if (normalization == "pct"){
-  print("PCR normalization with base R")
+  print("Percent normalization with base R")
   reads_trfs <- sapply(OTU, function(x) 100*x/sum(x))
 
 ## CSS normalization with metagenomeseq (modified form https://bioconductor.org/packages/release/bioc/vignettes/metagenomeSeq/inst/doc/metagenomeSeq.pdf )
 }else if (normalization == "css"){
   print("css normalization by metagenomeseq")
-  OTU_mtgs <- newMRexperiment(counts = OTU, phenoData = NULL, featureData = NULL, libSize = NULL, normFactors = NULL)
-  p <- cumNormStat(OTU_mtgs)
-  OTU_norm <-  cumNorm(OTU_mtgs, p = p)
-  reads_trfs = as.data.frame(MRcounts(OTU_norm, norm = TRUE, log = FALSE))
+  OTU_mtgs <- metagenomeSeq::newMRexperiment(counts = OTU, phenoData = NULL, featureData = NULL, libSize = NULL, normFactors = NULL)
+  p <- metagenomeSeq::cumNormStat(OTU_mtgs)
+  OTU_norm <-  metagenomeSeq::cumNorm(OTU_mtgs, p = p)
+  reads_trfs = as.data.frame(metagenomeSeq::MRcounts(OTU_norm, norm = TRUE, log = FALSE))
 
-## TMSS normalization with edgeR (modified from https://joey711.github.io/phyloseq-extensions/edgeR.html)
+## TMM normalization with edgeR (modified from https://joey711.github.io/phyloseq-extensions/edgeR.html)
 } else if (normalization == "tmm"){
   print("TMM normalization by edgeR")
   OTU1 <- OTU + 0.5
   group <- rownames(get_variable(physeq))
   tax <- tax_table(physeq, errorIfNULL=FALSE)
-  y <- DGEList(counts=OTU1, group=group, genes=tax, remove.zeros = TRUE)
+  y <- edgeR::DGEList(counts=OTU1, group=group, genes=tax, remove.zeros = TRUE)
   z = edgeR::calcNormFactors(y, method="TMM")
   reads_trfs <- data.frame(z$counts)
   reads_trfs[reads_trfs==0.5] <- 0
