@@ -18,10 +18,6 @@ phyloseq_norm <- snakemake@output[["phyloseq_norm"]]
 normalization <- snakemake@params[["normalization"]]
 min_abundance <- snakemake@params[["min_abundance_value"]]
 min_prevalence <- snakemake@params[["min_prevalence_value"]]
-if(min_prevalence > 1 & min_prevalence < 100){
-min_prevalence <- min_prevalence/100
-warning(paste(min_prevalence, '"min_prevalence" was over 1. Must have been recorded as % -> was divided by 100'))
-}
 
 ## Load needed libraries
 library("phyloseq");packageVersion("phyloseq")

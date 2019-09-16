@@ -41,8 +41,8 @@ classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", 
 
 ## Reads post-processing ##############################################################################################
 rarefaction_value: ["norarefaction",20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
-min_prevalence: [0,1] # number of samples in which the feature has to be found to be kept
-min_abundance: [0,1] # minimal count to be kept
+min_prevalence: [0,10] # proporition (in %) of samples in which the feature has to be found to be kept
+min_abundance: [0,100] # minimal count to be kept
 normalization: ["TSS", "CLR", "CSS","TMM", "NONE"] # value for counts normalization. Using script form https://github.com/biobakery/Maaslin2
 viz_replace_empty_tax: TRUE # "TRUE" is recommended to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc.... Otherwise they are left empty
 filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "Kingdom")

@@ -15,6 +15,6 @@ In brief, through the few rules in "EzBioCloud.rules", we will import the taxono
 - Locate the fasta, taxonomy files and the desired output path (just created directory) in configfile. 
 - Run the following command from the just created directory.
 ``` 
-snakemake --snakefile $pipeline_folder/Snakefile_DB --use-conda --conda-prefix $condaprefix --cores 1  --configfile config_DB.yaml     
+snakemake --snakefile $pipeline_folder/Snakefile.DB --use-conda --conda-prefix $condaprefix --cores 1  --configfile config_DB.yaml     
 ```
 - Add to git the output fasta and taxonomy as well as the configfile, the generated logs and the Readme describing the origin of the database to enable traceability. 
