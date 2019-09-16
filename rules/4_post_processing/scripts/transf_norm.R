@@ -30,9 +30,11 @@ library("metagenomeSeq");packageVersion("metagenomeSeq")
 
 ## Import phyloseq
 physeq <- (readRDS(phyloseq_object))
-## Recover OTu table
+
+## Recover OTU table
 OTU <- data.frame(otu_table(physeq))
 
+## List methods computed by vegan
 vegan_methods <- c("total", "max", "freq", "normalize", "range", "pa", "chi.square", "hellinger" ,"log")
 
 ## CLR with Aldex2 (modified form https://bioconductor.org/packages/devel/bioc/vignettes/ALDEx2/inst/doc/ALDEx2_vignette.pdf)
@@ -43,18 +45,14 @@ if (normalization == "clr"){
   reads_trfs[reads_trfs==0.5] <- 0
 
 ## Vegan decostand normalizations (with double t() to take in account the transposed structure of the counts used here, modified from https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/decostand)
-
 }else if (normalization %in% vegan_methods){
   print(paste(normalization, "normalization by vegan"))
   reads_trfs <- t(vegan::decostand(t(OTU), method = normalization))
-
 
 ## Percent normalization with basic R
 }else if (normalization == "pct"){
   print("PCR normalization with base R")
   reads_trfs <- sapply(OTU, function(x) 100*x/sum(x))
-
-
 
 ## CSS normalization with metagenomeseq (modified form https://bioconductor.org/packages/release/bioc/vignettes/metagenomeSeq/inst/doc/metagenomeSeq.pdf )
 }else if (normalization == "css"){
@@ -64,7 +62,6 @@ if (normalization == "clr"){
   OTU_norm <-  cumNorm(OTU_mtgs, p = p)
   reads_trfs = as.data.frame(MRcounts(OTU_norm, norm = TRUE, log = FALSE))
 
-
 ## TMSS normalization with edgeR (modified from https://joey711.github.io/phyloseq-extensions/edgeR.html)
 } else if (normalization == "tmm"){
   print("TMM normalization by edgeR")
@@ -72,7 +69,7 @@ if (normalization == "clr"){
   group <- rownames(get_variable(physeq))
   tax <- tax_table(physeq, errorIfNULL=FALSE)
   y <- DGEList(counts=OTU1, group=group, genes=tax, remove.zeros = TRUE)
-  z = calcNormFactors(y, method="TMM")
+  z = edgeR::calcNormFactors(y, method="TMM")
   reads_trfs <- data.frame(z$counts)
   reads_trfs[reads_trfs==0.5] <- 0
 
@@ -84,7 +81,6 @@ if (normalization == "clr"){
   stop(paste('"normalization" was', normalization, '.Must be one of : "clr", "pct", "css", "tmm", "total", "max", "freq", "normalize", "range", "pa", "chi.square", "hellinger" or "log", ')) 
 }
   
-
 ## Filter based on counts and prevalence
 ### Filter based on the cumulated abundance
 if(is.numeric(min_abundance)){
@@ -97,11 +93,10 @@ if(is.numeric(min_abundance)){
   stop(paste(min_abundance, 'must be a numeric value or "none')) 
 }
 
-
 ### Filter based on prevalence
 if(is.numeric(min_prevalence)){
   print(paste("filter based on prevalence:",min_prevalence))
-  prevalence_cutoff <- min_prevalence * nsamples(physeq)
+  prevalence_cutoff <- (min_prevalence/100) * nsamples(physeq)
   print(paste("Features must be found in more than", prevalence_cutoff, "samples to be retained"))
   filtered_data <- filtered_data[,colSums(filtered_data != 0) > prevalence_cutoff, drop = FALSE]
 }else if (min_prevalence == "none"){
@@ -109,8 +104,6 @@ if(is.numeric(min_prevalence)){
 }else{
   stop(paste(min_abundance, 'must be a numeric value or "none')) 
 }
-
-
 
 ## Repopulate physeq object (identical script than for taxa filter)
 physeq_filtered <- physeq
