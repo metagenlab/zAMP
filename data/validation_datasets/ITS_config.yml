@@ -60,7 +60,7 @@ Unconstrained_ordinations: False # or False
 grouping_column: ["patient_group"] # Column for which a plot will be generated for each value of.
 sample_label: sample_name # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)
 facet_plot: TRUE #(or 'FALSE') # Create facet plots with ggplot2 (alpha diversity, barplots and heatmaps).
-facetting_column: sample_label # If facets, which column in "local_samples" contains the information for facetting
+facetting_column: disease # If facets, which column in "local_samples" contains the information for facetting
 color_factor: disease # Column in "local_samples" used to color points and fill plots (alpha diversity, ordination)
 shape_factor : host_sex # Column in "local_samples" used to for shapes of points (ordination)
 
