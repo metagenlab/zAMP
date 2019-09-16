@@ -160,4 +160,4 @@ rule physeq_filter_norm_transf:
     log:
         logging_folder + "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.txt",
     script:
-        "scripts/trans_norm.R"
+        "scripts/transf_norm.R"
