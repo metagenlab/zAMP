@@ -65,12 +65,12 @@ color_factor: disease # Column in "local_samples" used to color points and fill 
 shape_factor : host_sex # Column in "local_samples" used to for shapes of points (ordination)
 
 ### Barplots and heatmaps parameters
-tax_ranks: ["Family", "Genus", "Species", "OTU"] # taxonomic levels for plotting
+tax_ranks: ["Genus", "Species"] # taxonomic levels for plotting
 relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
 relative_filtering_value: [1] # % for relative value based filtering.
 absolute_filtering_value: [2000] # number of reads for absolute value based filtering
-abundance_filtre_level: ["Group"]
+abundance_filtre_level: ["Sample"]
 horizontal_plot: TRUE #(or 'FALSE') # Turn horizontally the plots
 order_by_abundance: TRUE #(or 'FALSE') # Are the taxa to be ordered by abundace
 t_neg_PCR_sample_on_plots: FALSE #(or 'FALSE') # Add negative samples, even if filtered out based on grouping_column.
