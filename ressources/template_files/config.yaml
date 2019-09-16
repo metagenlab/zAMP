@@ -40,7 +40,7 @@ classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", 
 
 
 ## Reads post-processing ##############################################################################################
-rarefaction_value: ["norarefaction",20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
+rarefaction_value: [20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
 min_prevalence: [0,10] # proporition (in %) of samples in which the feature has to be found to be kept
 min_abundance: [0,100] # minimal count to be kept
 normalization: ["TSS", "CLR", "CSS","TMM", "NONE"] # value for counts normalization. Using script form https://github.com/biobakery/Maaslin2

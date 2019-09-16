@@ -18,33 +18,25 @@ rarefied_phyloseq <- snakemake@output[["phyloseq_object"]]
 ## Parameters
 rarefy_value <- snakemake@params[["rarefaction_value"]]
 
-
 ## Load libraries
 library(vegan);packageVersion("vegan")
 library(phyloseq);packageVersion("phyloseq")
 library(dplyr);packageVersion("dplyr")
 
-
 ## Set seed for reproducibility
 set.seed(1)
-
 
 ## Import the phyloseq object
 phyloseq_obj <- readRDS(phyloseq_object)
 
-
-print("start raref")
 ## Rarefy the count table
 otu_table(phyloseq_obj) <- t(rrarefy(t(otu_table(phyloseq_obj)), sample = as.numeric(rarefy_value)))
-print("stop raref)
 
 ## Compute alpha diversity indexes after this rarefaction
 ### Remove the previously computed values, in case
 #sample_data(phyloseq_obj) <- select(sample_data(phyloseq_obj), -c(Observed, Chao1, se.chao1, ACE, se.ACE, Shannon, Simpson, InvSimpson, Observed_min_1))
 drop <- c("Observed", "Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Fisher", "Observed_min_1")
 sample_data(phyloseq_obj) <- sample_data(phyloseq_obj)[,!(names(sample_data(phyloseq_obj)) %in% drop)]
-
-
 
 
 ### Add alpha diversity indexes to metadata

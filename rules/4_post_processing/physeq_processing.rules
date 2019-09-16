@@ -5,9 +5,9 @@ ruleorder: Phyloseq_collapse_taxa > physeq_filter_norm_transf
 ## Small function to extract numbers from rarefaction values
 import re
 def rafe_value_fct(wildcards):
-# if wildcards == "norarefaction":
-#    value = "norarefaction"
-# else :
+  if wildcards == "norarefaction":
+    raise NameError('"rarefaction_value" must not contain "norareraction, it is anyway computed')
+  else :
     value = re.findall('\d+',wildcards)
     return value
 
