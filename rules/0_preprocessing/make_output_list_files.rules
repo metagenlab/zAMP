@@ -79,14 +79,17 @@ phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{r
                    filter_column_value = config["filter_column_value"],
                    filter_meta_column = config["filter_meta_column"]))
 
-phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_melted.tsv",
+phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_melted.tsv",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
                    tax_DB = config["tax_DB"],
                    collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
                    rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                    filter_column_value = config["filter_column_value"],
-                   filter_meta_column = config["filter_meta_column"]))
+                   filter_meta_column = config["filter_meta_column"],
+                   norm_value = config["normalization"], 
+                   abund_value = config["min_abundance"], 
+                   prev_value = config["min_prevalence"]))
 
 ### Tax filtered
 phyloseq_filt = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
@@ -112,7 +115,7 @@ phyloseq_filt.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_l
                    filter_column_value = config["filter_column_value"],
                    filter_meta_column = config["filter_meta_column"]))
 
-phyloseq_filt.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_melted.tsv",
+phyloseq_filt.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_melted.tsv",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
                    tax_DB = config["tax_DB"],
@@ -121,12 +124,15 @@ phyloseq_filt.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_l
                    filter_tax_rank = config["filter_tax_rank"],
                    filter_lineage = config["filter_lineage"],
                    filter_column_value = config["filter_column_value"],
-                   filter_meta_column = config["filter_meta_column"]))
+                   filter_meta_column = config["filter_meta_column"],
+                   norm_value = config["normalization"], 
+                   abund_value = config["min_abundance"], 
+                   prev_value = config["min_prevalence"]))
 
 
 ### Transposed output tables
 ### Count-table transposed format - filtered
-transposed_output = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_export/count_table_transposed.txt",
+transposed_output = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
             tax_DB = config["tax_DB"],
@@ -135,11 +141,14 @@ transposed_output = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_li
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"])
+            filter_meta_column = config["filter_meta_column"],
+            norm_value = config["normalization"], 
+            abund_value = config["min_abundance"], 
+            prev_value = config["min_prevalence"])
 
 
 ### Count-table transposed format - not filtered
-transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_trfs_export/count_table_transposed.txt",
+transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
             tax_DB = config["tax_DB"],
@@ -148,7 +157,10 @@ transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofil
             filter_tax_rank = config["filter_tax_rank"],
             filter_lineage = config["filter_lineage"],
             filter_column_value = config["filter_column_value"],
-            filter_meta_column = config["filter_meta_column"]))
+            filter_meta_column = config["filter_meta_column"],
+            norm_value = config["normalization"], 
+            abund_value = config["min_abundance"], 
+            prev_value = config["min_prevalence"]))
 
 
 
