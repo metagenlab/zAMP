@@ -1,6 +1,6 @@
 ## Set a rule order for ambiguous rules
 ruleorder: physeq_tax_filtering > physeq_rarefy
-ruleorder: Phyloseq_collapse_taxa > Phyloseq_transform_to_percent
+ruleorder: Phyloseq_collapse_taxa > physeq_filter_norm_transf
 
 ## Small function to extract numbers from rarefaction values
 import re
@@ -67,7 +67,7 @@ rule physeq_tax_filtering:
     script:
         "scripts/physeq_filter_taxa.R"
 
-### Rarefy coumts
+### Rarefy counts
 rule physeq_rarefy:
     conda:
         "../../envs/physeq.yml"
@@ -81,6 +81,7 @@ rule physeq_rarefy:
         logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
     script:
         "scripts/physeq_rarefy.R"
+
 
 
 ### Add an updated phylogenetic tree into phyloseq objects
@@ -127,19 +128,6 @@ rule Phyloseq_collapse_taxa:
     script:
         "scripts/physeq_collapse_taxa.R"
 
-### Transform counts in %
-rule Phyloseq_transform_to_percent:
-    conda:
-        "../../envs/physeq.yml"
-    input:
-        "{prefix}.rds"
-    output:
-        "{prefix}_trfs.rds",
-    log:
-        logging_folder + "{prefix}_trfs.txt",
-    script:
-        "scripts/physeq_pct_trsf.R"
-
 ### Reformat count and metadata tables
 rule transpose_and_meta_count_table:
     conda:
@@ -156,3 +144,20 @@ rule transpose_and_meta_count_table:
         logging_folder + "{prefix}/count_table_transposed.log"
     script:
         "scripts/transpose_and_add_meta_count_table.R"
+
+### Transform and normalize counts
+rule physeq_filter_norm_transf:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        phyloseq_object = "{prefix}.rds"
+    output:
+        phyloseq_norm = "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.rds",
+    params:
+        normalization_value = lambda wildcards: rafe_value_fct(wildcards.norm_value),
+        min_abundance_value = lambda wildcards: rafe_value_fct(wildcards.abund_value),
+        min_prevalence_value = lambda wildcards: rafe_value_fct(wildcards.prev_value),
+    log:
+        logging_folder + "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.txt",
+    script:
+        "scripts/trans_norm.R"

@@ -27,3 +27,5 @@ dependencies:
  - r-cowplot
  - bioconductor-microbiome
  - bioconductor-aldex2
+ - bioconductor-metagenomeseq
+ - maaslin2

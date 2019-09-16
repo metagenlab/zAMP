@@ -39,7 +39,10 @@ classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", 
 
 
 ## Reads post-processing ##############################################################################################
-rarefaction_value: [10000,20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
+rarefaction_value: ["norarefaction",20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
+normalization: ["TSS", "NONE"] # value for counts normalization. Using script form https://github.com/biobakery/Maaslin2
+min_prevalence: [0,2] # number of samples in which the feature has to be found to be kept
+min_abundance: [0,2] # minimal count to be kept
 viz_replace_empty_tax: TRUE # "TRUE" is recommended to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc.... Otherwise they are left empty
 filter_tax_rank: ["Kingdom"] # At which taxonomic rank we filter in. (Usually "Kingdom")
 filter_lineage: ["Bacteria"] # What value of filter_tax_rank we keep. (Usually "Bacteria")
@@ -51,7 +54,7 @@ filter_out_lineage: ["Bacteria_phy"] # Which value of filter_out_tax_rank we fil
 Barplots: True # or False
 Heatmaps: True # or False
 Alpha_divs: True # or False
-alpha_metrics: ["Shannon", "Simpson", "InvSimpson", "Chao1"]
+alpha_metrics: ["Shannon", "Chao1"]
 Distance_ordinations: True # or False
 Constrained_ordinations: True # or False
 Unconstrained_ordinations: False # or False
@@ -65,7 +68,7 @@ color_factor: sample_source # Column in "local_samples" used to color points and
 shape_factor : sample_source # Column in "local_samples" used to for shapes of points (ordination)
 
 ### Barplots and heatmaps parameters
-tax_ranks: ["Family", "Genus", "Species"] # taxonomic levels for plotting
+tax_ranks: ["Family", "Genus"] # taxonomic levels for plotting
 relative_or_absolute_plotting: ["relative", "absolute"] # Plot relative of absolute values. Relative is recommended!
 relative_or_absolute_filtering: ["relative", "absolute", "nofiltering"] # Group values based on relative or absolute values. Relative is recommended!
 relative_filtering_value: [0.2] # % for relative value based filtering.
@@ -79,7 +82,7 @@ distinct_colors: TRUE #(or 'FALSE') # Use a automatic function to have distinct 
 separated_legend: TRUE #(or 'FALSE') # should the legend be separated( barplots)
 
 #### Ordination parameters
-ordination_distance: ["unifrac", "bray", "jaccard"]
+ordination_distance: ["unifrac", "jaccard"]
 ordination_method_distance_based: ["NMDS", "MDS"]
 ordination_method_constrained: ["DPCoA"]
 ordination_method_unconstrained: ""
