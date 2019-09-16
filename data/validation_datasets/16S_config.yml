@@ -37,10 +37,9 @@ tax_DB: ["Silva132.201908","ezbiocloud201805.201909"] # must be the name of the 
 ### Taxonimc classifier.
 classifier: ["qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", "dada2rdp","decipher"
 
-
 ## Reads post-processing ##############################################################################################
 rarefaction_value: [20000] # value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.
-normalization: ["tss", "none"] # value for counts normalization. Using script form https://github.com/biobakery/Maaslin2
+normalization: ["tmm", "none"] # value for counts normalization. Using script form https://github.com/biobakery/Maaslin2
 min_prevalence: [0,10] # proporition (in %) of samples in which the feature has to be found to be kept
 min_abundance: [0,100] # minimal count to be kept
 viz_replace_empty_tax: TRUE # "TRUE" is recommended to replace empty taxonomic levels by "_sp" for species, "_g" for the genus etc.... Otherwise they are left empty
