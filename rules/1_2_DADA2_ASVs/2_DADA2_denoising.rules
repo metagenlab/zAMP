@@ -158,7 +158,7 @@ rule create_filtered_reads_multiqc_report:
     input:
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(read_naming.keys())),
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
-       expand("DADA2/1a_trimmed_primers/logs/{sample}_export_cutadapt_trim-paired.txt", sample = list(read_naming.keys()))
+       expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(read_naming.keys()))
     output:
         "QC/multiqc_DADA2_filtered_reads_report.html"
     log:
