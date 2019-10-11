@@ -29,10 +29,10 @@ library("edgeR");packageVersion("edgeR")
 library("metagenomeSeq");packageVersion("metagenomeSeq")
 
 ## Import phyloseq
-physeq <- (readRDS(phyloseq_object))
+physeq <- readRDS(phyloseq_object)
 
 ## Recover OTU table
-OTU <- data.frame(otu_table(physeq))
+OTU <- data.frame(otu_table(physeq), check.names = FALSE)
 
 ## List methods computed by vegan
 vegan_methods <- c("total", "max", "freq", "normalize", "range", "pa", "chi.square", "hellinger" ,"log")
