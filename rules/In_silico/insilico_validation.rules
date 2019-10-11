@@ -202,7 +202,8 @@ rule In_silico_tax_compare:
         Metadata_table = "table_combined.tsv",
         taxonomy_table = "InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
     output:
-        output_table = "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv"
+        output_table = "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv",
+        output_table_long = "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax_long.tsv"
     params:
         viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
