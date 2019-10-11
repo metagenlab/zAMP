@@ -1,3 +1,5 @@
+
+## To build and push Docker image: bash build_n_validate_docker.sh {version_tag_or_hash} {cores} {Github_access_token}
 #!/bin/bash
 
 VERSION=$1
