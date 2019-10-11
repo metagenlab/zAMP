@@ -135,7 +135,8 @@ rule barplots:
     conda:
         "../../envs/barplots.yml"
     input:
-        phyloseq_melted_table = lambda wildcards: "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/" + barplot_levels(wildcards.tax_ranks) + "/base_melted.tsv"
+        phyloseq_melted_table = lambda wildcards: "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/" + barplot_levels(wildcards.tax_ranks) + "/base_melted.tsv",
+        metadata = lambda wildcards: "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/" + barplot_levels(wildcards.tax_ranks) + "/base_export/metadata_table.tsv"
     output:
         barplot = "{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{relative_or_absolute_filtering}_{filtering_value}_{tax_ranks}_barplot.pdf",
     params:

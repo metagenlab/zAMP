@@ -10,6 +10,7 @@
 
 ## Input
     phyloseq_melted_table <- snakemake@input[["phyloseq_melted_table"]]
+    metadata <- snakemake@input[["metadata"]]
 
 ## Ouput
     output_path <- snakemake@output[["barplot"]]
@@ -44,9 +45,10 @@
 
 ## Load the melted phyloseq table
     melted_dataframe <- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep = "\t")
+    metadata_table <- read.table(file = metadata, sep = "\t", header = TRUE, na.strings = "NA")
 
 ## Order the x axis as in the metadata_table
-    #melted_dataframe[[sample_label]] = factor(melted_dataframe[[sample_label]], levels = unique(melted_dataframe[[sample_label]]), ordered = TRUE)
+    melted_dataframe[[sample_label]] = factor(melted_dataframe[[sample_label]], levels = unique(metadata_table[[sample_label]]), ordered = TRUE)
 
 ################################################################################
 
