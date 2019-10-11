@@ -166,6 +166,7 @@ docker run -it --rm --mount source="$(pwd)",target=/home/pipeline_user/data/anal
     *Oksanen, J., Kindt, R., Legendre, P., O’Hara, B., Simpson, G. L., Solymos, P. M., … & Wagner, H. (2008). The vegan package. Community Ecology Package, (May 2014), 190. Retrieved from https://bcrc.bio.umass.edu/biometry/images/8/85/Vegan.pdf*
 
 - metagenomeSeq
+
     *Joseph, A., Paulson, N., Olson, N. D., Wagner, J., Talukder, H., & Corrada, H. (2019). Package ‘ metagenomeSeq .’*
     
 - edgeR
