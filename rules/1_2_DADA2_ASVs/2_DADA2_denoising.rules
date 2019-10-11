@@ -167,5 +167,5 @@ rule create_filtered_reads_multiqc_report:
 #        configfile = multiqc_configfile
     shell:
         """
-        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") &> {log[0]}
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
         """
