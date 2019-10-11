@@ -2,7 +2,7 @@
 ### Overview
 This is a comprehensive pipeline for amplicon-based metagenomics integrating in a Snakemake workflow the [best functions of many tools](#References). It enables performant and reproducibile processing of 16S rRNA or ITS Illumina paired-end reads. The whole process from local .fastq or SRA depository files to generation of basic visualization plots, including quality control plots of intermediate steps, is covered. 
     
-The Snakemake pipeline can be exectued either by cloning this repository and relying on and conda environments (Method 1). For better reproducibility, software stability and convenient installation, our stand-alone container can be used, either with Singularity (Method 2, recommended) or Docker (Method 3).
+The Snakemake pipeline can be exectued either by cloning this repository and relying on conda environments (Method 1). For better reproducibility, software stability and convenient installation, our stand-alone container can be used, either with Singularity (Method 2, recommended) or Docker (Method 3).
   
 ### Method 1 - Snakemake with conda environnements
 _Allows flexibility, with possibility to easily modify and personalize the pipeline. However, there are risks of errors or result inconsistencies due to changes in versions. Furthermore, _simulate_PCR_ must be installed independently for the in silico validation, since it is not available through conda._ 
