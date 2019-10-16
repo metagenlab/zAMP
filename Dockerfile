@@ -108,9 +108,9 @@ WORKDIR ${pipeline_folder}/data/validation_datasets
 
 #################### Build environements of the pipeline #####################
 ## Here, with "--create-envs-only", we only build the environements
-RUN snakemake --snakefile ${pipeline_folder}/Snakefile.insilico_validation --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile 16S_config_in_silico.yml insilico_validation && \
-    snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile 16S_config.yml all PICRUSt2_output && \
-    conda clean -a
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile.insilico_validation --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile 16S_config_in_silico.yml insilico_validation
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --use-conda --conda-prefix /opt/conda/ --create-envs-only --configfile 16S_config.yml all PICRUSt2_output
+RUN conda clean -a
 
 ## Run the insilico validation pipeline. It allows to create compiled versions of reference databases with root privileges
 ARG TEST_CPU
