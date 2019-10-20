@@ -203,7 +203,7 @@ def phyloseq_output_list():
     output = basic_plots_list()
     output.append(phyloseq)
     if config["filtered_phyloseq_output"] == True:
-        output.append(phyloseq)
+        output.append(phyloseq_filt)
     if config["transposed_tables"] == True:
         output.append(transposed_output)
     return(output)
