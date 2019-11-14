@@ -512,7 +512,38 @@ NMDS_fct <- function(threshod_filtered_abs_no_zero, shape_column, color_column, 
     theme_bw() +
     coord_equal() 
   
-  return(plot)
+  
+  ## Create stress plot, from https://stackoverflow.com/questions/47124238/annotate-in-ggplot2-does-not-honor-newline-is-a-pasted-and-parsed-command
+  tib <- tibble(mds$diss, mds$dist, mds$dhat)
+  colnames(tib) <- c("diss", "dist", "dhat")
+  stress <- mds$stress
+  coord_x <- min(tib$diss)
+  coord_y <- max(tib$dist)
+  nonmetric_r2 <- round(1 - stress * stress, digits = 3)
+  linear_r2 <- round(summary(lm(mds$dist~mds$dhat))$adj.r.squared, 3)
+  
+  nonmetric_label = c(paste0("Non-metric~fit~italic(R)^2 ==", nonmetric_r2),
+                      paste0("Linear~fit~italic(R)^2 ==", linear_r2)) 
+  
+  stress <- ggplot(tib,
+                   aes(x = diss, y = dist)) +
+    geom_point(color = "blue") +
+    geom_step(aes(x = diss, y = dhat), color = "red") +
+    annotate(
+      geom = "text",
+      x = coord_x,
+      y = c(coord_y, 0.95*coord_y),
+      hjust = 0,
+      #vjust = 1,
+      label = nonmetric_label, parse = TRUE) +
+    labs(x = "Observed Dissimilarity",
+         y = "Ordination Distance") +
+    theme_classic() +
+    labs(caption=paste0("stress:", round(mds$stress, digits = 2))) +
+    theme(plot.caption=element_text(size=12, hjust=0, margin=margin(15,0,0,0)))
+
+  #return(list(plot, stress))
+  return(list(plot, stress))
 }
 
 # Define UI
@@ -640,7 +671,8 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                     # NMDS
                     tabPanel(title = "NMDS",
                              downloadButton('Download_NMDS'),
-                             plotOutput("NMDS", height = "400px", width = "500px")
+                             splitLayout(cellWidths = c("50%", "50%"), plotOutput("NMDS", height = "400px", width = "500px"), plotOutput("NMDS_stress"))
+
                     )
                     
                 )
@@ -859,8 +891,8 @@ server <- function(input, output, session) {
         
         ## Generate NMDS
         ### Generate the plot
-        output$NMDS <- renderPlot({
-          req(filtered_table())
+        NMDS <- reactive({
+          req(melted_dataframe_filtered())
           plot <- NMDS_fct(threshod_filtered_abs_no_zero =  melted_dataframe_filtered(),
                            color_column = input$NMDS_color,
                            shape_column = input$NMDS_shape ,
@@ -870,11 +902,20 @@ server <- function(input, output, session) {
                            t_neg_PCR_group_column_value = input$t_neg_PCR_group_column_value,
                             distance = input$NMDS_distance
                                )
-          ggsave("NMDS.svg", plot)
+          ggsave("NMDS.svg", plot[[1]])
           return(plot)
         })
 
         
+        output$NMDS <- renderPlot({
+          req(NMDS())
+          return(NMDS()[[1]])
+        })
+        
+        output$NMDS_stress <- renderPlot({
+          req(NMDS())
+          return(NMDS()[[2]])
+        })
         
         
         output$Download_barplot <- downloadHandler(
