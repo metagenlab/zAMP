@@ -14,18 +14,18 @@ library(rlang); packageVersion("rlang")
 library(ggpubr); packageVersion("ggpubr")
 library(cowplot); packageVersion("cowplot")
 library(vegan); packageVersion("vegan")
-#library(stringr); packageVersion("stringr")
 
-count_table <- read.table("DADA2/4_physeq/qiimerdp_ezbiocloud201805.201909/Bacteria_in_Kingdom/rarefaction_20000/no_collapse/base_export/count_table.txt", header = TRUE, check.names = FALSE, sep = "\t")
 
-metadata_table <- read.table("DADA2/4_physeq/qiimerdp_ezbiocloud201805.201909/Bacteria_in_Kingdom/rarefaction_20000/no_collapse/base_export/metadata_table.tsv", header = TRUE, check.names = FALSE, sep = "\t")
+#count_table <- read.table("DADA2/4_physeq/qiimerdp_ezbiocloud201805.201909/Bacteria_in_Kingdom/rarefaction_20000/no_collapse/base_export/count_table.txt", header = TRUE, check.names = FALSE, sep = "\t")
 
-taxonomy_table <- read.table("DADA2/4_physeq/qiimerdp_ezbiocloud201805.201909/Bacteria_in_Kingdom/rarefaction_20000/no_collapse/base_export/dna-sequences_tax_assignments.txt", header = FALSE, check.names = FALSE, sep = "\t")
+#metadata_table <- read.table("base_export/metadata_table.tsv", header = TRUE, check.names = FALSE, sep = "\t")
+
+#taxonomy_table <- read.table("DADA2/4_physeq/qiimerdp_ezbiocloud201805.201909/Bacteria_in_Kingdom/rarefaction_20000/no_collapse/base_export/dna-sequences_tax_assignments.txt", header = FALSE, check.names = FALSE, sep = "\t")
 
 
 # Create functions
 ## Filter OTU table
-filter_OTU_count_fct <- function(count_table, grouping_column, x_axis_column, metadata_table, taxonomy_table, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filter_value, plotting_tax_ranks, distinct_colors, abundance_filtre_level = c("Sample", "Group")){
+filter_OTU_count_fct <- function(count_table, grouping_column, x_axis_column, sort_column, facetting_column, metadata_table, taxonomy_table, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filter_value, plotting_tax_ranks, distinct_colors, abundance_filtre_level = c("Sample", "Group")){
   
   ## Reformat and join count table, metadata and taxonomy
   ### Transform count table to long format
@@ -40,81 +40,97 @@ filter_OTU_count_fct <- function(count_table, grouping_column, x_axis_column, me
   ### Add taxonomy to long count table
   count_table_long_tax <- dplyr::left_join(count_table_long, taxonomy_table_split, by = "ASV")
   
-  ### Add metadata to this long format count table with taxonomy
-  count_table_long_tax_meta <- dplyr::left_join(metadata_table, count_table_long_tax, by = "Sample") %>% select(-ASV, -Confidence, -Count, everything())
-  
+
   ## Filter taxa based on quantities
   all_rank <- c("Kingdom","Phylum","Class","Order","Family","Genus","Species", "ASV")
   ranks <- all_rank[1:match(plotting_tax_ranks, all_rank)]
   
-  ### Relative value filtering
+  ### Absolute value filtering
   if (relative_or_absolute_filtering == "absolute"){
     filtering_tag <- paste0("<", filter_value, "reads")
     
-    count_table_long_tax <- count_table_long_tax_meta %>% 
-      dplyr::group_by_at(c("Sample", grouping_column, x_axis_column, ranks)) %>% 
+    count_table_long_tax_sum <- count_table_long_tax %>% 
+      dplyr::group_by_at(c("Sample", ranks)) %>% 
       dplyr::summarise(Count = sum(Count)) %>%
-      dplyr::ungroup() %>% 
-      select(-one_of(ranks)) %>% 
-      rename_at(.vars = vars(ends_with("_newtax")),
-                .funs = ~sub(x = ., pattern = "_newtax$", replacement = ""))
-
-
+      dplyr::ungroup() %>%
+      dplyr::mutate_at(.vars = vars(ranks), .funs = list(newtax = ~ dplyr::if_else(condition = (filter_value > Count), true = unique(.), false = filtering_tag))) %>%
+      dplyr::select(-one_of(ranks)) %>% 
+      dplyr::rename_at(.vars = vars(ends_with("_newtax")),
+                       .funs = ~sub(x = ., pattern = "_newtax$", replacement = ""))
     
-    ### Absolute value filtering
+    
+    ### Relative value filtering
   } else if (relative_or_absolute_filtering == "relative"){
     filtering_tag <- paste0("<", filter_value, "%_of_reads")
     
-    count_table_long_tax <- count_table_long_tax_meta %>% 
-      dplyr::group_by(Sample) %>% 
-      dplyr::mutate(group_total = sum(Count)) %>%
+    count_table_long_tax_sum <- count_table_long_tax %>% 
+      dplyr::group_by_at(c("Sample", ranks)) %>% 
+      dplyr::summarise(Count = sum(Count)) %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by_at("Sample") %>% 
+      dplyr::mutate(S_sum = sum(Count)) %>%
       dplyr::ungroup() %>%
       dplyr::group_by_at(c("Sample", ranks)) %>% 
-      dplyr::mutate_at(.vars = vars(ranks), .funs = list(newtax = ~ dplyr::if_else(condition = (filter_value > 100*sum(Count)/group_total), true = unique(.), false = filtering_tag))) %>%
+      dplyr::mutate(Count = (100*Count)/S_sum) %>%
+      dplyr::mutate_at(.vars = vars(ranks), .funs = list(newtax = ~ dplyr::if_else(condition = (filter_value < Count), true = unique(.), false = filtering_tag))) %>%
       dplyr::ungroup() %>%
-      dplyr::group_by_at(c("Sample", grouping_column, x_axis_column, ranks)) %>% 
-      dplyr::summarise(Count=as.numeric(mean(Count)))
-      dplyr::ungroup() %>%
-      dplyr::select(-group_total) # %>% 
-      #dplyr::ungroup() %>%  select(-one_of(ranks)) %>% rename_at(.vars = vars(ends_with("_newtax")), .funs = ~sub(x = ., pattern = "_newtax$", replacement = ""))
+      dplyr::select(-one_of(ranks)) %>%
+      dplyr::rename_at(.vars = vars(ends_with("_newtax")),
+                .funs = ~sub(x = ., pattern = "_newtax$", replacement = "")) %>%
+      dplyr::select(-S_sum) %>%
+      dplyr::group_by_at(c("Sample", ranks)) %>% 
+      dplyr::summarise(Count = sum(Count)) %>%
+      dplyr::ungroup()
+      
     
-    
+   
     ### No filtering
   } else if (relative_or_absolute_filtering == "nofiltering"){
     
-    count_table_long_tax <- count_table_long_tax_meta
+    count_table_long_tax_sum <- count_table_long_tax
     
   }
   
   
+  ### Add metadata to this long format count table with taxonomy
+  #### Keep only the used columns to keep the table small
+  metadata_table_select <- select(metadata_table, c(Sample, x_axis_column, grouping_column, facetting_column, sort_column))
+  #### Join tables
+  count_table_long_tax_meta <- dplyr::right_join(metadata_table_select, count_table_long_tax_sum, by = "Sample") #%>% select(-Confidence, -Count, everything())
+  #### Order the x_axis_column based on the column order
+  count_table_long_tax_meta[[x_axis_column]] <- reorder(count_table_long_tax_meta[[x_axis_column]], count_table_long_tax_meta[[sort_column]])
+
   ### Set colors palette
   #### Brewer colors
   if (distinct_colors == FALSE){
     getPalette <- colorRampPalette(brewer.pal(n=9, "Set1"))
-    ColList <- unique(count_table_long_tax[[plotting_tax_ranks]])
+    ColList <- unique(count_table_long_tax_meta[[plotting_tax_ranks]])
     colors_palette <- getPalette(length(ColList))
     names(colors_palette) <- ColList
     colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck
-    m <- match(count_table_long_tax[[plotting_tax_ranks]], names(colors_palette))
-    count_table_long_tax$colors <- colors_palette[m]
+    m <- match(count_table_long_tax_meta[[plotting_tax_ranks]], names(colors_palette))
+    count_table_long_tax_meta$colors <- colors_palette[m]
     
     
     #### Randomcolors distinct colors
   }else if (distinct_colors == TRUE){
     set.seed(4)
     
-    ColList <- unique(count_table_long_tax[[plotting_tax_ranks]])
-    print(length(unique(count_table_long_tax[[plotting_tax_ranks]])))
-    colors_palette <- distinctColorPalette(altCol = TRUE, k = length(unique(count_table_long_tax[[plotting_tax_ranks]])))
+    ColList <- unique(count_table_long_tax_meta[[plotting_tax_ranks]])
+    colors_palette <- distinctColorPalette(altCol = TRUE, k = length(unique(count_table_long_tax_meta[[plotting_tax_ranks]])))
     names(colors_palette) <-  ColList
     colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck
-    m <- match(count_table_long_tax[[plotting_tax_ranks]], names(colors_palette))
-    count_table_long_tax$colors <- colors_palette[m]
-    names(count_table_long_tax$colors) <- count_table_long_tax[[plotting_tax_ranks]]
+    m <- match(count_table_long_tax_meta[[plotting_tax_ranks]], names(colors_palette))
+    count_table_long_tax_meta$colors <- colors_palette[m]
+    names(count_table_long_tax_meta$colors) <- count_table_long_tax_meta[[plotting_tax_ranks]]
     }
   
+    
+  
+  
+  
   ## Return filtered table
-  return(count_table_long_tax)
+  return(count_table_long_tax_meta)
   
 }
 
@@ -142,8 +158,8 @@ barplots_fct <- function(long_count_table, grouping_column, grouping_column_valu
   } else if(plotting_tax_ranks == "Species"){
     label_ranks <- c("Phylum", "Species")
     
-  } else if(plotting_tax_ranks == "OTU"){
-    label_ranks <- c("Species", "OTU")
+  } else if(plotting_tax_ranks == "ASV"){
+    label_ranks <- c("Species", "ASV")
   }
   
 
@@ -216,14 +232,13 @@ barplots_fct <- function(long_count_table, grouping_column, grouping_column_valu
       taxrank_barplot <- taxrank_barplot + facet_grid(~ get(facetting_column), scales = "free", space = "free")
     }
   }
-  
-  taxrank_barplot <<- taxrank_barplot
+
   
   return(taxrank_barplot)
 }
 
 ## Heatmaps
-heatmaps_fct <- function(filtered_count_table, x_axis_column, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot = FALSE){
+heatmaps_fct <- function(long_count_table, grouping_column, grouping_column_value, x_axis_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot = FALSE){
   
   ## Select Tax ranks needed for labelling
   if(plotting_tax_ranks == "Kingdom"){
@@ -246,8 +261,28 @@ heatmaps_fct <- function(filtered_count_table, x_axis_column, relative_or_absolu
   } else if(plotting_tax_ranks == "Species"){
     label_ranks <- c("Phylum", "Species")
     
-  } else if(plotting_tax_ranks == "OTU"){
-    label_ranks <- c("Species", "OTU")
+  } else if(plotting_tax_ranks == "ASV"){
+    label_ranks <- c("Species", "ASV")
+  }
+  
+
+  ## Keep the sample of matching a specified value in the groupe_column variable
+  if(isTRUE(t_neg_PCR_sample_on_plots)){
+    filtered_count_table_f <- long_count_table[long_count_table[[grouping_column]] == grouping_column_value | long_count_table[[grouping_column]] == t_neg_PCR_group_column_value,] 
+  } else if (isFALSE(t_neg_PCR_sample_on_plots)){
+    filtered_count_table_f <- long_count_table[long_count_table[[grouping_column]] == grouping_column_value,] 
+  }
+  
+  
+  if (relative_or_absolute_plot == "relative"){
+    ## Normalize in % the table or plot absolute abundance
+    filtered_count_table_f_norm <- filtered_count_table_f  %>% # calculate % normalized Abundance
+      ungroup %>%
+      dplyr::group_by(Sample) %>%
+      dplyr::mutate(Count=as.numeric(100*Count/sum(Count))) %>%
+      ungroup()
+  }else if (relative_or_absolute_plot == "absolute"){
+    filtered_count_table_f_norm <- filtered_count_table_f  
   }
   
   ## Unquote factors
@@ -256,44 +291,23 @@ heatmaps_fct <- function(filtered_count_table, x_axis_column, relative_or_absolu
   t_column <-  rlang::sym(plotting_tax_ranks)
   l_ranks  <-  rlang::syms(label_ranks)
   
-  if (facet_plot == TRUE){
-    f_column <- rlang::sym(facetting_column)
-  }
-  
-  
-  ### Reorder by abundance
-  if (isTRUE(order_by_abundance)){
-    filtered_count_table_ord <- filtered_count_table %>%
-      group_by(!! t_column) %>%
-      mutate(tot = sum(Count)) %>%
-      ungroup() %>%
-      mutate(!! t_column := fct_reorder(!! t_column, tot)) %>%
-      arrange(desc(tot))
-  }else if (isFALSE(order_by_abundance)){ print("NOT ordered by abundance")
-    filtered_count_table_ord <- filtered_count_table
-    
-  }else {stop('"order_by_abundance" must be TRUE or FALSE')
-  }
-  
-  
+
   ### Set the filtering_tag at the top of the plot
-  filtered_df_abs_i[[plotting_tax_ranks]] <- fct_relevel(filtered_df_abs_i[[plotting_tax_ranks]], unique(grep(filtered_df_abs_i[[plotting_tax_ranks]], value = TRUE, pattern = "abund")), after = 0)
+  filtered_count_table_f_norm[[plotting_tax_ranks]] <- fct_relevel(filtered_count_table_f_norm[[plotting_tax_ranks]], unique(grep(filtered_count_table_f_norm[[plotting_tax_ranks]], value = TRUE, pattern = "<")), after = 0)
   
   ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
-  taxalabel <- as.character(paste(toupper(substr(filtered_df_abs_i[[label_ranks[1]]],1 ,6)) , filtered_df_abs_i[[label_ranks[2]]], sep = ";"))
-  names(taxalabel) <- filtered_df_abs_i[[plotting_tax_ranks]]
+  filtered_count_table_f_norm$taxalabel <- as.character(paste(toupper(substr(filtered_count_table_f_norm[[label_ranks[1]]],1 ,6)) , filtered_count_table_f_norm[[label_ranks[2]]], sep = ";"))
+  names(filtered_count_table_f_norm$taxalabel) <- filtered_count_table_f_norm[[plotting_tax_ranks]]
   
   ### Generate heatmap
-  
-  
-  filtered_df_abs_i_wide <- filtered_df_abs_i %>% 
-    select(!! x_column, !! t_column, Count ) %>%
-    spread(!! t_column, Count)
+  ## Generate an OTU table from the long format
+  filtered_df_abs_i_wide <- filtered_count_table_f_norm %>% 
+    select(!! x_column, taxalabel,  Count ) %>%
+    spread(taxalabel, value = Count)
   
   #filtered_df_abs_i_wide[is.na(filtered_df_abs_i_wide)] <- 0 
   rownames(filtered_df_abs_i_wide) <- filtered_df_abs_i_wide[[x_axis_column]]
   filtered_df_abs_i_wide[[x_axis_column]] <- NULL
-  #test <- filtered_df_abs_i_wide
   filtered_df_abs_i_wide <- t(filtered_df_abs_i_wide)
   filtered_df_abs_i_wide <- filtered_df_abs_i_wide[order(rowSums(filtered_df_abs_i_wide, na.rm = TRUE), decreasing=T),]
   filtered_df_abs_i_wide <- data.matrix(filtered_df_abs_i_wide)
@@ -321,20 +335,24 @@ heatmaps_fct <- function(filtered_count_table, x_axis_column, relative_or_absolu
 }
 
 ## NMDS
-NMDS_fct <- function(count_table, metadata_table, grouping_column, grouping_column_value, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filter_value, plotting_tax_ranks, abundance_filtre_level = c("Sample", "Group", color_column, shape_column)){
+NMDS_fct <- function(count_table, metadata_table, grouping_column, grouping_column_value, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, plotting_tax_ranks, distance, color_column, shape_column, color_palette){
   
   ## Keep the sample of matching a specified value in the groupe_column variable
   if(isTRUE(t_neg_PCR_sample_on_plots)){
-    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value | metadata_table[[grouping_column]] == t_neg_PCR_group_column_value] 
+    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value | metadata_table[[grouping_column]] == t_neg_PCR_group_column_value,] 
   } else if (isFALSE(t_neg_PCR_sample_on_plots)){
-    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value] 
+    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value,] 
   }
   
+
   count_table_col_f <- count_table[which(names(count_table) %in% metadata_table_f[["Sample"]])]
-  count_table_f <- count_table_f[which(rowSums(count_table_col_f) != 0),]
-  
-  beta_dist <- vegdist(t(count_table_f),
-                       index = distance)
+  count_table_f <- count_table_col_f[which(rowSums(count_table_col_f) != 0),]
+
+  if (distance == "jaccard"){
+    beta_dist <- vegdist(t(count_table_f),method = distance, binary = TRUE)
+  }else{
+    beta_dist <- vegdist(t(count_table_f), method = distance, binary = FALSE)
+  }
   
   mds <- metaMDS(beta_dist)
   
@@ -343,9 +361,11 @@ NMDS_fct <- function(count_table, metadata_table, grouping_column, grouping_colu
   mds_data <- dplyr::left_join(mds_data, metadata_table_f, by = "Sample")
   
   plot <- ggplot(mds_data, aes_string(x = "MDS1", y = "MDS2", color = color_column, shape = shape_column)) +
-    geom_point() +
+    geom_point(size=4) +
     theme_bw() +
-    coord_equal() 
+    coord_equal() +
+    scale_color_brewer(palette=color_palette) + 
+    stat_ellipse(aes(group = get(color_column), color = get(color_column)),linetype = 2, type = "t")
   
   ## Create stress plot, from https://stackoverflow.com/questions/47124238/annotate-in-ggplot2-does-not-honor-newline-is-a-pasted-and-parsed-command
   tib <- tibble(mds$diss, mds$dist, mds$dhat)
@@ -373,12 +393,47 @@ NMDS_fct <- function(count_table, metadata_table, grouping_column, grouping_colu
     labs(x = "Observed Dissimilarity",
          y = "Ordination Distance") +
     theme_classic() +
+    coord_equal() +
     labs(caption=paste0("stress:", round(mds$stress, digits = 2))) +
     theme(plot.caption=element_text(size=12, hjust=0, margin=margin(15,0,0,0)))
   
-  #return(list(plot, stress))
   return(list(plot, stress))
+  
 }
+
+## Alphy diversity
+alpha_fct <- function(metadata_table, x_axis_column, grouping_column, grouping_column_value, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value,facet_plot = FALSE, facetting_column = NULL, index, color_column, color_palette){
+  
+  ## Keep the sample of matching a specified value in the groupe_column variable
+  if(isTRUE(t_neg_PCR_sample_on_plots)){
+    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value | metadata_table[[grouping_column]] == t_neg_PCR_group_column_value,] 
+  } else if (isFALSE(t_neg_PCR_sample_on_plots)){
+    metadata_table_f <- metadata_table[metadata_table[[grouping_column]] == grouping_column_value,] 
+  }
+  
+  alpha <- ggplot(metadata_table_f, aes_string(x=x_axis_column, y=index, color = color_column)) +
+          geom_boxplot() +
+          theme_bw() +
+          theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+          xlab(label = x_axis_column) +
+          ylab(label = index) +
+          labs(color = color_column) +
+          ggtitle(paste(grouping_column_value, "alpha-diversity")) + 
+          scale_color_brewer(palette=color_palette)
+          
+  
+  if (isTRUE(facet_plot)){
+    alpha <- alpha + facet_grid(.~get(facetting_column) , scales = "free", space = "free")
+
+  }
+  
+  return(alpha)
+
+}
+ 
+
+ 
+
 
 # Define UI
 ui <- fluidPage(theme = shinytheme("lumen"),
@@ -386,11 +441,12 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                 titlePanel("Amplicon metagenomics"),
                 
                 fluidRow(
-                  column(3, h4("Import phyloseq melted dataframe"),
+                  column(3, h3("Import data"),
                          
                          ## Load data
                          ### Metadata
-                         fileInput("input_metadata_table", "Load metadata",
+                         fileInput("input_metadata_table", "Load metadata", 
+                                   placeholder = "metadata_table.tsv",
                                    multiple = FALSE, 
                                    accept = c("text/csv",
                                               "text/comma-separated-values,text/plain",
@@ -398,6 +454,7 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          
                          ### Taxonomy
                          fileInput("input_taxonomy_table", "Load taxonomy",
+                                   placeholder = "dna-sequences_tax_assignments.txt",
                                    multiple = FALSE, 
                                    accept = c("text/csv",
                                               "text/comma-separated-values,text/plain",
@@ -405,6 +462,7 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          
                          ### Count table
                          fileInput("input_count_table", "Load count table",
+                                   placeholder = "count_table.txt",
                                    multiple = FALSE, 
                                    accept = c("text/csv",
                                               "text/comma-separated-values,text/plain",
@@ -420,15 +478,12 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          conditionalPanel(condition = "input.filter_out == true",
                                           selectInput(inputId = "filter_out_value",label = "Value in filtering column",choice = NULL, multiple = TRUE)),
                          
-                         ### Metadata table
-                         # fileInput("input_metadata", "Metadata",
-                         #          multiple = FALSE, 
-                         #          accept = c("text/csv",
-                         #                     "text/comma-separated-values,text/plain",
-                         #                     ".tsv")),
-                  ),
+
+                         selectInput(inputId = "fformat", "Download plot format", choices=c("png","svg","jpeg","pdf"), selected = "png", multiple = FALSE, selectize = TRUE),
+                         
+                         ),
                   
-                  column(3, h4("Table columns settings"),
+                  column(3, h3("Select input columns"),
                          ## Select columm of interest
                          ### grouping column
                          selectInput(inputId = "grouping_column",label = "Grouping column",choice = NULL),
@@ -451,17 +506,23 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                                           selectInput(inputId ="facetting_column", label = "Column for facets", choices = NULL)),
                          
                          ### x axis
-                         selectInput(inputId = "x_axis_column",label = "X axis column", choices = NULL)
+                         selectInput(inputId = "x_axis_column",label = "X axis column", choices = NULL),
+                         
+                         ### Sort column
+                         ### x axis
+                         selectInput(inputId = "sort_column",label = "Sorting column", choices = NULL)
+                         
                   ),
                   
-                  column(3, h4("Plotting settings"),
+                  column(3, h3("Barplot and Heatmap settings"),
                          
-                         ## Select plotting parameters
+                         h4("Both"),
+                         
                          ### Relative or absolute filtering
                          selectInput(inputId = "relative_or_absolute_filtering",label = "Filtering type", c("relative", "absolute", "nofiltering")),
                          
                          ### Filter cumulated at the sample or group scale
-                         selectInput(inputId = "abundance_filtre_level",label = "Filtering scale",c("Sample", "Group")),
+                         #selectInput(inputId = "abundance_filtre_level",label = "Filtering scale",c("Sample", "Group")),
                          
                          ### Filtering value
                          numericInput(inputId = "filtering_value", label = "Filtering value", value = 1, min = 0),
@@ -470,61 +531,87 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          selectInput(inputId = "relative_or_absolute_plot",label = "Plotting value", c("relative", "absolute")),  
                          
                          ### Plotting tax rank
-                         selectInput(inputId = "plotting_tax_ranks",label = "Plotting taxonomic rank", choices = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU"), selected = "Genus"),
-                         
-                         ### Distinct color
-                         checkboxInput(inputId = "distinct_colors", label = "Random distinct color", value = TRUE),        
+                         selectInput(inputId = "plotting_tax_ranks",label = "Plotting taxonomic rank", choices = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "ASV"), selected = "Genus"),
                          
                          ### Horizontal plot
                          checkboxInput(inputId = "horizontal_plot", label = "Horizontal plot", value = FALSE),
                          
+
+                         h4("Barplots only"),
+                         
                          ### Order by abundance
                          checkboxInput(inputId = "order_by_abundance", label = "Order by abundance", value = FALSE),
                          
+                         ### Distinct color
+                         checkboxInput(inputId = "distinct_colors", label = "Random distinct color", value = TRUE),  
+                         
                          ### Seprated legends
                          checkboxInput(inputId = "separated_legend", label = "Separated legend", value = FALSE)
+                         
                   ),
                   
-                  column(3, h4("NMDS settings"),
+                  column(3, h3("Alpha-diversity and NMDS settings"),
                          
-                         ## Select plotting parameters
+                         h4("Both"),
                          ### Color column
-                         selectInput(inputId ="NMDS_color", label = "NMDS colors",choices = NULL),
+                         selectInput(inputId ="alp_NMDS_color", label = "Colors column",choices = NULL),
                          
+                         ### Color palette
+                         selectInput(inputId ="alp_NMDS_palette", label = "Color palette", choices = c("Set1", "Set2", "Set3", "Pastel1", "Pastel2","Paired", "Dark2", "Accent", "Spectral"), selected = "Dark2"),
+                         
+                         
+                         h4("Alpha-diversity"),
+                         ### Index
+                         selectInput(inputId ="alpha_index", label = "Alpha-diversity index", choices = c("Observed", "Chao1", "ACE", "Shannon", "Simpson","InvSimpson", "Observed_min_1"), selected = "Chao1"),
+                         
+                         h4("NMDS of beta-diversity"),
                          ### Shapes column
                          selectInput(inputId ="NMDS_shape", label = "NMDS shapes",choices = NULL),
                          
                          ### Distances
-                         selectInput(inputId ="NMDS_distance", label = "NMDS distance", choices = c("bray", "jaccard", "wunifrac", "unifrac"), selected = "bray")
-                         
+                         selectInput(inputId ="NMDS_distance", label = "NMDS distance", choices = c("bray", "jaccard", "manhattan", "euclidean", "canberra","gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial", "chao", "cao", "mahalanobis"), selected = "bray")
                          
                          
                   )
+                  
                 ),
-                
-                
+                     
                 tabsetPanel(
                   # Barplots plannel
                   tabPanel(title = "Baplots",
-                           downloadButton('Download_barplot'),
-                           splitLayout(cellWidths = c("75%", "25%"), plotOutput("b_plot", height = "1000px"), plotOutput("legend"))
-                  ),
+
+                            downloadButton('Download_barplot'),
+                            splitLayout(cellWidths = c("75%", "25%"), plotOutput("b_plot", height = "1000px"), plotOutput("legend"))
+
+                           ),
                   
+                
                   # Heatmaps
                   tabPanel(title = "Heatmaps",
+                           
                            downloadButton('Download_heatmap'),
                            plotOutput("heatmap", height = "1000px")
-                  ),
+
+                           ),
+                  
+
+                  ## Alpha diversity
+                  tabPanel(title = "Alpha",
+
+                              downloadButton('Download_alpha'),
+                              plotOutput("alpha_plot")
+
+                           ),
                   
                   # NMDS
                   tabPanel(title = "NMDS",
+                           
                            downloadButton('Download_NMDS'),
                            splitLayout(cellWidths = c("50%", "50%"), plotOutput("NMDS", height = "400px", width = "500px"), plotOutput("NMDS_stress"))
                            
                   )
                   
-                )
-                
+                  )
                 
                 
 )
@@ -616,6 +703,12 @@ server <- function(input, output, session) {
                       choices=colnames(metadata_table_filtered())[!colnames(metadata_table_filtered()) %in%  c("Observed" ,"Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Observed_min_1")])
   })
   
+  observeEvent({metadata_table_filtered()
+    input$x_axis_column},{
+    updateSelectInput(session = session, 'sort_column',
+                      choices=colnames(metadata_table_filtered())[!colnames(metadata_table_filtered()) %in%  c("Observed" ,"Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Observed_min_1")])
+  })
+  
   ### Facetting column
   observeEvent({metadata_table_filtered()
     input$facet_plot},{
@@ -624,9 +717,9 @@ server <- function(input, output, session) {
     })
   
   
-  ### NMDS colors
+  ### Alpha/NMDS colors
   observeEvent({metadata_table_filtered()},{
-    updateSelectInput(session = session, 'NMDS_color',
+    updateSelectInput(session = session, 'alp_NMDS_color',
                       choices=colnames(metadata_table_filtered())[!colnames(metadata_table_filtered()) %in%  c("Observed" ,"Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Observed_min_1")])
   })
   
@@ -636,6 +729,7 @@ server <- function(input, output, session) {
                       choices=colnames(metadata_table_filtered())[!colnames(metadata_table_filtered()) %in%  c("Observed" ,"Chao1", "se.chao1", "ACE", "se.ACE", "Shannon", "Simpson", "InvSimpson", "Observed_min_1")])
   })
   
+
   
   ## Filter dataframe
   filtered_table <- reactive({
@@ -649,11 +743,15 @@ server <- function(input, output, session) {
       taxonomy_table = taxonomy_table(), 
       grouping_column = input$grouping_column,
       x_axis_column = input$x_axis_column,
+      sort_column = input$sort_column,
+      facetting_column = input$facetting_column,
       relative_or_absolute_filtering = input$relative_or_absolute_filtering,
       filter_value = input$filtering_value, 
       plotting_tax_ranks = input$plotting_tax_ranks,
       distinct_colors = input$distinct_colors,
       abundance_filtre_level = c("Sample", "Group"))
+    
+    ordered2 <- filtered_table
 
     return(filtered_table)
   })
@@ -662,9 +760,8 @@ server <- function(input, output, session) {
   ## Generate barplot
   ### Generate the plot
   b_plot <- reactive({
-    req(filtered_table())
-
-    barplots_fct(long_count_table = filtered_table(),
+      req(filtered_table())
+      barplots_fct(long_count_table = filtered_table(),
                  x_axis_column = input$x_axis_column,
                  grouping_column = input$grouping_column,
                  grouping_column_value = input$grouping_column_value,
@@ -682,29 +779,45 @@ server <- function(input, output, session) {
   
   b_width <-  reactive({
     req(filtered_table())
+    
     table_i <- filtered_table()[filtered_table()[[input$grouping_column]] == input$grouping_column_value,]
-    w <- 200 + 3*(unique(length(table_i[[input$x_axis_column]])))
+    
+    w <- 50 + 30*(length(unique(table_i[[input$x_axis_column]])))
+    
     if(isFALSE(input$separated_legend)){
-      w <- w + 100
+    w <- w + 200
+    
+    print(paste("Basic W value is", w))
+      
     }
+    
     return(w)
+    
   })
   
   
   ### Remove the legend
   output$b_plot <- renderPlot({
     req(b_plot())
+    req(b_width())
     
-    if (isTRUE(input$separated_legend))
+    if (isTRUE(input$separated_legend)){
       p <- b_plot() + guides(fill = FALSE)
     
-    else if(isFALSE(input$separated_legend))
+      } else if(isFALSE(input$separated_legend)){
       p <- b_plot()
-    
-    ggsave("barplot.svg", p)
+      }
+
+  
+    ggsave(paste0("barplot.",input$fformat), p)
+
     return(p)
     
-  }, height = 400, width = 400 ) #function(){b_width()}
+    
+    
+  }, height = 400, width = function(){b_width()}) 
+  
+  
   
   output$legend <- renderPlot({
     req(b_plot())
@@ -718,77 +831,133 @@ server <- function(input, output, session) {
   output$heatmap <- renderPlot({
     req(filtered_table())
 
-    plot <- heatmaps_fct(filtered_count_table =  filtered_table(),
+    plot <- heatmaps_fct(long_count_table =  filtered_table(),
                          x_axis_column = input$x_axis_column,
-                         relative_or_absolute_filtering = input$relative_or_absolute_filtering,
-                         filtering_value = input$filtering_value,
+                         grouping_column = input$grouping_column,
+                         grouping_column_value = input$grouping_column_value,
+                         t_neg_PCR_sample_on_plots = input$t_neg_PCR_sample_on_plots ,
+                         t_neg_PCR_group_column_value = input$t_neg_PCR_group_column_value,
                          relative_or_absolute_plot = input$relative_or_absolute_plot,
                          plotting_tax_ranks = input$plotting_tax_ranks,
                          horizontal_plot = input$horizontal_plot)
-    ggsave("heatmap.svg", plot)
+    
+    print(paste0("heatmap.",input$fformat))
+    
+    ggsave(paste0("heatmap.",input$fformat), plot)
+
     return(plot)
   })
   
   
   ## Generate NMDS
   ### Generate the plot
-  NMDS <- reactive({
+  NMDS_biplot <- reactive({
     req(metadata_table_filtered())
     plot <- NMDS_fct(count_table = count_table() ,
-                     metadata_table = metadata_table(),
+                     metadata_table = metadata_table_filtered(),
                      grouping_column = input$grouping_column, 
                      grouping_column_value = input$grouping_column_value, 
                      t_neg_PCR_sample_on_plots = input$t_neg_PCR_sample_on_plots, 
                      t_neg_PCR_group_column_value = input$t_neg_PCR_group_column_value, 
                      plotting_tax_ranks = input$plotting_tax_ranks, 
-                     abundance_filtre_level = c("Sample"),
                      distance = input$NMDS_distance,
-                     color_column = input$NMDS_color,
-                     shape_column = input$NMDS_shape)
+                     color_column = input$alp_NMDS_color,
+                     shape_column = input$NMDS_shape,
+                     color_palette = input$alp_NMDS_palette)
     
-    ggsave("NMDS.svg", plot[[1]])
+    print(paste0("NMDS.",input$fformat))
+    
+    ggsave(filename = paste0("NMDS.",input$fformat), plot = plot[[1]])
+    
     return(plot)
   })
   
-  
   output$NMDS <- renderPlot({
-    req(NMDS())
-    return(NMDS()[[1]])
+    req(NMDS_biplot())
+    return(NMDS_biplot()[[1]])
   })
   
   output$NMDS_stress <- renderPlot({
-    req(NMDS())
-    return(NMDS()[[2]])
+    req(NMDS_biplot())
+    return(NMDS_biplot()[[2]])
   })
   
+  alp_width <-  reactive({
+    req(filtered_table())
+    
+    table_i <- filtered_table()[filtered_table()[[input$grouping_column]] == input$grouping_column_value,]
+    
+    w <- 200 + 30*(length(unique(table_i[[input$x_axis_column]])))
+    
+    if(isTRUE(input$facet_plot)){
+      w <- w + 100
+
+    }
+    
+    return(w)
+    
+  })
   
+  ## Generate alpha diversity plot
+  output$alpha_plot <- renderPlot({
+    req(metadata_table_filtered())
+    alpha_plot <- alpha_fct(metadata_table = metadata_table_filtered(), 
+                      grouping_column = input$grouping_column, 
+                      grouping_column_value = input$grouping_column_value, 
+                      t_neg_PCR_sample_on_plots = input$t_neg_PCR_sample_on_plots, 
+                      t_neg_PCR_group_column_value = input$t_neg_PCR_group_column_value, 
+                      x_axis_column = input$x_axis_column, 
+                      facet_plot = input$facet_plot,
+                      facetting_column =  input$facetting_column,
+                      index = input$alpha_index, 
+                      color_column = input$alp_NMDS_color,
+                      color_palette = input$alp_NMDS_palette)
+    
+    ggsave(filename = paste0("alpha.",input$fformat), plot = alpha_plot)
+
+    return(alpha_plot)
+      
+  }, height = 400, width = function(){alp_width()}) 
+  
+  
+
   output$Download_barplot <- downloadHandler(
     filename = function() {
-      "barplot.svg"
+      paste0("barplot.",input$fformat)
     },
     content = function(file) {
-      file.copy("barplot.svg", file, overwrite=TRUE)
+      file.copy(paste0("barplot.",input$fformat), file, overwrite=TRUE)
     }
   )
   
   output$Download_heatmap<- downloadHandler(
     filename = function() {
-      "heatmap.svg"
+      paste0("heatmap.",input$fformat)
+
     },
     content = function(file) {
-      file.copy("heatmap.svg", file, overwrite=TRUE)
+      file.copy(paste0("heatmap.",input$fformat), file, overwrite=TRUE)
     }
   )
   
   output$Download_NMDS<- downloadHandler(
     filename = function() {
-      "NMDS.svg"
+      paste0("NMDS.",input$fformat)
     },
     content = function(file) {
-      file.copy("NMDS.svg", file, overwrite=TRUE)
+      file.copy(paste0("NMDS.",input$fformat), file, overwrite=TRUE)
     }
   )
   
+  
+  output$Download_alpha<- downloadHandler(
+    filename = function() {
+      paste0("alpha.",input$fformat)
+    },
+    content = function(file) {
+      file.copy(paste0("alpha.",input$fformat), file, overwrite=TRUE)
+    }
+  )
 }
 
 
