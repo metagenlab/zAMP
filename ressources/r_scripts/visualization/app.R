@@ -2,6 +2,7 @@
 ## Shiny packages
 library(shiny)
 library(shinythemes)
+library(colourpicker)
 
 ## Specific packages
 library(tidyr); packageVersion("tidyr")
@@ -255,10 +256,8 @@ barplots_fct <- function(long_count_table, grouping_column, grouping_column_valu
 }
 
 ## Heatmaps
-heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grouping_column_value, x_axis_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot, facet_plot ,facetting_column ){
+heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grouping_column_value, x_axis_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot, facet_plot ,facetting_column, high_color, low_color){
 
-  
-  
   ## Select Tax ranks needed for labelling
   if(plotting_tax_ranks == "Kingdom"){
     label_ranks <- c("Kingdom", "")
@@ -353,13 +352,13 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
     
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
-      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], annotation_col = anno, cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c("#000033", "#CCFF66"))(100), fontsize = 10)
+      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], annotation_col = anno, cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
       
       }
     
     ### Plot horizontally
     else if (isTRUE(horizontal_plot)){
-      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], annotation_row = anno,  cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c("#000033", "#CCFF66"))(100), fontsize = 8, angle_col = 45)
+      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], annotation_row = anno,  cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
     }
     
   }else{
@@ -367,12 +366,12 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
     
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
-      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c("#000033", "#CCFF66"))(100), fontsize = 10)
+      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
       }
     
     ### Plot horizontally
     else if (isTRUE(horizontal_plot)){
-      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c("#000033", "#CCFF66"))(100), fontsize = 8, angle_col = 45)
+      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
     }
     
     
@@ -609,7 +608,14 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          checkboxInput(inputId = "distinct_colors", label = "Random distinct color", value = TRUE),  
                          
                          ### Seprated legends
-                         checkboxInput(inputId = "separated_legend", label = "Separated legend", value = TRUE)
+                         checkboxInput(inputId = "separated_legend", label = "Separated legend", value = TRUE),
+                         
+                         h4("Heatmap only"),
+                         
+                         colourInput(inputId = "low_color",label = "Low abundance color", "#000033"),
+                         
+                         colourInput(inputId = "high_color",label = "High abundance color", "#CCFF66")
+                         
                          
                   ),
                   
@@ -955,7 +961,9 @@ server <- function(input, output, session) {
                          plotting_tax_ranks = input$plotting_tax_ranks,
                          horizontal_plot = input$horizontal_plot,
                          facet_plot = input$facet_plot,
-                         facetting_column = input$facetting_column)
+                         facetting_column = input$facetting_column,
+                         high_color = input$high_color,
+                         low_color = input$low_color)
 
     ggsave(paste0("heatmap.",input$fformat), plot = heat)
     
