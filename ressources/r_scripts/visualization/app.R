@@ -256,7 +256,7 @@ barplots_fct <- function(long_count_table, grouping_column, grouping_column_valu
 }
 
 ## Heatmaps
-heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grouping_column_value, x_axis_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot, facet_plot ,facetting_column, high_color, low_color){
+heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grouping_column_value, x_axis_column, t_neg_PCR_sample_on_plots, t_neg_PCR_group_column_value, relative_or_absolute_plot = c("relative", "absolute"), plotting_tax_ranks, horizontal_plot, facet_plot ,facetting_column, high_color, low_color, log_transform){
 
   ## Select Tax ranks needed for labelling
   if(plotting_tax_ranks == "Kingdom"){
@@ -328,6 +328,8 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
   ### Format the OTU table for clustering with vegdist
   #### Transpose the table
   filtered_df_abs_i_wide <- t(filtered_df_abs_i_wide)
+
+  
   #### Set the most abundant taxa at the top
   filtered_df_abs_i_wide <- filtered_df_abs_i_wide[order(rowSums(filtered_df_abs_i_wide, na.rm = TRUE), decreasing=T),]
   #### Shape it into a matrix
@@ -342,6 +344,14 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
   #### x_axis_column
   metadata_table_f <- data.frame(metadata_table_f)
   rownames(metadata_table_f) <- metadata_table_f[["Sample"]]
+  
+  #### in option, transform the counts
+  ##### Get rid of 0 for tansformation
+  filtered_df_abs_i_wide[filtered_df_abs_i_wide == 0] <- NA
+  if(log_transform != "None"){
+    filtered_df_abs_i_wide <- log(filtered_df_abs_i_wide, base = as.numeric(as.character(log_transform)))
+  }
+  
   
   if(isTRUE(facet_plot)){
     
@@ -614,8 +624,10 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          
                          colourInput(inputId = "low_color",label = "Low abundance color", "#000033"),
                          
-                         colourInput(inputId = "high_color",label = "High abundance color", "#CCFF66")
+                         colourInput(inputId = "high_color",label = "High abundance color", "#CCFF66"),
                          
+                         selectInput(inputId = "log_transform",label = "Log transformation", choices = c("None", 2, 10), selected = FALSE)
+
                          
                   ),
                   
@@ -627,7 +639,6 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                          
                          ### Color palette
                          selectInput(inputId ="alp_NMDS_palette", label = "Color palette", choices = c("Set1", "Set2", "Set3", "Pastel1", "Pastel2","Paired", "Dark2", "Accent", "Spectral"), selected = "Dark2"),
-                         
                          
                          h4("Alpha-diversity"),
                          ### Index
@@ -963,7 +974,8 @@ server <- function(input, output, session) {
                          facet_plot = input$facet_plot,
                          facetting_column = input$facetting_column,
                          high_color = input$high_color,
-                         low_color = input$low_color)
+                         low_color = input$low_color,
+                         log_transform = input$log_transform)
 
     ggsave(paste0("heatmap.",input$fformat), plot = heat)
     
