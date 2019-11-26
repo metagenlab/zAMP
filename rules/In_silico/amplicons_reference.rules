@@ -3,7 +3,7 @@ rule Import_ReferenceSequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        config["amplicons_refpath_seq"]
+        trimmed_reads = "InSilico/2_denoised/dna-sequences.fasta"
     output :
         "QualityControl/Amplicons_reference_seq.qza"
     threads :
@@ -20,7 +20,7 @@ rule Import_Vsearch_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        "vsearch/1b_trimmed_paired/{sample}_trimmed_paired.fasta"
+        "vsearch/1c_derep/{sample}_derep.fasta"
     output :
         "QualityControl/vsearch_{sample}_query_seq.qza"
     threads :
@@ -33,30 +33,46 @@ rule Import_Vsearch_QuerySequences :
         --output-path {output} 
         '''
 
-rule file_DADA2 :
-    conda :
+
+def get_DADA2_samples_path(sample):
+    #path_list = []
+    #for i in set(all_samples.index.values):
+    print(i)
+    RUN = all_samples.at[sample, config["run_column"]]
+    path = "QualityControl/DADA2/"+RUN+"/"+sample+"/infer_seq_tab.fasta"
+    print(path)
+    #path_list.append(path)
+
+    return(path)
+
+
+rule export_DADA2_QuerySequences :
+    conda:
         "../../envs/DADA2_in_R.yml"
     input :
-        DADA2_seq = lambda wildcards: expand("DADA2/2_denoised/{RUN}/{{sample}}_infer_seq_tab.rds", RUN = all_samples[config["run_column"]][all_samples.index.values==wildcards.sample])
+        rep_seqs = "DADA2/2_denoised/{RUN}/{sample}_infer_seq_tab.rds"
     output :
-        rep_seqs = "QualityControl/DADA2_{sample}_sequence.fasta"
-    threads :
-        1
-    params :
-        sample = lambda wildcards : wildcards.sample
-    log:
-        logging_folder + "QualityControl/DADA2_{sample}_sequence.txt"
-    script :
-        "scripts/create_file_DADA2.R"
+        rep_seqs_DADA2 = "QualityControl/DADA2/{RUN}/{sample}/infer_seq_tab.fasta",
+        no_chim = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences_no_chim.rds",
+        length_filtered = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences_long_names.rds",
+        rep_seqs = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences.fasta",
+        count_table = "QualityControl/DADA2/{RUN}/{sample}/count_table.txt",
+        length_histo = "QualityControl/DADA2/{RUN}/{sample}/merged_reads_length.png"
+    script:
+        "scripts/extract_DADA2_sequences.R"
+
 
 
 rule Import_DADA2_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        rep_seqs = "QualityControl/DADA2_{sample}_sequence.fasta"
+        rep_seqs = lambda wildcards: get_DADA2_samples_path(wildcards.sample)
     output :
         "QualityControl/DADA2_{sample}_query_seq.qza"
+    params:
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
     threads :
         1
     shell :
@@ -67,14 +83,33 @@ rule Import_DADA2_QuerySequences :
         --output-path {output} 
         '''
 
-rule  Quality_Control :
+rule  Quality_Control_denoised :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/{methode}_{sample}_query_seq.qza"
+        Query = "QualityControl/DADA2_{sample}_query_seq.qza"
     output :
-        "QualityControl/{methode}_{sample}_eval_seqs_test.qzv"
+        "QualityControl/DADA2_{sample}_eval_seqs_test.qzv"
+    threads :
+        1
+    shell :
+         '''
+        qiime quality-control evaluate-seqs \
+        --i-query-sequences {input[Query]} \
+        --i-reference-sequences {input[Amplicons]} \
+        --o-visualization {output} \
+        --p-show-alignments
+         '''
+
+rule  Quality_Control_raw :
+    conda :
+        "../../envs/QIIME2-2019.07.yml"
+    input :
+        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
+        Query = "QualityControl/vsearch_{sample}_query_seq.qza"
+    output :
+        "QualityControl/vsearch_{sample}_eval_seqs_test.qzv"
     threads :
         1
     shell :
@@ -84,4 +119,35 @@ rule  Quality_Control :
         --i-reference-sequences {input[Amplicons]} \
         --o-visualization {output}
          '''
+
+
+rule  Export_quality_Control_raw :
+    conda :
+        "../../envs/QIIME2-2019.07.yml"
+    input :
+        "QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv"
+    output :
+        "QualityControl/{denoiser}_{sample}_export/results.tsv"
+    threads :
+        1
+    shell :
+         '''
+        qiime tools export \
+          --input-path {input} \
+          --output-path {output}
+         '''
+
+
+rule Compare_mismatch_per_run :
+    conda:
+        "../../envs/r_visualization.yml"
+    input :
+        expand("QualityControl/{{denoiser}}_{sample}_export/results.tsv", sample=list(read_naming.keys()))
+    output :
+        "QualityControl/{denoiser}_compare_quality.png"
+    threads :
+        1
+    script:
+        "scripts/compare_mismatches.R"
+
 

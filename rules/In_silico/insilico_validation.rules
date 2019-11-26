@@ -118,7 +118,7 @@ rule Insilico_merge_all_in_one_fasta:
         '''
 
 
-### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
+### Again, dereplicate all identical sequences after merging.
 rule InSilico_derepicate_all:
     conda:
         "../../envs/QIIME1.yml"
