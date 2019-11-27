@@ -16,11 +16,53 @@ rule Import_ReferenceSequences :
         --output-path {output} 
         '''
 
+
+### Count the number of occurences of the representative sequences in the samples.
+rule vsearch_count_occurences_for_QC :
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        uc = "vsearch/1c_derep/{sample}_derep.uc"
+    output:
+        count_table = "QualityControl/vsearch/{sample}/count_table.txt"
+    script:
+        "scripts/extract_vsearch_counts.R"
+
+
+
+
+def get_DADA2_samples_path(sample):
+    RUN = all_samples.at[sample, config["run_column"]]
+    path = "DADA2/2_denoised/"+RUN+"/"+sample+"_infer_seq_tab.rds"
+    print(path)
+    return(path)
+
+
+
+rule export_DADA2_QuerySequences :
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input :
+        dada2_rds = lambda wildcards: get_DADA2_samples_path(wildcards.sample)
+    output :
+        no_chim = "QualityControl/DADA2/{sample}/dna-sequences_no_chim.rds",
+        length_filtered = "QualityControl/DADA2/{sample}/dna-sequences_long_names.rds",
+        rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta",
+        count_table = "QualityControl/DADA2/{sample}/count_table.txt",
+        length_histo = "QualityControl/DADA2/{sample}/merged_reads_length.png"
+    params:
+        merged_min_length = config["merged_min_length"],
+        merged_max_length = config["merged_max_length"]
+    script:
+        "scripts/extract_DADA2_sequences.R"
+
+
+
 rule Import_Vsearch_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        "vsearch/1c_derep/{sample}_derep.fasta"
+        "vsearch/1c_derep/{sample}_derep.fasta",
     output :
         "QualityControl/vsearch_{sample}_query_seq.qza"
     threads :
@@ -34,45 +76,13 @@ rule Import_Vsearch_QuerySequences :
         '''
 
 
-def get_DADA2_samples_path(sample):
-    #path_list = []
-    #for i in set(all_samples.index.values):
-    print(i)
-    RUN = all_samples.at[sample, config["run_column"]]
-    path = "QualityControl/DADA2/"+RUN+"/"+sample+"/infer_seq_tab.fasta"
-    print(path)
-    #path_list.append(path)
-
-    return(path)
-
-
-rule export_DADA2_QuerySequences :
-    conda:
-        "../../envs/DADA2_in_R.yml"
-    input :
-        rep_seqs = "DADA2/2_denoised/{RUN}/{sample}_infer_seq_tab.rds"
-    output :
-        rep_seqs_DADA2 = "QualityControl/DADA2/{RUN}/{sample}/infer_seq_tab.fasta",
-        no_chim = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences_no_chim.rds",
-        length_filtered = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences_long_names.rds",
-        rep_seqs = "QualityControl/DADA2/{RUN}/{sample}/dna-sequences.fasta",
-        count_table = "QualityControl/DADA2/{RUN}/{sample}/count_table.txt",
-        length_histo = "QualityControl/DADA2/{RUN}/{sample}/merged_reads_length.png"
-    script:
-        "scripts/extract_DADA2_sequences.R"
-
-
-
 rule Import_DADA2_QuerySequences :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
-        rep_seqs = lambda wildcards: get_DADA2_samples_path(wildcards.sample)
+        rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta"
     output :
         "QualityControl/DADA2_{sample}_query_seq.qza"
-    params:
-        merged_min_length = config["merged_min_length"],
-        merged_max_length = config["merged_max_length"]
     threads :
         1
     shell :
@@ -83,12 +93,55 @@ rule Import_DADA2_QuerySequences :
         --output-path {output} 
         '''
 
+
+rule filter_QuerySequences :
+    conda :
+        "../../envs/QIIME2-2019.07.yml"
+    input :
+        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
+        Query = "QualityControl/{denoiser}_{sample}_query_seq.qza",
+    output :
+         filtered = "QualityControl/{denoiser}_{sample}_query_seq_filtered.qza",
+         out = "QualityControl/{denoiser}_{sample}_query_seq_out.qza",
+    threads :
+        1
+    shell :
+         '''
+    qiime quality-control exclude-seqs \
+      --i-query-sequences {input[Query]} \
+      --i-reference-sequences {input[Amplicons]}  \
+      --p-method blast \
+      --p-perc-identity 0.97 \
+      --p-perc-query-aligned 0.97 \
+      --o-sequence-hits {output[filtered]} \
+      --o-sequence-misses {output[out]}
+        '''
+
+
+rule  Quality_Control_raw :
+    conda :
+        "../../envs/QIIME2-2019.07.yml"
+    input :
+        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
+        Query = "QualityControl/vsearch_{sample}_query_seq_filtered.qza"
+    output :
+        "QualityControl/vsearch_{sample}_eval_seqs_test.qzv"
+    threads :
+        1
+    shell :
+         '''
+        qiime quality-control evaluate-seqs \
+        --i-query-sequences {input[Query]} \
+        --i-reference-sequences {input[Amplicons]} \
+        --o-visualization {output}
+         '''
+
 rule  Quality_Control_denoised :
     conda :
         "../../envs/QIIME2-2019.07.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/DADA2_{sample}_query_seq.qza"
+        Query = "QualityControl/DADA2_{sample}_query_seq_filtered.qza"
     output :
         "QualityControl/DADA2_{sample}_eval_seqs_test.qzv"
     threads :
@@ -100,24 +153,6 @@ rule  Quality_Control_denoised :
         --i-reference-sequences {input[Amplicons]} \
         --o-visualization {output} \
         --p-show-alignments
-         '''
-
-rule  Quality_Control_raw :
-    conda :
-        "../../envs/QIIME2-2019.07.yml"
-    input :
-        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/vsearch_{sample}_query_seq.qza"
-    output :
-        "QualityControl/vsearch_{sample}_eval_seqs_test.qzv"
-    threads :
-        1
-    shell :
-         '''
-        qiime quality-control evaluate-seqs \
-        --i-query-sequences {input[Query]} \
-        --i-reference-sequences {input[Amplicons]} \
-        --o-visualization {output}
          '''
 
 
@@ -134,20 +169,59 @@ rule  Export_quality_Control_raw :
          '''
         qiime tools export \
           --input-path {input} \
-          --output-path {output}
+          --output-path $(dirname {output[0]})
          '''
+
+
+
+def get_RUN(sample):
+    RUN = all_samples.at[sample, config["run_column"]]
+    return(RUN)
+
+
+
+rule mismatch_table_per_sample :
+    conda:
+        "../../envs/r_visualization.yml"
+    input :
+        mismatch_tables_path =  "QualityControl/{denoiser}_{sample}_export/results.tsv",
+        count_table_path = "QualityControl/{denoiser}/{sample}/count_table.txt"
+    output :
+        merged_mismatch_table_path = "QualityControl/{denoiser}/export_{sample}/with_counts.tsv",
+        missmatch_plot_path = "QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",
+    params:
+        RUN = lambda wildcards : get_RUN(wildcards.sample)
+    threads :
+        1
+    script:
+        "scripts/abundance_to_mismatches.R"
+
 
 
 rule Compare_mismatch_per_run :
     conda:
         "../../envs/r_visualization.yml"
     input :
-        expand("QualityControl/{{denoiser}}_{sample}_export/results.tsv", sample=list(read_naming.keys()))
+        mismatch_tables_path = lambda wildcards : expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
     output :
-        "QualityControl/{denoiser}_compare_quality.png"
+        missmatch_plot = "QualityControl/{denoiser}/{RUN}_compare_quality.png",
+        merged_mismatch_table = "QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
     threads :
         1
     script:
         "scripts/compare_mismatches.R"
 
 
+
+rule Compare_mismatch_all :
+    conda:
+        "../../envs/r_visualization.yml"
+    input :
+        mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = all_samples[config["run_column"]])
+    output :
+        missmatch_plot = "QualityControl/{denoiser}/compare_quality.pdf",
+        merged_mismatch_table = "QualityControl/{denoiser}/compare_quality_table.tsv",
+    threads :
+        1
+    script:
+        "scripts/compare_all_mismatches.R"

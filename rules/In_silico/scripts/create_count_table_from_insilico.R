@@ -4,9 +4,9 @@
 # Created on: 06.06.1p
 
 ## Redirect R output
-    log <- file(snakemake@log[[1]], open="wt")
-    sink(log)
-    sink(log, type="message")
+    #log <- file(snakemake@log[[1]], open="wt")
+    #sink(log)
+    #sink(log, type="message")
 
 ## Load needed library
     library(dplyr);packageVersion("dplyr")

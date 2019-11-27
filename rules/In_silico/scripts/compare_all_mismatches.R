@@ -21,27 +21,27 @@ library(ggplot2); packageVersion("ggplot2")
 
 
 
-#save.image(file= paste0(getwd(), "/myEnvironment.RData"))
+save.image(file= paste0(getwd(), "/compare_all.RData"))
 
 
 
+# Merge data from multiple runs (if necessary)
 # Merge data from multiple runs (if necessary)
 if (length(mismatch_tables_path) == 1){
   print("Unique RUN, no merging of seq_tabl")
   st.all <- readRDS(seq_tab)
 }else{
   print("Multiple RUN, merging")
-  st.all <- do.call("rbind", lapply(mismatch_tables_path, read.table, header = TRUE, sep = "\t", row.names = 1))
+  st.all <- do.call("rbind", lapply(mismatch_tables_path, read.table, header = TRUE, sep = "\t"))
 }
 
-p <-ggplot(st.all, aes(x=Mismatches)) +
-  geom_histogram(color="black", fill="white", binwidth=1) +
-  theme_bw() +
-  scale_y_continuous(limits = c(0,100000)) +
-    scale_x_continuous(limits = c(0,10))
+p <- ggplot(st.all, aes(x=Mismatches, fill=RUN, weight = Counts)) +
+  geom_histogram(aes(y=..density..), color="black", binwidth=1, position = position_dodge2(padding = 0.3, preserve = "single")) +
+  theme_bw()
 
 
 ggsave(missmatch_plot, plot = p)
 
 
 write.table(st.all, merged_mismatch_table, sep = "\t", row.names =  FALSE)
+

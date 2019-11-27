@@ -23,7 +23,9 @@ rule insilico_validation:
         expand("InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv", classifier = config["classifier"], tax_DB = config["tax_DB"])
 
 
+print(set(list(all_samples[config["run_column"]])))
+
 rule Qiime2_control_validation:
     input:
-        expand("QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv", sample=list(read_naming.keys()), denoiser=["vsearch", "DADA2"]),
-        expand("QualityControl/{denoiser}_{sample}_export/results.tsv", sample=list(read_naming.keys()), denoiser=["vsearch", "DADA2"])
+        expand("QualityControl/{denoiser}/{RUN}_compare_quality.png", RUN = set(list(all_samples[config["run_column"]])),  denoiser=["vsearch", "DADA2"]),
+        expand("QualityControl/{denoiser}/compare_quality.pdf", denoiser=["vsearch", "DADA2"])
