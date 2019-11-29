@@ -43,5 +43,7 @@ p <- ggplot(st.all, aes(x=Mismatches, fill=RUN, weight = Counts)) +
 ggsave(missmatch_plot, plot = p)
 
 
+
+
 write.table(st.all, merged_mismatch_table, sep = "\t", row.names =  FALSE)
 
