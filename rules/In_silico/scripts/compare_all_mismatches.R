@@ -36,7 +36,7 @@ if (length(mismatch_tables_path) == 1){
 }
 
 p <- ggplot(st.all, aes(x=Mismatches, fill=RUN, weight = Counts)) +
-  geom_histogram(aes(y=..density..), color="black", binwidth=1, position = position_dodge2(padding = 0.3, preserve = "single")) +
+  geom_histogram( color="black", binwidth=1, position = position_dodge2(padding = 0.3, preserve = "single")) +
   theme_bw()
 
 
