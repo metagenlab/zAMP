@@ -53,7 +53,7 @@ if (normalization == "clr"){
 }else if (normalization == "pct"){
   print("Percent normalization with base R")
   reads_trfs <- sapply(OTU, function(x) 100*x/sum(x))
-  rownames(reads_trfs) <. rownames(OTU)
+  rownames(reads_trfs) <- rownames(OTU)
 
 ## CSS normalization with metagenomeseq (modified form https://bioconductor.org/packages/release/bioc/vignettes/metagenomeSeq/inst/doc/metagenomeSeq.pdf )
 }else if (normalization == "css"){

@@ -1,8 +1,27 @@
 ## Use Docker image with singularity, if "--use-singularity" is used in snakemake command
 
+## Include the pipeline rules
+include: "rules/0_preprocessing/get_reads.rules"
+
+include: "rules/0_preprocessing/logging.rules"
+
+include: "rules/0_preprocessing/get_sras.rules"
+include: "rules/0_preprocessing/QC_raw_reads.rules"
+include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"
+include: "rules/1_2_DADA2_ASVs/2_DADA2_denoising.rules"
+include: "rules/1_2_vsearch_OTUs/1_PANDAseq_trim_filter_merge.rules"
+include: "rules/1_2_vsearch_OTUs/2_vsearch_denoising.rules"
+include: "rules/3_tax_assignment/tax_assign.rules"
+include: "rules/4_post_processing/physeq_processing.rules"
+include: "rules/5_visualization/General_plotting.rules"
+include: "rules/5_visualization/QIIME2_import.rules"
+include: "rules/PICRUSt2/picrust.rules"
+
+
+
 ## Input/output
 ### Include logging rules
-include: "rules/0_preprocessing/logging.rules"
+
 ## Include rules and functions to set input/output
 include: "rules/0_preprocessing/make_output_list_files.rules"
 
@@ -46,18 +65,4 @@ rule PICRUSt2_output:
     input: PICRUSt2_list()
     priority: 0
 
-
-## Include the pipeline rules
-include: "rules/0_preprocessing/get_reads.rules"
-include: "rules/0_preprocessing/get_sras.rules"
-include: "rules/0_preprocessing/QC_raw_reads.rules"
-include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"
-include: "rules/1_2_DADA2_ASVs/2_DADA2_denoising.rules"
-include: "rules/1_2_vsearch_OTUs/1_PANDAseq_trim_filter_merge.rules"
-include: "rules/1_2_vsearch_OTUs/2_vsearch_denoising.rules"
-include: "rules/3_tax_assignment/tax_assign.rules"
-include: "rules/4_post_processing/physeq_processing.rules"
-include: "rules/5_visualization/General_plotting.rules"
-include: "rules/5_visualization/QIIME2_import.rules"
-include: "rules/PICRUSt2/picrust.rules"
 
