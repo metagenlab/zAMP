@@ -2,9 +2,7 @@
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/get_reads.rules"
-
 include: "rules/0_preprocessing/logging.rules"
-
 include: "rules/0_preprocessing/get_sras.rules"
 include: "rules/0_preprocessing/QC_raw_reads.rules"
 include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"
