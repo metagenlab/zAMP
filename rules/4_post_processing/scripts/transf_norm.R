@@ -103,7 +103,7 @@ if(is.numeric(min_prevalence)){
 }else if (min_prevalence == "none"){
   print("NO filtering based on cumulated abundance")
 }else{
-  stop(paste(min_abundance, 'must be a numeric value or "none')) 
+  stop(paste(min_prevalence, 'must be a numeric value or "none'))
 }
 
 ## Repopulate physeq object (identical script than for taxa filter)
