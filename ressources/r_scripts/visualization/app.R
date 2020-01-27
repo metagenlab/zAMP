@@ -146,7 +146,7 @@ filter_OTU_count_fct <- function(count_table, metadata_table, taxonomy_table, gr
   }else if (distinct_colors == TRUE){
     set.seed(4)
     ColList <- unique(count_table_long_tax_meta[[plotting_tax_ranks]])
-    colors_palette <- distinctColorPalette(altCol = TRUE, k = length(unique(count_table_long_tax_meta[[plotting_tax_ranks]])))
+    colors_palette <- distinctColorPalette(altCol = FALSE, k = length(unique(count_table_long_tax_meta[[plotting_tax_ranks]])))
     names(colors_palette) <-  ColList
     colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck
     m <- match(count_table_long_tax_meta[[plotting_tax_ranks]], names(colors_palette))
