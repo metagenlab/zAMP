@@ -34,7 +34,7 @@ rule create_per_run_raw_reads_multiqc_report:
         100
     shell:
         """
-        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
+        multiqc -f -n --interactive {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
         """
 
 def sample_list():
