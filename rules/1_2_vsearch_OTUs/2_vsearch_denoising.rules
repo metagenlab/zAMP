@@ -7,7 +7,6 @@ def vsearch_trim_input():
     else : 
         return ["vsearch/1b_paired/{sample}_paired.fasta"]
 
-
    
   
 ### Keep only once indentical sequences and keep score of their prevalence.
@@ -33,7 +32,6 @@ rule vsearch_dereplicate_samples:
         '''
 
 
-
 ### Combine all dereplicated sequences in one big fasta
 rule merge_all_in_one_fasta:
     input:
@@ -44,6 +42,7 @@ rule merge_all_in_one_fasta:
         '''
         cat {input} >> {output}
         '''
+
 
 ### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
 rule vsearch_derepicate_all:
@@ -86,7 +85,7 @@ rule vsearch_cluster:
                 --centroids {output[centroid]} \
                 --consout {output[consout]} \
                 --profile {output[profile]} \
-                -- threads {threads} \
+                --threads {threads} \
                 2> {log}
         '''
 
@@ -157,7 +156,7 @@ rule vsearch_count_occurences :
         -id 0.97 \
         -strand plus \
         --db {input[rep_seq]} \
-        -- threads {threads} \
+        --threads {threads} \
         2> {log}
         '''
 
