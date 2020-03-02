@@ -45,6 +45,9 @@
 ## set RUN at the very end of the table
     all_stats <- all_stats%>%select(Sample, label, RUN, everything())
 
+## Compute % of passed reads
+    all_stats$passed_reads_pct <- (100*all_stats$length_filtered)/all_stats$reads.in
+
 ## Write the  stat table
 write.table(x = all_stats, file = filtering_stats, sep = "\t", row.names = FALSE)
 

@@ -33,8 +33,7 @@ rule vsearch_dereplicate_samples:
         vsearch --derep_fulllength {input} \
                 --sizeout \
                 --output {output[0]} \
-                --uc {output[1]} \
-                -- threads {threads} \
+                --uc {output[1]} 
                 2> {log}
         '''
 
@@ -61,15 +60,12 @@ rule vsearch_derepicate_all:
         temp("vsearch/1c_derep/derep_merged_all.fasta")
     log:
          logging_folder + "vsearch/1c_all_merged_sequences/dereplicate_all.txt"
-    threads:
-        4
     shell:
         '''
         vsearch --derep_fulllength {input} \
                 --sizeout \
                 --minuniquesize 2 \
-                --output {output} \
-                -- threads {threads} \
+                --output {output}
                 2> {log}
         '''
 
@@ -112,7 +108,7 @@ rule vsearch_chimera_detection:
     log:
          logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
     threads:
-        4
+        1
     shell:
         '''
         vsearch --uchime_denovo {input} \
@@ -120,8 +116,7 @@ rule vsearch_chimera_detection:
         --sizein \
         --nonchimeras {output[non_chimeras]} \
         --borderline {output[borderline]} \
-        --uchimeout {output[chimera_out]} \
-        -- threads {threads} \
+        --uchimeout {output[chimera_out]}
         2> {log}
         '''
 
@@ -136,7 +131,7 @@ rule vsearch_derep_to_consesus_sequences :
     log:
          logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
     threads:
-        4
+        1
     shell:
         '''
         vsearch --derep_fulllength {input} \
@@ -144,7 +139,6 @@ rule vsearch_derep_to_consesus_sequences :
         --relabel OTU_ \
         --xsize \
         --output {output} \
-        -- threads {threads} \
         2> {log}
         '''
 
@@ -160,7 +154,7 @@ rule vsearch_count_occurences :
     log:
          logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
     threads:
-        1
+        4
     shell:
         '''
         vsearch --usearch_global {input[samples]} \
