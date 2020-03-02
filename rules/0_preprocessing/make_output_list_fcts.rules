@@ -1,12 +1,10 @@
 ### Define samples to keep
 def get_grouping_key(column_of_interest):
 
-    filtered_all_samples = all_samples.loc[all_samples[config['filter_meta_column']]  == config['filter_column_value']]
-
     file_list = []
 
     for i in set(column_of_interest):
-        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(filtered_all_samples[i])))
+        combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(all_samples[i])))
         file_list = file_list + combined_values
     return(file_list)
 
