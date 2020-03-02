@@ -5,8 +5,6 @@ sra_samples: 16S_validation_set.tsv ## To access to Sequences Read Archive
 
 ### Sample processing metadata definition
 run_column: seq_run # Column identifying the sequencing run (sequencing error are learned for each run with DADA2)
-filter_meta_column: study_name # Column from which we filte samples
-filter_column_value: pipeline_validation # Value of this column for which we keep samples
 
 ### Choose the denoising approach, either the "vsearch" to generate classical 97% identity OTUs or the "DADA2" for errors corrected 100% ASVs
 denoiser: ["DADA2", "vsearch"] # "vsearch", "DADA2" or both. For ITS (see below) only DADA2 has been tested.
