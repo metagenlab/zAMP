@@ -162,8 +162,8 @@ p <- ggplot(
     colour = get(color_factor),
     group = get("Sample"))) +
       labs(col = "Sample type") +
-      geom_line(size = 0.2) +
-      geom_pointrange(size = 0.2) +
+      geom_line(size = 0.15) +
+      #geom_pointrange(size = 0.2) +
       facet_wrap(facets = ~ Measure, scales = 'free_y')
 
 
