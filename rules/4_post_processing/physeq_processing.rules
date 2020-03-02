@@ -106,7 +106,7 @@ rule melt_Phyloseq_object:
     input:
         "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
     output:
-        temp("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv")
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv"
     log:
         logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
     script:

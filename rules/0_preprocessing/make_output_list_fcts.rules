@@ -90,8 +90,8 @@ def phyloseq_output_list():
     output = []
     output = basic_plots_list()
     output.append(phyloseq)
-    if config["filtered_phyloseq_output"] == True:
-        output.append(phyloseq_filt)
+    if config["melted_phyloseq"] == True:
+        output.append(phyloseq_melted)
     if config["transposed_tables"] == True:
         output.append(transposed_output)
     return(output)

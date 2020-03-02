@@ -88,7 +88,7 @@ ordination_method_unconstrained: ["DCA", "CCA", "RDA", "DPCoA"]
 
 ## Special outputs ##############################################################################################################
 ### Phyloseq output for external plitting and analysis
-filtered_phyloseq_output: False # Same but tax filtered output
+melted_phyloseq: False # Generate melted phyloseq table (voluminous)
 phyloseq_tax_ranks: ["OTU"] # Which collapse level for phyloseq output
 transposed_tables: False # True to have transposed count table
 
