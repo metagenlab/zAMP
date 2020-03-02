@@ -110,7 +110,7 @@ rule DADA2_merge_runs_filter_chim:
         merged_min_length = config["merged_min_length"],
         merged_max_length = config["merged_max_length"]
     threads:
-        1
+        4
     script:
         "scripts/2d_big_data_DADA2_merge_chimera.R"
 

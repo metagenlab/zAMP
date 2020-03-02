@@ -38,7 +38,7 @@
 
 # Remove chimeras
   print("Filter chimera")
-  seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=snakemake@threads, verbose=TRUE)
+  seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=snakemake@threads, verbose=TRUE, multithread = snakemake@threads)
   print("Chimera filtered")
 
 # Sequences length inspection and filtration
