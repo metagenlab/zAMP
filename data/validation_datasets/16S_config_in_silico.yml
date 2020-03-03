@@ -14,7 +14,7 @@ threeprime: 2 # Number of match at the 3' end for a hit to be considered
 
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud201805.201909", "ezbiocloud201805"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
+tax_DB: ["ezbiocloud201805.201909", "ezbiocloud201805", "Silva132.201908"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
 classifier: ["qiimerdp", "dada2rdp", "decipher"]
 
 ### Processing for comparison of taxonomic assignment
