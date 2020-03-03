@@ -217,7 +217,7 @@ barplots_fct <- function(melted_dataframe, sample_label, grouping_column, groupi
                 else if (distinct_colors == TRUE) {
                     set.seed(8)
                     ColList <- unique(threshod_filtered_abs_no_zero[[t]])
-                    ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(threshod_filtered_abs_no_zero[[t]])))
+                    ColPalette <- distinctColorPalette(altCol = FALSE, k = length(unique(threshod_filtered_abs_no_zero[[t]])))
                     names(ColPalette) = ColList
                     colors_palette <- ColPalette
                     colors_palette[filtering_tag] <- "#d3d3d3" # Set the filtered in balck

@@ -29,7 +29,7 @@ dna_quant_barplots_fct <- function(count_table_df, figures_save_dir, grouping_co
     ### Distinct colors
     set.seed(2)
     ColList <- unique(count_table_df[[filling_column]])
-    ColPalette <- distinctColorPalette(altCol = TRUE, k = length(unique(count_table_df[[filling_column]])))
+    ColPalette <- distinctColorPalette(altCol = FALSE, k = length(unique(count_table_df[[filling_column]])))
     names(ColPalette) = ColList
     colors_palette <- ColPalette
   }
