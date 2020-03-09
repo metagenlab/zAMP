@@ -23,13 +23,13 @@ library(readxl); packageVersion("readxl")
 ## Filter metadata to exclude samples
 filter_metadata_fct <- function(metadata_table, filter_out, filtering_column, filter_out_value){
   
-
+  
   if (isTRUE(filter_out)){
     metadata_table_filtered <- metadata_table %>% dplyr::filter(!(!! rlang::sym(filtering_column) %in% filter_out_value))
   } else {
     metadata_table_filtered <- metadata_table
   }
-
+  
   metadata_table_filtered <- droplevels(metadata_table_filtered)
   
   return(metadata_table_filtered)
@@ -53,7 +53,7 @@ add_colors_fct <- function(metadata_table, alp_NMDS_color, alp_NMDS_palette){
 ## Prepare a melted long table from OTU, taxonomy and metadata table
 filter_OTU_count_fct <- function(count_table, metadata_table, taxonomy_table, grouping_column, x_axis_column, sort_column, facetting_column, relative_or_absolute_filtering = c("relative", "absolute", "nofiltering"), filter_value, plotting_tax_ranks, distinct_colors, abundance_filtre_level = c("Sample", "Group")){
   
-
+  
   ## Reformat and join count table, metadata and taxonomy
   ### Transform count table to long format
   count_table[["ASV"]] <- row.names(count_table) 
@@ -80,12 +80,16 @@ filter_OTU_count_fct <- function(count_table, metadata_table, taxonomy_table, gr
     count_table_long_tax_sum <- count_table_long_tax %>% 
       dplyr::group_by_at(c("Sample", ranks)) %>% 
       dplyr::summarise(Count = sum(Count)) %>% # Regroup counts for identical taxa within each sample
-      dplyr::ungroup() %>% 
       dplyr::mutate_at(.vars = vars(ranks), .funs = list(newtax = ~ dplyr::if_else(condition = (filter_value < Count), true = unique(.), false = filtering_tag))) %>% # Each taxa represented less counts that the cut-off are replated by the tag
-      dplyr::select(-one_of(ranks)) %>% # remove the orginal taxonomic columns
-      dplyr::rename_at(.vars = vars(ends_with("_newtax")), 
-                       .funs = ~sub(x = ., pattern = "_newtax$", replacement = "")) # Rename the columns just created by the mutate function to the original names
-    
+      dplyr::ungroup() %>% 
+      dplyr::select(-one_of(ranks)) %>% # remove the orginal taxonomic columns  
+      dplyr::rename_at(.vars = vars(ends_with("_newtax")),
+                       .funs = ~sub(x = ., pattern = "_newtax$", replacement = "")) %>%  # Rename the columns just created by the mutate function to the original names
+      dplyr::group_by_at(c("Sample", ranks)) %>% 
+      dplyr::summarise(Count = sum(Count)) %>% # Regroup the identical taxa per sample (the filtered ones)
+      dplyr::ungroup()
+   
+    print("filtered")
     
     ### Relative value filtering
   } else if (relative_or_absolute_filtering == "relative"){
@@ -153,7 +157,7 @@ filter_OTU_count_fct <- function(count_table, metadata_table, taxonomy_table, gr
     count_table_long_tax_meta$colors <- colors_palette[m]
     names(count_table_long_tax_meta$colors) <- count_table_long_tax_meta[[plotting_tax_ranks]]
   }
-
+  
   
   ## Return filtered table
   return(count_table_long_tax_meta)
@@ -317,13 +321,14 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
   filtered_count_table_f_norm$taxalabel <- as.character(paste(toupper(substr(filtered_count_table_f_norm[[label_ranks[1]]],1 ,6)) , filtered_count_table_f_norm[[label_ranks[2]]], sep = ";"))
   ### Renames the values in the vector of plotted used taxrank with their related OTU name to keep them matching. Without this step, the labels do NOT match the rows
   names(filtered_count_table_f_norm$taxalabel) <- filtered_count_table_f_norm[[plotting_tax_ranks]]
+
   
   ## Cluster taxa to order the heatmap
   ### Generate an OTU wide table from the long format
-  filtered_df_abs_i_wide <- filtered_count_table_f_norm %>% 
+  filtered_df_abs_i_wide <<- filtered_count_table_f_norm %>%
     select(Sample, taxalabel,  Count) %>%
     spread(taxalabel, value = Count)
-  
+
   #### Set the Sample ID as a rowname
   row.names(filtered_df_abs_i_wide) <- filtered_df_abs_i_wide[["Sample"]]
   filtered_df_abs_i_wide[["Sample"]] <- NULL
@@ -343,16 +348,14 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
   data.dist.g[is.na(data.dist.g)] <- 0
   col.clus <- hclust(data.dist.g,  method = "ward.D2")
   
-    ### Prepare annotation of the heatmap
+  ### Prepare annotation of the heatmap
   #### x_axis_column
   metadata_table_f <- data.frame(metadata_table_f, stringsAsFactors = FALSE, check.rows = F, check.names = F)
   rownames(metadata_table_f) <- metadata_table_f[["Sample"]]
   l_rows <- metadata_table_f[[x_axis_column]][match(colnames(filtered_df_abs_i_wide), rownames(metadata_table_f))]
-
+  
   #### in option, transform the counts
   ##### Get rid of 0 for tansformation
-
-  
 
   
   if(isTRUE(facet_plot)){
@@ -361,7 +364,7 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
     anno <- data.frame(facetting_column = metadata_table_f[[facetting_column]])
     colnames(anno)[1] <- facetting_column
     rownames(anno) <- metadata_table_f[["Sample"]]
- 
+    
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
       heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = l_rows, annotation_col = anno, cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
@@ -374,11 +377,9 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
     }
     
   }else{
-
+    
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
-      print(colnames(filtered_df_abs_i_wide))
-      print(l_rows)
       heat <- pheatmap(mat = filtered_df_abs_i_wide,  labels_col = l_rows, cluster_rows = FALSE , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10) 
     }
     
@@ -1117,4 +1118,3 @@ server <- function(input, output, session) {
 
 # Create Shiny object
 shinyApp(ui = ui, server = server)
-
