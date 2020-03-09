@@ -343,18 +343,17 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
   data.dist.g[is.na(data.dist.g)] <- 0
   col.clus <- hclust(data.dist.g,  method = "ward.D2")
   
-  ### Prepare annotation of the heatmap
+    ### Prepare annotation of the heatmap
   #### x_axis_column
-  metadata_table_f <- data.frame(metadata_table_f)
+  metadata_table_f <- data.frame(metadata_table_f, stringsAsFactors = FALSE, check.rows = F, check.names = F)
   rownames(metadata_table_f) <- metadata_table_f[["Sample"]]
-  
+  l_rows <- metadata_table_f[[x_axis_column]][match(colnames(filtered_df_abs_i_wide), rownames(metadata_table_f))]
+
   #### in option, transform the counts
   ##### Get rid of 0 for tansformation
-  filtered_df_abs_i_wide[filtered_df_abs_i_wide == 0] <- NA
-  if(log_transform != "None"){
-    filtered_df_abs_i_wide <- log(filtered_df_abs_i_wide, base = as.numeric(as.character(log_transform)))
-  }
+
   
+
   
   if(isTRUE(facet_plot)){
     
@@ -362,29 +361,30 @@ heatmaps_fct <- function(long_count_table, metadata_table, grouping_column, grou
     anno <- data.frame(facetting_column = metadata_table_f[[facetting_column]])
     colnames(anno)[1] <- facetting_column
     rownames(anno) <- metadata_table_f[["Sample"]]
-    
+ 
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
-      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], annotation_col = anno, cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
+      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = l_rows, annotation_col = anno, cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
       
     }
     
     ### Plot horizontally
     else if (isTRUE(horizontal_plot)){
-      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], annotation_row = anno,  cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
+      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = l_rows, annotation_row = anno,  cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
     }
     
   }else{
-    
-    
+
     ### Plot vertically
     if (isFALSE(horizontal_plot)){
-      heat <- pheatmap(mat = filtered_df_abs_i_wide, labels_col = metadata_table_f[[x_axis_column]], cluster_rows = FALSE , cluster_cols = col.clus, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10)
+      print(colnames(filtered_df_abs_i_wide))
+      print(l_rows)
+      heat <- pheatmap(mat = filtered_df_abs_i_wide,  labels_col = l_rows, cluster_rows = FALSE , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 10) 
     }
     
     ### Plot horizontally
     else if (isTRUE(horizontal_plot)){
-      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = metadata_table_f[[x_axis_column]], cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
+      heat <- pheatmap(mat = t(filtered_df_abs_i_wide), labels_row = l_rows, cluster_rows = col.clus , cluster_cols = FALSE, cellwidth = 11, cellheight = 11, color = colorRampPalette(c(low_color, high_color))(100), fontsize = 8, angle_col = 45)
     }
     
     
