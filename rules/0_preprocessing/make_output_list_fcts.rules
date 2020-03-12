@@ -1,4 +1,4 @@
-### Define samples to keep
+### Define values of grouping keys
 def get_grouping_key(column_of_interest):
 
     file_list = []
@@ -47,25 +47,6 @@ def get_taxa_collapse_level_key(collapse_level):
     return(file_list)
 
 
-### Define level of grouping of reads for plotting from config file
-def get_filtering_key(filtering):
-
-    file_list = []
-
-    for i in set(filtering):
-        if i == "nofiltering" :
-            filt = ["nofiltering_0"]
-        elif i == "absolute" :
-            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
-        elif i == "relative" :
-            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
-        else :
-            raise ValueError("Forbidden value for filtering type")
-
-        file_list = file_list + filt
-
-    return(file_list)
-
 
 ## Set of function to generate list of output from config ##############################################################
 
@@ -96,23 +77,6 @@ def phyloseq_output_list():
         output.append(transposed_output)
     return(output)
 
-### Complete set of home-made plots, as defined in config file
-def plots_output_list():
-    output = []
-    output = basic_plots_list()
-    if config["Barplots"] == True:
-        output.append(barplots)
-    if config["Heatmaps"] == True:
-        output.append(heatmaps)
-    if config["Alpha_divs"] == True:
-        output.append(alpha_diversities)
-    if config["Distance_ordinations"] == True:
-        output.append(distance_ordinations)
-    if config["Constrained_ordinations"] == True:
-        output.append(constrained_ordinations)
-    if config["Unconstrained_ordinations"] == True:
-        output.append(unconstrained_ordinations)
-    return(output)
 
 ### Qiime2 outputs, offering interactive visualization of the data
 def Qiime2_output_list():
@@ -132,7 +96,7 @@ def PICRUSt2_list():
 ### Rule all, the default rule including all default output (not PICRUSt2, since long to compute)
 def rule_all_list():
     output = []
-    output.append(plots_output_list())
+    output.append(basic_plots_list())
     output.append(Qiime2_vis_qzv)
     output.append(phyloseq_output_list())
     return(output)

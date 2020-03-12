@@ -148,7 +148,7 @@ rule vsearch_count_occurences :
     log:
          logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
     threads:
-        4
+        1
     shell:
         '''
         vsearch --usearch_global {input[samples]} \

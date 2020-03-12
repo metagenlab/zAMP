@@ -53,11 +53,6 @@ rule phyloseq_output:
     input: phyloseq_output_list()
     priority: 46
 
-### Complete set of plots
-rule plots_output:
-    input: plots_output_list()
-    priority: 45
-
 ### PICRUSt2 outputs
 rule PICRUSt2_output:
     input: PICRUSt2_list()

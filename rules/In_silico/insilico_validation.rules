@@ -26,7 +26,7 @@ rule print_primers_to_files :
         '''
 
 
-rule Extract_V3V4 :
+rule Extract_amplicon :
     input :
         "InSilico/PCR/Primers.fasta",
         "assembly_gz/{sample}.fna"
