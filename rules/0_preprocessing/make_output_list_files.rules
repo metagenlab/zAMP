@@ -39,7 +39,7 @@ basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rare
                                  classifier = config["classifier"],
                                  tax_DB = config["tax_DB"],
                                  rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                                 grouping_column = config["grouping_column"][1]))
+                                 grouping_column = config["grouping_column"][0]))
 
 
 basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}_rarefaction_curve_{grouping_column}.png",
@@ -49,7 +49,7 @@ basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rare
                                  rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                                  filter_tax_rank = config["filter_tax_rank"],
                                  filter_lineage = config["filter_lineage"],
-                                 grouping_column = config["grouping_column"][1]))
+                                 grouping_column = config["grouping_column"][0]))
 
 
 
