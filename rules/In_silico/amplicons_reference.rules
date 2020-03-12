@@ -1,7 +1,7 @@
 
 rule Import_ReferenceSequences :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         trimmed_reads = "InSilico/2_denoised/dna-sequences.fasta"
     output :
@@ -60,7 +60,7 @@ rule export_DADA2_QuerySequences :
 
 rule Import_Vsearch_QuerySequences :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         "vsearch/1c_derep/{sample}_derep.fasta",
     output :
@@ -78,7 +78,7 @@ rule Import_Vsearch_QuerySequences :
 
 rule Import_DADA2_QuerySequences :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta"
     output :
@@ -96,7 +96,7 @@ rule Import_DADA2_QuerySequences :
 
 rule filter_QuerySequences :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
         Query = "QualityControl/{denoiser}_{sample}_query_seq.qza",
@@ -120,7 +120,7 @@ rule filter_QuerySequences :
 
 rule  Quality_Control_raw :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
         Query = "QualityControl/vsearch_{sample}_query_seq_filtered.qza"
@@ -138,7 +138,7 @@ rule  Quality_Control_raw :
 
 rule  Quality_Control_denoised :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
         Query = "QualityControl/DADA2_{sample}_query_seq_filtered.qza"
@@ -158,7 +158,7 @@ rule  Quality_Control_denoised :
 
 rule  Export_quality_Control_raw :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         "QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv"
     output :

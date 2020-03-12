@@ -1,7 +1,7 @@
 
 rule Import_DB :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         config["DBpath_seq"]
     output :
@@ -19,7 +19,7 @@ rule Import_DB :
 
 rule Extract_amp :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza"
     output :
@@ -44,7 +44,7 @@ rule Extract_amp :
 
 rule Export :
    conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
    input :
         workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza"
    output :
@@ -62,7 +62,7 @@ rule Export :
 
 rule Vsearch :
     conda :
-        "../../envs/QIIME2-2019.07.yml"
+        "../../envs/QIIME2-2020.02.yml"
     input :
         workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta"
     output :
