@@ -3,17 +3,18 @@
 ### Import list of functions to handle the output
 include: "make_output_list_fcts.rules"
 
-### MultiQC
+### Basic output
+#### MuliQC
 MultiQC = expand("QC/{RUN}_multiqc_raw_reads_report.html", RUN = set(all_samples[config["run_column"]]))
 MultiQC.append("QC/multiqc_raw_reads_report.html")
 
 
-### Light pipeline output
+#### Light pipeline output
 light_output = expand("{denoiser}/2_denoised/dna-sequences.fasta", denoiser = config["denoiser"])
 light_output.append(expand("{denoiser}/2_denoised/count_table.txt", denoiser = config["denoiser"]))
 light_output.append(expand("{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.qzv", classifier = config["classifier"], denoiser = config["denoiser"], tax_DB = config["tax_DB"]))
 
-### DADA2 stat table
+#### DADA2 stat table
 DADA2_stats_tables = "DADA2/2_denoised/DADA2_denoising_stats.tsv"
 
 
@@ -58,8 +59,8 @@ basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/KRON
 
 
 
-### Phyloseq set of output
-### Not filtered
+### Advances Phyloseq set of output
+#### Not filtered
 phyloseq = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree.rds",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
@@ -85,7 +86,7 @@ phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{r
                    abund_value = config["min_abundance"], 
                    prev_value = config["min_prevalence"]))
 
-### Tax filtered
+#### Tax filtered
 phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree.rds",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
@@ -118,8 +119,8 @@ phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineag
                    prev_value = config["min_prevalence"]))
 
 
-### Melted Phyloseq set of output
-### Not filtered
+#### Melted Phyloseq set of output
+#### Not filtered
 phyloseq_melted = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
@@ -145,7 +146,7 @@ phyloseq_melted.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofilte
                    abund_value = config["min_abundance"], 
                    prev_value = config["min_prevalence"]))
 
-### Tax filtered
+#### Tax filtered
 phyloseq_melted.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
                    denoiser = config["denoiser"],
                    classifier = config["classifier"],
@@ -178,8 +179,8 @@ phyloseq_melted.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter
                    prev_value = config["min_prevalence"]))
 
 
-### Transposed output tables
-### Count-table transposed format - filtered
+#### Transposed output tables
+#### Count-table transposed format - filtered
 transposed_output = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
@@ -193,7 +194,7 @@ transposed_output = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_li
             prev_value = config["min_prevalence"])
 
 
-### Count-table transposed format - not filtered
+#### Count-table transposed format - not filtered
 transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_norm{norm_value}_abund{abund_value}_prev{prev_value}_export/count_table_transposed.txt",
             denoiser = config["denoiser"],
             classifier = config["classifier"],
@@ -205,88 +206,6 @@ transposed_output.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofil
             norm_value = config["normalization"], 
             abund_value = config["min_abundance"], 
             prev_value = config["min_prevalence"]))
-
-
-
-### Barplots
-barplots = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/barplots/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{tax_ranks}_barplot.pdf",
-                        denoiser = config["denoiser"],
-                        classifier = config["classifier"],
-                        tax_DB = config["tax_DB"],
-                        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                        filter_tax_rank = config["filter_tax_rank"],
-                        filter_lineage = config["filter_lineage"],
-                        relative_or_absolute_plot = config["relative_or_absolute_plotting"],
-                        grouping_column = config["grouping_column"],
-                        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        tax_ranks = config["tax_ranks"])
-
-### Heatmaps
-heatmaps = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/heatmaps/{filter_lineage}_in_{filter_tax_rank}/{relative_or_absolute_plot}/{grouping_column}_{filtering_key}_{tax_ranks}_heatmap.pdf",
-                        denoiser = config["denoiser"],
-                        classifier = config["classifier"],
-                        tax_DB = config["tax_DB"],
-                        rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                        filter_tax_rank = config["filter_tax_rank"],
-                        filter_lineage = config["filter_lineage"],
-                        relative_or_absolute_plot = config["relative_or_absolute_plotting"],
-                        grouping_column = config["grouping_column"],
-                        filtering_key = get_filtering_key(config["relative_or_absolute_filtering"]),
-                        tax_ranks = config["tax_ranks"])
-
-
-
-### Alpha-diversity plot
-alpha_diversities = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/alpha_diversities/{filter_lineage}_in_{filter_tax_rank}/{grouping_column}_{alpha_diversity}.pdf",
-                          denoiser = config["denoiser"],
-                          classifier = config["classifier"],
-                          tax_DB = config["tax_DB"],
-                          rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-                          filter_tax_rank = config["filter_tax_rank"],
-                          filter_lineage = config["filter_lineage"],
-                          grouping_column = config["grouping_column"],
-                          alpha_diversity = config["alpha_metrics"])
-
-
-### Basic ordination
-distance_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_distance_based/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_distance_based}/{grouping_column}_{ordination_distance}_d_{shape_factor}.pdf",
-            denoiser = config["denoiser"],
-            classifier = config["classifier"],
-            tax_DB = config["tax_DB"],
-            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-            filter_tax_rank = config["filter_tax_rank"],
-            filter_lineage = config["filter_lineage"],
-            ordination_method_distance_based = config["ordination_method_distance_based"],
-            grouping_column = config["grouping_column"],
-            ordination_distance = config["ordination_distance"],
-            shape_factor = config["shape_factor"])
-
-
-
-### Constrained ordination
-constrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_constrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_constrained}/{grouping_column}_c_{shape_factor}.pdf",
-            denoiser = config["denoiser"],
-            classifier = config["classifier"],
-            tax_DB = config["tax_DB"],
-            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-            filter_tax_rank = config["filter_tax_rank"],
-            filter_lineage = config["filter_lineage"],
-            ordination_method_constrained = config["ordination_method_constrained"],
-            grouping_column = config["grouping_column"],
-            shape_factor = config["shape_factor"])
-
-
-### Unconstrained ordination
-unconstrained_ordinations = expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/{rarefaction_value}/ordination_unconstrained/{filter_lineage}_in_{filter_tax_rank}/{ordination_method_unconstrained}/{grouping_column}_u_{shape_factor}.pdf",
-            denoiser = config["denoiser"],
-            classifier = config["classifier"],
-            tax_DB = config["tax_DB"],
-            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
-            filter_tax_rank = config["filter_tax_rank"],
-            filter_lineage = config["filter_lineage"],
-            ordination_method_unconstrained = config["ordination_method_unconstrained"],
-            grouping_column = config["grouping_column"],
-            shape_factor = config["shape_factor"])
 
 
 ### Qiime2 output
@@ -304,7 +223,7 @@ Qiime2_vis_qzv.append(expand("{denoiser}/3_classified/{classifier}_{tax_DB}/dna-
 
 
 ### Picrust2
-picrust2 = expand("{denoiser}/6_picrust2/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/picrust/",
+picrust2 = expand("{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}/picrust/",
                     denoiser = config["denoiser"],
                     classifier = config["classifier"],
                     tax_DB = config["tax_DB"],

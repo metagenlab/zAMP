@@ -1,4 +1,4 @@
-### Define samples to keep
+### Define values of grouping keys
 def get_grouping_key(column_of_interest):
 
     file_list = []
@@ -46,25 +46,6 @@ def get_taxa_collapse_level_key(collapse_level):
     file_list = file_list + ["no_collapse"]
     return(file_list)
 
-
-### Define level of grouping of reads for plotting from config file
-def get_filtering_key(filtering):
-
-    file_list = []
-
-    for i in set(filtering):
-        if i == "nofiltering" :
-            filt = ["nofiltering_0"]
-        elif i == "absolute" :
-            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["absolute_filtering_value"])
-        elif i == "relative" :
-            filt =  expand("{filter}_{filtering_value}" , filter = i, filtering_value = config["relative_filtering_value"])
-        else :
-            raise ValueError("Forbidden value for filtering type")
-
-        file_list = file_list + filt
-
-    return(file_list)
 
 
 ## Set of function to generate list of output from config ##############################################################
