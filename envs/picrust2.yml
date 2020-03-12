@@ -2,4 +2,4 @@ name: picrust2
 channels:
 - bioconda
 dependencies:
-- picrust2=2.2.0_b
+- picrust2=2.3.0_b
