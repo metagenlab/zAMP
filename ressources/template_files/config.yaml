@@ -49,7 +49,7 @@ filter_out_tax_rank: ["Phylum"] # At which taxonomic rank we filter out. (Usuall
 filter_out_lineage: ["Bacteria_phy"] # Which value of filter_out_tax_rank we filter out. (Usually "Bacteria_phy" to remove suspicious sequences assigned as Bacteria but which are probably not.
 
 ## Visualization ######################################################################################################
-grouping_column: ["sample_group"] # Column for which a plot will be generated for each value of.
+grouping_column: ["sample_group"] # Column for which a plot will be generated for each value of. Rarefaction curve will be only generated with colors from the first value in the list
 sample_label: sample_label # Column in "local_samples" used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)
 
 

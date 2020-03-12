@@ -34,20 +34,22 @@ basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/read
                                 filter_lineage = config["filter_lineage"]))
 
 
-basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/nofiltering/{rarefaction_value}_rarefaction_curve.png",
+basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/nofiltering/{rarefaction_value}_rarefaction_curve_{grouping_column}.png",
                                  denoiser = config["denoiser"],
                                  classifier = config["classifier"],
                                  tax_DB = config["tax_DB"],
-                                 rarefaction_value = get_rarefaction_key(config["rarefaction_value"])))
+                                 rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+                                 grouping_column = config["grouping_column"][1]))
 
 
-basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}_rarefaction_curve.png",
+basic_plots.append(expand("{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filter_lineage}_in_{filter_tax_rank}/{rarefaction_value}_rarefaction_curve_{grouping_column}.png",
                                  denoiser = config["denoiser"],
                                  classifier = config["classifier"],
                                  tax_DB = config["tax_DB"],
                                  rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
                                  filter_tax_rank = config["filter_tax_rank"],
-                                 filter_lineage = config["filter_lineage"]))
+                                 filter_lineage = config["filter_lineage"],
+                                 grouping_column = config["grouping_column"][1]))
 
 
 
@@ -227,6 +229,8 @@ picrust2 = expand("{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filter_lineage}_
                     denoiser = config["denoiser"],
                     classifier = config["classifier"],
                     tax_DB = config["tax_DB"],
+                    filter_tax_rank = config["filter_tax_rank"],
+                    filter_lineage = config["filter_lineage"],
                     rarefaction_value = get_rarefaction_key(config["rarefaction_value"])
                     )
 

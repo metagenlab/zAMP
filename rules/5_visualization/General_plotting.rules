@@ -93,12 +93,11 @@ rule rarefaction_curve:
         phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtration_or_not}/{raref_or_not}/no_collapse/base.rds",
         Metadata_table = config["local_samples"]
     output:
-        rarefaction_curve = "{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve.png"
+        rarefaction_curve = "{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve_{grouping_column}.png"
     params:
-        color_factor = config["color_factor"],
-        sample_label = config["sample_label"]
+        grouping_column = lambda wildcards: wildcards.grouping_column
     log:
-        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve.txt"
+        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/rarefaction_curve/{filtration_or_not}/{raref_or_not}_rarefaction_curve_{grouping_column}.txt"
     script:
         "scripts/rarefaction_curve.R"
 

@@ -19,7 +19,7 @@ phyloseq_object <- snakemake@input[["phyloseq_object"]]
 rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
 
 ## Parameters
-color_factor <- snakemake@params[["color_factor"]]
+color_factor <- snakemake@params[["grouping_column"]]
 
 ## Load libraries
 library('phyloseq')
