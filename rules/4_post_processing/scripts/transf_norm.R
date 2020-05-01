@@ -23,7 +23,6 @@ print(paste("normalization setting is", normalization))
 
 ## Load needed libraries
 library("phyloseq");packageVersion("phyloseq")
-library("ALDEx2");packageVersion("ALDEx2")
 library("vegan");packageVersion("vegan")
 library("edgeR");packageVersion("edgeR")
 library("metagenomeSeq");packageVersion("metagenomeSeq")
@@ -37,12 +36,11 @@ OTU <- data.frame(otu_table(physeq), check.names = FALSE)
 ## List methods computed by vegan
 vegan_methods <- c("total", "max", "freq", "normalize", "range", "pa", "chi.square", "hellinger" ,"log")
 
-## CLR with Aldex2 (modified form https://bioconductor.org/packages/devel/bioc/vignettes/ALDEx2/inst/doc/ALDEx2_vignette.pdf)
+## CLR must we computed sample-wise, on rows. In Phyloseq we have taxa_are_rows = TRUE. Thus, must be computed on the t() if OTU table
 if (normalization == "clr"){
-  print("clr normalization by ALDEx2")
-  aldex_obj <- ALDEx2::aldex.clr(reads = OTU)
-  reads_trfs <- aldex_obj@reads
-  reads_trfs[reads_trfs==0.5] <- 0
+  print("clr normalization")
+  OTU1 <- OTU + 1
+  reads_trfs <- t(chemometrics::clr(t(OTU1))
 
 ## Vegan decostand normalizations (with double t() to take in account the transposed structure of the counts used here, modified from https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/decostand)
 }else if (normalization %in% vegan_methods){
@@ -66,13 +64,13 @@ if (normalization == "clr"){
 ## TMM normalization with edgeR (modified from https://joey711.github.io/phyloseq-extensions/edgeR.html)
 } else if (normalization == "tmm"){
   print("TMM normalization by edgeR")
-  OTU1 <- OTU + 0.5
+  OTU1 <- OTU + 1
   group <- rownames(get_variable(physeq))
   tax <- tax_table(physeq, errorIfNULL=FALSE)
   y <- edgeR::DGEList(counts=OTU1, group=group, genes=tax, remove.zeros = TRUE)
   z = edgeR::calcNormFactors(y, method="TMM")
   reads_trfs <- data.frame(z$counts, check.names = FALSE)
-  reads_trfs[reads_trfs==0.5] <- 0
+  #reads_trfs[reads_trfs==0.5] <- 0
 
 } else if (normalization == "none"){
   print('No normalization (normalization = "none"')
