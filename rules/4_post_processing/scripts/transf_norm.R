@@ -40,7 +40,7 @@ vegan_methods <- c("total", "max", "freq", "normalize", "range", "pa", "chi.squa
 if (normalization == "clr"){
   print("clr normalization")
   OTU1 <- OTU + 1
-  reads_trfs <- t(chemometrics::clr(t(OTU1))
+  reads_trfs <- t(chemometrics::clr(t(OTU1)))
 
 ## Vegan decostand normalizations (with double t() to take in account the transposed structure of the counts used here, modified from https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/decostand)
 }else if (normalization %in% vegan_methods){
