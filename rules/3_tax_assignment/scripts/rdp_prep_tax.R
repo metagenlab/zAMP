@@ -17,10 +17,8 @@
     formatted_table <- snakemake@output[["formatted_table"]]
 
 ## Load needed libraries
-    library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
-    library(Biostrings);packageVersion("Biostrings")
 
 ## Read data
 tax_table <- read.table(file=ref_tax, sep="\t", stringsAsFactors=FALSE)
