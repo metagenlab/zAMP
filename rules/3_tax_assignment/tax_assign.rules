@@ -121,7 +121,7 @@ rule decipher_tax_assign:
         "scripts/decipher_assign_tax.R"
 
 
-rule preformat_for_cannonical_rdp
+rule preformat_for_cannonical_rdp:
     conda:
         "../../envs/decipher.yml"
     input:
@@ -137,7 +137,7 @@ rule preformat_for_cannonical_rdp
         "scripts/rdp_prep_tax.R"
 
 
-rule format_rdp_lineages
+rule format_rdp_lineages:
     conda:
         "../../envs/Python2.yml"
     input:
@@ -152,7 +152,7 @@ rule format_rdp_lineages
         "scripts/lineage2taxTrain.py"
 
 
-rule format_rdp_add_lineages
+rule format_rdp_add_lineages:
     conda:
         "../../envs/Python2.yml"
     input:
@@ -168,7 +168,7 @@ rule format_rdp_add_lineages
         "scripts/addFullLineage.py"
 
 
-rule train_rdp_classifier
+rule train_rdp_classifier:
     conda:
         "../../envs/rdp_tools.yml"
     input:
