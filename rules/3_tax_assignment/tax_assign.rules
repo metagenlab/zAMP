@@ -184,7 +184,7 @@ rule train_rdp_classifier:
        read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
     output:
         formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_train_file/bergeyTrainingTree.xml",
-	    properties = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties"
+	properties = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties"
     log:
       workflow.basedir + "/data/{tax_DB}/RDP_train_file.log",
     threads:
@@ -195,13 +195,13 @@ rule train_rdp_classifier:
         '''
         export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
         java -Xmx30g -jar \
-        $RDP_JAR_PATH train -o $(dirname{output[0]}) -s {input[0]} -t {input[1]} && \
+        $RDP_JAR_PATH train -o $(dirname {output[0]}) -s {input[0]} -t {input[1]} && \
         echo "bergeyTree=bergeyTrainingTree.xml
         probabilityList=genus_wordConditionalProbList.txt
         probabilityIndex=wordConditionalProbIndexArr.txt
         wordPrior=logWordPrior.txt
         classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
-	    '''
+	'''
 
 
 rule rdp_classify:
@@ -226,7 +226,6 @@ rule rdp_classify:
         -c 0.5 \
         -f allrank \
         -t {input[0]} \
-        -o {output[0]} \
-        {input[1]} >> {log[0]}
-	    '''
+        -o {output[0]} {input[1]}
+	'''
 
