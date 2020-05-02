@@ -24,7 +24,7 @@ for i in range(len(header)):
 	name = header[i]
 	ranks[i] = name
 root = ['0', 'Root', '-1', '0', 'rootrank']#root rank info
-print string.join(root, '*')
+print(string.join(root, '*'))
 ID = 0 #taxon id
 for line in f[1:]:
 	cols = line.strip().split('\t')[1:]
@@ -44,7 +44,7 @@ for line in f[1:]:
 		try:
 			rank = ranks[i]
 		except KeyError:
-			print cols
+			print(cols)
 			sys.exit()
 		if i == 0:
 			pName = 'Root'
@@ -52,7 +52,7 @@ for line in f[1:]:
 		ID += 1
 		hash[name] = ID #add name-id to the map
 		out = ['%s'%ID, name.split(';')[-1], '%s'%pID, '%s'%depth, rank] 
-		print string.join(out, '*')
+		print(string.join(out, '*'))
 
 sys.stdout = saveout                                
 f.close()      

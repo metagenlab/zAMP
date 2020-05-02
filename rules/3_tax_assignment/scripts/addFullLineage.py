@@ -1,10 +1,5 @@
 #!/usr/bin/python
 import sys, string
-if len(sys.argv) != 3:
-	print 'addFullLineage.py taxonomyFile fastaFile'
-	sys.exit()
-
-
 
 input_file_1 = snakemake.input[0]
 input_file_2 = snakemake.input[1]
@@ -47,11 +42,11 @@ for line in f2:
 		try:
 			lineage = hash[ID]
 		except KeyError:
-			print ID, 'not in taxonomy file'
+			print(ID, 'not in taxonomy file')
 			sys.exit()
-		print '>' + ID + '\t' + lineage
+		print('>' + ID + '\t' + lineage)
 	else:
-			print line.strip()
+			print(line.strip())
 
 sys.stdout = saveout 
 f.close()      
