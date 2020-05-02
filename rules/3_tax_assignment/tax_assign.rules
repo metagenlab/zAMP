@@ -119,3 +119,76 @@ rule decipher_tax_assign:
         mem_mb=30000
     script:
         "scripts/decipher_assign_tax.R"
+
+
+rule preformat_for_cannonical_rdp
+    conda:
+        "../../envs/decipher.yml"
+    input:
+        ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt",
+        ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+    output:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.log",
+    threads:
+        1
+    script:
+        "scripts/rdp_prep_tax.R"
+
+
+rule format_rdp_lineages
+    conda:
+        "../../envs/Python2.yml"
+    input:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+    output:
+        read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
+    threads:
+        1
+    script:
+        "scripts/lineage2taxTrain.py"
+
+
+rule format_rdp_add_lineages
+    conda:
+        "../../envs/Python2.yml"
+    input:
+        taxonomyFile = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+        fastaFile = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+    output:
+        read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
+    threads:
+        1
+    script:
+        "scripts/addFullLineage.py"
+
+
+rule train_rdp_classifier
+    conda:
+        "../../envs/rdp_tools.yml"
+    input:
+       read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
+       read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+    output:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_train_file.rdp",
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_train_file.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
+        java -Xmx10g -jar \
+        $RDP_JAR_PATH \
+            -o {output[0]} \
+            -s {input[0]} \
+            -t {input[1]} 
+           >> {log[0]}
+        '''
