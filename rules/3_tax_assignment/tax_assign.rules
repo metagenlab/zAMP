@@ -145,7 +145,7 @@ rule format_rdp_lineages:
     output:
         read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
     params:
-        script =  workflow.basedir + "rules/3_tax_assignment/scripts/lineage2taxTrain.py"
+        script =  workflow.basedir + "/rules/3_tax_assignment/scripts/lineage2taxTrain.py"
     log:
       workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
     threads:
@@ -165,7 +165,7 @@ rule format_rdp_add_lineages:
     output:
         read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
     params:
-        script =  workflow.basedir + "rules/3_tax_assignment/scripts/addFullLineage.py"
+        script =  workflow.basedir + "/rules/3_tax_assignment/scripts/addFullLineage.py"
     log:
       workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
     threads:
