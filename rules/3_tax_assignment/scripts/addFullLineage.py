@@ -1,13 +1,9 @@
 #!/usr/bin/python
 import sys, string
-
-input_file_1 = snakemake.input[0]
-input_file_2 = snakemake.input[1]
-output_file = snakemake.output[0]
-
-
-
-f1 = open(input_file_1, 'r').readlines()
+if len(sys.argv) != 3:
+	print 'addFullLineage.py taxonomyFile fastaFile'
+	sys.exit()
+f1 = open(sys.argv[1], 'r').readlines()
 hash = {} #lineage map
 for line in f1[1:]:
 	line = line.strip()
@@ -23,13 +19,7 @@ for line in f1[1:]:
 	ID = cols[0]
 	lineage = string.join(lineage, ';').strip()
 	hash[ID] = lineage
-f2 = open(input_file_2, 'r').readlines()
-
-f = open(output_file, 'w')
-
-saveout = sys.stdout 
-sys.stdout = f
-
+f2 = open(sys.argv[2], 'r').readlines()
 for line in f2:
 	line = line.strip()
 	if line == '':
@@ -42,11 +32,8 @@ for line in f2:
 		try:
 			lineage = hash[ID]
 		except KeyError:
-			print(ID, 'not in taxonomy file')
+			print ID, 'not in taxonomy file'
 			sys.exit()
-		print('>' + ID + '\t' + lineage)
+		print '>' + ID + '\t' + lineage
 	else:
-			print(line.strip())
-
-sys.stdout = saveout 
-f.close()      
+			print line.strip()

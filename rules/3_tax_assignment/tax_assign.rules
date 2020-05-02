@@ -148,9 +148,10 @@ rule format_rdp_lineages:
       workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
     threads:
         1
-    script:
-        "scripts/lineage2taxTrain.py"
-
+    shell:
+        '''
+        python ../scripts/lineage2taxTrain.py {input[0]} > {output[0]}
+        '''
 
 rule format_rdp_add_lineages:
     conda:
@@ -164,8 +165,10 @@ rule format_rdp_add_lineages:
       workflow.basedir + "/data/{tax_DB}/RDP_formatted_lineages.log",
     threads:
         1
-    script:
-        "scripts/addFullLineage.py"
+    shell:
+        '''
+        python ../scripts/addFullLineage.py {input[0]} {input[1]} >{output[0]}       
+        '''
 
 
 rule train_rdp_classifier:
