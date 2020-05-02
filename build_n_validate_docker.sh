@@ -12,8 +12,8 @@ echo $3
 docker build . \
     -t metagenlab/amplicon_pipeline:$VERSION \
     -f ./Dockerfile \
-    --no-cache \
     --build-arg GITHUB_AT=$GITHUBAT \
+    --no-cache \
     --build-arg TEST_CPU=$CPU && \
 docker build . \
     -f ./Dockerfile.validation \
