@@ -123,7 +123,7 @@ rule decipher_tax_assign:
 
 rule preformat_for_cannonical_rdp:
     conda:
-        "../../envs/decipher.yml"
+        "../../envs/r_visualization.yml"
     input:
         ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt",
         ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
