@@ -121,6 +121,8 @@ rule decipher_tax_assign:
         "scripts/decipher_assign_tax.R"
 
 
+# Original RDP implementation, based on https://john-quensen.com/tutorials/training-the-rdp-classifier/
+
 rule preformat_for_cannonical_rdp:
     conda:
         "../../envs/r_visualization.yml"
@@ -207,9 +209,9 @@ rule rdp_classify:
        trained_ref = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties",
        query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
     output:
-        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",
+        "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
     log:
-        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.log",
+        "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.log",
     threads:
         10
     resources:
@@ -224,4 +226,21 @@ rule rdp_classify:
         -t {input[0]} \
         -o {output[0]} {input[1]}
 	'''
+
+
+rule rdp_format_output:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
+    output:
+       formatted_output = "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",
+    log:
+        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.log",
+    threads:
+        10
+    resources:
+        mem_mb=30000
+    script:
+        "scripts/format_RDP_output.R"
 
