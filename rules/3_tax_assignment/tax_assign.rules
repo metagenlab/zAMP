@@ -190,7 +190,7 @@ rule train_rdp_classifier:
     resources:
         mem_mb=30000
     shell:
-    '''
+        '''
         export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
         java -Xmx30g -jar \
         $RDP_JAR_PATH train -o $(dirname {output[0]}) -s {input[0]} -t {input[1]} && \
@@ -199,7 +199,7 @@ rule train_rdp_classifier:
         probabilityIndex=wordConditionalProbIndexArr.txt
         wordPrior=logWordPrior.txt
         classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
-	'''
+	    '''
 
 
 rule rdp_classify:
@@ -217,7 +217,7 @@ rule rdp_classify:
     resources:
         mem_mb=30000
     shell:
-    '''
+        '''
         export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
         java -Xmx30g -jar \
         $RDP_JAR_PATH classify \
@@ -225,7 +225,7 @@ rule rdp_classify:
         -f allrank \
         -t {input[0]} \
         -o {output[0]} {input[1]}
-	'''
+	    '''
 
 
 rule rdp_format_output:
