@@ -119,3 +119,128 @@ rule decipher_tax_assign:
         mem_mb=30000
     script:
         "scripts/decipher_assign_tax.R"
+
+
+# Original RDP implementation, based on https://john-quensen.com/tutorials/training-the-rdp-classifier/
+
+rule preformat_for_cannonical_rdp:
+    conda:
+        "../../envs/r_visualization.yml"
+    input:
+        ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt",
+        ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+    output:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.log",
+    threads:
+        1
+    script:
+        "scripts/rdp_prep_tax.R"
+
+
+rule format_rdp_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    input:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+    output:
+        read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+    params:
+        script =  workflow.basedir + "/rules/3_tax_assignment/scripts/lineage2taxTrain.py"
+    threads:
+        1
+    shell:
+        '''
+        python {params[0]} {input[0]} > {output[0]}
+        '''
+
+ 
+rule format_rdp_add_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    input:
+        taxonomyFile = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+        fastaFile = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+    output:
+        read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
+    params:
+        script =  workflow.basedir + "/rules/3_tax_assignment/scripts/addFullLineage.py"
+    threads:
+        1
+    shell:
+        '''
+        python {params[0]} {input[0]} {input[1]} > {output[0]}       
+        '''
+
+
+rule train_rdp_classifier:
+    conda:
+        "../../envs/rdp_tools.yml"
+    input:
+       read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
+       read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+    output:
+        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_train_file/bergeyTrainingTree.xml",
+	properties = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties"
+    log:
+      workflow.basedir + "/data/{tax_DB}/RDP_train_file.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+    '''
+        export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
+        java -Xmx30g -jar \
+        $RDP_JAR_PATH train -o $(dirname {output[0]}) -s {input[0]} -t {input[1]} && \
+        echo "bergeyTree=bergeyTrainingTree.xml
+        probabilityList=genus_wordConditionalProbList.txt
+        probabilityIndex=wordConditionalProbIndexArr.txt
+        wordPrior=logWordPrior.txt
+        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
+	'''
+
+
+rule rdp_classify:
+    conda:
+        "../../envs/rdp_tools.yml"
+    input:
+       trained_ref = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties",
+       query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
+    output:
+        "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
+    log:
+        "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.log",
+    threads:
+        10
+    resources:
+        mem_mb=30000
+    shell:
+    '''
+        export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
+        java -Xmx30g -jar \
+        $RDP_JAR_PATH classify \
+        -c 0.5 \
+        -f allrank \
+        -t {input[0]} \
+        -o {output[0]} {input[1]}
+	'''
+
+
+rule rdp_format_output:
+    conda:
+        "../../envs/DADA2_in_R.yml"
+    input:
+        RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
+    output:
+       formatted_output = "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",
+    log:
+        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.log",
+    threads:
+        10
+    resources:
+        mem_mb=30000
+    script:
+        "scripts/format_RDP_output.R"
+
