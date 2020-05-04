@@ -36,7 +36,7 @@ rule dada2_prep_tax_db:
     conda:
         "../../envs/DADA2_in_R.yml"
     singularity:
-        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
+        "docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
         ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt"
@@ -57,7 +57,7 @@ rule dada2_assign_taxonomy_rdp:
     conda:
         "../../envs/DADA2_in_R.yml"
     singularity:
-        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
+        "docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
         King_to_Species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
@@ -79,7 +79,7 @@ rule decipher_prep_fasta:
     conda:
         "../../envs/decipher.yml"
     singularity:
-        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
+        "docker://quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
         ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt",
         ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
@@ -97,7 +97,7 @@ rule decipher_train_tax:
     conda:
         "../../envs/decipher.yml"
     singularity:
-        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
+        "docker://quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
         decipher_seqs = "{prefix}/{tax_DB}/Decipher_DB_amp_taxonomy_decipher.fasta"
     output:
@@ -115,7 +115,7 @@ rule decipher_tax_assign:
     conda:
         "../../envs/decipher.yml"
     singularity:
-        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
+        "docker://quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
         trained_tax = config["tax_DB_path"] + "/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
         seq = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -195,7 +195,7 @@ rule train_rdp_classifier:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "quay.io/biocontainers/rdptools:2.0.3--0"
+        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
     input:
        read4train_fasta = "{prefix}/{tax_DB}/RDP_ready4train_seqs.fasta",
        read4train_tax = "{prefix}/{tax_DB}/RDP_ready4train_lineages.txt",
@@ -226,7 +226,7 @@ rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "quay.io/biocontainers/rdptools:2.0.3--0"
+        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
     input:
        trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP_train_file/rRNAClassifier.properties",
        query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",

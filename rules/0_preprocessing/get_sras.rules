@@ -4,7 +4,7 @@ rule download_sra:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
     output:
         # /home/pipeline_user/ncbi/public
         temp("ncbi/public/sra/{sample}.sra"),
@@ -25,7 +25,7 @@ rule sra_convert_to_fastq_paired:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
     input:
         "%s/ncbi/public/sra/{sample}.sra" % os.getenv("HOME"),
     output:
@@ -42,7 +42,7 @@ rule sra_convert_to_fastq_single:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
     input:
         "%s/ncbi/public/sra/{sample}.sra" % os.getenv("HOME"),
     output:
