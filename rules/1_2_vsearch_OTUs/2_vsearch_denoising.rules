@@ -178,7 +178,7 @@ rule create_vsearch_count_table :
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
+        "docker://metagenlab/amplicons_r_utils:v.1.0"
     input:
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
     output:

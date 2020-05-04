@@ -9,16 +9,17 @@
    sink(log, type="message")
 
 ## Input
-rdp_tax <- snakemake@input["RDP_output"]
+rdp_tax <- snakemake@input[["RDP_output"]]
 
 ## Output
-simplified_tax <-snakemake@input["formatted_output"]
+simplified_tax <-snakemake@output[["formatted_output"]]
+
 
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
 
 ## Read data
-tax_table <- read.table(file=rdp_tax, sep="\t", stringsAsFactors=FALSE)
+tax_table <- read.table(rdp_tax, sep="\t", stringsAsFactors=FALSE)
 
 ## Format table
    ### set rownames
