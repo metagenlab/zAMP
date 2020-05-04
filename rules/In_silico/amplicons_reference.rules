@@ -20,7 +20,7 @@ rule Import_ReferenceSequences :
 ### Count the number of occurences of the representative sequences in the samples.
 rule vsearch_count_occurences_for_QC :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_R_utils.yml"
     input:
         uc = "vsearch/1c_derep/{sample}_derep.uc"
     output:
@@ -182,7 +182,7 @@ def get_RUN(sample):
 
 rule mismatch_table_per_sample :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_R_utils.yml"
     input :
         mismatch_tables_path =  "QualityControl/{denoiser}_{sample}_export/results.tsv",
         count_table_path = "QualityControl/{denoiser}/{sample}/count_table.txt"
@@ -200,7 +200,7 @@ rule mismatch_table_per_sample :
 
 rule Compare_mismatch_per_run :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_R_utils.yml"
     input :
         mismatch_tables_path = lambda wildcards : expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
     output :
@@ -215,7 +215,7 @@ rule Compare_mismatch_per_run :
 
 rule Compare_mismatch_all :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_R_utils.yml"
     input :
         mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = all_samples[config["run_column"]])
     output :

@@ -1,10 +1,12 @@
 rule QIIME1_assign_taxonomy_rdp:
     conda:
         "../../envs/QIIME1.yml"
+    singularity:
+       "docker://metagenlab/qiime_rdp:v.1.0"       
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
-        workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
-        workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt"
+        config["tax_DB_path"] + "{tax_DB}/DB_amp.fasta",
+        config["tax_DB_path"] + "{tax_DB}/DB_amp_taxonomy.txt"
     output:
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt",
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.log"
@@ -30,19 +32,20 @@ rule QIIME1_assign_taxonomy_rdp:
         '''
 
 
-
 rule dada2_prep_tax_db:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
-        ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
-        ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt"
+        ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
+        ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt"
     output:
-        King_to_Species = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
-        King_to_Genus = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
-        Genus_species = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_Genus_species.txt"
+        King_to_Species ="{prefix}/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = "{prefix}/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species =  "{prefix}/{tax_DB}/DADA2_DB_amp_taxonomy_Genus_species.txt"
     log:
-        workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy_dada2_prep.log"
+        workflow.basedir + "{prefix}/{tax_DB}/DB_amp_taxonomy_dada2_prep.log"
     threads:
         1
     script:
@@ -53,11 +56,13 @@ rule dada2_prep_tax_db:
 rule dada2_assign_taxonomy_rdp:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
-        King_to_Species = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
-        King_to_Genus = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
-        Genus_species = workflow.basedir + "/data/{tax_DB}/DADA2_DB_amp_taxonomy_Genus_species.txt"
+        King_to_Species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_Genus_species.txt"
     output:
         tax = "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt",
     log:
@@ -73,13 +78,15 @@ rule dada2_assign_taxonomy_rdp:
 rule decipher_prep_fasta:
     conda:
         "../../envs/decipher.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
-        ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt",
-        ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+        ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
     output:
-        decipher_seqs = workflow.basedir + "/data/{tax_DB}/Decipher_DB_amp_taxonomy_decipher.fasta",
+        "{prefix}/{tax_DB}/{tax_DB}/Decipher_DB_amp_taxonomy_decipher.fasta",
     log:
-        workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy_decipher_fasta.log"
+        "{prefix}/{tax_DB}/DB_amp_taxonomy_decipher_fasta.log"
     threads:
         1
     script:
@@ -89,13 +96,15 @@ rule decipher_prep_fasta:
 rule decipher_train_tax:
     conda:
         "../../envs/decipher.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
-        decipher_seqs = workflow.basedir + "/data/{tax_DB}/Decipher_DB_amp_taxonomy_decipher.fasta"
+        decipher_seqs = "{prefix}/{tax_DB}/Decipher_DB_amp_taxonomy_decipher.fasta"
     output:
-        trained_tax = workflow.basedir + "/data/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
-        training_plot = workflow.basedir + "/data/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_plot.pdf",
+        trained_tax = "{prefix}/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
+        training_plot = "{prefix}/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_plot.pdf",
     log:
-        workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy_decipher_tax_tree.log",
+        "{prefix}/{tax_DB}/DB_amp_taxonomy_decipher_tax_tree.log",
     threads:
         1
     script:
@@ -105,8 +114,10 @@ rule decipher_train_tax:
 rule decipher_tax_assign:
     conda:
         "../../envs/decipher.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
     input:
-        trained_tax = workflow.basedir + "/data/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
+        trained_tax = config["tax_DB_path"] + "/{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
         seq = "{denoiser}/2_denoised/dna-sequences.fasta",
     output:
         tax = "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt",
@@ -125,14 +136,16 @@ rule decipher_tax_assign:
 
 rule preformat_for_cannonical_rdp:
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_R_utils.yml"
+    singularity:
+        "docker://metagenlab/amplicons_R_utils:v.1.0"  
     input:
-        ref_tax = workflow.basedir + "/data/{tax_DB}/DB_amp_taxonomy.txt",
-        ref_seqs = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+        ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
     output:
-        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+        formatted_table = "{prefix}/{tax_DB}/RDP_formatted_tax_table.tsv",
     log:
-      workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.log",
+      workflow.basedir + "{prefix}/{tax_DB}/RDP_formatted_tax_table.log",
     threads:
         1
     script:
@@ -142,10 +155,12 @@ rule preformat_for_cannonical_rdp:
 rule format_rdp_lineages:
     conda:
         "../../envs/Python2.yml"
+    singularity:
+        "docker://python:2.7"  
     input:
-        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
+        formatted_table = "{prefix}/{tax_DB}/RDP_formatted_tax_table.tsv",
     output:
-        read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+        read4train_tax = "{prefix}/{tax_DB}/RDP_ready4train_lineages.txt",
     params:
         script =  workflow.basedir + "/rules/3_tax_assignment/scripts/lineage2taxTrain.py"
     threads:
@@ -159,11 +174,13 @@ rule format_rdp_lineages:
 rule format_rdp_add_lineages:
     conda:
         "../../envs/Python2.yml"
+    singularity:
+        "docker://python:2.7"  
     input:
-        taxonomyFile = workflow.basedir + "/data/{tax_DB}/RDP_formatted_tax_table.tsv",
-        fastaFile = workflow.basedir + "/data/{tax_DB}/DB_amp.fasta",
+        taxonomyFile = "{prefix}/{tax_DB}/RDP_formatted_tax_table.tsv",
+        fastaFile = "{prefix}/{tax_DB}/DB_amp.fasta",
     output:
-        read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
+        read4train_fasta = "{prefix}/{tax_DB}/RDP_ready4train_seqs.fasta",
     params:
         script =  workflow.basedir + "/rules/3_tax_assignment/scripts/addFullLineage.py"
     threads:
@@ -177,23 +194,26 @@ rule format_rdp_add_lineages:
 rule train_rdp_classifier:
     conda:
         "../../envs/rdp_tools.yml"
+    singularity:
+        "quay.io/biocontainers/rdptools:2.0.3--0"
     input:
-       read4train_fasta = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_seqs.fasta",
-       read4train_tax = workflow.basedir + "/data/{tax_DB}/RDP_ready4train_lineages.txt",
+       read4train_fasta = "{prefix}/{tax_DB}/RDP_ready4train_seqs.fasta",
+       read4train_tax = "{prefix}/{tax_DB}/RDP_ready4train_lineages.txt",
     output:
-        formatted_table = workflow.basedir + "/data/{tax_DB}/RDP_train_file/bergeyTrainingTree.xml",
-	properties = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties"
+        formatted_table = "{prefix}/{tax_DB}/RDP_train_file/bergeyTrainingTree.xml",
+        properties = "{prefix}/{tax_DB}/RDP_train_file/rRNAClassifier.properties"
     log:
-      workflow.basedir + "/data/{tax_DB}/RDP_train_file.log",
+      "{prefix}/{tax_DB}/RDP_train_file.log",
     threads:
         1
     resources:
         mem_mb=30000
     shell:
         '''
-        export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
-        java -Xmx30g -jar \
-        $RDP_JAR_PATH train -o $(dirname {output[0]}) -s {input[0]} -t {input[1]} && \
+        classifier -Xmx30g train \
+        -o $(dirname {output[0]}) \
+        -s {input[0]} \
+        -t {input[1]} && \
         echo "bergeyTree=bergeyTrainingTree.xml
         probabilityList=genus_wordConditionalProbList.txt
         probabilityIndex=wordConditionalProbIndexArr.txt
@@ -205,8 +225,10 @@ rule train_rdp_classifier:
 rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
+    singularity:
+        "quay.io/biocontainers/rdptools:2.0.3--0"
     input:
-       trained_ref = workflow.basedir + "/data/{tax_DB}/RDP_train_file/rRNAClassifier.properties",
+       trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP_train_file/rRNAClassifier.properties",
        query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
     output:
         "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
@@ -218,9 +240,7 @@ rule rdp_classify:
         mem_mb=30000
     shell:
         '''
-        export RDP_JAR_PATH=$CONDA_PREFIX/share/rdptools-2.0.3-0/classifier.jar;
-        java -Xmx30g -jar \
-        $RDP_JAR_PATH classify \
+        classifier -Xmx30g classify \
         -c 0.5 \
         -f allrank \
         -t {input[0]} \
@@ -230,7 +250,9 @@ rule rdp_classify:
 
 rule rdp_format_output:
     conda:
-        "../../envs/DADA2_in_R.yml"
+        "../../envs/amplicons_R_utils.yml"
+    singularity:
+        "docker://metagenlab/amplicons_R_utils:v.1.0"  
     input:
         RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
     output:

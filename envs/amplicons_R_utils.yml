@@ -1,0 +1,36 @@
+#name: amplicons_R_utils
+channels:
+- conda-forge
+- bioconda
+- defaults
+- biocore
+dependencies:
+- r-base==3.5.1[build=*_1007] # specific version correcting "can't access ldpath" error
+- r-devtools
+- r-ggplot2
+- r-vegan
+- r-dplyr
+- r-reshape2
+- bioconductor-phyloseq
+- r-RColorBrewer
+- r-tidyverse
+- r-data.table
+- r-forcats
+- r-ggpubr
+- r-taxa
+- r-rlang
+- bioconductor-deseq2
+- r-gtools
+- bioconductor-decontam
+- krona = 2.7.1
+- r-magrittr
+- r-cowplot
+- bioconductor-microbiome
+- bioconductor-aldex2
+- bioconductor-metagenomeseq
+- maaslin2
+- r-stringr
+- r-lattice
+- r-tidyr
+
+

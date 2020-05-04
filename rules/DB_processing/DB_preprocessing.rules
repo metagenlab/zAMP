@@ -1,7 +1,9 @@
 
 rule Import_DB :
-    conda :
+    conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input :
         config["DBpath_seq"]
     output :
@@ -18,8 +20,10 @@ rule Import_DB :
 
 
 rule Extract_amp :
-    conda :
+    conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input :
         workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza"
     output :
@@ -43,8 +47,10 @@ rule Extract_amp :
 
 
 rule Export :
-   conda :
+    conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
    input :
         workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza"
    output :
@@ -61,8 +67,10 @@ rule Export :
 
 
 rule Vsearch :
-    conda :
+    conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input :
         workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta"
     output :
@@ -84,8 +92,10 @@ rule Vsearch :
 
 
 rule Taxonomy :
-    conda :
-        "../../envs/R_DB_processing.yml"
+    conda:
+        "../../envs/amplicons_R_utils.yml"
+    singularity:
+        "docker://metagenlab/amplicons_R_utils:v.1.0"  
     input :
         tax = config["DBpath_tax"],
         uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"

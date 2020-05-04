@@ -1,6 +1,8 @@
 rule create_biom_from_count_table :
     conda:
-        "../../envs/physeq.yml"
+        "../../envs/amplicons_R_utils.yml"
+    singularity:
+        "docker://metagenlab/amplicons_R_utils:v.1.0"  
     input:
         count_table = "{prefix}/count_table.txt"
     output:
@@ -31,6 +33,8 @@ rule import_count_table_to_QIIME2 :
 rule create_visualize_count_table_QIIME2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2"  
     input:
         "{prefix}/count-table.qza"
     output:
@@ -61,6 +65,8 @@ rule force_all_upper_case_rep_seq :
 rule import_rep_seq_to_QIIME2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         rep_seqs = "{denoiser}/{prefix}/dna-sequences_all_UPPER.fasta",
     output:
@@ -80,6 +86,8 @@ rule import_rep_seq_to_QIIME2 :
 rule create_tree_in_QIIME2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         "{denoiser}/{prefix}/rep-seqs.qza"
     output:
@@ -105,6 +113,8 @@ rule create_tree_in_QIIME2 :
 rule export_QIIME2_tree:
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         rooted = "{denoiser}/{prefix}/rooted-tree.qza"
     output:
@@ -120,6 +130,8 @@ rule export_QIIME2_tree:
 rule create_visualize_rep_seq_QIIME2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         "{denoiser}/2_denoised/rep-seqs.qza"
     output:
@@ -136,6 +148,8 @@ rule create_visualize_rep_seq_QIIME2 :
 rule import_taxonomy_to_Qiime2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         "{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt"
     output:
@@ -154,6 +168,8 @@ rule import_taxonomy_to_Qiime2 :
 rule create_visualize_table_QIIME2 :
     conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        "docker://qiime2/core:2020.2" 
     input:
         "{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.qza"
     output:

@@ -13,6 +13,8 @@ def DADA2_trim_input():
 rule DADA2_q_filtering:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         DADA2_trim_input()
     output:
@@ -36,6 +38,8 @@ rule DADA2_q_filtering:
 rule DADA2_learn_errors:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         q_score_filtered_F = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
         q_score_filtered_R = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
@@ -55,6 +59,8 @@ rule DADA2_learn_errors:
 rule DADA2_infer_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         q_score_filtered_F = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         q_score_filtered_R = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
@@ -79,6 +85,8 @@ rule DADA2_infer_ASV:
 rule DADA2_merge_sample_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         infer_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
         sample_seq_tab = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_seq_tab.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
@@ -96,6 +104,8 @@ rule DADA2_merge_sample_ASV:
 rule DADA2_merge_runs_filter_chim:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         seq_tab = expand("DADA2/2_denoised/{RUN}/run_seq_tab.rds", RUN=list(set(all_samples[config["run_column"]])))
     output:
@@ -118,6 +128,8 @@ rule DADA2_merge_runs_filter_chim:
 rule DADA2_filter_stats:
     conda:
         "../../envs/DADA2_in_R.yml"
+    singularity:
+        "quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
     input:
         q_filtering_stats = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds", sample = all_samples.index.values),
         run_stats = expand("DADA2/2_denoised/{RUN}/run_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
@@ -139,6 +151,8 @@ rule DADA2_filter_stats:
 rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
         "../../envs/FastQC.yml"
+    singularity:
+        "quay.io/biocontainers/fastqc:0.11.8--0"
     input:
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
@@ -155,6 +169,8 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
 rule create_filtered_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
+    singularity:
+        "quay.io/biocontainers/multiqc:1.7--py_4"
     input:
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(read_naming.keys())),
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
