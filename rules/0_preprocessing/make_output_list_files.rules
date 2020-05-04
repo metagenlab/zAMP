@@ -5,7 +5,7 @@ import os
 
 ### Bind the directory of the database to the singularity containers
 if "--use-singularity" in sys.argv:
-    workflow.singularity_args += f' -B {config["tax_DB_name"]}:{config["tax_DB_name"]}'
+    workflow.singularity_args += f' -B {config["tax_DB_path"]}:{config["tax_DB_path"]}'
 
 ### Import list of functions to handle the output
 include: "make_output_list_fcts.rules"
