@@ -93,9 +93,9 @@ rule Vsearch :
 
 rule Taxonomy :
     conda:
-        "../../envs/amplicons_R_utils.yml"
+        "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_R_utils:v.1.0"  
+        "docker://metagenlab/amplicons_r_utils:v.1.0"  
     input :
         tax = config["DBpath_tax"],
         uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"

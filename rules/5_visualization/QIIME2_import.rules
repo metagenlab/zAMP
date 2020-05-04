@@ -1,8 +1,8 @@
 rule create_biom_from_count_table :
     conda:
-        "../../envs/amplicons_R_utils.yml"
+        "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_R_utils:v.1.0"  
+        "docker://metagenlab/amplicons_r_utils:v.1.0"  
     input:
         count_table = "{prefix}/count_table.txt"
     output:

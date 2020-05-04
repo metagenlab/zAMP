@@ -1,4 +1,4 @@
-#name: amplicons_R_utils
+#name: amplicons_r_utils
 channels:
 - conda-forge
 - bioconda

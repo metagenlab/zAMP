@@ -176,7 +176,7 @@ rule vsearch_count_occurences :
 ### Format count table from vsearch
 rule create_vsearch_count_table :
     conda:
-        "../../envs/amplicons_R_utils.yml"
+        "../../envs/amplicons_r_utils.yml"
     singularity:
         "quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:

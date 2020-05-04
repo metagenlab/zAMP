@@ -3,7 +3,7 @@ FROM continuumio/miniconda:4.7.12
 
 ########################### Install with conda some basic usefull R packages ##############################
 
-COPY ./envs/amplicons_R_utils.yml /tmp/conda_definition.yml
+COPY ./envs/amplicons_r_utils.yml /tmp/conda_definition.yml
 
 
 
