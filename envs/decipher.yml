@@ -4,6 +4,3 @@ channels:
  - bioconda
 dependencies:
  - bioconductor-decipher==2.12.0
- - r-dplyr
- - r-tidyr
- - r-stringr

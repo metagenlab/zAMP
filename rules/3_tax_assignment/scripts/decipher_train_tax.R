@@ -16,32 +16,8 @@
     trained_tax <- snakemake@output[["trained_tax"]]
     training_plot <- snakemake@output[["training_plot"]]
 
-
 ## Load needed libraries
     library(DECIPHER);packageVersion("DECIPHER")
-    library(dplyr);packageVersion("dplyr")
-    library(tidyr);packageVersion("tidyr")
-    library(stringr);packageVersion("stringr")
-
-
-## Redirect R output to the log file
-   log <- file(snakemake@log[[1]], open="wt")
-   sink(log)
-   sink(log, type="message")
-
-## Input
-    decipher_seqs <- snakemake@input[["decipher_seqs"]]
-
-## Output
-    trained_tax <- snakemake@output[["trained_tax"]]
-    training_plot <- snakemake@output[["training_plot"]]
-
-## Load needed libraries
-    library(DECIPHER);packageVersion("DECIPHER")
-    library(dplyr);packageVersion("dplyr")
-    library(tidyr);packageVersion("tidyr")
-    library(stringr);packageVersion("stringr")
-
 
 # read the sequences into memory
     seqs <- readDNAStringSet(decipher_seqs)

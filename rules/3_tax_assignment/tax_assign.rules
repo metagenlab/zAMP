@@ -2,7 +2,7 @@ rule QIIME1_assign_taxonomy_rdp:
     conda:
         "../../envs/QIIME1.yml"
     singularity:
-       "docker://metagenlab/qiime_rdp:v.1.0"       
+       "docker://metagenlab/amplicons_qiime1_rdp:v.1.0"       
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
         config["tax_DB_path"] + "{tax_DB}/DB_amp.fasta",
@@ -77,9 +77,9 @@ rule dada2_assign_taxonomy_rdp:
 
 rule decipher_prep_fasta:
     conda:
-        "../../envs/decipher.yml"
+        "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://quay.io/biocontainers/bioconductor-decipher:2.12.0--r36h516909a_1"
+        "docker://metagenlab/amplicons_r_utils:v.1.0"  
     input:
         ref_tax = "{prefix}/{tax_DB}/DB_amp_taxonomy.txt",
         ref_seqs = "{prefix}/{tax_DB}/DB_amp.fasta",
