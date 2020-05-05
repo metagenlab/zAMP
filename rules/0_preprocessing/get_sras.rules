@@ -4,7 +4,7 @@ rule download_sra:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://ncbi/sra-toolkit:2.9.4-1"
     output:
         # /home/pipeline_user/ncbi/public
         temp("ncbi/public/sra/{sample}.sra"),
@@ -25,9 +25,9 @@ rule sra_convert_to_fastq_paired:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://ncbi/sra-toolkit:2.9.4-1"
     input:
-        "%s/ncbi/public/sra/{sample}.sra" % os.getenv("HOME"),
+        "ncbi/public/sra/{sample}.sra",
     output:
          temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
          temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
@@ -42,9 +42,9 @@ rule sra_convert_to_fastq_single:
     conda:
         "../../envs/sra-tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/sra-tools:2.9.6--hf484d3e_0"
+        "docker://ncbi/sra-toolkit:2.9.4-1"
     input:
-        "%s/ncbi/public/sra/{sample}.sra" % os.getenv("HOME"),
+        "ncbi/public/sra/{sample}.sra"
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:

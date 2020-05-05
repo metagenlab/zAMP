@@ -127,9 +127,9 @@ rule DADA2_merge_runs_filter_chim:
 ### Generate filtration stats
 rule DADA2_filter_stats:
     conda:
-        "../../envs/DADA2_in_R.yml"
+        "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
+        "docker://metagenlab/amplicons_r_utils:v.1.0"
     input:
         q_filtering_stats = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds", sample = all_samples.index.values),
         run_stats = expand("DADA2/2_denoised/{RUN}/run_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
@@ -152,7 +152,7 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
         "../../envs/FastQC.yml"
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.11.8--0"
+        "docker://quay.io/biocontainers/fastqc:0.11.9--0"
     input:
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",

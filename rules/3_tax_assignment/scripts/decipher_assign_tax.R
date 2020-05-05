@@ -23,6 +23,7 @@
 ## Load needed libraries
     library(DECIPHER);packageVersion("DECIPHER")
     library(dplyr);packageVersion("dplyr")
+    library(tidyr);packageVersion("tidyr")
 
 # load a training set object (trainingSet)
 # see http://DECIPHER.codes/Downloads.html

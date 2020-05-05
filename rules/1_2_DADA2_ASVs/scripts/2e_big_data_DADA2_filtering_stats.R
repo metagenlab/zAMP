@@ -19,7 +19,6 @@
     filtering_stats <- snakemake@output[["filtering_stats"]]
 
 ## Load needed libraries
-    library(dada2); packageVersion("dada2")
     library(dplyr); packageVersion("dplyr")
 
 ## Load the q score filtration R stats

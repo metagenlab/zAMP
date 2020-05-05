@@ -4,7 +4,7 @@ rule assess_quality_paired_raw_reads_with_fastqc:
     conda:
         "../../envs/FastQC.yml"
     singularity:
-        "docker://quay.io/biocontainers/fastqc:0.11.8--0"
+        "docker://quay.io/biocontainers/fastqc:0.11.9--0"
     input:
         "raw_reads/{sample}_R1.fastq.gz",
         "raw_reads/{sample}_R2.fastq.gz",

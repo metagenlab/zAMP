@@ -12,7 +12,7 @@
 # Input
   seq_tab <- snakemake@input[["seq_tab"]]
 
-## Output
+# Output
   no_chim <- snakemake@output[["no_chim"]]
   length_filtered <- snakemake@output[["length_filtered"]]
   rep_seqs <- snakemake@output[["rep_seqs"]]

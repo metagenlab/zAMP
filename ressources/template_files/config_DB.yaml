@@ -1,9 +1,10 @@
-#localisation of database
+## Localisation of input database
 DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta"
 DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt"
 
 ## Output
-output_dir: "EzBioCloud_version"
+tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/"
+tax_DB_name: "EzBioCloud_version" # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
 
 #trimming
 forward_primer: CCTACGGGNGGCWGCAG

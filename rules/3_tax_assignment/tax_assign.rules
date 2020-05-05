@@ -18,7 +18,7 @@ rule QIIME1_assign_taxonomy_rdp:
         mem_mb=30000
     shell:
         '''
-        export RDP_JAR_PATH=$CONDA_PREFIX/bin/rdp_classifier-2.2.jar;
+        export RDP_JAR_PATH=$(command -v rdp_classifier-2.2.jar);
         assign_path=$(which assign_taxonomy.py)
         python $assign_path \
           -i {input[0]} \
