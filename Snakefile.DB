@@ -1,6 +1,19 @@
 include: "rules/DB_processing/DB_preprocessing.rules"
 
 ## Run the function
+
+rule format_n_dereplicate_DB:
+    input:
+        
+
+
+rule prep_DADA2_DB:
+    input:
+        tax_DB_path + config["tax_DB_name"] + "/DB_amp_taxonomy.txt",
+
+
 rule all:
     input:
-         workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_taxonomy.txt"
+         tax_DB_path + config["tax_DB_name"] + "/DB_amp_taxonomy.txt",
+         tax_DB_path + config["tax_DB_name"] + "/DB_amp_taxonomy.txt",
+
