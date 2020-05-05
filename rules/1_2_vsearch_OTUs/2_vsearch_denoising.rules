@@ -12,7 +12,7 @@ def vsearch_trim_input():
 ### Keep only once indentical sequences and keep score of their prevalence.
 rule vsearch_dereplicate_samples:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:
@@ -49,7 +49,7 @@ rule merge_all_in_one_fasta:
 ### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
 rule vsearch_derepicate_all:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:
@@ -70,7 +70,7 @@ rule vsearch_derepicate_all:
 ### Pick clusters which will be the representative sequences
 rule vsearch_cluster:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:
@@ -98,7 +98,7 @@ rule vsearch_cluster:
 ### Detect chimera in representative sequences
 rule vsearch_chimera_detection:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:
@@ -125,7 +125,7 @@ rule vsearch_chimera_detection:
 ### Relabel sequences
 rule vsearch_derep_to_consesus_sequences :
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:
@@ -149,7 +149,7 @@ rule vsearch_derep_to_consesus_sequences :
 ### Count the number of occurences of the representative sequences in the samples.
 rule vsearch_count_occurences :
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
     singularity:
         "docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0"
     input:

@@ -17,6 +17,7 @@ simplified_tax <-snakemake@output[["formatted_output"]]
 
 ## Load needed libraries
 library(dplyr);packageVersion("dplyr")
+library(tidyr);packageVersion("tidyr")
 
 ## Read data
 tax_table <- read.table(rdp_tax, sep="\t", stringsAsFactors=FALSE)
