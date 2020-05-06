@@ -28,6 +28,7 @@ include: "rules/0_preprocessing/make_output_list_files.rules"
 ### Defaul rule all. Include all but PICRUSt2
 rule all:
     input: rule_all_list()
+    
 ### Only QC of the reads
 rule QC:
     input: MultiQC

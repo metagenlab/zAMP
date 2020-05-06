@@ -19,7 +19,6 @@
     Genus_species <- snakemake@output[["Genus_species"]]
 
 ## Load needed libraries
-    library(dada2);packageVersion("dada2")
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
     library(Biostrings);packageVersion("Biostrings")

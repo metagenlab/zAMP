@@ -20,10 +20,11 @@
     library(dplyr);packageVersion("dplyr")
     library(tidyr);packageVersion("tidyr")
     library(stringr);packageVersion("stringr")
+    library(Biostrings);packageVersion("Biostrings")
 
 ################### Prep taxonomy tree ########################
 tax_table <- read.table(file=ref_tax, sep="\t", stringsAsFactors=FALSE)
-tax_table
+
 
 ################### Prep fasta table ########################
 split_tax_table<-tax_table %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
