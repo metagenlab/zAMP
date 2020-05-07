@@ -22,6 +22,7 @@ rarefaction_curve <- snakemake@output[["rarefaction_curve"]]
 color_factor <- snakemake@params[["grouping_column"]]
 
 ## Load libraries
+library('phyloseq')
 library('ggplot2')
 library('plyr') # ldply
 library('reshape2') # melt
@@ -124,7 +125,7 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
     # as.matrix forces the use of melt.array, which includes the Sample names (rownames)
     molten_alpha_diversity <- melt(as.matrix(alpha_diversity), varnames = c('Sample', 'Measure'), value.name = 'Alpha_diversity')
 
-    
+    molten_alpha_diversity
   }
 
   names(depths) <- depths # this enables automatic addition of the Depth to the output by ldply
@@ -133,13 +134,23 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
   # convert Depth from factor to numeric
   rarefaction_curve_data$Depth <- as.numeric(levels(rarefaction_curve_data$Depth))[rarefaction_curve_data$Depth]
 
-  
+  rarefaction_curve_data
 }
 
 rarefaction_curve_data <- calculate_rarefaction_curves(psdata = phyloseq_obj, measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson"), depth = rep(c(1, 10, 100, 1000, 1:100 * 10000), each = 10))
+summary(rarefaction_curve_data)
+
+
+####
+
 rarefaction_curve_data_summary <- ddply(rarefaction_curve_data, c('Depth', 'Sample', 'Measure'), summarise, Alpha_diversity_mean = mean(Alpha_diversity), Alpha_diversity_sd = sd(Alpha_diversity))
+
+
+####
+
 rarefaction_curve_data_summary_verbose <- merge(rarefaction_curve_data_summary, data.frame(sample_data(phyloseq_obj)), by.x = 'Sample', by.y = 'row.names')
 
+rarefaction_curve_data_summary_verbose
 
 p <- ggplot(
   data = rarefaction_curve_data_summary_verbose,
