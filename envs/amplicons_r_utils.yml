@@ -32,5 +32,4 @@ dependencies:
 - r-stringr
 - r-lattice
 - r-tidyr
-
-
+- mscorefonts
