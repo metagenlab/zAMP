@@ -1,8 +1,15 @@
 
 include: "rules/DB_processing/DB_preprocessing.rules"
-
+include: "rules/DB_processing/RDP_validation.rules"
 
 
 rule all:
     input:
         config["tax_DB_path"] + config["tax_DB_name"] + "/DB.hash"
+
+rule RDP_validation:
+    input:
+         config["tax_DB_path"] + config["tax_DB_name"] + "/RDP/RDP_leave_seq_out_accuracy.txt",
+         config["tax_DB_path"] + config["tax_DB_name"] + "/RDP/RDP_leave_tax_out_accuracy.txt",
+         config["tax_DB_path"] + config["tax_DB_name"] + "/RDP/RDP_cross_validate.txt",
+         

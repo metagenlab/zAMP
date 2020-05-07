@@ -180,7 +180,7 @@ rule DADA2_prep_tax_db:
         King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
         Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     log:
-        workflow.basedir + "{prefix}/dada2rdp/log/DB_amp_taxonomy_dada2_prep.log"
+        "{prefix}/dada2rdp/log/DB_amp_taxonomy_dada2_prep.log"
     threads:
         1
     script:
@@ -203,8 +203,9 @@ rule Hash_DADA2:
 
 
 ## Rules to format taxonomy to fit the requirements of the original RDP.
-## Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
-## following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
+### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
+### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
+### See 'RDP_validations.rules' for more validatino based on RDP authors' recommendations
 
 rule Preformat_for_cannonical_rdp:
     conda:
@@ -217,7 +218,7 @@ rule Preformat_for_cannonical_rdp:
     output:
         formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
     log:
-      workflow.basedir + "{prefix}/RDP/log/formatted_tax_table.log",
+      "{prefix}/RDP/log/formatted_tax_table.log",
     threads:
         1
     script:
@@ -261,37 +262,6 @@ rule Format_rdp_add_lineages:
         '''
         python2.7 {params[0]} {input[0]} {input[1]} > {output[0]}       
         '''
-
-
-rule Visualize_similarity_rdp:
-    conda:
-        "../../envs/rdp_tools.yml"
-    singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
-    input:
-        tax = "{prefix}/RDP/ready4train_lineages.txt",
-        query_seq = "{prefix}/RDP/ready4train_seqs.fasta",
-        seqs = "{prefix}/RDP/ready4train_seqs.fasta",
-        rankfile = workflow.basedir + "/rules/DB_processing/scripts/RDP_rankfile.txt"
-    output:
-        "{prefix}/RDP/RDP_taxa_sim.fig",
-    log:
-      workflow.basedir + "{prefix}/RDP/log/RDP_formatted_tax_table.log",
-    threads:
-        1
-    resources:
-        mem_mb=30000
-    shell:
-        '''
-        classifier -Djava.awt.headless=true taxa-sim \
-        {input.tax} \
-        {input.seqs} \
-        {input.query_seq} \
-        $(dirname {output[0]}) \
-        8 \
-        {input.rankfile} \
-        sab 2> {log}
-	    '''
 
 
 rule Train_rdp_classifier:
