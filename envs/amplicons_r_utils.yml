@@ -5,7 +5,7 @@ channels:
 - defaults
 - biocore
 dependencies:
-- r-feedstock # specific version correcting "can't access ldpath" error
+- r-base==3.5.1
 - r-devtools
 - r-ggplot2
 - r-vegan
