@@ -2,7 +2,7 @@ rule QIIME1_assign_taxonomy_rdp:
     conda:
         "../../envs/QIIME1.yml"
     singularity:
-       "docker://metagenlab/amplicons_qiime1_rdp:v.1.0"       
+       singularity_envs["qiimerdp"]      
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
         config["tax_DB_path"] + "{tax_DB}/DB_amp.fasta",
@@ -35,7 +35,7 @@ rule dada2_assign_taxonomy_rdp:
     conda:
         "../../envs/DADA2_in_R.yml"
     singularity:
-        "docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0"
+        singularity_envs["dada2"]
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
         King_to_Species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
@@ -58,7 +58,7 @@ rule decipher_tax_assign:
     conda:
         "../../envs/decipher.yml"
     singularity:
-        "docker://metagenlab/amplicons_decipher:v.1.0"
+        singularity_envs["decipher"]
     input:
         trained_tax = config["tax_DB_path"] + "{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
         seq = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -80,7 +80,7 @@ rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
        trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP_train_file/rRNAClassifier.properties",
        query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -106,7 +106,7 @@ rule rdp_format_output:
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_r_utils:v.1.0"  
+        singularity_envs["r_utils"]  
     input:
         RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
     output:

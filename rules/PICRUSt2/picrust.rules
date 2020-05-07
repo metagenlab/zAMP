@@ -3,6 +3,8 @@
 rule picrust2_custom_tree :
     conda:
         "../../envs/picrust2.yml"
+    singularity:
+        singularity_envs["picrust2"]  
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences_all_UPPER.fasta",
         table = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom"

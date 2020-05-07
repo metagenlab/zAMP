@@ -4,7 +4,7 @@ rule cutadapt_trim_for_DADA2:
     conda:
         "../../envs/cutadapt.yml"
     singularity:
-        "docker://metagenlab/amplicons_cutadapt:v.1.0"
+        singularity_envs["cutadapt"]
     input:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
         R2_raw_reads = "raw_reads/{sample}_R2.fastq.gz"

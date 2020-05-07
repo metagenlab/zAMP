@@ -41,7 +41,7 @@ rule Import_DB:
     conda:
         "../../envs/QIIME2-2020.02.yml"
     singularity:
-        "docker://qiime2/core:2020.2" 
+        singularity_envs["qiime2"] 
     input :
         "{prefix}/master/original_seqs.fasta"
     output :
@@ -61,7 +61,7 @@ rule Extract_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
     singularity:
-        "docker://qiime2/core:2020.2" 
+        singularity_envs["qiime2"] 
     input :
         "{prefix}/QIIME/DB_seq.qza"
     output :
@@ -87,7 +87,7 @@ rule Export_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
     singularity:
-        "docker://qiime2/core:2020.2" 
+        singularity_envs["qiime2"] 
     input :
         "{prefix}/QIIME/DB_amp_seq.qza"
     output :
@@ -106,7 +106,7 @@ rule Dereplicate_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
     singularity:
-        "docker://qiime2/core:2020.2" 
+        singularity_envs["qiime2"] 
     input :
         "{prefix}/QIIME/dna-sequences.fasta"
     output :
@@ -130,7 +130,7 @@ rule Derep_and_merge_taxonomy:
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_r_utils:v.1.0"  
+        singularity_envs["r_utils"]  
     input :
         tax = "{prefix}/master/original.tax_DB_path",
         uc = "{prefix}/QIIME/log/DB_amp.uc"
@@ -171,7 +171,7 @@ rule DADA2_prep_tax_db:
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_r_utils:v.1.0"
+        singularity_envs["r_utils"]
     input:
         ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
         ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt"
@@ -211,7 +211,7 @@ rule Preformat_for_cannonical_rdp:
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_r_utils:v.1.0"  
+        singularity_envs["r_utils"]  
     input:
         ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
@@ -229,7 +229,7 @@ rule Format_rdp_lineages:
     conda:
         "../../envs/Python2.yml"
     singularity:
-        "docker://python:2.7"  
+        singularity_envs["python27"] 
     input:
         formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
     output:
@@ -248,7 +248,7 @@ rule Format_rdp_add_lineages:
     conda:
         "../../envs/Python2.yml"
     singularity:
-        "docker://python:2.7"  
+        singularity_envs["python27"] 
     input:
         taxonomyFile = "{prefix}/RDP/formatted_tax_table.tsv",
         fastaFile = "{prefix}/QIIME/DB_amp.fasta",
@@ -268,7 +268,7 @@ rule Train_rdp_classifier:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
@@ -316,7 +316,7 @@ rule Decipher_prep_fasta:
     conda:
         "../../envs/amplicons_r_utils.yml"
     singularity:
-        "docker://metagenlab/amplicons_r_utils:v.1.0"  
+        singularity_envs["r_utils"]  
     input:
         ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
@@ -334,7 +334,7 @@ rule Decipher_train_tax:
     conda:
         "../../envs/decipher.yml"
     singularity:
-        "docker://metagenlab/amplicons_decipher:v.1.0"
+        singularity_envs["decipher"]
     input:
         decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta"
     output:

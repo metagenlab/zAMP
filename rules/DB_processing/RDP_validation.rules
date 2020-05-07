@@ -8,7 +8,7 @@ rule Visualize_similarity_rdp: ## Generate a plot for intra taxa similarity. Ver
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
         tax = "{prefix}/RDP/ready4train_lineages.txt",
         seqs = "{prefix}/RDP/ready4train_seqs.fasta",
@@ -39,7 +39,7 @@ rule Accuracy_seqs_testing_rdp:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
         tax = "{prefix}/RDP/ready4train_lineages.txt",
         seqs = "{prefix}/RDP/ready4train_seqs.fasta",
@@ -67,7 +67,7 @@ rule Accuracy_taxon_testing_rdp:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
         tax = "{prefix}/RDP/ready4train_lineages.txt",
         seqs = "{prefix}/RDP/ready4train_seqs.fasta",
@@ -95,7 +95,7 @@ rule Cross_validate__rdp:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
-        "docker://quay.io/biocontainers/rdptools:2.0.3--0"
+        singularity_envs["rdptools"]
     input:
         tax = "{prefix}/RDP/ready4train_lineages.txt",
         seqs = "{prefix}/RDP/ready4train_seqs.fasta",
