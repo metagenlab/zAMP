@@ -9,7 +9,7 @@ rule Back_up_master:
         config = workflow.overwrite_configfile
     output :
         seqs = "{prefix}/master/original_seqs.fasta",
-        tax = "{prefix}/master/original.tax_DB_path",
+        tax = "{prefix}/master/original_tax.txt",
         config = "{prefix}/config_DB.yml"
     threads :
         1
@@ -23,7 +23,7 @@ rule Back_up_master:
 rule Hash_master_files:
     input :
         seqs = "{prefix}/master/original_seqs.fasta",
-        tax = "{prefix}/master/original.tax_DB_path"
+        tax = "{prefix}/master/original_tax.txt"
     output :
         hash = "{prefix}/master/original.hash",
     threads :
