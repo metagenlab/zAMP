@@ -37,7 +37,7 @@ if "--dryrun" not in sys.argv and "-n" not in sys.argv:
     git_log = subprocess.run("git", "-C", workflow.basedir, "rev-parse", "HEAD") 
     with open(git_log_path, "w") as f:
         f.write(git_log +"\n")
-    user_path = logging_folder + "/user.txt
+    user_path = logging_folder + "/user.txt"
     user_cred = getpass.getuser()
     with open(user_path, "w") as f:
         f.write(user_cred +"\n")

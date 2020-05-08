@@ -6,18 +6,15 @@ rule Back_up_master:
     input :
         seqs = config["DBpath_seq"],
         tax = config["DBpath_tax"],
-        config = workflow.overwrite_configfile
     output :
         seqs = "{prefix}/master/original_seqs.fasta",
         tax = "{prefix}/master/original_tax.txt",
-        config = "{prefix}/config_DB.yml"
     threads :
         1
     shell :
         '''
         cp {input.seqs} {output.seqs} && \
-        cp {input.tax} {output.tax} && \
-        cp {input.config} {output.config}
+        cp {input.tax} {output.tax}
         '''
 
 rule Hash_master_files:
@@ -113,7 +110,7 @@ rule Dereplicate_amplicons:
         fasta = "{prefix}/QIIME/DB_amp.fasta",
         uc = "{prefix}/QIIME/DB_amp.uc"
     log :
-        "prefix/" + logging_folder + "QIIME/vsearch_dereplicate_ampli.log"
+        "{prefix}/" + logging_folder + "QIIME/vsearch_dereplicate_ampli.log"
     threads :
         1
     shell :
@@ -132,12 +129,12 @@ rule Derep_and_merge_taxonomy:
     singularity:
         singularity_envs["r_utils"]  
     input :
-        tax = "{prefix}/master/original.tax_DB_path",
+        tax = "{prefix}/master/original_tax.txt",
         uc = "{prefix}/QIIME/DB_amp.uc"
     output :
         formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic = "{prefix}/QIIME/probematic_taxa.txt"
+        problematic = "{prefix}/QIIME/problematic_taxa.txt"
     log :
        "{prefix}/" + logging_folder + "QIIME/derep_and_merge.log"
     params:
@@ -153,7 +150,7 @@ rule Hash_derep_tax:
     input :
         formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic = "{prefix}/QIIME/probematic_taxa.txt",
+        problematic = "{prefix}/QIIME/problematic_taxa.txt",
         fasta = "{prefix}/QIIME/DB_amp.fasta",
     output :
         hash = "{prefix}/QIIME/DB_formatted.hash",
@@ -272,7 +269,6 @@ rule Train_rdp_classifier:
     input:
        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
-       validation = "{prefix}/RDP/RDP_taxa_sim.fig",
     output:
         formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
         properties = "{prefix}/RDP/rRNAClassifier.properties"
