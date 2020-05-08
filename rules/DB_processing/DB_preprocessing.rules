@@ -59,11 +59,11 @@ rule Extract_amplicons:
         "../../envs/QIIME2-2020.02.yml"
     singularity:
         singularity_envs["qiime2"] 
-    input :
+    input:
         "{prefix}/QIIME/DB_seq.qza"
-    output :
+    output:
         temp("{prefix}/QIIME/DB_amp_seq.qza")
-    params :
+    params:
         primer_forward = config["forward_primer"],
         primer_reverse = config["reverse_primer"],
         length = config["length_max"]
@@ -111,7 +111,7 @@ rule Dereplicate_amplicons:
         "{prefix}/QIIME/dna-sequences.fasta"
     output :
         fasta = "{prefix}/QIIME/DB_amp.fasta",
-        uc = "{prefix}/QIIME/log/DB_amp.uc"
+        uc = "{prefix}/QIIME/DB_amp.uc"
     log :
         "prefix/" + logging_folder + "QIIME/vsearch_dereplicate_ampli.log"
     threads :
@@ -133,11 +133,11 @@ rule Derep_and_merge_taxonomy:
         singularity_envs["r_utils"]  
     input :
         tax = "{prefix}/master/original.tax_DB_path",
-        uc = "{prefix}/QIIME/log/DB_amp.uc"
+        uc = "{prefix}/QIIME/DB_amp.uc"
     output :
         formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic = "{prefix}/QIIME/log/probematic_taxa.txt"
+        problematic = "{prefix}/QIIME/probematic_taxa.txt"
     log :
        "{prefix}/" + logging_folder + "QIIME/derep_and_merge.log"
     params:
@@ -153,7 +153,7 @@ rule Hash_derep_tax:
     input :
         formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic = "{prefix}/QIIME/log/probematic_taxa.txt",
+        problematic = "{prefix}/QIIME/probematic_taxa.txt",
         fasta = "{prefix}/QIIME/DB_amp.fasta",
     output :
         hash = "{prefix}/QIIME/DB_formatted.hash",
