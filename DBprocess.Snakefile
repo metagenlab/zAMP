@@ -13,7 +13,7 @@ if "--use-singularity" in sys.argv:
     singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/singularity/sing_envs.yml"), 'r'))
 
 ## Set logging into the same directory that the DB output by adding logging folder which will be taken in account in the logginf rules
-config["logging_folder"] = config["tax_DB_path"] + config["tax_DB_name"] + "/log/"
+config["logging_folder"] = config["tax_DB_path"] + config["tax_DB_name"] + "/logs/"
 
 
 include: "rules/0_preprocessing/logging.rules"

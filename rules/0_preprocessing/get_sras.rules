@@ -48,7 +48,7 @@ rule sra_convert_to_fastq_single:
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:
-        logging_folder + "log/sra_download/{sample}_dump.txt"
+        logging_folder + "logs/sra_download/{sample}_dump.txt"
     shell:
         """
         fastq-dump --gzip --outdir $(dirname {output[0]}) --log-level 0 --disable-multithreading --minReadLen 0 {wildcards.sample} &> {log}
