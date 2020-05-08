@@ -136,7 +136,7 @@ rule Derep_and_merge_taxonomy:
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
         problematic = "{prefix}/QIIME/problematic_taxa.txt"
     log :
-       "{prefix}/" + logging_folder + "QIIME/derep_and_merge.log"
+       logging_folder + "QIIME/derep_and_merge.log"
     params:
         numbers_species = config["numbers_species"],
         numbers_genus = config["numbers_genus"]
@@ -177,7 +177,7 @@ rule DADA2_prep_tax_db:
         King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
         Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     log:
-        "{prefix}/" + logging_folder + "dada2rdp/DB_amp_taxonomy_dada2_prep.log"
+       logging_folder + "dada2rdp/DB_amp_taxonomy_dada2_prep.log"
     threads:
         1
     script:
@@ -215,7 +215,7 @@ rule Preformat_for_cannonical_rdp:
     output:
         formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
     log:
-       "{prefix}/" + logging_folder + "RDP/formatted_tax_table.log",
+       logging_folder + "RDP/formatted_tax_table.log",
     threads:
         1
     script:
@@ -228,16 +228,15 @@ rule Format_rdp_lineages:
     singularity:
         singularity_envs["python27"] 
     input:
-        formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
+        table = "{prefix}/RDP/formatted_tax_table.tsv",
+	script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
     output:
         read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
-    params:
-        script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
     threads:
         1
     shell:
         '''
-        python2.7 {params[0]} {input[0]} > {output[0]}
+        python2.7 {input.script} {input.table} > {output[0]}
         '''
 
  
@@ -247,17 +246,16 @@ rule Format_rdp_add_lineages:
     singularity:
         singularity_envs["python27"] 
     input:
-        taxonomyFile = "{prefix}/RDP/formatted_tax_table.tsv",
-        fastaFile = "{prefix}/QIIME/DB_amp.fasta",
+        taxonomy = "{prefix}/RDP/formatted_tax_table.tsv",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+        script =  workflow.basedir + "/rules/DB_processing/scripts/addFullLineage.py"
     output:
         read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
-    params:
-        script =  workflow.basedir + "/rules/DB_processing/scripts/addFullLineage.py"
     threads:
         1
     shell:
         '''
-        python2.7 {params[0]} {input[0]} {input[1]} > {output[0]}       
+        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}       
         '''
 
 
@@ -273,7 +271,7 @@ rule Train_rdp_classifier:
         formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
         properties = "{prefix}/RDP/rRNAClassifier.properties"
     log:
-       "{prefix}/" + logging_folder + "RDP/RDP_train.log",
+       logging_folder + "RDP/RDP_train.log",
     threads:
         1
     resources:
@@ -319,7 +317,7 @@ rule Decipher_prep_fasta:
     output:
         decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
     log:
-        "{prefix}/" + logging_folder + "decipher/DB_amp_taxonomy_decipher_fasta.log"
+       logging_folder + "decipher/DB_amp_taxonomy_decipher_fasta.log"
     threads:
         1
     script:
@@ -337,7 +335,7 @@ rule Decipher_train_tax:
         trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
         training_plot = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
     log:
-        "{prefix}/" + logging_folder + "decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+       logging_folder + "decipher/DB_amp_taxonomy_decipher_tax_tree.log",
     threads:
         1
     script:
