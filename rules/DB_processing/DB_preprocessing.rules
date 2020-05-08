@@ -1,11 +1,45 @@
+## Rules taking taxonomy and representatives sequences in Qiime format
+## to dereplicate them of the amplified fragment (have only unique representative sequences)
+## and merge taxonomy for sequences with unique taxonomy
 
-rule Import_DB :
-    conda :
-        "../../envs/QIIME2-2020.02.yml"
+rule Back_up_master:
     input :
-        config["DBpath_seq"]
+        seqs = config["DBpath_seq"],
+        tax = config["DBpath_tax"],
     output :
-        temp(workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza")
+        seqs = "{prefix}/master/original_seqs.fasta",
+        tax = "{prefix}/master/original_tax.txt",
+    threads :
+        1
+    shell :
+        '''
+        cp {input.seqs} {output.seqs} && \
+        cp {input.tax} {output.tax}
+        '''
+
+rule Hash_master_files:
+    input :
+        seqs = "{prefix}/master/original_seqs.fasta",
+        tax = "{prefix}/master/original_tax.txt"
+    output :
+        hash = "{prefix}/master/original.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.seqs} {input.tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+rule Import_DB:
+    conda:
+        "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        singularity_envs["qiime2"] 
+    input :
+        "{prefix}/master/original_seqs.fasta"
+    output :
+        temp("{prefix}/QIIME/DB_seq.qza")
     threads :
         1
     shell :
@@ -17,17 +51,21 @@ rule Import_DB :
         '''
 
 
-rule Extract_amp :
-    conda :
+rule Extract_amplicons:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
-    input :
-        workflow.basedir + "/data/" + config["output_dir"] + "/DB_seq.qza"
-    output :
-        temp(workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza")
-    params :
+    singularity:
+        singularity_envs["qiime2"] 
+    input:
+        "{prefix}/QIIME/DB_seq.qza"
+    output:
+        temp("{prefix}/QIIME/DB_amp_seq.qza")
+    params:
         primer_forward = config["forward_primer"],
         primer_reverse = config["reverse_primer"],
         length = config["length_max"]
+    log:
+        "{prefix}/log/QIIME/DB_amp_seq.txt"
     threads :
         1
     shell :
@@ -37,21 +75,23 @@ rule Extract_amp :
         --p-f-primer {params[primer_forward]} \
         --p-r-primer {params[primer_reverse]} \
         --p-trunc-len {params[length]} \
-        --o-reads {output} 
+        --o-reads {output} \
+        --verbose 2> {log}
         '''
 
 
-
-rule Export :
-   conda :
+rule Export_amplicons:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
-   input :
-        workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_seq.qza"
-   output :
-        temp(workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta")
-   threads :
+    singularity:
+        singularity_envs["qiime2"] 
+    input :
+        "{prefix}/QIIME/DB_amp_seq.qza"
+    output :
+        temp("{prefix}/QIIME/dna-sequences.fasta")
+    threads :
         1
-   shell :
+    shell :
          '''
         qiime tools export \
         --input-path {input} \
@@ -59,17 +99,18 @@ rule Export :
         '''
 
 
-
-rule Vsearch :
-    conda :
+rule Dereplicate_amplicons:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
+    singularity:
+        singularity_envs["qiime2"] 
     input :
-        workflow.basedir + "/data/" + config["output_dir"] + "/dna-sequences.fasta"
+        "{prefix}/QIIME/dna-sequences.fasta"
     output :
-        fasta = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp.fasta",
-        uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+        uc = "{prefix}/QIIME/DB_amp.uc"
     log :
-        workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.log"
+        "{prefix}/log/QIIME/vsearch_dereplicate_ampli.log"
     threads :
         1
     shell :
@@ -82,19 +123,20 @@ rule Vsearch :
         '''
 
 
-
-rule Taxonomy :
-    conda :
-        "../../envs/R_DB_processing.yml"
+rule Derep_and_merge_taxonomy:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]  
     input :
-        tax = config["DBpath_tax"],
-        uc = workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp.uc"
+        tax = "{prefix}/master/original_tax.txt",
+        uc = "{prefix}/QIIME/DB_amp.uc"
     output :
-        formatted_tax = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_taxonomy.txt",
-        all = workflow.basedir + "/data/" + config["output_dir"] + "/DB_amp_all_taxonomy.txt",
-        problematic = workflow.basedir + "/data/" + config["output_dir"] + "/log/probematic_taxa.txt"
+        formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
+        problematic = "{prefix}/QIIME/problematic_taxa.txt"
     log :
-       workflow.basedir + "/data/" + config["output_dir"] + "/log/DB_amp_taxonomy.log"
+       "{prefix}/log/QIIME/derep_and_merge.log"
     params:
         numbers_species = config["numbers_species"],
         numbers_genus = config["numbers_genus"]
@@ -102,3 +144,230 @@ rule Taxonomy :
         1
     script :
         "scripts/DB_tax_formatting.R"
+
+
+rule Hash_derep_tax:
+    input :
+        formatted_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
+        problematic = "{prefix}/QIIME/problematic_taxa.txt",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+    output :
+        hash = "{prefix}/QIIME/DB_formatted.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.formatted_tax} {input.all} {input.problematic} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+
+## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
+rule DADA2_prep_tax_db:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]
+    input:
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt"
+    output:
+        King_to_Species ="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
+    log:
+       "{prefix}/log/dada2rdp/DB_amp_taxonomy_dada2_prep.log"
+    threads:
+        1
+    script:
+        "scripts/dada2_prep_tax.R"
+
+
+rule Hash_DADA2:
+    input :
+        King_to_Species ="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
+    output :
+        hash = "{prefix}/dada2rdp/DADA2_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.King_to_Species} {input.King_to_Genus} {input.Genus_species} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+## Rules to format taxonomy to fit the requirements of the original RDP.
+### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
+### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
+### See 'RDP_validations.rules' for more validatino based on RDP authors' recommendations
+
+rule Preformat_for_cannonical_rdp:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]  
+    input:
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+    output:
+        formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
+    log:
+       "{prefix}/log/RDP/formatted_tax_table.log",
+    threads:
+        1
+    script:
+        "scripts/rdp_prep_tax.R"
+
+
+rule Format_rdp_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    singularity:
+        singularity_envs["python27"] 
+    input:
+        table = "{prefix}/RDP/formatted_tax_table.tsv",
+	script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
+    output:
+        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+    threads:
+        1
+    shell:
+        '''
+        python2.7 {input.script} {input.table} > {output[0]}
+        '''
+
+ 
+rule Format_rdp_add_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    singularity:
+        singularity_envs["python27"] 
+    input:
+        taxonomy = "{prefix}/RDP/formatted_tax_table.tsv",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+        script =  workflow.basedir + "/rules/DB_processing/scripts/addFullLineage.py"
+    output:
+        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+    threads:
+        1
+    shell:
+        '''
+        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}       
+        '''
+
+
+rule Train_rdp_classifier:
+    conda:
+        "../../envs/rdp_tools.yml"
+    singularity:
+        singularity_envs["rdptools"]
+    input:
+       read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+       read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+    output:
+        formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
+        properties = "{prefix}/RDP/rRNAClassifier.properties"
+    log:
+       "{prefix}/log/RDP/RDP_train.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Xmx30g train \
+        -o $(dirname {output[0]}) \
+        -s {input[0]} \
+        -t {input[1]} && \
+        echo "bergeyTree=bergeyTrainingTree.xml
+        probabilityList=genus_wordConditionalProbList.txt
+        probabilityIndex=wordConditionalProbIndexArr.txt
+        wordPrior=logWordPrior.txt
+        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
+	    '''
+
+rule Hash_RDP:
+    input :
+        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+        formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
+        properties = "{prefix}/RDP/rRNAClassifier.properties"
+    output :
+        hash = "{prefix}/RDP/RDP_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.read4train_fasta} {input.read4train_tax} {input.formatted_table} {input.properties} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
+rule Decipher_prep_fasta:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]  
+    input:
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+    output:
+        decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
+    log:
+       "{prefix}/log/decipher/DB_amp_taxonomy_decipher_fasta.log"
+    threads:
+        1
+    script:
+        "scripts/decipher_prep_tax.R"
+
+
+rule Decipher_train_tax:
+    conda:
+        "../../envs/decipher.yml"
+    singularity:
+        singularity_envs["decipher"]
+    input:
+        decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta"
+    output:
+        trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
+        training_plot = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
+    log:
+       "{prefix}/log/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+    threads:
+        1
+    script:
+        "scripts/decipher_train_tax.R"
+
+
+rule Hash_Decipher:
+    input :
+        trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
+    output :
+        hash = "{prefix}/decipher/decipher_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.trained_tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+## Generate a hash from all relevant files to insure that we always work with the same reference databases
+rule hash_global_DB:
+    input:
+        master = "{prefix}/master/original.hash",
+        QIIME = "{prefix}/QIIME/DB_formatted.hash",
+        DADA2 = "{prefix}/dada2rdp/DADA2_DB.hash",
+        RDP = "{prefix}/RDP/RDP_DB.hash",
+        decipher = "{prefix}/decipher/decipher_DB.hash",
+    output:
+        trained_tax = "{prefix}/DB.hash",
+    threads:
+        1
+    shell :
+        '''
+        md5sum {input.master} {input.QIIME} {input.DADA2} {input.RDP} {input.decipher} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''

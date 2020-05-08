@@ -12,7 +12,9 @@ def vsearch_trim_input():
 ### Keep only once indentical sequences and keep score of their prevalence.
 rule vsearch_dereplicate_samples:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         vsearch_trim_input()
     output:
@@ -47,7 +49,9 @@ rule merge_all_in_one_fasta:
 ### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
 rule vsearch_derepicate_all:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         "vsearch/1c_derep/merged_all.fasta"
     output:
@@ -66,7 +70,9 @@ rule vsearch_derepicate_all:
 ### Pick clusters which will be the representative sequences
 rule vsearch_cluster:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         "vsearch/1c_derep/derep_merged_all.fasta"
     output:
@@ -92,7 +98,9 @@ rule vsearch_cluster:
 ### Detect chimera in representative sequences
 rule vsearch_chimera_detection:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         "vsearch/2_denoised/clustering/consout_min2.fasta"
     output:
@@ -117,7 +125,9 @@ rule vsearch_chimera_detection:
 ### Relabel sequences
 rule vsearch_derep_to_consesus_sequences :
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta"
     output:
@@ -139,7 +149,9 @@ rule vsearch_derep_to_consesus_sequences :
 ### Count the number of occurences of the representative sequences in the samples.
 rule vsearch_count_occurences :
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         samples = "vsearch/1c_derep/{sample}_derep.fasta",
         rep_seq = "vsearch/2_denoised/dna-sequences.fasta"
@@ -164,7 +176,9 @@ rule vsearch_count_occurences :
 ### Format count table from vsearch
 rule create_vsearch_count_table :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]
     input:
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
     output:

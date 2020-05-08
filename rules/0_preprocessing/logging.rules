@@ -4,6 +4,7 @@ from shutil import copyfile
 import sys
 import datetime
 import os
+import getpass
 
 try:
     pipeline_path 
@@ -32,4 +33,10 @@ if "--dryrun" not in sys.argv and "-n" not in sys.argv:
         copyfile(config["local_samples"], logging_folder+"/local_samples.tsv")
     if "sra_samples" in config.keys():
         copyfile(config["sra_samples"], logging_folder+"/sra_samples.tsv")
-
+    git_log_path = logging_folder + "/git.txt"
+    with open(git_log_path, "w") as devnull:
+        subprocess.run(args=["git -C " + workflow.basedir + " rev-parse HEAD"], shell=True, stdout=devnull)     
+    user_path = logging_folder + "/user.txt"
+    user_cred = getpass.getuser()
+    with open(user_path, "w") as f:
+        f.write(user_cred +"\n")

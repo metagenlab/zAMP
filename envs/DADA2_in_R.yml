@@ -3,9 +3,5 @@ channels:
  - conda-forge
  - bioconda
 dependencies:
-  - r-base
   - bioconductor-DADA2=1.12.1
-  - r-dplyr
-  - libgfortran
-  - ggplot
-  - r-tidyr
+

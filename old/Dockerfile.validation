@@ -1,0 +1,15 @@
+
+ARG VERSION
+ARG TEST_CPU
+
+FROM metagenlab/amplicon_pipeline:$VERSION
+
+#################### Run the pipeline to test it #####################
+## Recover input files
+RUN cp ${pipeline_folder}/data/validation_datasets/16S* ./ && \
+    cp ${pipeline_folder}/data/validation_datasets/ITS* ./
+
+## Run the pipeline to test it
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile 16S_config.yml all
+
+RUN snakemake --snakefile ${pipeline_folder}/Snakefile --cores $TEST_CPU --resources max_copy=4 --use-conda --conda-prefix /opt/conda/ --configfile ITS_config.yml all

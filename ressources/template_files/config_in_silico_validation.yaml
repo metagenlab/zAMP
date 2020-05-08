@@ -17,7 +17,8 @@ threeprime: 2 # Number of match at the 3' end for a hit to be considered
 
 
 ### Database used for taxonomic assignment
-tax_DB: ["ezbiocloud201805.201905"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
+tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/"
+tax_DB_name: [ezbiocloud201805.202005] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
 classifier: ["qiimerdp", "dada2rdp"]
 
 ### Processing for comparison of taxonomic assignment

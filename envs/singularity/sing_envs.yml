@@ -1,0 +1,14 @@
+sra-toolkit: docker://ncbi/sra-toolkit:2.9.4-1
+fastqc: docker://quay.io/biocontainers/fastqc:0.11.9--0
+multiqc: docker://quay.io/biocontainers/multiqc:1.7--py_4
+cutadapt: docker://metagenlab/amplicons_cutadapt:v.1.0
+pandaseq: docker://quay.io/biocontainers/pandaseq:2.11--2
+vsearch: docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0
+dada2: docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0
+r_utils: docker://metagenlab/amplicons_r_utils:v.1.0
+qiimerdp: docker://metagenlab/amplicons_qiime1_rdp:v.1.0
+qiime2: docker://qiime2/core:2020.2
+decipher: docker://metagenlab/amplicons_decipher:v.1.0
+rdptools: docker://quay.io/biocontainers/rdptools:2.0.3--0
+python27: docker://python:2.7
+picrust2: docker://quay.io/biocontainers/picrust2:2.3.0_b--py_0

@@ -27,6 +27,8 @@ rule print_primers_to_files :
 
 
 rule Extract_amplicon :
+    singularity:
+        singularity_envs["python27"]://metagenlab/amplicons_simluatepcr:v.1.0"
     input :
         "InSilico/PCR/Primers.fasta",
         "assembly_gz/{sample}.fna"
@@ -70,6 +72,8 @@ rule Extract_amplicon :
 rule cutadapt_trim_for_In_silico:
     conda:
         "../../envs/cutadapt.yml"
+    singularity:
+        singularity_envs["cutadapt"]
     input:
         raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
     output:
@@ -121,7 +125,9 @@ rule Insilico_merge_all_in_one_fasta:
 ### Again, dereplicate all identical sequences after merging.
 rule InSilico_derepicate_all:
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         "InSilico/1c_derep/merged_all.fasta"
     output:
@@ -142,7 +148,9 @@ rule InSilico_derepicate_all:
 
 rule InSilico_count_occurences :
     conda:
-        "../../envs/QIIME1.yml"
+        "../../envs/vsearch.yml"
+    singularity:
+        singularity_envs["vsearch"]
     input:
         samples = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
         rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
@@ -181,7 +189,9 @@ def list_samples_counts(wildcards):
 ### Format count table from InSilico
 rule create_InSilico_count_table :
     conda:
-        "../../envs/r_visualization.yml"
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]  
     input:
         count_table_samples = list_samples_counts
     output:
@@ -196,7 +206,9 @@ rule create_InSilico_count_table :
 ### Create a table to compare tax assignment
 rule In_silico_tax_compare:
     conda:
-        "../../envs/physeq.yml"
+        "../../envs/amplicons_r_utils.yml"
+    singularity:
+        singularity_envs["r_utils"]  
     input:
         count_table = "InSilico/2_denoised/count_table.txt",
         Metadata_table = "table_combined.tsv",

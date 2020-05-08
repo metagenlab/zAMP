@@ -1,0 +1,117 @@
+
+## Following : https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d. 
+### While based on different approaches, points a/b are being taken care of by our own methods in the main DB_processing.rules
+
+
+### C) plot inta taxon similarity
+rule Visualize_similarity_rdp: ## Generate a plot for intra taxa similarity. Very long to compute 
+    conda:
+        "../../envs/rdp_tools.yml"
+    singularity:
+        singularity_envs["rdptools"]
+    input:
+        tax = "{prefix}/RDP/ready4train_lineages.txt",
+        seqs = "{prefix}/RDP/ready4train_seqs.fasta",
+        rankfile = workflow.basedir + "/rules/DB_processing/scripts/RDP_rankfile.txt"
+    output:
+        "{prefix}/RDP/RDP_taxa_sim.fig",
+    log:
+        "{prefix}/log/RDP/RDP_taxa_sim.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Djava.awt.headless=true taxa-sim \
+        {input.tax} \
+        {input.seqs} \
+        {input.seqs} \
+        $(dirname {output[0]}) \
+        8 \
+        {input.rankfile} \
+        sab 2> {log}
+	    '''
+
+
+### D.1) Leave one sequence out test for accuracy testing
+rule Accuracy_seqs_testing_rdp:
+    conda:
+        "../../envs/rdp_tools.yml"
+    singularity:
+        singularity_envs["rdptools"]
+    input:
+        tax = "{prefix}/RDP/ready4train_lineages.txt",
+        seqs = "{prefix}/RDP/ready4train_seqs.fasta",
+    output:
+        "{prefix}/RDP/RDP_leave_seq_out_accuracy.txt",
+    log:
+        "{prefix}/log/RDP/RDP_leave_seq_out_accuracy.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Xmx30g loot \
+        -q {input.seqs} \
+        -s {input.seqs} \
+        -t {input.tax} \
+        -l 400 \
+        -o {output} 2> {log}
+	    '''
+
+
+### D.2) Leave one taxon out test for accuracy testing
+rule Accuracy_taxon_testing_rdp: 
+    conda:
+        "../../envs/rdp_tools.yml"
+    singularity:
+        singularity_envs["rdptools"]
+    input:
+        tax = "{prefix}/RDP/ready4train_lineages.txt",
+        seqs = "{prefix}/RDP/ready4train_seqs.fasta",
+    output:
+        "{prefix}/RDP/RDP_leave_tax_out_accuracy.txt",
+    log:
+        "{prefix}/log/RDP/RDP_leave_tax_out_accuracy.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Xmx30g loot -h \
+        -q {input.seqs} \
+        -s {input.seqs} \
+        -t {input.tax} \
+        -l 400 \
+        -o {output} 2> {log}
+	    '''
+
+
+### E) Cross-validate
+rule Cross_validate__rdp: 
+    conda:
+        "../../envs/rdp_tools.yml"
+    singularity:
+        singularity_envs["rdptools"]
+    input:
+        tax = "{prefix}/RDP/ready4train_lineages.txt",
+        seqs = "{prefix}/RDP/ready4train_seqs.fasta",
+    output:
+        "{prefix}/RDP/RDP_cross_validate.txt",
+    log:
+        "{prefix}/log/RPD/RDP_cross_validate.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Xmx30g crossvalidate \
+        -s {input.seqs} \
+        -t {input.tax} \
+        -l 400 \
+        -o {output} 2> {log}
+	    '''

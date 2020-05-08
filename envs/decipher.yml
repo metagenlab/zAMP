@@ -1,4 +1,4 @@
-name: barplots
+name: decipher
 channels:
  - conda-forge
  - bioconda
