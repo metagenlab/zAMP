@@ -65,7 +65,7 @@ rule Extract_amplicons:
         primer_reverse = config["reverse_primer"],
         length = config["length_max"]
     log:
-        "{prefix}/log/QIIME/DB_amp_seq.txt"
+        "{prefix}/logs/QIIME/DB_amp_seq.txt"
     threads :
         1
     shell :
@@ -110,7 +110,7 @@ rule Dereplicate_amplicons:
         fasta = "{prefix}/QIIME/DB_amp.fasta",
         uc = "{prefix}/QIIME/DB_amp.uc"
     log :
-        "{prefix}/log/QIIME/vsearch_dereplicate_ampli.log"
+        "{prefix}/logs/QIIME/vsearch_dereplicate_ampli.log"
     threads :
         1
     shell :
@@ -136,7 +136,7 @@ rule Derep_and_merge_taxonomy:
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
         problematic = "{prefix}/QIIME/problematic_taxa.txt"
     log :
-       "{prefix}/log/QIIME/derep_and_merge.log"
+       "{prefix}/logs/QIIME/derep_and_merge.log"
     params:
         numbers_species = config["numbers_species"],
         numbers_genus = config["numbers_genus"]
@@ -177,7 +177,7 @@ rule DADA2_prep_tax_db:
         King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
         Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     log:
-       "{prefix}/log/dada2rdp/DB_amp_taxonomy_dada2_prep.log"
+       "{prefix}/logs/dada2rdp/DB_amp_taxonomy_dada2_prep.log"
     threads:
         1
     script:
@@ -215,7 +215,7 @@ rule Preformat_for_cannonical_rdp:
     output:
         formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
     log:
-       "{prefix}/log/RDP/formatted_tax_table.log",
+       "{prefix}/logs/RDP/formatted_tax_table.log",
     threads:
         1
     script:
@@ -271,7 +271,7 @@ rule Train_rdp_classifier:
         formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
         properties = "{prefix}/RDP/rRNAClassifier.properties"
     log:
-       "{prefix}/log/RDP/RDP_train.log",
+       "{prefix}/logs/RDP/RDP_train.log",
     threads:
         1
     resources:
@@ -317,7 +317,7 @@ rule Decipher_prep_fasta:
     output:
         decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
     log:
-       "{prefix}/log/decipher/DB_amp_taxonomy_decipher_fasta.log"
+       "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_fasta.log"
     threads:
         1
     script:
@@ -335,7 +335,7 @@ rule Decipher_train_tax:
         trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
         training_plot = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
     log:
-       "{prefix}/log/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+       "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
     threads:
         1
     script:

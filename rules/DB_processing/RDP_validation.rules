@@ -16,7 +16,7 @@ rule Visualize_similarity_rdp: ## Generate a plot for intra taxa similarity. Ver
     output:
         "{prefix}/RDP/RDP_taxa_sim.fig",
     log:
-        "{prefix}/log/RDP/RDP_taxa_sim.log",
+        "{prefix}/logs/RDP/RDP_taxa_sim.log",
     threads:
         1
     resources:
@@ -46,7 +46,7 @@ rule Accuracy_seqs_testing_rdp:
     output:
         "{prefix}/RDP/RDP_leave_seq_out_accuracy.txt",
     log:
-        "{prefix}/log/RDP/RDP_leave_seq_out_accuracy.log",
+        "{prefix}/logs/RDP/RDP_leave_seq_out_accuracy.log",
     threads:
         1
     resources:
@@ -74,7 +74,7 @@ rule Accuracy_taxon_testing_rdp:
     output:
         "{prefix}/RDP/RDP_leave_tax_out_accuracy.txt",
     log:
-        "{prefix}/log/RDP/RDP_leave_tax_out_accuracy.log",
+        "{prefix}/logs/RDP/RDP_leave_tax_out_accuracy.log",
     threads:
         1
     resources:
@@ -102,7 +102,7 @@ rule Cross_validate__rdp:
     output:
         "{prefix}/RDP/RDP_cross_validate.txt",
     log:
-        "{prefix}/log/RPD/RDP_cross_validate.log",
+        "{prefix}/logs/RPD/RDP_cross_validate.log",
     threads:
         1
     resources:
