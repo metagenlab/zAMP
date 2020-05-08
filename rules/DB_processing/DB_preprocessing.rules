@@ -11,16 +11,13 @@ rule Back_up_master:
         seqs = "{prefix}/master/original_seqs.fasta",
         tax = "{prefix}/master/original.tax_DB_path",
         config = "{prefix}/config_DB.yml"
-    log :
-        "{prefix}/DB_build.log",
     threads :
         1
     shell :
         '''
         cp {input.seqs} {output.seqs} && \
         cp {input.tax} {output.tax} && \
-        cp {input.config} {output.config} && \
-        echo "$(uname -a) \n {input.seqs} \n {input.tax}"> {log} 
+        cp {input.config} {output.config}
         '''
 
 rule Hash_master_files:
@@ -70,6 +67,8 @@ rule Extract_amplicons:
         primer_forward = config["forward_primer"],
         primer_reverse = config["reverse_primer"],
         length = config["length_max"]
+    log:
+        "{prefix}/" + logging_folder + "QIIME/DB_amp_seq.txt"
     threads :
         1
     shell :
@@ -79,7 +78,8 @@ rule Extract_amplicons:
         --p-f-primer {params[primer_forward]} \
         --p-r-primer {params[primer_reverse]} \
         --p-trunc-len {params[length]} \
-        --o-reads {output} 
+        --o-reads {output} \
+        --verbose 2> {log}
         '''
 
 
@@ -113,7 +113,7 @@ rule Dereplicate_amplicons:
         fasta = "{prefix}/QIIME/DB_amp.fasta",
         uc = "{prefix}/QIIME/log/DB_amp.uc"
     log :
-        "{prefix}/QIIME/log/vsearch_dereplicate_ampli.log"
+        "prefix/" + logging_folder + "QIIME/vsearch_dereplicate_ampli.log"
     threads :
         1
     shell :
@@ -139,7 +139,7 @@ rule Derep_and_merge_taxonomy:
         all = "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
         problematic = "{prefix}/QIIME/log/probematic_taxa.txt"
     log :
-       "{prefix}/QIIME/log/derep_and_merge.log"
+       "{prefix}/" + logging_folder + "QIIME/derep_and_merge.log"
     params:
         numbers_species = config["numbers_species"],
         numbers_genus = config["numbers_genus"]
@@ -180,7 +180,7 @@ rule DADA2_prep_tax_db:
         King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
         Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     log:
-        "{prefix}/dada2rdp/log/DB_amp_taxonomy_dada2_prep.log"
+        "{prefix}/" + logging_folder + "dada2rdp/DB_amp_taxonomy_dada2_prep.log"
     threads:
         1
     script:
@@ -218,7 +218,7 @@ rule Preformat_for_cannonical_rdp:
     output:
         formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
     log:
-      "{prefix}/RDP/log/formatted_tax_table.log",
+       "{prefix}/" + logging_folder + "RDP/formatted_tax_table.log",
     threads:
         1
     script:
@@ -277,7 +277,7 @@ rule Train_rdp_classifier:
         formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
         properties = "{prefix}/RDP/rRNAClassifier.properties"
     log:
-      "{prefix}/RDP/log/RDP_train.log",
+       "{prefix}/" + logging_folder + "RDP/RDP_train.log",
     threads:
         1
     resources:
@@ -323,7 +323,7 @@ rule Decipher_prep_fasta:
     output:
         decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
     log:
-        "{prefix}/decipher/DB_amp_taxonomy_decipher_fasta.log"
+        "{prefix}/" + logging_folder + "decipher/DB_amp_taxonomy_decipher_fasta.log"
     threads:
         1
     script:
@@ -341,7 +341,7 @@ rule Decipher_train_tax:
         trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
         training_plot = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
     log:
-        "{prefix}/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+        "{prefix}/" + logging_folder + "decipher/DB_amp_taxonomy_decipher_tax_tree.log",
     threads:
         1
     script:
@@ -362,7 +362,6 @@ rule Hash_Decipher:
 
 
 ## Generate a hash from all relevant files to insure that we always work with the same reference databases
-
 rule hash_global_DB:
     input:
         master = "{prefix}/master/original.hash",
