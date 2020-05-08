@@ -5,8 +5,8 @@ rule QIIME1_assign_taxonomy_rdp:
        singularity_envs["qiimerdp"]      
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
-        config["tax_DB_path"] + "{tax_DB}/DB_amp.fasta",
-        config["tax_DB_path"] + "{tax_DB}/DB_amp_taxonomy.txt"
+        config["tax_DB_path"] + "{tax_DB}/QIIME/DB_amp.fasta",
+        config["tax_DB_path"] + "{tax_DB}/QIIME/DB_amp_taxonomy.txt"
     output:
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt",
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.log"
@@ -38,9 +38,9 @@ rule dada2_assign_taxonomy_rdp:
         singularity_envs["dada2"]
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
-        King_to_Species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Species.txt",
-        King_to_Genus = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
-        Genus_species = config["tax_DB_path"]  + "{tax_DB}/DADA2_DB_amp_taxonomy_Genus_species.txt"
+        King_to_Species = config["tax_DB_path"]  + "{tax_DB}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = config["tax_DB_path"]  + "{tax_DB}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species = config["tax_DB_path"]  + "{tax_DB}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     output:
         tax = "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt",
     log:
@@ -53,36 +53,13 @@ rule dada2_assign_taxonomy_rdp:
         "scripts/dada2_rdp_tax_assign.R"
 
 
-
-rule decipher_tax_assign:
-    conda:
-        "../../envs/decipher.yml"
-    singularity:
-        singularity_envs["decipher"]
-    input:
-        trained_tax = config["tax_DB_path"] + "{tax_DB}/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
-        seq = "{denoiser}/2_denoised/dna-sequences.fasta",
-    output:
-        tax = "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt",
-        tax_plot = "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.pdf"
-    log:
-      logging_folder + "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.log"
-    threads:
-        4
-    resources:
-        mem_mb=30000
-    script:
-        "scripts/decipher_assign_tax.R"
-
-
-
 rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
     singularity:
         singularity_envs["rdptools"]
     input:
-       trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP_train_file/rRNAClassifier.properties",
+       trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP/rRNAClassifier.properties",
        query_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
     output:
         "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
@@ -119,4 +96,28 @@ rule rdp_format_output:
         mem_mb=30000
     script:
         "scripts/format_RDP_output.R"
+
+
+
+rule decipher_tax_assign:
+    conda:
+        "../../envs/decipher.yml"
+    singularity:
+        singularity_envs["decipher"]
+    input:
+        trained_tax = config["tax_DB_path"] + "{tax_DB}/decipher/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
+        seq = "{denoiser}/2_denoised/dna-sequences.fasta",
+    output:
+        tax = "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt",
+        tax_plot = "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.pdf"
+    log:
+      logging_folder + "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.log"
+    threads:
+        4
+    resources:
+        mem_mb=30000
+    script:
+        "scripts/decipher_assign_tax.R"
+
+
 
