@@ -19,7 +19,7 @@ rule vsearch_dereplicate_samples:
         vsearch_trim_input()
     output:
         temp("vsearch/1c_derep/{sample}_derep.fasta"),
-        "vsearch/1c_derep/{sample}_derep.uc",
+        temp("vsearch/1c_derep/{sample}_derep.uc"),
     log:
          logging_folder + "vsearch/1b_derep/{sample}_derep.txt"
     threads:
