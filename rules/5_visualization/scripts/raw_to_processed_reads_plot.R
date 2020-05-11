@@ -67,9 +67,10 @@ theme_set(theme_bw())
         ggtitle(paste("Reads counts overall")) +
         scale_x_discrete(drop = TRUE) + # Keep all groups, included the ones with values. Alternative : (drop = FALSE)
         scale_y_continuous(labels = scales::comma, limits = c(0,smax)) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) #+
+        theme(axis.text.x = element_text(angle = 90, vjust=0.5, size = 7)) #+
         # guides(fill=guide_legend(title=filling_column))
 
 
     ### Save it
-        ggsave(overall_reads_barplot, filename = reads_plot_with_filtered, width = 10, height = 5)
+        w <- 7 + 0.07 * (length(unique(raw_to_filtered_reads_stats[[x_axis_column]]))) 
+        ggsave(overall_reads_barplot, filename = reads_plot_with_filtered, width = w, height = 5)
