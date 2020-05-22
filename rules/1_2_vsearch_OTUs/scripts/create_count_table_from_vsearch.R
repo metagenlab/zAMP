@@ -24,7 +24,7 @@
     colnames(otus_table) <- c("Sample", "V1", "V2")
 
     for (xx in count_table_samples){
-        sample <- gsub("_count_table.txt", "", basename(xx))
+        sample <- gsub("_count_table.tsv", "", basename(xx))
         table <- read.table(file = xx, sep="\t", as.is=T, header=F)
         table <- cbind("Sample"=sample, table)
         otus_table <- rbind(otus_table, table)

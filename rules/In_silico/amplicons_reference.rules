@@ -28,7 +28,7 @@ rule vsearch_count_occurences_for_QC :
     input:
         uc = "vsearch/1c_derep/{sample}_derep.uc"
     output:
-        count_table = "QualityControl/vsearch/{sample}/count_table.txt"
+        count_table = "QualityControl/vsearch/{sample}/count_table.tsv"
     script:
         "scripts/extract_vsearch_counts.R"
 
@@ -54,7 +54,7 @@ rule export_DADA2_QuerySequences :
         no_chim = "QualityControl/DADA2/{sample}/dna-sequences_no_chim.rds",
         length_filtered = "QualityControl/DADA2/{sample}/dna-sequences_long_names.rds",
         rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta",
-        count_table = "QualityControl/DADA2/{sample}/count_table.txt",
+        count_table = "QualityControl/DADA2/{sample}/count_table.tsv",
         length_histo = "QualityControl/DADA2/{sample}/merged_reads_length.png"
     params:
         merged_min_length = config["merged_min_length"],
@@ -205,7 +205,7 @@ rule mismatch_table_per_sample :
         singularity_envs["r_utils"]  
     input :
         mismatch_tables_path =  "QualityControl/{denoiser}_{sample}_export/results.tsv",
-        count_table_path = "QualityControl/{denoiser}/{sample}/count_table.txt"
+        count_table_path = "QualityControl/{denoiser}/{sample}/count_table.tsv"
     output :
         merged_mismatch_table_path = "QualityControl/{denoiser}/export_{sample}/with_counts.tsv",
         missmatch_plot_path = "QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",

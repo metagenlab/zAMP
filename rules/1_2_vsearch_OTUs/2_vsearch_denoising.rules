@@ -131,7 +131,7 @@ rule vsearch_derep_to_consesus_sequences :
     input:
         "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta"
     output:
-        "vsearch/2_denoised/dna-sequences.fasta",
+        report("vsearch/2_denoised/dna-sequences.fasta"),
     log:
          logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
     threads:
@@ -156,9 +156,9 @@ rule vsearch_count_occurences :
         samples = "vsearch/1c_derep/{sample}_derep.fasta",
         rep_seq = "vsearch/2_denoised/dna-sequences.fasta"
     output:
-        "vsearch/2_denoised/countOTUs/{sample}_count_table.txt",
+        "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv",
     log:
-         logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
+         logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv"
     threads:
         1
     shell:
@@ -180,11 +180,11 @@ rule create_vsearch_count_table :
     singularity:
         singularity_envs["r_utils"]
     input:
-        count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
+        count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.tsv", sample=list(read_naming.keys()))
     output:
-        count_table = "vsearch/2_denoised/count_table.txt"
+        count_table = report("vsearch/2_denoised/count_table.tsv")
     log:
-        logging_folder +  "vsearch/2_denoised/count_table.txt"
+        logging_folder +  "vsearch/2_denoised/count_table.tsv"
     script:
         "scripts/create_count_table_from_vsearch.R"
 

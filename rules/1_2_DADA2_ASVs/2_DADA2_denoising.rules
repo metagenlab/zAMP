@@ -46,8 +46,8 @@ rule DADA2_learn_errors:
     output:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
-        error_profile_F_plot = "DADA2/2_denoised/{RUN}/error_profile_F_plot.png",
-        error_profile_R_plot = "DADA2/2_denoised/{RUN}/error_profile_R_plot.png",
+        error_profile_F_plot =  report("DADA2/2_denoised/{RUN}/error_profile_F_plot.png", category = "DADA2 QC"),
+        error_profile_R_plot = report("DADA2/2_denoised/{RUN}/error_profile_R_plot.png", category = "DADA2 QC"),
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_learn_errors.txt"
     threads:
@@ -111,9 +111,9 @@ rule DADA2_merge_runs_filter_chim:
     output:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
-        rep_seqs = "DADA2/2_denoised/dna-sequences.fasta",
-        count_table = "DADA2/2_denoised/count_table.txt",
-        length_histo = "DADA2/2_denoised/merged_reads_length.png"
+        rep_seqs = report("DADA2/2_denoised/dna-sequences.fasta",category = "DADA2 QC"),
+        count_table = report("DADA2/2_denoised/count_table.tsv",category = "DADA2 QC"),
+        length_histo = report("DADA2/2_denoised/merged_reads_length.png", category = "DADA2 QC")
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"
     params:
@@ -136,7 +136,7 @@ rule DADA2_filter_stats:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
     output:
-        filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
+        filtering_stats = report("DADA2/2_denoised/DADA2_denoising_stats.tsv", category = "DADA2 QC")
     log:
         logging_folder + "DADA2/2_denoised/DADA2_denoising_stats.txt"
     threads:
@@ -176,7 +176,7 @@ rule create_filtered_reads_multiqc_report:
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
        expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(read_naming.keys()))
     output:
-        "QC/multiqc_DADA2_filtered_reads_report.html"
+        report("QC/multiqc_DADA2_filtered_reads_report.html", category = "DADA2 QC")
     log:
         logging_folder + "QC/multiqc_filtered_reads_report.txt"
 #    params:

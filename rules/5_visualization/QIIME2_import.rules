@@ -4,7 +4,7 @@ rule create_biom_from_count_table :
     singularity:
         singularity_envs["r_utils"]  
     input:
-        count_table = "{prefix}/count_table.txt"
+        count_table = "{prefix}/count_table.tsv"
     output:
         biom_count = "{prefix}/otu_biom.biom"
     log:

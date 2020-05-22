@@ -26,6 +26,7 @@ include: "rules/5_visualization/General_plotting.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/PICRUSt2/picrust.rules"
 
+report: "report.rst"
 
 
 ## Input/output
