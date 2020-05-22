@@ -25,7 +25,7 @@ rule physeq_initial_import:
         rep_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
         tax_tree = "{denoiser}/2_denoised/tree.nwk"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds"
+        phyloseq_object = report("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds", caption="report/physeq.rst", category="Physeq objects", subcategory="Initial import"),
     params:
         viz_replace_empty_tax = config["viz_replace_empty_tax"]
     log:
@@ -42,11 +42,11 @@ rule physeq_export_object:
     input:
         phyloseq_object = "{prefix1}.rds"
     output:
-        tree_path = "{prefix1}_export/tree.tree",
-        meta_path = "{prefix1}_export/metadata_table.tsv",
-        taxonomy_path = "{prefix1}_export/dna-sequences_tax_assignments.txt",
-        OTU_path = "{prefix1}_export/count_table.txt",
-        rep_seq_path = "{prefix1}_export/dna-sequences.fasta",
+        tree_path = report("{prefix1}_export/tree.tree", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        meta_path = report("{prefix1}_export/metadata_table.tsv", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        taxonomy_path = report("{prefix1}_export/dna-sequences_tax_assignments.txt", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        OTU_path = report("{prefix1}_export/count_table.txt", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        rep_seq_path = report("{prefix1}_export/dna-sequences.fasta", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
     log:
         logging_folder + "{prefix1}_export/export.txt",
     script:
@@ -102,7 +102,7 @@ rule physeq_new_tree:
         new_tree = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
         phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"
+        phyloseq_object = report("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds", caption="report/physeq.rst", category="Physeq objects", subcategory="Updated after filtration"),
     log:
         logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
     script:

@@ -131,7 +131,7 @@ rule vsearch_derep_to_consesus_sequences :
     input:
         "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta"
     output:
-        "vsearch/2_denoised/dna-sequences.fasta",
+        report("vsearch/2_denoised/dna-sequences.fasta", caption="report/vsearch_output.rst", category="vsearch", subcategory="Output")
     log:
          logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
     threads:
@@ -182,7 +182,7 @@ rule create_vsearch_count_table :
     input:
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.txt", sample=list(read_naming.keys()))
     output:
-        count_table = "vsearch/2_denoised/count_table.txt"
+        count_table = report("vsearch/2_denoised/count_table.txt", caption="report/vsearch_output.rst", category="vsearch", subcategory="Output")
     log:
         logging_folder +  "vsearch/2_denoised/count_table.txt"
     script:
