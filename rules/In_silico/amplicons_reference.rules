@@ -2,7 +2,7 @@
 rule Import_ReferenceSequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         trimmed_reads = "InSilico/2_denoised/dna-sequences.fasta"
@@ -23,7 +23,7 @@ rule Import_ReferenceSequences :
 rule vsearch_count_occurences_for_QC :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         uc = "vsearch/1c_derep/{sample}_derep.uc"
@@ -46,7 +46,7 @@ def get_DADA2_samples_path(sample):
 rule export_DADA2_QuerySequences :
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input :
         dada2_rds = lambda wildcards: get_DADA2_samples_path(wildcards.sample)
@@ -67,7 +67,7 @@ rule export_DADA2_QuerySequences :
 rule Import_Vsearch_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         "vsearch/1c_derep/{sample}_derep.fasta",
@@ -87,7 +87,7 @@ rule Import_Vsearch_QuerySequences :
 rule Import_DADA2_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta"
@@ -107,7 +107,7 @@ rule Import_DADA2_QuerySequences :
 rule filter_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
@@ -133,7 +133,7 @@ rule filter_QuerySequences :
 rule  Quality_Control_raw :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
@@ -153,7 +153,7 @@ rule  Quality_Control_raw :
 rule  Quality_Control_denoised :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         Amplicons = "QualityControl/Amplicons_reference_seq.qza",
@@ -175,7 +175,7 @@ rule  Quality_Control_denoised :
 rule  Export_quality_Control_raw :
     conda :
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         "QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv"
@@ -201,7 +201,7 @@ def get_RUN(sample):
 rule mismatch_table_per_sample :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input :
         mismatch_tables_path =  "QualityControl/{denoiser}_{sample}_export/results.tsv",
@@ -221,7 +221,7 @@ rule mismatch_table_per_sample :
 rule Compare_mismatch_per_run :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input :
         mismatch_tables_path = lambda wildcards : expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
@@ -238,7 +238,7 @@ rule Compare_mismatch_per_run :
 rule Compare_mismatch_all :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input :
         mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = all_samples[config["run_column"]])

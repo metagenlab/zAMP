@@ -3,7 +3,7 @@
 rule PANDAseq_trim_pair_reads:
     conda:
         "../../envs/PANDAseq.yml"
-    singularity:
+    container:
         singularity_envs["pandaseq"]
     input:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",
@@ -44,7 +44,7 @@ rule PANDAseq_trim_pair_reads:
 rule PANDAseq_pair_reads:
     conda:
         "../../envs/PANDAseq.yml"
-    singularity:
+    container:
         singularity_envs["pandaseq"]
     input:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",

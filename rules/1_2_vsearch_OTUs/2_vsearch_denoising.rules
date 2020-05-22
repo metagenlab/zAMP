@@ -13,7 +13,7 @@ def vsearch_trim_input():
 rule vsearch_dereplicate_samples:
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         vsearch_trim_input()
@@ -50,7 +50,7 @@ rule merge_all_in_one_fasta:
 rule vsearch_derepicate_all:
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         "vsearch/1c_derep/merged_all.fasta"
@@ -71,7 +71,7 @@ rule vsearch_derepicate_all:
 rule vsearch_cluster:
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         "vsearch/1c_derep/derep_merged_all.fasta"
@@ -99,7 +99,7 @@ rule vsearch_cluster:
 rule vsearch_chimera_detection:
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         "vsearch/2_denoised/clustering/consout_min2.fasta"
@@ -126,7 +126,7 @@ rule vsearch_chimera_detection:
 rule vsearch_derep_to_consesus_sequences :
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta"
@@ -150,7 +150,7 @@ rule vsearch_derep_to_consesus_sequences :
 rule vsearch_count_occurences :
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         samples = "vsearch/1c_derep/{sample}_derep.fasta",
@@ -177,7 +177,7 @@ rule vsearch_count_occurences :
 rule create_vsearch_count_table :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]
     input:
         count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.tsv", sample=list(read_naming.keys()))

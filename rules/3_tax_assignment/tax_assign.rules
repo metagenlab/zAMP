@@ -1,7 +1,7 @@
 rule QIIME1_assign_taxonomy_rdp:
     conda:
         "../../envs/QIIME1.yml"
-    singularity:
+    container:
        singularity_envs["qiimerdp"]      
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -34,7 +34,7 @@ rule QIIME1_assign_taxonomy_rdp:
 rule dada2_assign_taxonomy_rdp:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -56,7 +56,7 @@ rule dada2_assign_taxonomy_rdp:
 rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
-    singularity:
+    container:
         singularity_envs["rdptools"]
     input:
        trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP/rRNAClassifier.properties",
@@ -82,7 +82,7 @@ rule rdp_classify:
 rule rdp_format_output:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
@@ -102,7 +102,7 @@ rule rdp_format_output:
 rule decipher_tax_assign:
     conda:
         "../../envs/decipher.yml"
-    singularity:
+    container:
         singularity_envs["decipher"]
     input:
         trained_tax = config["tax_DB_path"] + "{tax_DB}/decipher/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",

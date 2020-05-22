@@ -34,7 +34,7 @@ rule Hash_master_files:
 rule Import_DB:
     conda:
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         "{prefix}/master/original_seqs.fasta"
@@ -54,7 +54,7 @@ rule Import_DB:
 rule Extract_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input:
         "{prefix}/QIIME/DB_seq.qza"
@@ -83,7 +83,7 @@ rule Extract_amplicons:
 rule Export_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         "{prefix}/QIIME/DB_amp_seq.qza"
@@ -102,7 +102,7 @@ rule Export_amplicons:
 rule Dereplicate_amplicons:
     conda:
         "../../envs/QIIME2-2020.02.yml"
-    singularity:
+    container:
         singularity_envs["qiime2"] 
     input :
         "{prefix}/QIIME/dna-sequences.fasta"
@@ -126,7 +126,7 @@ rule Dereplicate_amplicons:
 rule Derep_and_merge_taxonomy:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input :
         tax = "{prefix}/master/original_tax.txt",
@@ -167,7 +167,7 @@ rule Hash_derep_tax:
 rule DADA2_prep_tax_db:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]
     input:
         ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
@@ -207,7 +207,7 @@ rule Hash_DADA2:
 rule Preformat_for_cannonical_rdp:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
@@ -225,7 +225,7 @@ rule Preformat_for_cannonical_rdp:
 rule Format_rdp_lineages:
     conda:
         "../../envs/Python2.yml"
-    singularity:
+    container:
         singularity_envs["python27"] 
     input:
         table = "{prefix}/RDP/formatted_tax_table.tsv",
@@ -243,7 +243,7 @@ rule Format_rdp_lineages:
 rule Format_rdp_add_lineages:
     conda:
         "../../envs/Python2.yml"
-    singularity:
+    container:
         singularity_envs["python27"] 
     input:
         taxonomy = "{prefix}/RDP/formatted_tax_table.tsv",
@@ -262,7 +262,7 @@ rule Format_rdp_add_lineages:
 rule Train_rdp_classifier:
     conda:
         "../../envs/rdp_tools.yml"
-    singularity:
+    container:
         singularity_envs["rdptools"]
     input:
        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
@@ -309,7 +309,7 @@ rule Hash_RDP:
 rule Decipher_prep_fasta:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
@@ -327,7 +327,7 @@ rule Decipher_prep_fasta:
 rule Decipher_train_tax:
     conda:
         "../../envs/decipher.yml"
-    singularity:
+    container:
         singularity_envs["decipher"]
     input:
         decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta"
