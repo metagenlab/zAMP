@@ -3,7 +3,7 @@
 rule assess_quality_paired_raw_reads_with_fastqc:
     conda:
         "../../envs/FastQC.yml"
-    singularity:
+    container:
         singularity_envs["fastqc"]
     input:
         "raw_reads/{sample}_R1.fastq.gz",
@@ -24,13 +24,13 @@ rule assess_quality_paired_raw_reads_with_fastqc:
 rule create_per_run_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
-    singularity:
+    container:
         singularity_envs["multiqc"]
     input:
       lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
       lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
     output:
-        "QC/{RUN}_multiqc_raw_reads_report.html",
+        report("QC/{RUN}_multiqc_raw_reads_report.html", category = "Sequencing QC"),
         "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt",
     log:
         logging_folder + "QC/{RUN}_multiqc_raw_reads_report.txt"
@@ -55,12 +55,12 @@ def sample_list():
 rule create_overall_raw_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
-    singularity:
+    container:
         singularity_envs["multiqc"]
     input:
        sample_list()
     output:
-        "QC/multiqc_raw_reads_report.html",
+        report("QC/multiqc_raw_reads_report.html", category = "Sequencing QC"),
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt",
     log:
         logging_folder + "QC/multiqc_raw_reads_report.txt"

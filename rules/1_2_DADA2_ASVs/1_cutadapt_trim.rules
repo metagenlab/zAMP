@@ -3,7 +3,7 @@
 rule cutadapt_trim_for_DADA2:
     conda:
         "../../envs/cutadapt.yml"
-    singularity:
+    container:
         singularity_envs["cutadapt"]
     input:
         R1_raw_reads = "raw_reads/{sample}_R1.fastq.gz",

@@ -13,7 +13,7 @@ def DADA2_trim_input():
 rule DADA2_q_filtering:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         DADA2_trim_input()
@@ -38,7 +38,7 @@ rule DADA2_q_filtering:
 rule DADA2_learn_errors:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         q_score_filtered_F = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
@@ -46,8 +46,8 @@ rule DADA2_learn_errors:
     output:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
-        error_profile_F_plot = "DADA2/2_denoised/{RUN}/error_profile_F_plot.png",
-        error_profile_R_plot = "DADA2/2_denoised/{RUN}/error_profile_R_plot.png",
+        error_profile_F_plot =  report("DADA2/2_denoised/{RUN}/error_profile_F_plot.png", category = "DADA2 QC"),
+        error_profile_R_plot = report("DADA2/2_denoised/{RUN}/error_profile_R_plot.png", category = "DADA2 QC"),
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_learn_errors.txt"
     threads:
@@ -59,7 +59,7 @@ rule DADA2_learn_errors:
 rule DADA2_infer_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         q_score_filtered_F = "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
@@ -85,7 +85,7 @@ rule DADA2_infer_ASV:
 rule DADA2_merge_sample_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         infer_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
@@ -104,16 +104,16 @@ rule DADA2_merge_sample_ASV:
 rule DADA2_merge_runs_filter_chim:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         seq_tab = expand("DADA2/2_denoised/{RUN}/run_seq_tab.rds", RUN=list(set(all_samples[config["run_column"]])))
     output:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
-        rep_seqs = "DADA2/2_denoised/dna-sequences.fasta",
-        count_table = "DADA2/2_denoised/count_table.txt",
-        length_histo = "DADA2/2_denoised/merged_reads_length.png"
+        rep_seqs = report("DADA2/2_denoised/dna-sequences.fasta",category = "DADA2 QC"),
+        count_table = report("DADA2/2_denoised/count_table.tsv",category = "DADA2 QC"),
+        length_histo = report("DADA2/2_denoised/merged_reads_length.png", category = "DADA2 QC")
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"
     params:
@@ -128,7 +128,7 @@ rule DADA2_merge_runs_filter_chim:
 rule DADA2_filter_stats:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]
     input:
         q_filtering_stats = expand("DADA2/1b_q_score_filtered_paired/{sample}_q_score_filtering_stats.rds", sample = all_samples.index.values),
@@ -136,7 +136,7 @@ rule DADA2_filter_stats:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
     output:
-        filtering_stats = "DADA2/2_denoised/DADA2_denoising_stats.tsv",
+        filtering_stats = report("DADA2/2_denoised/DADA2_denoising_stats.tsv", category = "DADA2 QC")
     log:
         logging_folder + "DADA2/2_denoised/DADA2_denoising_stats.txt"
     threads:
@@ -151,7 +151,7 @@ rule DADA2_filter_stats:
 rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
         "../../envs/FastQC.yml"
-    singularity:
+    container:
         singularity_envs["fastqc"]
     input:
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
@@ -169,14 +169,14 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
 rule create_filtered_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
-    singularity:
+    container:
         singularity_envs["multiqc"]
     input:
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(read_naming.keys())),
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
        expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(read_naming.keys()))
     output:
-        "QC/multiqc_DADA2_filtered_reads_report.html"
+        report("QC/multiqc_DADA2_filtered_reads_report.html", category = "DADA2 QC")
     log:
         logging_folder + "QC/multiqc_filtered_reads_report.txt"
 #    params:

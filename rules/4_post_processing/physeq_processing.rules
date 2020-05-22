@@ -16,10 +16,10 @@ def rafe_value_fct(wildcards):
 rule physeq_initial_import:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
-        count_table = "{denoiser}/2_denoised/count_table.txt",
+        count_table = "{denoiser}/2_denoised/count_table.tsv",
         Metadata_table = config["local_samples"],
         taxonomy_table = "{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
         rep_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -37,16 +37,16 @@ rule physeq_initial_import:
 rule physeq_export_object:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         phyloseq_object = "{prefix1}.rds"
     output:
-        tree_path = "{prefix1}_export/tree.tree",
-        meta_path = "{prefix1}_export/metadata_table.tsv",
-        taxonomy_path = "{prefix1}_export/dna-sequences_tax_assignments.txt",
-        OTU_path = "{prefix1}_export/count_table.txt",
-        rep_seq_path = "{prefix1}_export/dna-sequences.fasta",
+        tree_path = report("{prefix1}_export/tree.tree"),
+        meta_path = report("{prefix1}_export/metadata_table.tsv"),
+        taxonomy_path = report("{prefix1}_export/dna-sequences_tax_assignments.txt"),
+        OTU_path = report("{prefix1}_export/count_table.tsv"),
+        rep_seq_path = report("{prefix1}_export/dna-sequences.fasta"),
     log:
         logging_folder + "{prefix1}_export/export.txt",
     script:
@@ -57,7 +57,7 @@ rule physeq_export_object:
 rule physeq_tax_filtering:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds"
@@ -77,7 +77,7 @@ rule physeq_tax_filtering:
 rule physeq_rarefy:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/norarefaction/no_collapse/base.rds"
@@ -96,13 +96,13 @@ rule physeq_rarefy:
 rule physeq_new_tree:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         new_tree = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
         phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds"
+        phyloseq_object = report("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds")
     log:
         logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
     script:
@@ -113,12 +113,12 @@ rule physeq_new_tree:
 rule melt_Phyloseq_object:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
     output:
-        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv"
+        report("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv")
     log:
         logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
     script:
@@ -129,7 +129,7 @@ rule melt_Phyloseq_object:
 rule Phyloseq_collapse_taxa:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds"
@@ -146,10 +146,10 @@ rule Phyloseq_collapse_taxa:
 rule transpose_and_meta_count_table:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
-        count_table = "{prefix}/count_table.txt",
+        count_table = "{prefix}/count_table.tsv",
         meta = "{prefix}/metadata_table.tsv"
     output:
         transposed_table = "{prefix}/count_table_transposed.txt",
@@ -165,7 +165,7 @@ rule transpose_and_meta_count_table:
 rule physeq_filter_norm_transf:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         phyloseq_object = "{prefix}.rds"

@@ -2,6 +2,9 @@
 import re
 import yaml
 import os
+from snakemake.utils import min_version
+
+min_version("5.14")
 
 ## When using singularity
 if "--use-singularity" in sys.argv:    
@@ -26,6 +29,7 @@ include: "rules/5_visualization/General_plotting.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/PICRUSt2/picrust.rules"
 
+report: "report.rst"
 
 
 ## Input/output
