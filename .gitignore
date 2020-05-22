@@ -328,3 +328,4 @@ data/unite201902/Decipher_DB_amp_taxonomy_decipher_trained_plot.pdf
 data/unite201902/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds
 data/unite201902/Decipher_DB_amp_taxonomy_decipher.fasta
 data/unite201902/Readme.Md
+.snakemake/log/2020-05-22T155000.555653.snakemake.log
