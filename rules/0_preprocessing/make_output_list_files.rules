@@ -11,7 +11,7 @@ MultiQC.append("QC/multiqc_raw_reads_report.html")
 
 #### Light pipeline output
 light_output = expand("{denoiser}/2_denoised/dna-sequences.fasta", denoiser = config["denoiser"])
-light_output.append(expand("{denoiser}/2_denoised/count_table.txt", denoiser = config["denoiser"]))
+light_output.append(expand("{denoiser}/2_denoised/count_table.tsv", denoiser = config["denoiser"]))
 light_output.append(expand("{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.qzv", classifier = config["classifier"], denoiser = config["denoiser"], tax_DB = config["tax_DB_name"]))
 
 #### DADA2 stat table

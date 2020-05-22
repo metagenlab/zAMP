@@ -1,14 +1,18 @@
 rule QIIME1_assign_taxonomy_rdp:
     conda:
         "../../envs/QIIME1.yml"
-    singularity:
+    container:
        singularity_envs["qiimerdp"]      
     input:
         "{denoiser}/2_denoised/dna-sequences.fasta",
         config["tax_DB_path"] + "{tax_DB}/QIIME/DB_amp.fasta",
         config["tax_DB_path"] + "{tax_DB}/QIIME/DB_amp_taxonomy.txt"
     output:
+<<<<<<< HEAD
         report("{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="Qiime_rdp_{tax_DB}"),
+=======
+        report("{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt"),
+>>>>>>> master
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.log"
     log:
         logging_folder + "{denoiser}/3_classified/qiime_rdp_{tax_DB}/dna-sequences_tax_assignments_log.txt"
@@ -34,7 +38,7 @@ rule QIIME1_assign_taxonomy_rdp:
 rule dada2_assign_taxonomy_rdp:
     conda:
         "../../envs/DADA2_in_R.yml"
-    singularity:
+    container:
         singularity_envs["dada2"]
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
@@ -42,7 +46,11 @@ rule dada2_assign_taxonomy_rdp:
         King_to_Genus = config["tax_DB_path"]  + "{tax_DB}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
         Genus_species = config["tax_DB_path"]  + "{tax_DB}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
     output:
+<<<<<<< HEAD
         tax = report("{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DADA2_rdp_{tax_DB}"),
+=======
+        tax = report("{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt"),
+>>>>>>> master
     log:
         logging_folder + "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.log"
     threads:
@@ -56,7 +64,7 @@ rule dada2_assign_taxonomy_rdp:
 rule rdp_classify:
     conda:
         "../../envs/rdp_tools.yml"
-    singularity:
+    container:
         singularity_envs["rdptools"]
     input:
        trained_ref = config["tax_DB_path"] + "{tax_DB}/RDP/rRNAClassifier.properties",
@@ -82,12 +90,16 @@ rule rdp_classify:
 rule rdp_format_output:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         RDP_output= "{denoiser}/3_classified/RDP_{tax_DB}/RDP_tax_assignments.txt",
     output:
+<<<<<<< HEAD
        formatted_output = report("{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="Orig_rdp_{tax_DB}"),
+=======
+       formatted_output = report("{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt"),
+>>>>>>> master
     log:
         "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.log",
     threads:
@@ -102,14 +114,19 @@ rule rdp_format_output:
 rule decipher_tax_assign:
     conda:
         "../../envs/decipher.yml"
-    singularity:
+    container:
         singularity_envs["decipher"]
     input:
         trained_tax = config["tax_DB_path"] + "{tax_DB}/decipher/Decipher_DB_amp_taxonomy_decipher_trained_tax.rds",
         seq = "{denoiser}/2_denoised/dna-sequences.fasta",
     output:
+<<<<<<< HEAD
         tax = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DECIPHER_rdp_{tax_DB}"),
         tax_plot = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.pdf", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DECIPHER_rdp_{tax_DB}"),
+=======
+        tax = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt"),
+        tax_plot = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.pdf")
+>>>>>>> master
     log:
       logging_folder + "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.log"
     threads:

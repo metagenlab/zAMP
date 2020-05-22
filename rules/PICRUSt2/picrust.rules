@@ -3,7 +3,7 @@
 rule picrust2_custom_tree :
     conda:
         "../../envs/picrust2.yml"
-    singularity:
+    container:
         singularity_envs["picrust2"]  
     input:
         seqs = "{denoiser}/2_denoised/dna-sequences_all_UPPER.fasta",

@@ -539,7 +539,7 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                            
                            ### Count table
                            fileInput("input_count_table", "Load count table",
-                                     placeholder = "count_table.txt",
+                                     placeholder = "count_table.tsv",
                                      multiple = FALSE, 
                                      accept = c("text/csv",
                                                 "text/comma-separated-values,text/plain",

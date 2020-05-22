@@ -27,7 +27,7 @@ rule print_primers_to_files :
 
 
 rule Extract_amplicon :
-    singularity:
+    container:
         singularity_envs["python27"]://metagenlab/amplicons_simluatepcr:v.1.0"
     input :
         "InSilico/PCR/Primers.fasta",
@@ -72,7 +72,7 @@ rule Extract_amplicon :
 rule cutadapt_trim_for_In_silico:
     conda:
         "../../envs/cutadapt.yml"
-    singularity:
+    container:
         singularity_envs["cutadapt"]
     input:
         raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
@@ -126,7 +126,7 @@ rule Insilico_merge_all_in_one_fasta:
 rule InSilico_derepicate_all:
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         "InSilico/1c_derep/merged_all.fasta"
@@ -149,15 +149,15 @@ rule InSilico_derepicate_all:
 rule InSilico_count_occurences :
     conda:
         "../../envs/vsearch.yml"
-    singularity:
+    container:
         singularity_envs["vsearch"]
     input:
         samples = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
         rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
     output:
-        "InSilico/2_denoised/countOTUs/{sample}_count_table.txt",
+        "InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",
     log:
-         logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.txt"
+         logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.tsv"
     shell:
         '''       
         if [ -s "{input[samples]}" ]
@@ -182,7 +182,7 @@ def list_samples_counts(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
-    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.txt",sample=acc)
+    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",sample=acc)
     return expd
 
 
@@ -190,14 +190,14 @@ def list_samples_counts(wildcards):
 rule create_InSilico_count_table :
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
         count_table_samples = list_samples_counts
     output:
-        count_table = "InSilico/2_denoised/count_table.txt"
+        count_table = "InSilico/2_denoised/count_table.tsv"
     log:
-        logging_folder +  "InSilico/2_denoised/count_table.txt"
+        logging_folder +  "InSilico/2_denoised/count_table.tsv"
     script:
         "scripts/create_count_table_from_insilico.R"
 
@@ -207,10 +207,10 @@ rule create_InSilico_count_table :
 rule In_silico_tax_compare:
     conda:
         "../../envs/amplicons_r_utils.yml"
-    singularity:
+    container:
         singularity_envs["r_utils"]  
     input:
-        count_table = "InSilico/2_denoised/count_table.txt",
+        count_table = "InSilico/2_denoised/count_table.tsv",
         Metadata_table = "table_combined.tsv",
         taxonomy_table = "InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
     output:

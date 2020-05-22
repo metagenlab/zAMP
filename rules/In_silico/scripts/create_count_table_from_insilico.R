@@ -31,7 +31,7 @@ colnames(otus_table) <- c("Sample", "V1", "V2")
 
 for (xx in count_table_samples){
   print(paste("Processing", xx))
-  sample <- gsub("_count_table.txt", "", basename(xx))
+  sample <- gsub("_count_table.tsv", "", basename(xx))
   print(paste("Sample:", sample))
   table <- as.data.frame(array(dim=c(1,2)))
   table$V1 <- "No_amp"
