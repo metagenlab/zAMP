@@ -112,7 +112,7 @@ rule DADA2_merge_runs_filter_chim:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
         rep_seqs = report("DADA2/2_denoised/dna-sequences.fasta",caption="report/DADA2_output.rst", category="DADA2", subcategory="Output"),
-        count_table = report("DADA2/2_denoised/count_table.txt",caption="report/DADA2_output.rst", category="DADA2", subcategory="Output"),
+        count_table = report("DADA2/2_denoised/count_table.tsv",caption="report/DADA2_output.rst", category="DADA2", subcategory="Output"),
         length_histo = report("DADA2/2_denoised/merged_reads_length.png", caption="report/DADA2_output.rst", category="DADA2", subcategory="Output")
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"

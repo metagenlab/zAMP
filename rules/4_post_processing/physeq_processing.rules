@@ -45,7 +45,7 @@ rule physeq_export_object:
         tree_path = report("{prefix1}_export/tree.tree", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
         meta_path = report("{prefix1}_export/metadata_table.tsv", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
         taxonomy_path = report("{prefix1}_export/dna-sequences_tax_assignments.txt", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
-        OTU_path = report("{prefix1}_export/count_table.txt", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        OTU_path = report("{prefix1}_export/count_table.tsv", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
         rep_seq_path = report("{prefix1}_export/dna-sequences.fasta", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
     log:
         logging_folder + "{prefix1}_export/export.txt",
