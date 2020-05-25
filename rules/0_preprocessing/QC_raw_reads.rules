@@ -25,9 +25,8 @@ def sample_list_run_QC(RUN):
     for s in samples:
         suffix_s = reads_ext[s]
         combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = RUN, sample = s, suffix = suffix_s)
-        file_list = file_list + combined_values
-    
-    print(file_list)
+        file_list = file_list + combined_values 
+
     return(file_list)
 
 
