@@ -1,7 +1,6 @@
 ## Process trimmed sequences with DADA2 to correct errors and generate ASVs. Follows the "big data" protocol (https://benjjneb.github.io/dada2/bigdata.html)
 
 ## Define trimmed or not trimmed input (for read already trimmed)
-
 def DADA2_trim_input_paired():
     if config['Trim_primers'] == True :
         return ["DADA2/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz", "DADA2/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz"]
@@ -42,7 +41,6 @@ rule DADA2_q_filtering_paired:
         "scripts/1_DADA2_q_filtering_paired.R"
 
 
-### Remove low quality and too short reads
 rule DADA2_q_filtering_single:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -85,11 +83,10 @@ rule DADA2_learn_errors_paired:
     threads:
         8
     script:
-        "scripts/2a_big_data_DADA2_learn_errors.R"
+        "scripts/2a_big_data_DADA2_learn_errors_paired.R"
 
 
 
-### Learn error profile of the runs
 rule DADA2_learn_errors_single:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -105,23 +102,11 @@ rule DADA2_learn_errors_single:
     threads:
         8
     script:
-        "scripts/2a_big_data_DADA2_learn_errors.R"
+        "scripts/2a_big_data_DADA2_learn_errors_single.R"
 
         
 
-### Infer error free sequences from the filtered reads and the runs error profiles
-def sample_list_run_QC(RUN):
-    file_list = []
-    samples =  list(all_samples.index.values[all_samples[config["run_column"]] == RUN])
-    for s in samples:
-        suffix_s = reads_ext[s]
-        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = RUN, sample = s, suffix = suffix_s)
-        file_list = file_list + combined_values
-
-    return(file_list)
-
-
-
+## Correct errors based on profile error of the run
 rule DADA2_infer_paired_ASV:
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -145,7 +130,7 @@ rule DADA2_infer_paired_ASV:
     threads:
         4
     script:
-        "scripts/2b_big_data_DADA2_infer_ASV.R"
+        "scripts/2b_big_data_DADA2_infer_ASV_paired.R"
 
 
 
@@ -170,8 +155,7 @@ rule DADA2_infer_single_ASV:
     threads:
         4
     script:
-        "scripts/2b_big_data_DADA2_infer_ASV.R"
-
+        "scripts/2b_big_data_DADA2_infer_ASV_single.R"
 
 
 
