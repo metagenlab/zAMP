@@ -43,6 +43,7 @@ reads_sra = {}
 
 reads_local = {}
 original_names = {}
+reads_ext = {}
 
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
