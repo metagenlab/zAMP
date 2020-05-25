@@ -28,11 +28,7 @@ rule raw_to_processed_reads_plot:
         Metadata_table = config["local_samples"],
         multi_QC_report_path = "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt"
     output:
-<<<<<<< HEAD
         reads_plot_with_filtered = report("{denoiser}/5_visualization/{classifier}_{tax_DB}/reads/reads_plot_with_filtered.png", caption="report/fig1.rst", category="Step 1")
-=======
-        reads_plot_with_filtered = report("{denoiser}/5_visualization/{classifier}_{tax_DB}/reads/reads_plot_with_filtered.png")
->>>>>>> master
     params:
         grouping_column = config["grouping_column"],
         sample_label = config["sample_label"]

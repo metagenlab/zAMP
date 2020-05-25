@@ -46,13 +46,8 @@ rule DADA2_learn_errors:
     output:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
-<<<<<<< HEAD
         error_profile_F_plot = report("DADA2/2_denoised/{RUN}/error_profile_F_plot.png", caption="report/DADA2_error_profile.rst", category="DADA2", subcategory="Error profile"),
         error_profile_R_plot = report("DADA2/2_denoised/{RUN}/error_profile_R_plot.png", caption="report/DADA2_error_profile.rst", category="DADA2", subcategory="Error profile"),
-=======
-        error_profile_F_plot =  report("DADA2/2_denoised/{RUN}/error_profile_F_plot.png", category = "DADA2 QC"),
-        error_profile_R_plot = report("DADA2/2_denoised/{RUN}/error_profile_R_plot.png", category = "DADA2 QC"),
->>>>>>> master
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_learn_errors.txt"
     threads:
@@ -116,15 +111,9 @@ rule DADA2_merge_runs_filter_chim:
     output:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
-<<<<<<< HEAD
         rep_seqs = report("DADA2/2_denoised/dna-sequences.fasta",caption="report/DADA2_output.rst", category="DADA2", subcategory="Output"),
         count_table = report("DADA2/2_denoised/count_table.txt",caption="report/DADA2_output.rst", category="DADA2", subcategory="Output"),
         length_histo = report("DADA2/2_denoised/merged_reads_length.png", caption="report/DADA2_output.rst", category="DADA2", subcategory="Output")
-=======
-        rep_seqs = report("DADA2/2_denoised/dna-sequences.fasta",category = "DADA2 QC"),
-        count_table = report("DADA2/2_denoised/count_table.tsv",category = "DADA2 QC"),
-        length_histo = report("DADA2/2_denoised/merged_reads_length.png", category = "DADA2 QC")
->>>>>>> master
     log:
         logging_folder + "DADA2/2_denoised/DADA2_2_merge_filter_chim.txt"
     params:
@@ -147,11 +136,7 @@ rule DADA2_filter_stats:
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",
     output:
-<<<<<<< HEAD
         filtering_stats = report("DADA2/2_denoised/DADA2_denoising_stats.tsv", caption="report/DADA2_output.rst", category="DADA2", subcategory="Output")
-=======
-        filtering_stats = report("DADA2/2_denoised/DADA2_denoising_stats.tsv", category = "DADA2 QC")
->>>>>>> master
     log:
         logging_folder + "DADA2/2_denoised/DADA2_denoising_stats.txt"
     threads:
@@ -191,11 +176,7 @@ rule create_filtered_reads_multiqc_report:
        expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
        expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(read_naming.keys()))
     output:
-<<<<<<< HEAD
         report("QC/multiqc_DADA2_filtered_reads_report.html", caption="report/DADA2_output.rst", category="DADA2", subcategory="MultiQC")
-=======
-        report("QC/multiqc_DADA2_filtered_reads_report.html", category = "DADA2 QC")
->>>>>>> master
     log:
         logging_folder + "QC/multiqc_filtered_reads_report.txt"
 #    params:
