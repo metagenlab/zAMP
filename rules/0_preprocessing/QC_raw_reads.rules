@@ -66,7 +66,10 @@ def sample_list():
     file_list = []
 
     for i in set(all_samples[config['run_column']]):
-        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = i, sample = all_samples.index.values[all_samples[config["run_column"]] == i], suffix = read_naming[all_samples.index.values[all_samples[config["run_column"]] == i]][0])
+        RUN = i
+        samples =  list(all_samples.index.values[all_samples[config["run_column"]] == i])
+        suffix = read_naming[samples[0][0]][0]
+        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = RUN, sample = samples, suffix = suffix)
         file_list = file_list + combined_values
 
     return(file_list)
