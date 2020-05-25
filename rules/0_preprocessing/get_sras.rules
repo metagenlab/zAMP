@@ -47,7 +47,7 @@ rule sra_convert_to_fastq_single:
     input:
         "ncbi/public/sra/{sample}.sra"
     output:
-        temp(link_directory + "{sample,[A-Za-z0-9]+}_fastq.gz"),
+        temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:
         logging_folder + "logs/sra_download/{sample}_dump.txt"
     shell:
