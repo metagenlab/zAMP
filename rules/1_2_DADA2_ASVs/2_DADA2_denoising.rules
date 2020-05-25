@@ -98,10 +98,8 @@ rule DADA2_learn_errors_single:
     input:
         q_score_filtered_F = lambda wildcards: expand("DADA2/1b_q_score_filtered_paired/{sample}_filtered_single.fastq.gz", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
     output:
-        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
-        error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
-        error_profile_F_plot = report("DADA2/2_denoised/{RUN}/error_profile_F_plot.png", caption="report/DADA2_error_profile.rst", category="DADA2", subcategory="Error profile"),
-        error_profile_R_plot = report("DADA2/2_denoised/{RUN}/error_profile_R_plot.png", caption="report/DADA2_error_profile.rst", category="DADA2", subcategory="Error profile"),
+        error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_single.rds",
+        error_profile_F_plot = report("DADA2/2_denoised/{RUN}/error_profile_single_plot.png", caption="report/DADA2_error_profile.rst", category="DADA2", subcategory="Error profile"),
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/DADA2_learn_errors.txt"
     threads:
