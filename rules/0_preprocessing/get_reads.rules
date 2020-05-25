@@ -92,8 +92,10 @@ if "sra_samples" in config.keys():
         reads_sra[sample_name]=str(i)
         if sra_data.loc[i, "LibraryLayout"].lower()=="paired":
             sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
+            reads_ext[sample_name]=["R1", "R2"]
         elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
             sras_ext[sample_name] = ["fastq.gz"]
+            reads_ext[sample_name]=["single"]
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
     all_samples=sra_data
