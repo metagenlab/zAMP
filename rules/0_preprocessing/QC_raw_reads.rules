@@ -56,6 +56,7 @@ def sample_list_overall_QC():
     for i in set(all_samples[config['run_column']]):
         samples =  list(all_samples.index.values[all_samples[config["run_column"]] == i])
         for s in samples:
+            print(reads_ext)
             suffix_s = reads_ext[s]
             combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = i, sample = s, suffix = suffix_s)
             file_list = file_list + combined_values

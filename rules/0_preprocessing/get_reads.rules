@@ -70,13 +70,13 @@ if "local_samples" in config.keys():
 
             if "LibraryLayout" in list(local_data):
                 if local_data.loc[i, "LibraryLayout"].lower()=="paired":
-                    reads_ext[sample]=["R1", "R2"]
+                    reads_ext[i]=["R1", "R2"]
                 elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
-                    reads_ext[sample]=["single"]
+                    reads_ext[i]=["single"]
                 else:
                     raise ValueError("Problem in the sra file, LibraryLayout badly defined")
             else:
-                reads_ext[sample]=["R1", "R2"]
+                reads_ext[i]=["R1", "R2"]
 
             
     else:
@@ -92,17 +92,18 @@ if "local_samples" in config.keys():
 
             if "LibraryLayout" in list(local_data):
                 if local_data.loc[i, "LibraryLayout"].lower()=="paired":
-                    reads_ext[sample]=["R1", "R2"]
+                    reads_ext[i]=["R1", "R2"]
                 elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
-                    reads_ext[sample]=["single"]
+                    reads_ext[i]=["single"]
                 else:
                     raise ValueError("Problem in the sra file, LibraryLayout badly defined")
             else:
-                reads_ext[sample]=["R1", "R2"]
+                reads_ext[i]=["R1", "R2"]
 
     original_names = original_correct
     reads_local = read_correct
     all_samples=local_data
+    reads_ext = reads_ext
 
 if "sra_samples" in config.keys():
     sra_data = pandas.read_csv(config["sra_samples"], sep="\t", index_col=0).drop_duplicates()
