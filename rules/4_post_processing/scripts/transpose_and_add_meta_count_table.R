@@ -20,7 +20,7 @@
 
 ## Load the phyloseq phyloseq_object
     table <- read.table(count_table,  sep = "\t", header = TRUE)
-    meta <- read.table(meta,  sep = "\t", header = TRUE)
+    meta <- read.table(meta,  sep = "\t", header = TRUE, na.strings = "NA")
 
 ## Tranpose table
     table_t <- t(table)
