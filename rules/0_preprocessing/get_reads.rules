@@ -91,14 +91,14 @@ if "local_samples" in config.keys():
             read_correct[sample] = reads_local[old_sample_name]
 
             if "LibraryLayout" in list(local_data):
-                if local_data.loc[i, "LibraryLayout"].lower()=="paired":
-                    reads_ext[i]=["R1", "R2"]
+                if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
+                    reads_ext[sample]=["R1", "R2"]
                 elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
-                    reads_ext[i]=["single"]
+                    reads_ext[sample]=["single"]
                 else:
                     raise ValueError("Problem in the sra file, LibraryLayout badly defined")
             else:
-                reads_ext[i]=["R1", "R2"]
+                reads_ext[sample]=["R1", "R2"]
 
     original_names = original_correct
     reads_local = read_correct
