@@ -1,18 +1,16 @@
 ## Generate MultiQC reports
 
-rule assess_quality_paired_raw_reads_with_fastqc:
+rule assess_quality_raw_reads_with_fastqc:
     conda:
         "../../envs/FastQC.yml"
     container:
         singularity_envs["fastqc"]
     input:
-        "raw_reads/{sample}_R1.fastq.gz",
-        "raw_reads/{sample}_R2.fastq.gz",
+        "raw_reads/{sample}_{suffix}.fastq.gz"
     output:
-          "QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip",
-          "QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip",
+          "QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip"          
     log:
-        logging_folder + "QC/FastQC/raw_reads/{RUN}/{sample}_fastqc.txt"
+        logging_folder + "QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.txt"
     threads: 
         1
     shell:
@@ -21,14 +19,24 @@ rule assess_quality_paired_raw_reads_with_fastqc:
         """
 
 
-rule create_per_run_raw_reads_multiqc_report:
+def sample_list_run_QC(RUN):
+    file_list = []
+    samples =  list(all_samples.index.values[all_samples[config["run_column"]] == RUN])
+    for s in samples:
+        suffix_s = reads_ext[s]
+        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = RUN, sample = s, suffix = suffix_s)
+        file_list = file_list + combined_values 
+
+    return(file_list)
+
+
+rule create_per_run_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     container:
         singularity_envs["multiqc"]
     input:
-      lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R1_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
-      lambda wildcards: expand("QC/FastQC/raw_reads/{RUN}/{sample}_R2_fastqc.zip", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN], RUN = wildcards.RUN),
+      lambda wildcards: sample_list_run_QC(wildcards.RUN)
     output:
         report("QC/{RUN}_multiqc_raw_reads_report.html", caption="report/MultiQC.rst", category="MultiQC", subcategory="{RUN}"),
         "QC/{RUN}_multiqc_raw_reads_report_data/multiqc_general_stats.txt",
@@ -41,13 +49,16 @@ rule create_per_run_raw_reads_multiqc_report:
         multiqc --interactive -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" &> {log}
         """
 
-def sample_list():
+def sample_list_overall_QC():
 
     file_list = []
 
     for i in set(all_samples[config['run_column']]):
-        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_R{read_number}_fastqc.zip", RUN = i, sample = all_samples.index.values[all_samples[config["run_column"]] == i], read_number = ["1","2"])
-        file_list = file_list + combined_values
+        samples =  list(all_samples.index.values[all_samples[config["run_column"]] == i])
+        for s in samples:
+            suffix_s = reads_ext[s]
+            combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = i, sample = s, suffix = suffix_s)
+            file_list = file_list + combined_values
 
     return(file_list)
 
@@ -58,7 +69,7 @@ rule create_overall_raw_reads_multiqc_report:
     container:
         singularity_envs["multiqc"]
     input:
-       sample_list()
+       sample_list_overall_QC()
     output:
         report("QC/multiqc_raw_reads_report.html", caption="report/MultiQC.rst", category="MultiQC", subcategory="All run"),
         "QC/multiqc_raw_reads_report_data/multiqc_general_stats.txt",

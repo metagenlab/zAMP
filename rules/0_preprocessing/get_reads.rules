@@ -43,6 +43,7 @@ reads_sra = {}
 
 reads_local = {}
 original_names = {}
+reads_ext = {}
 
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
@@ -66,6 +67,18 @@ if "local_samples" in config.keys():
             sample = str(sorted(list(original_names.keys()))[match.index(True)])
             original_correct[i] = original_names[sample]
             read_correct[i] = reads_local[sample]
+
+            if "LibraryLayout" in list(local_data):
+                if local_data.loc[i, "LibraryLayout"].lower()=="paired":
+                    reads_ext[i]=["R1", "R2"]
+                elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
+                    reads_ext[i]=["single"]
+                else:
+                    raise ValueError("Problem in the sra file, LibraryLayout badly defined")
+            else:
+                reads_ext[i]=["R1", "R2"]
+
+            
     else:
         for i in list(local_data["OldSampleName"]):
             regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % i)
@@ -76,9 +89,21 @@ if "local_samples" in config.keys():
             sample=str(local_data.index[local_data['OldSampleName'] == i][0])
             original_correct[sample] = original_names[old_sample_name]
             read_correct[sample] = reads_local[old_sample_name]
+
+            if "LibraryLayout" in list(local_data):
+                if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
+                    reads_ext[sample]=["R1", "R2"]
+                elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
+                    reads_ext[sample]=["single"]
+                else:
+                    raise ValueError("Problem in the sra file, LibraryLayout badly defined")
+            else:
+                reads_ext[sample]=["R1", "R2"]
+
     original_names = original_correct
     reads_local = read_correct
     all_samples=local_data
+    reads_ext = reads_ext
 
 if "sra_samples" in config.keys():
     sra_data = pandas.read_csv(config["sra_samples"], sep="\t", index_col=0).drop_duplicates()
@@ -92,8 +117,10 @@ if "sra_samples" in config.keys():
         reads_sra[sample_name]=str(i)
         if sra_data.loc[i, "LibraryLayout"].lower()=="paired":
             sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
+            reads_ext[sample_name]=["R1", "R2"]
         elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
             sras_ext[sample_name] = ["fastq.gz"]
+            reads_ext[sample_name]=["single"]
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
     all_samples=sra_data

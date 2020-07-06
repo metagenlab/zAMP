@@ -37,6 +37,6 @@ create_phyloseq_fct <- function(physeq_name = "physeq", melted_df_name = "physeq
   save(physeq_obj, file = "physeq_object")
   
   ### Write this table in a tsv file since it is ground for coming analysis and slow to compute
-  write.table(x = physeq_df, file = "physeq_df.tsv", append = F, quote = F, sep = "\t", eol = "\n", row.names = F, col.names = T )
+  write.table(x = physeq_df, file = "physeq_df.tsv", append = F, sep = "\t", eol = "\n", row.names = F, col.names = T )
   
 }

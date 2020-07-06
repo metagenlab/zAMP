@@ -38,6 +38,7 @@ rule sra_convert_to_fastq_paired:
         fastq-dump --split-3 --gzip --log-level 1 --disable-multithreading --minReadLen 0 --outdir $(dirname {output[0]}) {input[0]} &> {log}
         """
 
+
 rule sra_convert_to_fastq_single:
     conda:
         "../../envs/sra-tools.yml"

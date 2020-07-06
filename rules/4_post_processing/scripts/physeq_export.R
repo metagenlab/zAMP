@@ -41,7 +41,7 @@ ape::write.tree(tree, tree_path)
 metadata <- (sample_data(phyloseq_obj))
 metadata$Sample <- rownames(metadata)
 metadata <- metadata %>% select(Sample, everything())
-write.table(metadata, meta_path , sep="\t", quote=F, row.names = FALSE)
+write.table(metadata, meta_path , sep="\t", row.names = FALSE)
 
 ## Write the taxonomy table of the phyloseq object
 taxa_df<- as.data.frame(tax_table(phyloseq_obj), stringsAsFactors = F)

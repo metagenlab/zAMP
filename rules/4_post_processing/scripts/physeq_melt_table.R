@@ -29,4 +29,4 @@ phyloseq_obj <- prune_taxa(taxa_sums(phyloseq_obj) > 0, phyloseq_obj) ## Removes
 physeq_df <- psmelt(phyloseq_obj)
 
 ### Write this table in a tsv format
-write.table(x = physeq_df, file = phyloseq_melted_table, append = F, quote = F, sep = "\t", eol = "\n", row.names = F, col.names = T )
+write.table(x = physeq_df, file = phyloseq_melted_table, append = F, sep = "\t", eol = "\n", row.names = F, col.names = T )
