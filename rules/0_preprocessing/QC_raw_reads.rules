@@ -8,7 +8,7 @@ rule assess_quality_raw_reads_with_fastqc:
     input:
         "raw_reads/{sample}_{suffix}.fastq.gz"
     output:
-          "QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip"          
+          temp("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip")          
     log:
         logging_folder + "QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.txt"
     threads: 

@@ -237,8 +237,8 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R1.fastq.gz",
         "DADA2/1b_q_score_filtered_paired/{sample}_filtered_R2.fastq.gz",
     output:
-        "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip",
-        "QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip",
+        temp("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip"),
+        temp("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip"),
     log:
         logging_folder + "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.txt"
     shell:
