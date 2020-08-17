@@ -26,7 +26,7 @@ rule DADA2_q_filtering_paired:
     output:
         q_score_filtered_F = temp("DADA2/1b_q_score_filtered/{sample}_filtered_R1.fastq.gz"),
         q_score_filtered_R = temp("DADA2/1b_q_score_filtered/{sample}_filtered_R2.fastq.gz"),
-        q_filtering_stats = "DADA2/1b_q_score_filtered/{sample}_q_score_filtering_stats.rds"
+        q_filtering_stats = "DADA2/1b_q_score_filtered/{sample}_q_score_filtering_paired_stats.rds"
     log:
         logging_folder + "DADA2/1b_q_score_filtered/{sample}_DADA2_1b_q_score_filtering.txt"
     params:
@@ -50,7 +50,7 @@ rule DADA2_q_filtering_single:
         DADA2_trim_input_single()
     output:
         q_score_filtered_F = temp("DADA2/1b_q_score_filtered/{sample}_filtered_single.fastq.gz"),
-        q_filtering_stats = "DADA2/1b_q_score_filtered/{sample}_q_score_filtering_stats.rds"
+        q_filtering_stats = "DADA2/1b_q_score_filtered/{sample}_q_score_filtering_single_stats.rds"
     log:
         logging_folder + "DADA2/1b_q_score_filtered/{sample}_DADA2_1b_q_score_filtering.txt"
     params:
@@ -118,8 +118,8 @@ rule DADA2_infer_paired_ASV:
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_F.rds",
         error_profile_R = "DADA2/2_denoised/{RUN}/error_profile_R.rds",
     output:
-        infer_stats = "DADA2/2_denoised/{RUN}/{sample}_infer_stats.rds",
-        sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_infer_seq_tab.rds",
+        infer_stats = "DADA2/2_denoised/{RUN}/{sample}_paired_infer_stats.rds",
+        sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_paired_infer_seq_tab.rds",
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
@@ -143,8 +143,8 @@ rule DADA2_infer_single_ASV:
         q_score_filtered_F = "DADA2/1b_q_score_filtered/{sample}_filtered_single.fastq.gz",
         error_profile_F = "DADA2/2_denoised/{RUN}/error_profile_single.rds",
     output:
-        infer_stats = "DADA2/2_denoised/{RUN}/{sample}_infer_stats.rds",
-        sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_infer_seq_tab.rds",
+        infer_stats = "DADA2/2_denoised/{RUN}/{sample}_single_infer_stats.rds",
+        sample_seq_tab = "DADA2/2_denoised/{RUN}/{sample}_single_infer_seq_tab.rds",
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
@@ -159,21 +159,17 @@ rule DADA2_infer_single_ASV:
 
 
 
-
-def sample_list_run_DADA2(RUN):
+def sample_list_run_DADA2_merge(RUN):
     file_list = []
     samples =  list(all_samples.index.values[all_samples[config["run_column"]] == RUN])
     for s in samples:
-        layout = layout[s]
-        if layout == "single":
-
-
-
-        suffix_s = reads_ext[s]
-
-        combined_values = expand("QC/FastQC/raw_reads/{RUN}/{sample}_{suffix}_fastqc.zip", RUN = RUN, sample = s, suffix = suffix_s)
-        file_list = file_list + combined_values 
-
+        sample_layout = layout[s]
+        if sample_layout == "single":
+            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
+        elif sample_layout == "paired":
+            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
+        file_list = file_list + input_file
+    print(file_list)
     return(file_list)
 
 
@@ -185,8 +181,7 @@ rule DADA2_merge_sample_ASV:
     container:
         singularity_envs["dada2"]
     input:
-        infer_stats = lambda wildcards : expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_stats.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
-        sample_seq_tab = lambda wildcards: expand("DADA2/2_denoised/{{RUN}}/{sample}_infer_seq_tab.rds", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN]),
+        lambda wildcards: sample_list_run_DADA2_merge(wildcards.RUN)
     output:
         run_stats = "DADA2/2_denoised/{RUN}/run_stats.rds",
         run_seq_table = "DADA2/2_denoised/{RUN}/run_seq_tab.rds",
@@ -222,6 +217,18 @@ rule DADA2_merge_runs_filter_chim:
     script:
         "scripts/2d_big_data_DADA2_merge_chimera.R"
 
+
+def sample_list_run_DADA2_stats():
+    file_list = []
+    samples =  all_samples.index.values
+    for s in samples:
+        sample_layout = layout[s]
+        input_file = ["DADA2/1b_q_score_filtered/" +s+ "_q_score_filtering_" +sample_layout+ "_stats.rds"]
+        file_list = file_list + input_file
+    print(file_list)
+    return(file_list)
+
+
 ### Generate filtration stats
 rule DADA2_filter_stats:
     conda:
@@ -229,7 +236,7 @@ rule DADA2_filter_stats:
     container:
         singularity_envs["r_utils"]
     input:
-        q_filtering_stats = expand("DADA2/1b_q_score_filtered/{sample}_q_score_filtering_stats.rds", sample = all_samples.index.values),
+        q_filtering_stats = sample_list_run_DADA2_stats(),
         run_stats = expand("DADA2/2_denoised/{RUN}/run_stats.rds", RUN=list(set(all_samples[config["run_column"]]))),
         no_chim = "DADA2/2_denoised/dna-sequences_no_chim.rds",
         length_filtered = "DADA2/2_denoised/dna-sequences_long_names.rds",

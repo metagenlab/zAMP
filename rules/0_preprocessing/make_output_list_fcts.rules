@@ -27,7 +27,6 @@ def get_read_naming_patterns(directory):
                 read = re.compile(re.search(regex_after, fname).group(0))
                 samp = re.sub(regex, '', re.search(regex_before, fname).group(0))
                 extension.setdefault(samp, [])
-                # print(extension)
                 extension[samp].append(re.sub("^_", "", read.pattern))
     return(extension)
 
@@ -88,6 +87,7 @@ if "local_samples" in config.keys():
 
         if "OldSampleName" not in list(local_data):
 
+            ## i vs sample et correct vs original à checker!!!!
             for i in list(local_data.index):
                 regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % i) # this regex ensures that the matching of the sample names end at the end of the str, to prevent S1 matching S10 for instance
                 match = [bool(re.match(regex, x)) for x in sorted(list(original_names.keys()))]
@@ -96,16 +96,21 @@ if "local_samples" in config.keys():
                 sample = str(sorted(list(original_names.keys()))[match.index(True)])
                 original_correct[i] = original_names[sample]
                 read_correct[i] = reads_local[sample]
+                paths[i] = expand(link_directory + sample + "_{reads}" ,  reads = read_correct[i]) 
+                print(paths[i])
 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[i, "LibraryLayout"].lower()=="paired":
                         reads_ext[i]=["R1", "R2"]
+                        layout[i] = "paired"
                     elif local_data.loc[i, "LibraryLayout"].lower()=="single":
                         reads_ext[i]=["single"]
+                        layout[i] = "single"
                     else:
                         raise ValueError("Problem in the sra file, LibraryLayout badly defined")
                 else:
                     reads_ext[i]=["R1", "R2"]
+                    layout[i] = "paired"
 
                 
         else:
@@ -117,7 +122,9 @@ if "local_samples" in config.keys():
                 old_sample_name=str(sorted(list(original_names.keys()))[match.index(True)])
                 sample=str(local_data.index[local_data['OldSampleName'] == i][0])
                 original_correct[sample] = original_names[old_sample_name]
-                read_correct[sample] = reads_local[old_sample_name]
+                read_correct[i] = reads_local[old_sample_name]
+                paths[i] = link_directory + read_correct[i] 
+                print(path[i])
 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
@@ -133,7 +140,9 @@ if "local_samples" in config.keys():
         reads_local = read_correct
         reads_ext = reads_ext
 
-        paths = expand(link_directory + original_names + "_{ext}", ext=read_naming)
+
+        #print(original_names)
+        print(read_correct)
 
         all_samples=local_data
 

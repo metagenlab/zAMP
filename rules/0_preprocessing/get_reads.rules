@@ -1,7 +1,4 @@
 
-
-print(paths)
-
 rule copy_fastq_paired_from_link:
     input:
         unpack(lambda wildcards: paths[wildcards.sample])
