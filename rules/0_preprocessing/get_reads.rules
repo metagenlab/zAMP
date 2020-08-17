@@ -1,8 +1,10 @@
 
 
+print(paths)
+
 rule copy_fastq_paired_from_link:
     input:
-        lambda wildcards: paths[wildcards.sample]
+        unpack(lambda wildcards: paths[wildcards.sample])
     output:
         temp("raw_reads/{sample}_R1.fastq.gz"),
         temp("raw_reads/{sample}_R2.fastq.gz")
@@ -19,7 +21,7 @@ rule copy_fastq_paired_from_link:
 
 rule copy_fastq_single_from_link:
     input:
-        lambda wildcards: paths[wildcards.sample]
+        unpack(lambda wildcards: paths[wildcards.sample])
     output:
         temp("raw_reads/{sample}_single.fastq.gz")
     resources:
