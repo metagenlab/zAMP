@@ -3,8 +3,7 @@
 import pandas
 import re
 
-
-
+## Define a function to extract the .fastq name pattern
 def get_read_naming_patterns(directory):
     result = []
     extension= {}
@@ -33,7 +32,7 @@ def get_read_naming_patterns(directory):
 all_samples=pandas.DataFrame()
 
 
-
+## Check for the presence of a directory for .fastq in config. If none, will be "links".
 if "link_directory" in config.keys():
     link_directory = config["link_directory"]
     if not link_directory.endswith("/"):
@@ -41,9 +40,9 @@ if "link_directory" in config.keys():
 else:
     link_directory = "links/"
 
+## Create a set of dictionaries to store sample characteristics
 sras_ext = {}
 reads_sra = {}
-
 reads_local = {}
 original_names = {}
 reads_ext = {}
@@ -51,18 +50,24 @@ paths  = {}
 layout = {}
 
 
+## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
 
+## In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
 if "local_samples" in config.keys():
+    ## Read the metadata table
     local_data = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
     local_data.index = [str(x) for x in local_data.index]
     all_local_sample_names =  "".join(list(local_data.index))
+    ## Check for forbidden characters in sample names
     if "(" in all_local_sample_names or ")" in all_local_sample_names or "_-_" in all_local_sample_names:
         raise ValueError("Forbidden character in sample name in sample name file")
+    ## Extract path if indicated in "R1" column
     if "R1" in list(local_data):
         for sample_name, sample_data in local_data.iterrows():
             if sample_name in paths:
+                ## Check for sample names to be unique
                 raise IOError("Identical sample name used multiple times: %s" % sample_name)
             paths[sample_name] =[sample_data.loc["R1"]] 
             reads_ext[sample_name] = "single"
