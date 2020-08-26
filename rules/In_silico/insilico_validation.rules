@@ -28,7 +28,7 @@ rule print_primers_to_files :
 
 rule Extract_amplicon :
     container:
-        singularity_envs["python27"]://metagenlab/amplicons_simluatepcr:v.1.0"
+        singularity_envs["insilicoPCR"]
     input :
         "InSilico/PCR/Primers.fasta",
         "assembly_gz/{sample}.fna"
