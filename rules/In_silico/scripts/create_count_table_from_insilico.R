@@ -4,9 +4,9 @@
 # Created on: 06.06.1p
 
 ## Redirect R output
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Load needed library
     library(dplyr);packageVersion("dplyr")
@@ -25,25 +25,25 @@
 
 
 ## Reformat
-otus_table<-as.data.frame(array(dim=c(1,3)))
-colnames(otus_table) <- c("Sample", "V1", "V2")
+    otus_table<-as.data.frame(array(dim=c(1,3)))
+    colnames(otus_table) <- c("Sample", "V1", "V2")
 
 
-for (xx in count_table_samples){
-  print(paste("Processing", xx))
-  sample <- gsub("_count_table.tsv", "", basename(xx))
-  print(paste("Sample:", sample))
-  table <- as.data.frame(array(dim=c(1,2)))
-  table$V1 <- "No_amp"
-  table$V2 <- 0
-  try(table <-read.table(file = xx, sep="\t", as.is=T, header=F))
-  table <- cbind("Sample"=sample, table)
-  print(table)
-  otus_table <- rbind(otus_table, table)
-}
+    for (xx in count_table_samples){
+    print(paste("Processing", xx))
+    sample <- gsub("_count_table.tsv", "", basename(xx))
+    print(paste("Sample:", sample))
+    table <- as.data.frame(array(dim=c(1,2)))
+    table$V1 <- "No_amp"
+    table$V2 <- 0
+    try(table <-read.table(file = xx, sep="\t", as.is=T, header=F))
+    table <- cbind("Sample"=sample, table)
+    print(table)
+    otus_table <- rbind(otus_table, table)
+    }
 
-otus_table <- otus_table[-1,]
-colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
+    otus_table <- otus_table[-1,]
+    colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
 
 
 ## Transform this table to have a wide format where we have a column by sample

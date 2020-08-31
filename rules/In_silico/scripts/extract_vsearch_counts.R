@@ -4,9 +4,9 @@
 # Created on: 27.11.2019
 
 ## Redirect R output
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 ## Load needed library
     library(dplyr);packageVersion("dplyr")
@@ -17,9 +17,6 @@
 ## Output
     count_table_path <- snakemake@output[["count_table"]]
 
-
-
-library("dplyr")
 
 uc_table <- read.table(uc_path, sep = "\t", header = FALSE)
 

@@ -4,9 +4,9 @@
 # Created on: 06.11.2019
 
 ## Redirect R output
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 
 ## Input

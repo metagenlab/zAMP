@@ -17,8 +17,8 @@ rule print_primers_to_files:
     output:
         "InSilico/PCR/Primers.fasta"
     params:
-        forward = config["forward_primer"],
-        reverse = config["reverse_primer"]
+        config["forward_primer"],
+        config["reverse_primer"]
     shell:
         '''
         printf \

@@ -4,9 +4,9 @@
 # Created on: 06.06.1p
 
 ## Redirect R output
-    #log <- file(snakemake@log[[1]], open="wt")
-    #sink(log)
-    #sink(log, type="message")
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
 
 
 ## Input
@@ -74,8 +74,7 @@
     print("Create count table")
     asv_tab <- seqtab2
 
-## Renamed
-
+## Renamed:
     names(asv_tab) <- sub(">", "", asv_headers)
     asv_tab <- data.frame(names(asv_tab), asv_tab)
 
