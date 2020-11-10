@@ -37,7 +37,7 @@ rule vsearch_dereplicate_samples:
 ### Combine all dereplicated sequences in one big fasta
 rule merge_all_in_one_fasta:
     input:
-        expand(vsearch_trim_input(), sample=list(read_naming.keys())),
+        expand(vsearch_trim_input(), sample=list(all_samples.index.values)),
     output:
         temp("vsearch/1c_derep/merged_all.fasta")
     shell:
@@ -180,7 +180,7 @@ rule create_vsearch_count_table :
     container:
         singularity_envs["r_utils"]
     input:
-        count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.tsv", sample=list(read_naming.keys()))
+        count_table_samples = expand("vsearch/2_denoised/countOTUs/{sample}_count_table.tsv", sample=list(all_samples.index.values))
     output:
         count_table = report("vsearch/2_denoised/count_table.tsv", caption="report/vsearch_output.rst", category="vsearch", subcategory="Output")
     log:

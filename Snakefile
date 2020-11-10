@@ -15,6 +15,7 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 
 
 ## Include the pipeline rules
+include: "rules/0_preprocessing/make_output_list_files.rules"
 include: "rules/0_preprocessing/get_reads.rules"
 include: "rules/0_preprocessing/logging.rules"
 include: "rules/0_preprocessing/get_sras.rules"
@@ -30,13 +31,6 @@ include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/PICRUSt2/picrust.rules"
 
 report: "workflow.rst"
-
-## Input/output
-### Include logging rules
-
-## Include rules and functions to set input/output
-include: "rules/0_preprocessing/make_output_list_files.rules"
-
 
 ## Rules to call defined sets of output. For each, we first generate a function calling the combined list of output. Then its is integrated in a easily callable rule
 ### Defaul rule all. Include all but PICRUSt2
