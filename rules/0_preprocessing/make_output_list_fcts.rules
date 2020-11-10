@@ -73,15 +73,15 @@ if "local_samples" in config.keys():
             reads_ext[sample_name] = "single"
             layout[sample_name] = "single"
             if 'R2' in local_data.columns.values:
-                if "R1" in sample_data.loc["R2"]:
+                if "R1" in str(sample_data.loc["R2"]):
                     raise IOError("ATTENTION! R1 flag within R2 filename: %s", sample_data.loc["R2"])
-                if sample_data.loc["R2"].strip() != '':
+                if (str(sample_data.loc["R2"]).strip()) != "nan":
                     paths[sample_name].append(sample_data.loc["R2"])
                     reads_ext[sample_name] = ["R1", "R2"]
                     layout[sample_name] = "paired"
         all_samples = local_data   
-
-        paths = {**paths}             
+        paths = {**paths}
+    
 
     else:
         
@@ -102,7 +102,6 @@ if "local_samples" in config.keys():
                 original_correct[i] = original_names[sample]
                 read_correct[i] = reads_local[sample]
                 paths[i] = expand(link_directory + sample + "_{reads}" ,  reads = read_correct[i]) 
-                print(paths[i])
 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[i, "LibraryLayout"].lower()=="paired":
@@ -129,7 +128,6 @@ if "local_samples" in config.keys():
                 original_correct[sample] = original_names[old_sample_name]
                 read_correct[i] = reads_local[old_sample_name]
                 paths[i] = link_directory + read_correct[i] 
-                print(path[i])
 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
@@ -145,9 +143,6 @@ if "local_samples" in config.keys():
         reads_local = read_correct
         reads_ext = reads_ext
 
-
-        #print(original_names)
-        print(read_correct)
 
         all_samples=local_data
 

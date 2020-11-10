@@ -1,4 +1,4 @@
-## Process trimmed sequences with DADA2 to correct errors and generate ASVs. Follows the "big data" protocol (https://benjjneb.github.io/dada2/bigdata.html)
+## Process trimmed sequences with DADA2 to correct errors and generate ASVs. Adapted from DADA2's "big data" protocol (https://benjjneb.github.io/dada2/bigdata.html)
 
 ## Define trimmed or not trimmed input (for read already trimmed)
 def DADA2_trim_input_paired():
@@ -167,9 +167,8 @@ def sample_list_run_DADA2_merge(RUN):
         if sample_layout == "single":
             input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
         elif sample_layout == "paired":
-            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
+            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_seq_tab.rds"]
         file_list = file_list + input_file
-    print(file_list)
     return(file_list)
 
 
@@ -225,7 +224,6 @@ def sample_list_run_DADA2_stats():
         sample_layout = layout[s]
         input_file = ["DADA2/1b_q_score_filtered/" +s+ "_q_score_filtering_" +sample_layout+ "_stats.rds"]
         file_list = file_list + input_file
-    print(file_list)
     return(file_list)
 
 
@@ -271,15 +269,16 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
         fastqc {input} -o $(dirname {output[0]}) &> {log}
         """
 
+
 rule create_filtered_reads_multiqc_report:
     conda:
         "../../envs/MultiQC.yml"
     container:
         singularity_envs["multiqc"]
     input:
-       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(read_naming.keys())),
-       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(read_naming.keys())),
-       expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(read_naming.keys()))
+       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(all_samples.index.values)),
+       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(all_samples.index.values)),
+       expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(all_samples.index.values))
     output:
         report("QC/multiqc_DADA2_filtered_reads_report.html", caption="report/DADA2_output.rst", category="DADA2", subcategory="MultiQC")
     log:
