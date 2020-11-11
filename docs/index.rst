@@ -8,7 +8,8 @@ Welcome to name_to_be_found's documentation!
 
 .. toctree::
    :maxdepth: 2
-   
+   :glob:
+
    pages/*
 
 
