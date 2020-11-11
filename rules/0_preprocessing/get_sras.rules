@@ -1,4 +1,4 @@
-### Obtain reads from SRA. Rest of the pipeline is designed only for paired-ends reads for now
+### Obtain reads from SRA. 
 
 rule download_sra:
     conda:
