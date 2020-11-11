@@ -10,6 +10,8 @@ Welcome to name_to_be_found's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   pages/*
+
 
 
 Indices and tables
