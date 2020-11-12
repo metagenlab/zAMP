@@ -35,11 +35,92 @@
             
   <div class="section" id="pipeline-execution">
 <h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
-<p>Before the analysis, please prepare a new folder with the following elements:</p>
+<p><em>Provided command-line examples a standard unix terminal in bash</em></p>
+<div class="section" id="working-directory">
+<h2>0. Working directory<a class="headerlink" href="#working-directory" title="Permalink to this headline">¶</a></h2>
+<p>Before the execution of the pipeline, prepare a new dedicated directory</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
+$ mkdir new_analysis
+
+# change to the new directory
+$ cd new_analysis
+</pre></div>
+</div>
+<p>Then, your working directory must contain the following elements:</p>
+</div>
 <div class="section" id="a-config-file">
 <h2>1. A <em>config</em> file:<a class="headerlink" href="#a-config-file" title="Permalink to this headline">¶</a></h2>
-<p>A certain number of parameters must be indicated to specificities of your analysis to the pipeline. This is done through a config file in the “<em>.yaml</em>” format. Please find a <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml">example</a>.</p>
-<p>The a descriptions of the expected values and</p>
+<p>Parameters must be provided to adapt the pipeline to the specificities of your analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in your working directory, copy the content of the example below and adapt it to your analysis. Refer to <a href="#id1"><span class="problematic" id="id2">:ref:`under_the_hood.rst`_</span></a> page for detailed meaning of each parameter.</p>
+<p><strong>Config file example:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Dataset ############################################################################################################</span>
+<span class="c1">### Set input samples list. (Mandatory, one of them or both)</span>
+<span class="nt">link_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">links</span> <span class="c1"># links by default.</span>
+<span class="nt">sra_samples</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example_sra_samples.tsv</span> <span class="c1">## To access to Sequences Read Archive</span>
+<span class="nt">local_samples</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example_local_samples.tsv</span> <span class="c1">## Local analysis</span>
+
+<span class="c1">### Sample processing metadata definition</span>
+<span class="nt">run_column</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">seq_run</span> <span class="c1"># Column identifying the sequencing run (sequencing error are learned for each run with DADA2)</span>
+
+<span class="c1">### Choose the denoising approach, either the &quot;vsearch&quot; to generate classical 97% identity OTUs or the &quot;DADA2&quot; for errors corrected 100% ASVs</span>
+<span class="nt">denoiser</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;DADA2&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;vsearch&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># &quot;vsearch&quot;, &quot;DADA2&quot; or both. For ITS (see below) only DADA2 has been tested.</span>
+
+<span class="c1">### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)</span>
+<span class="nt">Trim_primers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)</span>
+<span class="nt">ITS_or_16S</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16S</span> <span class="c1"># ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.</span>
+<span class="nt">min_overlap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span> <span class="c1"># Min overlap of the reads for paired-end reads merging</span>
+<span class="nt">forward_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CCTACGGGNGGCWGCAG</span> <span class="c1"># CCTACGGGNGGCWGCAG for Illumina V3V4</span>
+<span class="nt">reverse_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GACTACHVGGGTATCTAATCC</span> <span class="c1"># GACTACHVGGGTATCTAATCC for Illumina V3V4</span>
+
+<span class="c1">### Merged sequences length-based filtering</span>
+<span class="nt">merged_min_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">390</span> <span class="c1"># from 390 to 400 for V3V4</span>
+<span class="nt">merged_max_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">480</span> <span class="c1"># from 450 to 500 for V3V4</span>
+
+<span class="c1">### DADA2 specific settings ###########################################################################################</span>
+<span class="c1">#### Trim reads based on length. Reads shorter than this length are trimmed.</span>
+<span class="nt">DADA2_F_reads_length_trim</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">280</span> <span class="c1"># 280 recommended to remove low quality ends of R1. Must be &lt; than read_length - trimmed_primer_length</span>
+<span class="nt">DADA2_R_reads_length_trim</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">255</span> <span class="c1"># 255 recommended to remove low quality ends of R2. Must be &lt; than read_length - trimmed_primer_length</span>
+
+<span class="c1">### Filter reads based on number of expected errors after trimming</span>
+<span class="nt">F_extected_error</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span> <span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
+<span class="nt">R_extected_error</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span> <span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
+
+<span class="c1">### Taxonomic assignment ##############################################################################################</span>
+<span class="c1">### Reference database</span>
+<span class="nt">tax_DB_path</span><span class="p">:</span>  <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span>
+<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;ezbiocloud201805.201909&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;ezbiocloud201805.202005&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># must be the name of the folder containing files named &quot;DB_amp.fasta&quot; and &quot;DB_amp_taxonomy.txt&quot; in /data/. Can be multiple.</span>
+
+
+<span class="c1">### Taxonimc classifier.</span>
+<span class="nt">classifier</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;RDP&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;qiimerdp&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;dada2rdp&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;decipher&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># one or more from :&quot;qiimerdp&quot;, &quot;dada2rdp&quot;,&quot;decipher&quot;</span>
+
+
+<span class="c1">## Reads post-processing ##############################################################################################</span>
+<span class="nt">rarefaction_value</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">20000</span><span class="p p-Indicator">]</span> <span class="c1"># value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.</span>
+<span class="nt">min_prevalence</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">10</span><span class="p p-Indicator">]</span> <span class="c1"># proporition (in %) of samples in which the feature has to be found to be kept</span>
+<span class="nt">min_abundance</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">100</span><span class="p p-Indicator">]</span> <span class="c1"># minimal count to be kept</span>
+<span class="nt">normalization</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;CLR&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;CSS&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;TMM&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;NONE&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># value for counts normalization. Using script form https://github.com/biobakery/Maaslin2</span>
+<span class="nt">viz_replace_empty_tax</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TRUE</span> <span class="c1"># &quot;TRUE&quot; is recommended to replace empty taxonomic levels by &quot;_sp&quot; for species, &quot;_g&quot; for the genus etc.... Otherwise they are left empty</span>
+<span class="nt">filter_tax_rank</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Kingdom&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># At which taxonomic rank we filter in. (Usually &quot;Kingdom&quot;)</span>
+<span class="nt">filter_lineage</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Bacteria&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># What value of filter_tax_rank we keep. (Usually &quot;Bacteria&quot;)</span>
+<span class="nt">filter_out_tax_rank</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Phylum&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># At which taxonomic rank we filter out. (Usually &quot;Phylum&quot;)</span>
+<span class="nt">filter_out_lineage</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Bacteria_phy&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Which value of filter_out_tax_rank we filter out. (Usually &quot;Bacteria_phy&quot; to remove suspicious sequences assigned as Bacteria but which are probably not.</span>
+
+<span class="c1">## Visualization ######################################################################################################</span>
+<span class="nt">grouping_column</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;sample_group&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Column for which a plot will be generated for each value of. Rarefaction curve will be only generated with colors from the first value in the list</span>
+<span class="nt">sample_label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sample_label</span> <span class="c1"># Column in &quot;local_samples&quot; used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)</span>
+
+
+<span class="c1">## Special outputs ##############################################################################################################</span>
+<span class="c1">### Phyloseq output for external plitting and analysis</span>
+<span class="nt">melted_phyloseq</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># Generate melted phyloseq table (voluminous)</span>
+<span class="nt">phyloseq_tax_ranks</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;OTU&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Which collapse level for phyloseq output</span>
+<span class="nt">transposed_tables</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># True to have transposed count table</span>
+
+<span class="c1">### Qiime2 Visualization information</span>
+<span class="nt">Qiime2_basic_output_visualization</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># or False</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="a-sample-table">
 <h2>2. A <em>sample_table</em>:<a class="headerlink" href="#a-sample-table" title="Permalink to this headline">¶</a></h2>
@@ -74,6 +155,7 @@
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#working-directory">0. Working directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-config-file">1. A <em>config</em> file:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-sample-table">2. A <em>sample_table</em>:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#method-1-local-fastq-matching">Method 1: local <em>.fastq</em> matching</a></li>
@@ -81,6 +163,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
 </ul>
 
 <div class="relations">

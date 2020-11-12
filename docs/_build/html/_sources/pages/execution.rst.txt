@@ -1,14 +1,36 @@
 Pipeline execution
 ==================
 
+*Provided command-line examples a standard unix terminal in bash* 
 
-Before the analysis, please prepare a new folder with the following elements:
+0. Working directory
+---------------------------------
+
+Before the execution of the pipeline, prepare a new dedicated directory
+
+*for instance*::
+
+    #make a new directory named "new_analysis"
+    $ mkdir new_analysis
+
+    # change to the new directory
+    $ cd new_analysis
+
+Then, your working directory must contain the following elements: 
 
 1. A *config* file:
 ---------------------------------
-A certain number of parameters must be indicated to specificities of your analysis to the pipeline. This is done through a config file in the "*.yaml*" format. Please find a `example <https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml>`_.
 
-The a descriptions of the expected values and 
+Parameters must be provided to adapt the pipeline to the specificities of your analysis. This is done through a config file in the "*.yaml*" format. Create this file in your working directory, copy the content of the example below and adapt it to your analysis. Refer to :ref:`under_the_hood.rst`_ page for detailed meaning of each parameter.
+
+
+**Config file example:**
+
+.. literalinclude:: ../../ressources/template_files/config.yaml
+    :language: yaml
+
+
+
 
 2. A *sample_table*:
 ---------------------------------
