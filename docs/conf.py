@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'name_to_be_found'
+project = 'RSP4ABM'
 copyright = '2020, Valentin Scherz'
 author = 'Valentin Scherz'
 

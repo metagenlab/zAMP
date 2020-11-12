@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&lt;no title&gt; &#8212; name_to_be_found v.0.9.15 documentation</title>
+    <title>Pipeline execution &#8212; RSP4ABM v.0.9.15 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,6 +15,8 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="output.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="downstream_analysis.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,7 +33,28 @@
 
           <div class="body" role="main">
             
-  
+  <div class="section" id="pipeline-execution">
+<h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
+<p>Before the analysis, please prepare a new folder with the following elements:</p>
+<div class="section" id="a-config-file">
+<h2>1. A <em>config</em> file:<a class="headerlink" href="#a-config-file" title="Permalink to this headline">¶</a></h2>
+<p>A certain number of parameters must be indicated to specificities of your analysis to the pipeline. This is done through a config file in the “<em>.yaml</em>” format. Please find a <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml">example</a>.</p>
+<p>The a descriptions of the expected values and</p>
+</div>
+<div class="section" id="a-sample-table">
+<h2>2. A <em>sample_table</em>:<a class="headerlink" href="#a-sample-table" title="Permalink to this headline">¶</a></h2>
+<p>The pipeline requires a spread-sheet in tabulation-separated values (tsv) format listing all the file in your analysis and where:
+- the first column in a Unique Sample ID. This ID can NOT start by a number.
+- sufficient column to describe all the parameters demanded in the config file.
+- all metadata</p>
+<p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml">https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml</a></p>
+</div>
+<div class="section" id="method-1-local-fastq-matching">
+<h2>Method 1: local <em>.fastq</em> matching<a class="headerlink" href="#method-1-local-fastq-matching" title="Permalink to this headline">¶</a></h2>
+<p>With this method, you will deposit all required in a “<em>links</em>” folder. The files in this folder can be the actual files or symbolic links to you reads. The pipeline with</p>
+</div>
+</div>
+
 
           </div>
           
@@ -39,7 +62,7 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">name_to_be_found</a></h1>
+<h1 class="logo"><a href="../index.html">RSP4ABM</a></h1>
 
 
 
@@ -49,11 +72,23 @@
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-config-file">1. A <em>config</em> file:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-sample-table">2. A <em>sample_table</em>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#method-1-local-fastq-matching">Method 1: local <em>.fastq</em> matching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Requirements</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="downstream_analysis.html" title="previous chapter">&lt;no title&gt;</a></li>
+      <li>Next: <a href="output.html" title="next chapter">&lt;no title&gt;</a></li>
   </ul></li>
 </ul>
 </div>
