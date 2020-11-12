@@ -158,18 +158,23 @@ rule DADA2_infer_single_ASV:
         "scripts/2b_big_data_DADA2_infer_ASV_single.R"
 
 
-
+## Functions that call single or paired rules based on sample layout. 
 def sample_list_run_DADA2_merge(RUN):
-    file_list = []
+    sample_list = []
+    stat_list = []
     samples =  list(all_samples.index.values[all_samples[config["run_column"]] == RUN])
     for s in samples:
         sample_layout = layout[s]
         if sample_layout == "single":
-            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
+            sample_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_seq_tab.rds"]
+            stat_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_single_infer_stats.rds"]   
         elif sample_layout == "paired":
-            input_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_stats.rds", "DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_seq_tab.rds"]
-        file_list = file_list + input_file
-    return(file_list)
+            sample_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_seq_tab.rds"]
+            stat_file = ["DADA2/2_denoised/" + RUN+ "/" +s+ "_paired_infer_stats.rds"]     
+        sample_list = sample_list + sample_file
+        stat_list = stat_list + stat_file
+
+    return{'sample_seq_tab': sample_list, 'infer_stats' : stat_list}
 
 
 
@@ -180,7 +185,7 @@ rule DADA2_merge_sample_ASV:
     container:
         singularity_envs["dada2"]
     input:
-        lambda wildcards: sample_list_run_DADA2_merge(wildcards.RUN)
+        unpack(lambda wildcards: sample_list_run_DADA2_merge(wildcards.RUN))
     output:
         run_stats = "DADA2/2_denoised/{RUN}/run_stats.rds",
         run_seq_table = "DADA2/2_denoised/{RUN}/run_seq_tab.rds",
