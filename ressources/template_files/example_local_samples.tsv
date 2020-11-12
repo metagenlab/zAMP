@@ -32,10 +32,10 @@
 ### Should be not numerique only. Describe the sequencing run. Used to generate run specific MultiQC reports. Used as
 ### well by DADA2 which generate an error profile for each run.
 #
-#
-Sample	sample_label    sample_group    color_factor   seq_run
-S1111   sample_1    patient1    feces   run1
-MIX9B   sample_2	patient1    feces   run1
-MIX7B   sample_3	patient2    feces   run1
-MIX10B  sample_4    patient2    feces   run1
-MIX7A   QC_1    QC  QC  run1
+#Example:
+Sample  sample_label    sample_group    seq_run
+S1111   sample_1    patient1   run1
+MIX9B   sample_2	patient1   run1
+MIX7B   sample_3	patient2   run1
+MIX10B  sample_4    patient2   run1
+MIX7A   QC_1    QC  run1

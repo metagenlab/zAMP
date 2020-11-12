@@ -35,23 +35,53 @@
             
   <div class="section" id="pipeline-execution">
 <h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
-<p><em>Provided command-line examples a standard unix terminal in bash</em></p>
+<p>Upon execution, the snakemake require to associate the demanded output with the input sequencing read files. RSP4ABM is designed to accept three scenarios regarding sequencing reads locations:</p>
+<p>1. Name-based matching of reads
+Requirement:
+- all reads are located in one single directory (named <em>links</em> by default).
+- all reads have a simp</p>
+<p>Working principle:</p>
+<p>Choose this option:</p>
+<ol class="arabic simple" start="2">
+<li><p>Name-based matching of the reads, with reads renaming (OldSampleName)</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p>Local path designation of reads</p></li>
+<li><p>Sequence Read Archive (SRA) deposited reads</p></li>
+</ol>
+<p><em>Provided command-line examples are for a standard unix terminal in bash</em></p>
+<hr class="docutils" />
 <div class="section" id="working-directory">
 <h2>0. Working directory<a class="headerlink" href="#working-directory" title="Permalink to this headline">¶</a></h2>
-<p>Before the execution of the pipeline, prepare a new dedicated directory</p>
+<p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on your computer where you have sufficient space (and NOT within the pipeline folder).</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
 $ mkdir new_analysis
 
-# change to the new directory
+# Move to the new directory
 $ cd new_analysis
 </pre></div>
 </div>
-<p>Then, your working directory must contain the following elements:</p>
+<dl class="simple">
+<dt>Then, your working directory must contain the following elements:</dt><dd><ul class="simple">
+<li><p>config file</p></li>
+<li><p>sample sheet</p></li>
+<li><p>a link directory (optional)</p></li>
+</ul>
+</dd>
+</dl>
 </div>
-<div class="section" id="a-config-file">
-<h2>1. A <em>config</em> file:<a class="headerlink" href="#a-config-file" title="Permalink to this headline">¶</a></h2>
-<p>Parameters must be provided to adapt the pipeline to the specificities of your analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in your working directory, copy the content of the example below and adapt it to your analysis. Refer to <a href="#id1"><span class="problematic" id="id2">:ref:`under_the_hood.rst`_</span></a> page for detailed meaning of each parameter.</p>
+<div class="section" id="config-file">
+<h2>1. Config file:<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h2>
+<p>Parameters must be provided to adapt the pipeline to the specificities of your analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in your working directory, copy the content of the example below and adapt it to your analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files and are explained hereunder. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <a class="reference internal" href="under_the_hood.html#under-the-hood"><span class="std std-ref">Under the hood</span></a> page.</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
+$ gedit config.yaml
+
+# Or use a command-line text editor, e.g.
+# $ nano config.yaml
+</pre></div>
+</div>
 <p><strong>Config file example:</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Dataset ############################################################################################################</span>
 <span class="c1">### Set input samples list. (Mandatory, one of them or both)</span>
@@ -122,13 +152,50 @@ $ cd new_analysis
 </pre></div>
 </div>
 </div>
-<div class="section" id="a-sample-table">
-<h2>2. A <em>sample_table</em>:<a class="headerlink" href="#a-sample-table" title="Permalink to this headline">¶</a></h2>
-<p>The pipeline requires a spread-sheet in tabulation-separated values (tsv) format listing all the file in your analysis and where:
-- the first column in a Unique Sample ID. This ID can NOT start by a number.
-- sufficient column to describe all the parameters demanded in the config file.
-- all metadata</p>
-<p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml">https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/template_files/config.yaml</a></p>
+<div class="section" id="sample-sheet-metadata">
+<h2>2. Sample sheet (metadata):<a class="headerlink" href="#sample-sheet-metadata" title="Permalink to this headline">¶</a></h2>
+<p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the file in your analysis and where:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>A leftmost “<em>Sample</em>” column is an unique sample identifier.</dt><dd><p><em>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>a “<em>run_column</em>” describes the sequencing run of each sample.</dt><dd><p><em>Each sample must have a different value under this column for each sequencing run included in the analysis. If all samples were sequenced together, then the same value must be repeated for all samples. Prefer an alphanumeric factor, e.g. “run_20200101”</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>a “<em>grouping_column</em>” regroups the samples for visualization purpose.</dt><dd><p><em>Some of the visualization generated by the pipeline will be generated individually for each value contained in the “grouping column”</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>a “<em>sample_label</em>” describes each sample.</dt><dd><p><em>This column must provide a unique, explicit description of each sample. It can be a replication of the *Sample</em> column but also provides the opportunity to have more concise or explicit description of each sample*.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>optional (but recommended) columns describes technical metadata.</dt><dd><p><em>In this recommended to provide technical metadata (e.g. library preparation DNA yield) to support technical QC of the data</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>optional (but recommended) columns describes experimental or clinical metadata.</dt><dd><p><em>In this recommended to provide clinical or experimental description of each sample, which will support later interpretation of the data.</em></p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Sample sheet file example:</strong></p>
+<div class="highlight-tsv notranslate"><div class="highlight"><pre><span></span>Sample  sample_label    sample_group    seq_run
+S1111   sample_1    patient1   run1
+MIX9B   sample_2	patient1   run1
+MIX7B   sample_3	patient2   run1
+MIX10B  sample_4    patient2   run1
+MIX7A   QC_1    QC  run1
+</pre></div>
+</div>
 </div>
 <div class="section" id="method-1-local-fastq-matching">
 <h2>Method 1: local <em>.fastq</em> matching<a class="headerlink" href="#method-1-local-fastq-matching" title="Permalink to this headline">¶</a></h2>
@@ -154,10 +221,11 @@ $ cd new_analysis
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#working-directory">0. Working directory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a-config-file">1. A <em>config</em> file:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a-sample-table">2. A <em>sample_table</em>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config-file">1. Config file:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sample-sheet-metadata">2. Sample sheet (metadata):</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#method-1-local-fastq-matching">Method 1: local <em>.fastq</em> matching</a></li>
 </ul>
 </li>
