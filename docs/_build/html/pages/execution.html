@@ -250,50 +250,38 @@
 <h3>C. Absolute path<a class="headerlink" href="#c-absolute-path" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id5">
 <h4>Rational:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Eventually requires more time to prepare the <em>sample sheet</em>. Yet, it is foolproof since the <em>.fastq.gz</em> files are designated by the absolute path.</p>
-</div></blockquote>
+<p>Eventually requires more time to prepare the <em>sample sheet</em>. Yet, it is foolproof since the <em>.fastq.gz</em> files are designated by the absolute path.</p>
 </div>
 <div class="section" id="id6">
 <h4>Working principle:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample.</p>
-</div></blockquote>
+<p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample.</p>
 </div>
 <div class="section" id="id7">
 <h4>Requirements:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>A column named “<em>R1</em>” (and a “<em>R2</em>” for paired-end reads) with the corresponding path of the <em>.fastq.gz</em> read files for each sample.</p></li>
 <li><p>The presence of a value in a “<em>R2</em>” column indicates to the pipeline that the sample was sequenced in paired-end.</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>local_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
-</div></blockquote>
 </div>
 </div>
 <div class="section" id="d-sample-read-archive-sra">
 <h3>D. Sample Read Archive (SRA)<a class="headerlink" href="#d-sample-read-archive-sra" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id8">
 <h4>Rational:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
-</div></blockquote>
+<p>RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
 </div>
 <div class="section" id="id9">
 <h4>Working principle:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Reads stored on the SRA are designated by their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data are automatically downloaded and then processed by the pipeline.</p>
-</div></blockquote>
+<p>Reads stored on the SRA are designated by their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data are automatically downloaded and then processed by the pipeline.</p>
 </div>
 <div class="section" id="id10">
 <h4>Requirements:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>The leftmost column of the <em>sample sheet</em>  is named “<em>Run</em>” and matches “<em>Run</em>” identifiers from SRA.</p></li>
 <li><p>A “<em>LibraryLayout</em>” column in the <em>sample sheet</em> indicates the sequencing layout (“<em>single</em>” or “<em>paired</em>”).</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>sra_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
-</div></blockquote>
 </div>
 </div>
 </div>
@@ -406,40 +394,38 @@ $ gedit config.yaml
 <div class="section" id="write-a-sample-sheet-aka-metadata-table">
 <h2>5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):<a class="headerlink" href="#write-a-sample-sheet-aka-metadata-table" title="Permalink to this headline">¶</a></h2>
 <p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">*tabulation-separated values (tsv)* format</a> listing all the file in the analysis and where:</p>
+<ul>
+<li><p>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
 <blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</dt><dd><p><a href="#id11"><span class="problematic" id="id12">*</span></a>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK. *</p>
-</dd>
-</dl>
+<div><p><a href="#id11"><span class="problematic" id="id12">*</span></a>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK. *</p>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>A “<em>run_column</em>” describes the sequencing run of each sample.</dt><dd><p><em>Each sample must have a different value under this column for each sequencing run included in the analysis. If all samples were sequenced together, then the same value must be repeated for all samples. Prefer an alphanumeric factor, e.g. “run_20200101”</em></p>
-</dd>
-</dl>
+<li><p>A “<em>run_column</em>” describes the sequencing run of each sample.</p>
+<blockquote>
+<div><p><em>Each sample must have a different value under this column for each sequencing run included in the analysis. If all samples were sequenced together, then the same value must be repeated for all samples. Prefer an alphanumeric factor, e.g. “run_20200101”</em></p>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>A “<em>grouping_column</em>” regroups the samples for visualization purpose.</dt><dd><p><em>Some of the visualization generated by the pipeline will be generated individually for each value contained in the “grouping column”</em></p>
-</dd>
-</dl>
+<li><p>A “<em>grouping_column</em>” regroups the samples for visualization purpose.</p>
+<blockquote>
+<div><p><em>Some of the visualization generated by the pipeline will be generated individually for each value contained in the “grouping column”</em></p>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>A “<em>sample_label</em>” describes each sample.</dt><dd><p><em>This column must provide a unique, explicit description of each sample. It can be a replication of the *Sample</em> column but also provides the opportunity to have more concise or explicit description of each sample*.</p>
-</dd>
-</dl>
+<li><p>A “<em>sample_label</em>” describes each sample.</p>
+<blockquote>
+<div><p><em>This column must provide a unique, explicit description of each sample. It can be a replication of the *Sample</em> column but also provides the opportunity to have more concise or explicit description of each sample*.</p>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>Optional (but recommended) columns describes technical metadata.</dt><dd><p><em>In this recommended to provide technical metadata (e.g. library preparation DNA yield) to support technical QC of the data</em></p>
-</dd>
-</dl>
+<li><p>Optional (but recommended) columns describes technical metadata.</p>
+<blockquote>
+<div><p><em>In this recommended to provide technical metadata (e.g. library preparation DNA yield) to support technical QC of the data</em></p>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>Optional (but recommended) columns describes experimental or clinical metadata.</dt><dd><p><em>In this recommended to provide clinical or experimental description of each sample, which will support later interpretation of the data.</em></p>
-</dd>
-</dl>
+<li><p>Optional (but recommended) columns describes experimental or clinical metadata.</p>
+<blockquote>
+<div><p><em>In this recommended to provide clinical or experimental description of each sample, which will support later interpretation of the data.</em></p>
+</div></blockquote>
 </li>
 </ul>
-</div></blockquote>
 <p><em>For instance:</em></p>
 <div class="highlight-tsv notranslate"><div class="highlight"><pre><span></span>Sample  sample_label    sample_group    seq_run
 S1111   sample_1    patient1   run1
