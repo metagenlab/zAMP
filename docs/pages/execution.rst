@@ -25,7 +25,7 @@ Requirements:
 - The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
 
 - All samples have unique, simple names starting by a letter (and not a number).
-    *e.g. "1" will fail as sample name*
+*e.g. "1" will fail as sample name*
 
 - All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
     *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
@@ -78,7 +78,7 @@ Requirements:
 
 
 
-D. Sample Read Archive (SRA) hosted reads.
+D. Sample Read Archive (SRA)
 =======================================================================
 
 Rational:
