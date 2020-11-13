@@ -397,7 +397,7 @@ $ gedit config.yaml
 <ul>
 <li><p>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
 <blockquote>
-<div><p><a href="#id11"><span class="problematic" id="id12">*</span></a>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK. *</p>
+<div><p><em>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK.</em></p>
 </div></blockquote>
 </li>
 <li><p>A “<em>run_column</em>” describes the sequencing run of each sample.</p>
@@ -438,7 +438,7 @@ MIX7A   QC_1    QC  run1
 </div>
 <div class="section" id="make-sure-snakemake-is-available">
 <h2>6. Make sure Snakemake is available<a class="headerlink" href="#make-sure-snakemake-is-available" title="Permalink to this headline">¶</a></h2>
-<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">*Conda* environment</a>. (see <a href="#id13"><span class="problematic" id="id14">Setup_</span></a>). Thus, make sure to activate this environment.</p>
+<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">*Conda* environment</a>. (see <a href="#id11"><span class="problematic" id="id12">Setup_</span></a>). Thus, make sure to activate this environment.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Activate your conda environment
 $ conda activate snakemake
@@ -450,15 +450,21 @@ $ snakemake --version
 </div>
 <div class="section" id="run-the-pipeline">
 <h2>7. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Permalink to this headline">¶</a></h2>
+<p>At this stage:
+-
+-
+-
+-
+- the “<em>snakemake</em>” should be working, your bash terminal should be in a folder with a <em>config file</em> (<em>config.yaml</em>), a <em>sample sheet</em> (<em>local_samples.tsv</em>), and depending on the option chosen in <a class="reference external" href="1.Selectamethodtodefinesequencingreadfilesasinput">test</a></p>
 <p>The execution of the pipeline follows the principles of any <a class="reference external" href="https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html">*Snakemake pipeline execution</a>.</p>
 <p>But to make it short, here are the requirement arguments.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>snakemake <span class="se">\</span>
-    --snakefile &lt;path/to/pipeline&gt;/microbiome16S_pipeline/Snakefile <span class="se">\</span>
+    --snakefile &lt;path/to/pipeline&gt;/microbiome16S_pipeline&gt;/Snakefile <span class="se">\</span>
     --use-singularity --singularity-prefix &lt;path/to/singularity/containers/storage/&gt; <span class="se">\</span>
     <span class="c1">#or --use-conda --conda-prefix &lt;path/to/conda/environements/storage/&gt; \</span>
     --cores &lt;number_of_CPU_allocated_to_the_analysis&gt; <span class="se">\</span>
     --configfile config.yaml <span class="se">\</span>
-    --resources <span class="nv">max_copy</span><span class="o">=</span>&lt;number_of_file_copied_simultaneously_4_is_a_good_default_value&gt; <span class="se">\</span>
+    --resources <span class="nv">max_copy</span><span class="o">=</span>&lt;number_of_file_copied_simultaneously_4_is_a_good_default_value&gt; <span class="nv">mem_mb</span><span class="o">=</span>&lt;available_RAM_memory_in_MB&gt;<span class="se">\</span>
     all <span class="c1">#create_filtered_reads_multiqc_report PICRUSt2_output</span>
 </pre></div>
 </div>

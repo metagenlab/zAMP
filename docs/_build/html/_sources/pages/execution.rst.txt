@@ -162,7 +162,7 @@ The pipeline requires a spreadsheet in `*tabulation-separated values (tsv)* form
 
 - The leftmost column ("*Sample*" or "*Run*") is the sample identifier. 
 
-    *This identifier must be unique, start with a letter and not a number and cannot contain spaces or "-". "_" are OK. *  
+    *This identifier must be unique, start with a letter and not a number and cannot contain spaces or "-". "_" are OK.*  
     
 - A "*run_column*" describes the sequencing run of each sample.
 
@@ -210,6 +210,13 @@ The recommended way to install *Snakemake* is to create a dedicated `*Conda* env
 ************************************************************************
 7. Run the pipeline
 ************************************************************************
+At this stage:
+- 
+- 
+- 
+- 
+- the "*snakemake*" should be working, your bash terminal should be in a folder with a *config file* (*config.yaml*), a *sample sheet* (*local_samples.tsv*), and depending on the option chosen in `test <1. Select a method to define sequencing read files as input>`_
+
 The execution of the pipeline follows the principles of any `*Snakemake pipeline execution <https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html>`_. 
 
 But to make it short, here are the requirement arguments.  
