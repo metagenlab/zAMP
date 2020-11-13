@@ -7,7 +7,7 @@ Welcome to RSP4ABM's documentation!
 ============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :glob:
 
    pages/overall_description.rst
