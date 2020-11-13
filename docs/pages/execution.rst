@@ -25,12 +25,15 @@ Requirements:
 - The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
 
 - All samples have unique, simple names starting by a letter (and not a number).
-*e.g. "1" will fail as sample name*
+
+    *e.g. "1" will fail as sample name*
 
 - All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
+
     *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
 
 - All reads are located in one single directory.
+
     *reads can be actually stored in the folder or be represented by symbolic links (recommended)*
 
 - The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
