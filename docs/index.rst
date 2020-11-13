@@ -18,14 +18,3 @@ Welcome to RSP4ABM's documentation!
    pages/downstream_analysis.rst
    pages/FAQ.rst
 
-
-
-docs/pages/
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
