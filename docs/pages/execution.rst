@@ -14,31 +14,30 @@ A. Sample column
 
 Rational:
 -----------------------------------------------------------------------
-    The easy, but not completely foolproof, way to run the pipeline. 
+The easy, but not completely foolproof, way to run the pipeline. 
 
 Working principle:
 -----------------------------------------------------------------------
-    A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script will automatically match the names of the samplesfrom the *sample sheet* with the read files in *.fastq.gz* format found in a directory. 
+A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script will automatically match the names of the samplesfrom the *sample sheet* with the read files in *.fastq.gz* format found in a directory. 
     
 Requirements:
 -----------------------------------------------------------------------
+- The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
 
-    - The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
+- All samples have unique, simple names starting by a letter (and not a number).
+    *e.g. "1" will fail as sample name*
 
-    - All samples have unique, simple names starting by a letter (and not a number).
-        *e.g. "1" will fail as sample name*
+- All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
+    *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
 
-    - All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
-        *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
+- All reads are located in one single directory.
+    *reads can be actually stored in the folder or be represented by symbolic links (recommended)*
 
-    - All reads are located in one single directory.
-        *reads can be actually stored in the folder or be represented by symbolic links (recommended)*
+- The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
 
-    - The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
+- Reads are considered to be paired-end (the pipeline looks for "*R1*" and "*R2*" *.fastq.gz* files) by default. For single-end or mixed reads, the *sample sheet* must contain a "*LibraryLayout*" column indicating "*single*" (or "*paired*").
 
-    - Reads are considered to be paired-end (the pipeline looks for "*R1*" and "*R2*" *.fastq.gz* files) by default. For single-end or mixed reads, the *sample sheet* must contain a "*LibraryLayout*" column indicating "*single*" (or "*paired*").
-
-    - The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
+- The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
 
 
 B. OldSampleName column
@@ -46,17 +45,16 @@ B. OldSampleName column
 
 Rational:
 -----------------------------------------------------------------------
-    The sample names used for sequencing and contained in the *.fastq.gz* read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named "*OldSampleName*" in the *sample sheet* will force the pipeline to match the sample reads with this column, instead of the *Sample* leftmost column of the spreadsheet. This method implies that sample will be given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
+The sample names used for sequencing and contained in the *.fastq.gz* read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named "*OldSampleName*" in the *sample sheet* will force the pipeline to match the sample reads with this column, instead of the *Sample* leftmost column of the spreadsheet. This method implies that sample will be given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
 
 Working principle:
 -----------------------------------------------------------------------
-    Same than for *sample column matching* except that the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching will be done with the "*OldSampleName*" column of the *sample sheet* instead of the leftmost "*Sample*" column.
+Same than for *sample column matching* except that the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching will be done with the "*OldSampleName*" column of the *sample sheet* instead of the leftmost "*Sample*" column.
 
 Requirements:
 -----------------------------------------------------------------------
-    - A column named "*OldSampleName*" where all samples have a unique name contained without ambiguity within their *.fastq.gz* filename.
-
-    - Similar to the *Sample column matching* method for the rest.    
+- A column named "*OldSampleName*" where all samples have a unique name contained without ambiguity within their *.fastq.gz* filename.
+- Similar to the *Sample column matching* method for the rest.    
 
 
 C. Absolute path
