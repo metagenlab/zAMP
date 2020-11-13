@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setup and Requirements" href="setup.html" />
+    <link rel="next" title="Setup and system requirements" href="setup.html" />
     <link rel="prev" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" href="overall_description.html" /> 
 </head>
 
@@ -84,8 +84,65 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Requirements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#snakemake">Snakemake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conda-environments">Conda environments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singularity-containers">Singularity containers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#input-output-definition">Input output definition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input">Input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#local-reads">Local reads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sra-reads">SRA reads</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-and-traceability">Logging and traceability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#snakemake-logs">Snakemake logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rsp4abm-logs">RSP4ABM logs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sequencing-reads-qc">Sequencing reads QC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#denoising">Denoising</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vsearch-otu-clustering">Vsearch (OTU clustering)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pandaseq">PANDAseq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vsearch">Vsearch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dada2-asv-denoising">DADA2 (ASV denoising)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cutadapt">cutadapt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dada2">DADA2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#taxonomic-assignment">Taxonomic assignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reference-database">reference database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classifiers">classifiers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processing">Post-processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#taxonomic-filtering">Taxonomic filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rarefaction">Rarefaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phylogenetic-tree-generation">Phylogenetic tree generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#taxonomic-collapsing">Taxonomic collapsing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#normalization-and-abundance-based-filtering">Normalization and abundance-based filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exports">Exports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fromatting">Fromatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wide-to-long-melting">Wide to long melting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transpose-and-meta-count-table">transpose_and_meta_count_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qiime2-formats">Qiime2 formats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#picrust2">Picrust2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
@@ -153,8 +210,113 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="under-the-hood">
-<span id="id1"></span><h1>Under the hood<a class="headerlink" href="#under-the-hood" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="id1">
+<h1>Under the hood<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="snakemake-environments-and-containers">
+<h2>Snakemake, environments and containers<a class="headerlink" href="#snakemake-environments-and-containers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="snakemake">
+<h3>Snakemake<a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="conda-environments">
+<h3>Conda environments<a class="headerlink" href="#conda-environments" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="singularity-containers">
+<h3>Singularity containers<a class="headerlink" href="#singularity-containers" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="input-output-definition">
+<h2>Input output definition<a class="headerlink" href="#input-output-definition" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="input">
+<h3>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="local-reads">
+<h4>Local reads<a class="headerlink" href="#local-reads" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="sra-reads">
+<h4>SRA reads<a class="headerlink" href="#sra-reads" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="output">
+<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="logging-and-traceability">
+<h2>Logging and traceability<a class="headerlink" href="#logging-and-traceability" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="snakemake-logs">
+<h3>Snakemake logs<a class="headerlink" href="#snakemake-logs" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="rsp4abm-logs">
+<h3>RSP4ABM logs<a class="headerlink" href="#rsp4abm-logs" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="sequencing-reads-qc">
+<h2>Sequencing reads QC<a class="headerlink" href="#sequencing-reads-qc" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="denoising">
+<h2>Denoising<a class="headerlink" href="#denoising" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="vsearch-otu-clustering">
+<h3>Vsearch (OTU clustering)<a class="headerlink" href="#vsearch-otu-clustering" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pandaseq">
+<h4>PANDAseq<a class="headerlink" href="#pandaseq" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="vsearch">
+<h4>Vsearch<a class="headerlink" href="#vsearch" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="dada2-asv-denoising">
+<h3>DADA2 (ASV denoising)<a class="headerlink" href="#dada2-asv-denoising" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="cutadapt">
+<h4>cutadapt<a class="headerlink" href="#cutadapt" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="dada2">
+<h4>DADA2<a class="headerlink" href="#dada2" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="section" id="taxonomic-assignment">
+<h2>Taxonomic assignment<a class="headerlink" href="#taxonomic-assignment" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="reference-database">
+<h3>reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="classifiers">
+<h3>classifiers<a class="headerlink" href="#classifiers" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="post-processing">
+<h2>Post-processing<a class="headerlink" href="#post-processing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="taxonomic-filtering">
+<h3>Taxonomic filtering<a class="headerlink" href="#taxonomic-filtering" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="rarefaction">
+<h3>Rarefaction<a class="headerlink" href="#rarefaction" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="phylogenetic-tree-generation">
+<h3>Phylogenetic tree generation<a class="headerlink" href="#phylogenetic-tree-generation" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="taxonomic-collapsing">
+<h3>Taxonomic collapsing<a class="headerlink" href="#taxonomic-collapsing" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="normalization-and-abundance-based-filtering">
+<h3>Normalization and abundance-based filtering<a class="headerlink" href="#normalization-and-abundance-based-filtering" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="exports">
+<h3>Exports<a class="headerlink" href="#exports" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="fromatting">
+<h3>Fromatting<a class="headerlink" href="#fromatting" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="wide-to-long-melting">
+<h4>Wide to long melting<a class="headerlink" href="#wide-to-long-melting" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="transpose-and-meta-count-table">
+<h4>transpose_and_meta_count_table<a class="headerlink" href="#transpose-and-meta-count-table" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="qiime2-formats">
+<h4>Qiime2 formats<a class="headerlink" href="#qiime2-formats" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="section" id="picrust2">
+<h2>Picrust2<a class="headerlink" href="#picrust2" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -165,7 +327,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="setup.html" class="btn btn-neutral float-right" title="Setup and Requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="Setup and system requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="overall_description.html" class="btn btn-neutral float-left" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

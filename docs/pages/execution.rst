@@ -34,7 +34,7 @@ Requirements:
 
 - All reads are located in one single directory.
 
-    *reads can be actually stored in the folder or be represented by symbolic links (recommended)*
+    *reads can be actually stored in the directory or be represented by symbolic links (recommended)*
 
 - The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
 
@@ -108,7 +108,7 @@ Requirements:
 
 .. Provided command-line examples are for a standard unix terminal in bash
 
-Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline folder).
+Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline directory).
 
 *for instance*::
 
@@ -119,21 +119,21 @@ Before the execution of the pipeline, prepare a new dedicated directory somewher
     $ cd new_analysis
 
 
-The *config file*, *the sample sheet* and eventually the *links/* folder (see below) must be created within this working directory
+The *config file*, *the sample sheet* and eventually the *links/* directory (see below) must be created within this working directory
 
 
 ******************************************************************************
 3. Create a *links* directory (*for Sample and OldSampleName column as input*)
 ******************************************************************************
-When using the method of the *Sample column* or the *OldSampleName* for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single folder. By default, this folder is named "*links/*"and is found in the working directory but another path can be defined by the "*link_directory*" parameter in the *config file*. It is recommended to create symbolic links of the original reads into this *links/* folder.
+When using the method of the *Sample column* or the *OldSampleName* for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory but another path can be defined by the "*link_directory*" parameter in the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
 
 *for instance*::
 
     #make a new directory named "links"
     $ mkdir links
 
-    # Create symbolic links for .fastq.gz files from distant folder into "links/"
-    $ ln -s path/to/a/distant/folder/containing/some/reads/*.fastq.gz links/
+    # Create symbolic links for .fastq.gz files from distant directory into "links/"
+    $ ln -s path/to/a/distant/directory/containing/some/reads/*.fastq.gz links/
 
 
 ************************************************************************
@@ -210,14 +210,18 @@ The recommended way to install *Snakemake* is to create a dedicated `*Conda* env
 ************************************************************************
 7. Run the pipeline
 ************************************************************************
-At this stage:
-- 
-- 
-- 
-- 
-- the "*snakemake*" should be working, your bash terminal should be in a folder with a *config file* (*config.yaml*), a *sample sheet* (*local_samples.tsv*), and depending on the option chosen in `test <1. Select a method to define sequencing read files as input>`_
+At this stage, the content of your working directory depends upon what was selected in `1. Select a method to define sequencing read files as input`_. 
 
-The execution of the pipeline follows the principles of any `*Snakemake pipeline execution <https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html>`_. 
+But using the simplest  `A. Sample column`_ reads matching strategy it should contain:
+
+*for instance*::
+
+    # List the content of your working directory
+    $ ls
+    config.yaml  links  local_sample.tsv
+
+
+Then, the execution of the pipeline follows the principles of any `*Snakemake pipeline execution* <https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html>`_. 
 
 But to make it short, here are the requirement arguments.  
 

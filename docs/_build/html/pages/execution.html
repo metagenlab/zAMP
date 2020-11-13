@@ -219,7 +219,7 @@
 </li>
 <li><p>All reads are located in one single directory.</p>
 <blockquote>
-<div><p><em>reads can be actually stored in the folder or be represented by symbolic links (recommended)</em></p>
+<div><p><em>reads can be actually stored in the directory or be represented by symbolic links (recommended)</em></p>
 </div></blockquote>
 </li>
 <li><p>The path of the directory containing the reads is designated by the “<em>link_directory</em>” parameter in the <em>config file</em> (“<em>links/</em>” by default).</p></li>
@@ -287,7 +287,7 @@
 </div>
 <div class="section" id="create-a-working-directory">
 <h2>2. Create a working directory<a class="headerlink" href="#create-a-working-directory" title="Permalink to this headline">¶</a></h2>
-<p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline folder).</p>
+<p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline directory).</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
 $ mkdir new_analysis
@@ -296,17 +296,17 @@ $ mkdir new_analysis
 $ cd new_analysis
 </pre></div>
 </div>
-<p>The <em>config file</em>, <em>the sample sheet</em> and eventually the <em>links/</em> folder (see below) must be created within this working directory</p>
+<p>The <em>config file</em>, <em>the sample sheet</em> and eventually the <em>links/</em> directory (see below) must be created within this working directory</p>
 </div>
 <div class="section" id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
 <h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Permalink to this headline">¶</a></h2>
-<p>When using the method of the <em>Sample column</em> or the <em>OldSampleName</em> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single folder. By default, this folder is named “<em>links/</em>”and is found in the working directory but another path can be defined by the “<em>link_directory</em>” parameter in the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> folder.</p>
+<p>When using the method of the <em>Sample column</em> or the <em>OldSampleName</em> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory but another path can be defined by the “<em>link_directory</em>” parameter in the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;links&quot;
 $ mkdir links
 
-# Create symbolic links for .fastq.gz files from distant folder into &quot;links/&quot;
-$ ln -s path/to/a/distant/folder/containing/some/reads/*.fastq.gz links/
+# Create symbolic links for .fastq.gz files from distant directory into &quot;links/&quot;
+$ ln -s path/to/a/distant/directory/containing/some/reads/*.fastq.gz links/
 </pre></div>
 </div>
 </div>
@@ -450,13 +450,15 @@ $ snakemake --version
 </div>
 <div class="section" id="run-the-pipeline">
 <h2>7. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Permalink to this headline">¶</a></h2>
-<p>At this stage:
--
--
--
--
-- the “<em>snakemake</em>” should be working, your bash terminal should be in a folder with a <em>config file</em> (<em>config.yaml</em>), a <em>sample sheet</em> (<em>local_samples.tsv</em>), and depending on the option chosen in <a class="reference external" href="1.Selectamethodtodefinesequencingreadfilesasinput">test</a></p>
-<p>The execution of the pipeline follows the principles of any <a class="reference external" href="https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html">*Snakemake pipeline execution</a>.</p>
+<p>At this stage, the content of your working directory depends upon what was selected in <a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a>.</p>
+<p>But using the simplest  <a class="reference internal" href="#a-sample-column">A. Sample column</a> reads matching strategy it should contain:</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># List the content of your working directory
+$ ls
+config.yaml  links  local_sample.tsv
+</pre></div>
+</div>
+<p>Then, the execution of the pipeline follows the principles of any <a class="reference external" href="https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html">*Snakemake pipeline execution*</a>.</p>
 <p>But to make it short, here are the requirement arguments.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>snakemake <span class="se">\</span>
     --snakefile &lt;path/to/pipeline&gt;/microbiome16S_pipeline&gt;/Snakefile <span class="se">\</span>

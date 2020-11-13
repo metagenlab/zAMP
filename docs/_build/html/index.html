@@ -84,7 +84,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="pages/overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and system requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Pipeline execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
@@ -157,8 +157,65 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pages/overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and Requirements</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#snakemake-environments-and-containers">Snakemake, environments and containers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#snakemake">Snakemake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#conda-environments">Conda environments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#singularity-containers">Singularity containers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#input-output-definition">Input output definition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#input">Input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#local-reads">Local reads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#sra-reads">SRA reads</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#logging-and-traceability">Logging and traceability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#snakemake-logs">Snakemake logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#rsp4abm-logs">RSP4ABM logs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#sequencing-reads-qc">Sequencing reads QC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#denoising">Denoising</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#vsearch-otu-clustering">Vsearch (OTU clustering)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#pandaseq">PANDAseq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#vsearch">Vsearch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#dada2-asv-denoising">DADA2 (ASV denoising)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#cutadapt">cutadapt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#dada2">DADA2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#taxonomic-assignment">Taxonomic assignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#reference-database">reference database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#classifiers">classifiers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#post-processing">Post-processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#taxonomic-filtering">Taxonomic filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#rarefaction">Rarefaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#phylogenetic-tree-generation">Phylogenetic tree generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#taxonomic-collapsing">Taxonomic collapsing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#normalization-and-abundance-based-filtering">Normalization and abundance-based filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#exports">Exports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/under_the_hood.html#fromatting">Fromatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#wide-to-long-melting">Wide to long melting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#transpose-and-meta-count-table">transpose_and_meta_count_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pages/under_the_hood.html#qiime2-formats">Qiime2 formats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#picrust2">Picrust2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and system requirements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/setup.html#operating-system-and-system-resource">Operating system and system resource</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pages/setup.html#operating-system">Operating system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pages/setup.html#ram-memory">RAM memory</a></li>
