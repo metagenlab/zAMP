@@ -40,20 +40,20 @@
     mergers <- vector("list", 1)
     names(mergers) <- sample_name
 
-## Sample inference and merger of paired-end reads
+## Sample inference
     cat("Processing:", sample_name, "\n")
     ## Forward
         derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
         ddF <- dada(derepF, err=errF, multithread = snakemake@threads, verbose = 1, pool = FALSE, selfConsist = TRUE)
         mergers[[sample_name]] <- ddF
 
-## Save the dereplicated, corrected and merged sequences for this sample
+## Save the dereplicated, corrected sequences for this sample
     saveRDS(mergers, file = sample_seq_tab)
 
 ## For statistics record the number of reads
     ### Write the statistics in a dataframe
         infer <- data.frame(denoisedF = getN(ddF))
-        infer$denoisedR <- NULL
+        infer$denoisedR <- NA
         infer$merged_pairs <- infer$denoisedF
         infer$Sample <- sample_name
         infer$label <- x_column_value
