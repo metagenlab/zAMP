@@ -84,9 +84,9 @@ Upon execution, the pipeline needs to match the demanded output with the input s
 
     **Requirement:** 
 
-        - A leftmost *Run* column in the 
+        - The leftmost column of the *sample sheet*  is named "*Run*" and matches "*Run*" identifiers from SRA. 
 
-
+        - A "*LibraryLayout*" column in the *sample sheet* indicates the sequencing layout ("*single*" or "*paired*").
 
 
 
