@@ -37,24 +37,25 @@
 <h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="sequencing-read-files-selection">
 <h2>Sequencing read files selection<a class="headerlink" href="#sequencing-read-files-selection" title="Permalink to this headline">¶</a></h2>
-<p>Upon execution, the pipeline needs to associate the demanded output with the input sequencing read files (resolve the DAG in snakemake terms). RSP4ABM is designed to accept four scenarios for defining your input reads. Start by identifying the strategy that best fits your needs and then prepare your <em>working directory</em>, <em>config file</em> and <em>sample sheet</em> accordingly:</p>
+<p>Upon execution, the pipeline needs to match the demanded output with the input sequencing read files. RSP4ABM is designed to accept four scenarios for defining your input reads. Start by identifying the strategy that best fits your needs, and then prepare your <em>working directory</em>, <em>config file</em> and <em>sample sheet</em> accordingly:</p>
 <div class="section" id="sample-names-based-reads-matching-sample-column-matching">
 <h3>1. Sample names-based reads matching (<em>sample column matching</em>)<a class="headerlink" href="#sample-names-based-reads-matching-sample-column-matching" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p><strong>Motivation:</strong></p>
-<p>The easiest way to run the pipeline. However, this easy method comes with pitfalls…</p>
+<p>The easy but not completely fool-proof way to run the pipeline.</p>
 <p><strong>Working principle:</strong></p>
-<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script will automatically match the names of the samples of the <em>sample sheet</em> with the reads in the <em>links</em>. It will fail if each sample does not match exactly one single (or one pair for paired-end) <em>.fastq</em> file in the <em>links</em> directory.</p>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script will automatically match the names of the samples from the <em>sample sheet</em> with the read files in <em>.fastq.gz</em> format found in a directory.</p>
 <p><strong>Requirement:</strong></p>
 <blockquote>
 <div><ul class="simple">
+<li><p>The leftmost column of your <em>sample sheet</em> is named “<em>Sample</em>” and contains the sample identifiers.</p></li>
 <li><dl class="simple">
 <dt>all samples have unique, simple names starting by a letter and not a number.</dt><dd><p><em>e.g. “1” will fail as sample name</em></p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>all samples names are contained without ambiguity within the filename of your <em>.fastq</em> read files.</dt><dd><p><em>e.g. the pipeline will be confused by “Sample2” and “Sample2_bis”.</em></p>
+<dt>all samples names are contained without ambiguity within the filename of your <em>.fastq.gz</em> read files.</dt><dd><p><em>e.g. the pipeline will be confused by “Sample2” and “Sample2_bis”.</em></p>
 </dd>
 </dl>
 </li>
@@ -63,8 +64,8 @@
 </dd>
 </dl>
 </li>
-<li><p>The directory containing your reads is designated by the      “<em>link_directory</em>” parameter of the <em>config file</em> (“<em>links</em>”) by default.</p></li>
-<li><p>Reads are considered to be paired-end (the pipeline looks for “<em>R1</em>” and “<em>R2</em>” <em>.fastq</em> files) by default. For single-end or mixed reads, the <em>sample sheet</em> must contain a “<em>LibraryLayout</em>” column indicating “<em>paired</em>” or “<em>single</em>”.</p></li>
+<li><p>The directory containing your reads is designated by the “<em>link_directory</em>” parameter in the <em>config file</em> (“<em>links</em>” by default).</p></li>
+<li><p>Reads are considered to be paired-end (the pipeline looks for “<em>R1</em>” and “<em>R2</em>” <em>.fastq.gz</em> files) by default. For single-end or mixed reads, the <em>sample sheet</em> must contain a “<em>LibraryLayout</em>” column indicating “<em>single</em>” (or “<em>paired</em>”).</p></li>
 </ul>
 </div></blockquote>
 </div></blockquote>
@@ -73,13 +74,13 @@
 <h3>2. OldSampleName names-based reads matching (<em>OldSampleName column matching</em>)<a class="headerlink" href="#oldsamplename-names-based-reads-matching-oldsamplename-column-matching" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p><strong>Motivation:</strong></p>
-<p>The sample names used for sequencing and contained in the <em>.fastq</em> read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named “OldSampleName” in the <em>sample sheet</em> will force the pipeline to match the sample reads with this column, instead of the <em>Sample</em> leftmost column.</p>
+<p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named “OldSampleName” in the <em>sample sheet</em> will force the pipeline to match the sample reads with this column, instead of the <em>Sample</em> leftmost column of the spreadsheet.</p>
 <p><strong>Working principle:</strong></p>
 <p>Same than for <em>sample column matching</em> except that the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching will be done with the “<em>OldSampleName</em>” column of the <em>sample sheet</em> instead of the leftmost “<em>Sample</em>” column.</p>
 <p><strong>Requirement:</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li><p>a column named “OldSampleName” where all samples have unique names that are contained without ambiguity within the .fastq filename.</p></li>
+<li><p>a column named “OldSampleName” where all samples have unique names that are contained without ambiguity within the <em>.fastq.gz</em> filename.</p></li>
 <li><p>similar to the <em>sample matching</em> method for the rest.</p></li>
 </ul>
 </div></blockquote>
@@ -89,7 +90,7 @@
 <h3>3. Absolute path designation of the reads<a class="headerlink" href="#absolute-path-designation-of-the-reads" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p><strong>Motivation:</strong></p>
-<p>Eventually more time consuming but fool-proof method to designate to the pipeline the <em>.fastq</em> files by their absolute path on the system.</p>
+<p>Eventually more time consuming to prepare the <em>sample sheet</em> but fool-proof method to designate to the pipeline the <em>.fastq.gz</em> files by their absolute path on the system.</p>
 <p><strong>Working principle:</strong></p>
 <p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample.</p>
 <p><strong>Requirement:</strong></p>
@@ -105,13 +106,13 @@
 <h3>4. Sample Read Archive (SRA) hosted reads.<a class="headerlink" href="#sample-read-archive-sra-hosted-reads" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p><strong>Motivation:</strong></p>
-<p>Eventually more time consuming but fool-proof method to designate to the pipeline the <em>.fastq</em> files by their absolute path on the system.</p>
+<p>RSP4ABM capable to work with locally stored read files but also to automatically download and process reads stored the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
 <p><strong>Working principle:</strong></p>
-<p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample.</p>
+<p>Reads stored under the SRA are designated by a their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data are automatically downloaded and then processed by the pipeline.</p>
 <p><strong>Requirement:</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li><p>a column named “<em>R1</em>” (and a “<em>R2</em>” for paired-end reads) pointing to the absolute filepath of the <em>.fastq</em> reads of each sample.</p></li>
+<li><p>A leftmost <em>Run</em> column in the</p></li>
 </ul>
 </div></blockquote>
 </div></blockquote>
