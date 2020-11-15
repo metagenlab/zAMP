@@ -2,21 +2,80 @@
 Setup and system requirements
 ########################################################################
 
+.. Note:: Provided command-line examples are given as example for a standard unix terminal in bash.
+
 ************************************************************************
 Operating system and system resource 
 ************************************************************************
 
 Operating system
 =======================================================================
-RST4ABM was designed on Linux 18.04 but should compatible with all system capable of installing the dependencies listed on this page.
+RST4ABM was designed on Ubuntu 18.04 (Linux) but should compatible with all system capable of installing the dependencies listed on this page.
 
 RAM memory
 =======================================================================
-Some tools embedded in RST4ABM can be quite demanding regarding RAM memory. The actual requirements depends on your dataset, are influences by parameters and variates along processing steps. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
+Some tools embedded in RST4ABM can be quite demanding regarding RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
 - the number of samples
 - the bacterial diversity within your samples
 - the number of cores (start by reducing the number of core in snakemake if facing issues)
-In practice, 16 to 32 GB are usually required. 
+
+.. Hint:: In practice, 16 to 32 GB are usually required. 
+
+
+************************************************************************
+Dependencies
+************************************************************************
+
+Git
+=======================================================================
+
+What for?
+-----------------------------------------------------------------------
+
+Git is required to conveniently download (clone) RSP4ABM. 
+
+
+Install
+-----------------------------------------------------------------------
+
+Git is available by default in operating systems. 
+
+*Test if it is installed*::
+
+    #To test if git is installed, make it print its version. will fail if not installed
+    git --version
+
+If it is not installed, `follow indications on the git installation page. <https://git-scm.com/downloads>`_
+
+
+
+*Conda*
+=======================================================================
+
+What for?
+-----------------------------------------------------------------------
+
+`*Conda* is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_. It  enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* in RSP4ABM to install all the packages required to the execution of the each rule. 
+
+
+Install
+-----------------------------------------------------------------------
+`Follow the *Miniconda3* installation recommendation on <https://docs.conda.io/en/latest/miniconda.html> `_
+
+
+
+*Conda*
+=======================================================================
+
+
+
+
+
+
+************************************************************************
+Conda
+************************************************************************
+
 
 
 ************************************************************************

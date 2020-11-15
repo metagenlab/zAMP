@@ -18,7 +18,7 @@ The easy, but not completely foolproof, way to run the pipeline.
 
 Working principle:
 -----------------------------------------------------------------------
-A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script will automatically match the names of the samplesfrom the *sample sheet* with the read files in *.fastq.gz* format found in a directory. 
+A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script will automatically match the sample names with the sequencing read files format located in a directory. 
     
 Requirements:
 -----------------------------------------------------------------------
@@ -68,7 +68,8 @@ C. Absolute path
 
 Rational:
 -----------------------------------------------------------------------
-Eventually requires more time to prepare the *sample sheet*. Yet, it is foolproof since the *.fastq.gz* files are designated by the absolute path. 
+The foolproof approach, pointing by their absolute path the sequencing read files of each sample. 
+
 
 Working principle:
 -----------------------------------------------------------------------
@@ -109,7 +110,7 @@ Requirements:
 2. Create a working directory
 ************************************************************************
 
-.. Note:: Provided command-line examples are valid for a standard unix terminal in bash.
+.. Note:: Provided command-line examples are given as example for a standard unix terminal in bash.
 
 
 Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).
