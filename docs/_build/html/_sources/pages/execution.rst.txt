@@ -48,11 +48,14 @@ B. OldSampleName column
 
 Rational:
 -----------------------------------------------------------------------
-The sample names used for sequencing and contained in the *.fastq.gz* read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named "*OldSampleName*" in the *sample sheet* will force the pipeline to match the sample reads with this column, instead of the *Sample* leftmost column of the spreadsheet. This method implies that sample will be given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
+The sample names used for sequencing and contained in the *.fastq.gz* read filenames can impractical or incompatible with our pipeline to be used as Sample identifier (e.g. stars with numbers). In this case, match can be done with an "*OldSampleName*" column instead of the defaut "*Sample*" column. 
 
 Working principle:
 -----------------------------------------------------------------------
-Same than for *sample column matching* except that the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching will be done with the "*OldSampleName*" column of the *sample sheet* instead of the leftmost "*Sample*" column.
+Same than for *sample column matching* except that the presence of a column named "*OldSampleName*" in the *sample sheet* will force the pipeline to run the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching on this column instead of the leftmost "*Sample*" column. 
+
+This method implies that sample will be given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
+
 
 Requirements:
 -----------------------------------------------------------------------
@@ -106,9 +109,10 @@ Requirements:
 2. Create a working directory
 ************************************************************************
 
-.. Provided command-line examples are for a standard unix terminal in bash
+.. Note:: Provided command-line examples are valid for a standard unix terminal in bash.
 
-Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline directory).
+
+Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).
 
 *for instance*::
 
@@ -125,7 +129,7 @@ The *config file*, *the sample sheet* and eventually the *links/* directory (see
 ******************************************************************************
 3. Create a *links* directory (*for Sample and OldSampleName column as input*)
 ******************************************************************************
-When using the method of the *Sample column* or the *OldSampleName* for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory but another path can be defined by the "*link_directory*" parameter in the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
+When using the method of the *Sample column* or the *OldSampleName* for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory but another path can be defined by the "*link_directory*" parameter of the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
 
 *for instance*::
 
@@ -210,11 +214,11 @@ The recommended way to install *Snakemake* is to create a dedicated `*Conda* env
 ************************************************************************
 7. Run the pipeline
 ************************************************************************
-At this stage, the content of your working directory depends upon what was selected in `1. Select a method to define sequencing read files as input`_. 
 
-But using the simplest  `A. Sample column`_ reads matching strategy it should contain:
+.. Hint:: At this stage, the content of your working directory depends upon what was selected in `1. Select a method to define sequencing read files as input`_. 
 
-*for instance*::
+
+*Example of directory content for the basic Sample column strategy*::
 
     # List the content of your working directory
     $ ls

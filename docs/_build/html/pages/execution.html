@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="&lt;no title&gt;" href="output.html" />
-    <link rel="prev" title="Setup and Requirements" href="setup.html" /> 
+    <link rel="prev" title="Setup and system requirements" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,9 +83,8 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a-sample-column">A. Sample column</a><ul>
@@ -232,11 +231,12 @@
 <h3>B. OldSampleName column<a class="headerlink" href="#b-oldsamplename-column" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id1">
 <h4>Rational:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can impractical or incompatible with our pipeline (e.g. starting with a number). The inclusion of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> will force the pipeline to match the sample reads with this column, instead of the <em>Sample</em> leftmost column of the spreadsheet. This method implies that sample will be given a “new” identifier from the <em>Sample</em> leftmost column of the <em>sample sheet</em>, instead of their “old” identifier (the one in the <em>fastq.gz</em> filename and in the <em>OldSampleName</em> column).</p>
+<p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can impractical or incompatible with our pipeline to be used as Sample identifier (e.g. stars with numbers). In this case, match can be done with an “<em>OldSampleName</em>” column instead of the defaut “<em>Sample</em>” column.</p>
 </div>
 <div class="section" id="id2">
 <h4>Working principle:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p>Same than for <em>sample column matching</em> except that the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching will be done with the “<em>OldSampleName</em>” column of the <em>sample sheet</em> instead of the leftmost “<em>Sample</em>” column.</p>
+<p>Same than for <em>sample column matching</em> except that the presence of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> will force the pipeline to run the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching on this column instead of the leftmost “<em>Sample</em>” column.</p>
+<p>This method implies that sample will be given a “new” identifier from the <em>Sample</em> leftmost column of the <em>sample sheet</em>, instead of their “old” identifier (the one in the <em>fastq.gz</em> filename and in the <em>OldSampleName</em> column).</p>
 </div>
 <div class="section" id="id4">
 <h4>Requirements:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
@@ -287,7 +287,11 @@
 </div>
 <div class="section" id="create-a-working-directory">
 <h2>2. Create a working directory<a class="headerlink" href="#create-a-working-directory" title="Permalink to this headline">¶</a></h2>
-<p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space ( NOT within the pipeline directory).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Provided command-line examples are valid for a standard unix terminal in bash.</p>
+</div>
+<p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
 $ mkdir new_analysis
@@ -300,7 +304,7 @@ $ cd new_analysis
 </div>
 <div class="section" id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
 <h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Permalink to this headline">¶</a></h2>
-<p>When using the method of the <em>Sample column</em> or the <em>OldSampleName</em> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory but another path can be defined by the “<em>link_directory</em>” parameter in the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
+<p>When using the method of the <em>Sample column</em> or the <em>OldSampleName</em> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;links&quot;
 $ mkdir links
@@ -312,7 +316,7 @@ $ ln -s path/to/a/distant/directory/containing/some/reads/*.fastq.gz links/
 </div>
 <div class="section" id="write-a-config-file">
 <h2>4. Write a <em>config file</em><a class="headerlink" href="#write-a-config-file" title="Permalink to this headline">¶</a></h2>
-<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <a class="reference internal" href="under_the_hood.html#under-the-hood"><span class="std std-ref">Under the hood</span></a> page.</p>
+<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <span class="xref std std-ref">under_the_hood</span> page.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
 $ gedit config.yaml
@@ -450,9 +454,11 @@ $ snakemake --version
 </div>
 <div class="section" id="run-the-pipeline">
 <h2>7. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Permalink to this headline">¶</a></h2>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>At this stage, the content of your working directory depends upon what was selected in <a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a>.</p>
-<p>But using the simplest  <a class="reference internal" href="#a-sample-column">A. Sample column</a> reads matching strategy it should contain:</p>
-<p><em>for instance</em>:</p>
+</div>
+<p><em>Example of directory content for the basic Sample column strategy</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># List the content of your working directory
 $ ls
 config.yaml  links  local_sample.tsv
@@ -484,7 +490,7 @@ config.yaml  links  local_sample.tsv
         <a href="output.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="setup.html" class="btn btn-neutral float-left" title="Setup and Requirements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setup and system requirements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
