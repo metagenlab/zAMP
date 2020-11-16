@@ -90,20 +90,26 @@
 <li class="toctree-l3"><a class="reference internal" href="#ram-memory">RAM memory</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#git">Git</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#software-dependencies">Software dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#git"><em>Git</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#what-for">What for?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#install">Install</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#conda"><em>Conda</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">What for?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Install</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Git</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#conda">Conda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#snakemake">Snakemake</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">Conda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#singularity">Singularity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#taxonomic-reference-database">Taxonomic reference database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#snakemake"><em>Snakemake</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">What for?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reference-sequences">Reference sequences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
@@ -183,7 +189,7 @@
 <h2>Operating system and system resource<a class="headerlink" href="#operating-system-and-system-resource" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="operating-system">
 <h3>Operating system<a class="headerlink" href="#operating-system" title="Permalink to this headline">¶</a></h3>
-<p>RST4ABM was designed on Ubuntu 18.04 (Linux) but should compatible with all system capable of installing the dependencies listed on this page.</p>
+<p>RST4ABM was designed on <em>Ubuntu 18.04*</em> (Linux) but should compatible with all system capable of installing the dependencies listed on this page.</p>
 </div>
 <div class="section" id="ram-memory">
 <h3>RAM memory<a class="headerlink" href="#ram-memory" title="Permalink to this headline">¶</a></h3>
@@ -197,46 +203,70 @@
 </div>
 </div>
 </div>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="software-dependencies">
+<h2>Software dependencies<a class="headerlink" href="#software-dependencies" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="git">
-<h3>Git<a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h3>
+<h3><em>Git</em><a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="what-for">
 <h4>What for?<a class="headerlink" href="#what-for" title="Permalink to this headline">¶</a></h4>
-<p>Git is required to conveniently download (clone) RSP4ABM.</p>
+<p><em>Git</em> is required to download (clone) RSP4ABM.</p>
 </div>
 <div class="section" id="install">
 <h4>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h4>
-<p>Git is available by default in operating systems.</p>
+<p><em>Git</em> is available by default in operating systems.</p>
 <p><em>Test if it is installed</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#To test if git is installed, make it print its version. will fail if not installed</span>
 <span class="n">git</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
-<p>If it is not installed, <a class="reference external" href="https://git-scm.com/downloads">follow indications on the git installation page.</a></p>
+<p>If it is not installed, <a class="reference external" href="https://git-scm.com/downloads">follow the indications on the git installation page.</a></p>
 </div>
-</div>
-</div>
-<div class="section" id="id1">
-<h2>Git<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="conda">
-<h2>Conda<a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="snakemake">
-<h2>Snakemake<a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h2>
-<p>Snakemake is the cornerstone of this pipeline. It can be easily installed through</p>
-<p>For full description of installation options,  look at the dedicated <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">Snakemake installation page</a>. It can</p>
+<h3><em>Conda</em><a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4>What for?<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://docs.conda.io/en/latest">Conda is a convenient python-based package and environment manager.</a>
+It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be used (as an alternative to <em>Singularity containers</em>) by <em>Snakemake</em> and RSP4ABM to install all the packages required to the execution of the pipeline.</p>
 </div>
 <div class="section" id="id2">
-<h2>Conda<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>Conda is a python-based package manager enabling to easily install environments containing required tools and software. It</p>
+<h4>Install<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Follow the Miniconda3 installation recommendation</a></p>
 </div>
-<div class="section" id="singularity">
-<h2>Singularity<a class="headerlink" href="#singularity" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="taxonomic-reference-database">
-<h2>Taxonomic reference database<a class="headerlink" href="#taxonomic-reference-database" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="snakemake">
+<h3><em>Snakemake</em><a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h4>What for?<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p><em>RSP4ABM</em> is a <em>Snakemake</em> pipeline. Then, is must be installed an available for each execution of the pipeline.</p>
+</div>
+<div class="section" id="id4">
+<h4>Install<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>Follow indications on Snakemake <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">installation page</a></p>
+<p><em>Reference database</em></p>
+<p>RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files:</p>
+</div>
+<div class="section" id="reference-sequences">
+<h4>Reference sequences<a class="headerlink" href="#reference-sequences" title="Permalink to this headline">¶</a></h4>
+<p>The first file must be a <cite>*.fasta* file &lt;https://en.wikipedia.org/wiki/FASTA_format&gt;</cite> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
+<p><em>For instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
+<span class="n">CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA</span>
+<span class="o">&gt;</span><span class="mi">2</span>
+<span class="n">AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reference-taxonomy">
+<h4>Reference taxonomy<a class="headerlink" href="#reference-taxonomy" title="Permalink to this headline">¶</a></h4>
+<p>The second file must be a text file where the first column is the sequence identifier and the second must be 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
+<p><em>For instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
+<span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 
