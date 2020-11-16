@@ -109,8 +109,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reference-database">Reference database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reference-sequences">Reference sequences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-sequences-format">Reference sequences format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-taxonomy-format">Reference taxonomy format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#available-options">Available options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#s-rrna-database-bacteria">16S rRNA database (Bacteria)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unite">UNITE</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -196,7 +201,7 @@
 </div>
 <div class="section" id="ram-memory">
 <h3>RAM memory<a class="headerlink" href="#ram-memory" title="Permalink to this headline">¶</a></h3>
-<p>Some tools embedded in RST4ABM can be quite demanding regarding RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
+<p>Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
 - the number of samples
 - the bacterial diversity within your samples
 - the number of cores (start by reducing the number of core in snakemake if facing issues)</p>
@@ -251,9 +256,9 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
 </div>
 <div class="section" id="reference-database">
 <h2>Reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h2>
-<p>RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files:</p>
-<div class="section" id="reference-sequences">
-<h3>Reference sequences<a class="headerlink" href="#reference-sequences" title="Permalink to this headline">¶</a></h3>
+<p>RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original QIIME format :</p>
+<div class="section" id="reference-sequences-format">
+<h3>Reference sequences format<a class="headerlink" href="#reference-sequences-format" title="Permalink to this headline">¶</a></h3>
 <p>The first file must be a <cite>*.fasta* file &lt;https://en.wikipedia.org/wiki/FASTA_format&gt;</cite> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
@@ -263,13 +268,35 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
 </pre></div>
 </div>
 </div>
-<div class="section" id="reference-taxonomy">
-<h3>Reference taxonomy<a class="headerlink" href="#reference-taxonomy" title="Permalink to this headline">¶</a></h3>
-<p>The second file must be a text file where the first column is the sequence identifier and the second must be 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
+<div class="section" id="reference-taxonomy-format">
+<h3>Reference taxonomy format<a class="headerlink" href="#reference-taxonomy-format" title="Permalink to this headline">¶</a></h3>
+<p>The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
 <span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="available-options">
+<h3>Available options<a class="headerlink" href="#available-options" title="Permalink to this headline">¶</a></h3>
+<p>We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list of available options.</p>
+<div class="section" id="s-rrna-database-bacteria">
+<h4>16S rRNA database (Bacteria)<a class="headerlink" href="#s-rrna-database-bacteria" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="ezbiocloud">
+<h5>EzBioCloud<a class="headerlink" href="#ezbiocloud" title="Permalink to this headline">¶</a></h5>
+<p><a class="reference external" href="https://www.ezbiocloud.net/resources/16s_download">Website</a>
+<a class="reference external" href="https://doi.org/10.1099/ijsem.0.001755">Publication</a></p>
+</div>
+<div class="section" id="silvia">
+<h5>Silvia<a class="headerlink" href="#silvia" title="Permalink to this headline">¶</a></h5>
+<p><a class="reference external" href="https://www.arb-silva.de/download/arb-files/">Website</a>
+<a class="reference external" href="https://doi.org/10.1093/nar/gks1219">Publication</a></p>
+<p>ITS (Eukarya)</p>
+</div>
+</div>
+<div class="section" id="unite">
+<h4>UNITE<a class="headerlink" href="#unite" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://unite.ut.ee/repository.php">https://unite.ut.ee/repository.php</a></p>
 </div>
 </div>
 </div>

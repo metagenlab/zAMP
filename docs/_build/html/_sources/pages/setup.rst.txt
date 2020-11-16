@@ -14,7 +14,7 @@ RST4ABM was designed on *Ubuntu 18.04** (Linux) but should compatible with all s
 
 RAM memory
 =======================================================================
-Some tools embedded in RST4ABM can be quite demanding regarding RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
+Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
 - the number of samples
 - the bacterial diversity within your samples
 - the number of cores (start by reducing the number of core in snakemake if facing issues)
@@ -83,9 +83,9 @@ Follow indications on Snakemake `installation page <https://snakemake.readthedoc
 Reference database
 ************************************************************************
 
-RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files: 
+RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original QIIME format : 
 
-Reference sequences
+Reference sequences format
 =======================================================================
 
 The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>` with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
@@ -98,12 +98,42 @@ The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_for
     >2
     AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG
 
-Reference taxonomy
+Reference taxonomy format
 =======================================================================
 
-The second file must be a text file where the first column is the sequence identifier and the second must be 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
+The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
 
 *For instance*::
 
     1   Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Rhodospirillaceae;Magnetospirillum;Magnetospirillum magnetotacticum
     2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatu
+
+
+Available options
+=======================================================================
+We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list of available options. 
+
+
+16S rRNA database (Bacteria)
+-----------------------------------------------------------------------
+
+EzBioCloud
+.......................................................................
+`Website <https://www.ezbiocloud.net/resources/16s_download>`_ 
+`Publication <https://doi.org/10.1099/ijsem.0.001755>`_ 
+
+
+
+Silvia
+.......................................................................
+`Website <https://www.arb-silva.de/download/arb-files/>`_ 
+`Publication <https://doi.org/10.1093/nar/gks1219>`_ 
+
+
+
+ITS (Eukarya)
+
+UNITE
+-----------------------------------------------------------------------
+https://unite.ut.ee/repository.php
+
