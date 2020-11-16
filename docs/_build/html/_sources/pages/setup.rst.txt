@@ -70,7 +70,7 @@ Install
 
 What for?
 -----------------------------------------------------------------------
-*RSP4ABM* is a *Snakemake* pipeline. Then, is must be installed an available for each execution of the pipeline. 
+*RSP4ABM* is a *Snakemake* pipeline. Then, is must be installed and available for each execution of the pipeline. 
 
 
 Install
@@ -79,13 +79,14 @@ Follow indications on Snakemake `installation page <https://snakemake.readthedoc
 
 
 
-
-*Reference database*
+************************************************************************
+Reference database
+************************************************************************
 
 RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files: 
 
 Reference sequences
------------------------------------------------------------------------
+=======================================================================
 
 The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>` with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
 
@@ -98,7 +99,7 @@ The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_for
     AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG
 
 Reference taxonomy
------------------------------------------------------------------------
+=======================================================================
 
 The second file must be a text file where the first column is the sequence identifier and the second must be 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
 

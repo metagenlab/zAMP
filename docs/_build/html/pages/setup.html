@@ -104,10 +104,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#snakemake"><em>Snakemake</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id3">What for?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">Install</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reference-sequences">Reference sequences</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reference-database">Reference database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reference-sequences">Reference sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a></li>
 </ul>
 </li>
 </ul>
@@ -238,16 +241,19 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
 <h3><em>Snakemake</em><a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id3">
 <h4>What for?<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p><em>RSP4ABM</em> is a <em>Snakemake</em> pipeline. Then, is must be installed an available for each execution of the pipeline.</p>
+<p><em>RSP4ABM</em> is a <em>Snakemake</em> pipeline. Then, is must be installed and available for each execution of the pipeline.</p>
 </div>
 <div class="section" id="id4">
 <h4>Install<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>Follow indications on Snakemake <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">installation page</a></p>
-<p><em>Reference database</em></p>
-<p>RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files:</p>
 </div>
+</div>
+</div>
+<div class="section" id="reference-database">
+<h2>Reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h2>
+<p>RSP4ABM requires a reference taxonomic database for taxonomic classification. The original reference database provided to RSP4ABM must be organized into two files:</p>
 <div class="section" id="reference-sequences">
-<h4>Reference sequences<a class="headerlink" href="#reference-sequences" title="Permalink to this headline">¶</a></h4>
+<h3>Reference sequences<a class="headerlink" href="#reference-sequences" title="Permalink to this headline">¶</a></h3>
 <p>The first file must be a <cite>*.fasta* file &lt;https://en.wikipedia.org/wiki/FASTA_format&gt;</cite> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
@@ -258,13 +264,12 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
 </div>
 </div>
 <div class="section" id="reference-taxonomy">
-<h4>Reference taxonomy<a class="headerlink" href="#reference-taxonomy" title="Permalink to this headline">¶</a></h4>
+<h3>Reference taxonomy<a class="headerlink" href="#reference-taxonomy" title="Permalink to this headline">¶</a></h3>
 <p>The second file must be a text file where the first column is the sequence identifier and the second must be 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
 <span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
 </pre></div>
-</div>
 </div>
 </div>
 </div>
