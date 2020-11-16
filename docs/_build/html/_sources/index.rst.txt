@@ -17,6 +17,7 @@ Please note that RSP4ABM compiles number of published tools. We would be very gr
 
    pages/under_the_hood.rst
    pages/setup.rst
+   pages/ref_DB_preprocessing.rst
    pages/execution.rst
    pages/output.rst
    pages/downstream_analysis.rst

@@ -132,7 +132,8 @@ ITS (Eukarya)
 
 UNITE
 -----------------------------------------------------------------------
-https://unite.ut.ee/repository.php
+`Website <https://unite.ut.ee/repository.php>`_ 
+
 
 
 Reference database preparation
