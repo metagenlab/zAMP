@@ -1,16 +1,16 @@
-## Localisation of input database
-DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta"
-DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt"
+## Path to the input database files
+DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta" # reference genomic sequence in .fasta format
+DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt" # reference taxonomy of these sequences. 
 
 ## Output
-tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/"
-tax_DB_name: "EzBioCloud_version" # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
+tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/" # path where to write the output of the database processing pipeline. 
+tax_DB_name: "EzBioCloud_version" # desired name of processed database (name of the directory which will contain the output)
 
-#trimming
-forward_primer: CCTACGGGNGGCWGCAG
-reverse_primer: GACTACHVGGGTATCTAATCC
-length_max: 500
+## Amplicons extraction
+forward_primer: CCTACGGGNGGCWGCAG # the forward PCR primer used to extract the amplicon
+reverse_primer: GACTACHVGGGTATCTAATCC # the reverse PCR primer used to extract the amplicon
+length_max: 500 # the max length of the amplicon
 
-#Filtering
-numbers_species: 4
-numbers_genus: 2
+## Taxa collapsing
+numbers_species: 4 # the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. 
+numbers_genus: 2 # the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.
