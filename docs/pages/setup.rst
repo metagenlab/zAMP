@@ -49,10 +49,10 @@ Install
 Test
 -----------------------------------------------------------------------
 
-    *To test if git is installed*::
+*To test if git is installed*::
 
-        # To test if git is installed, make it print its version. It will fail if it is not installed
-        git --version
+    # To test if git is installed, make it print its version. It will fail if it is not installed
+    git --version
 
 
 
@@ -74,10 +74,10 @@ Install
 Test
 -----------------------------------------------------------------------
 
-    *To test if Conda is installed*::
+*To test if Conda is installed*::
 
-        # To test if Conda is installed, make it print its version. It will fail if it is not installed
-        conda --version
+    # To test if Conda is installed, make it print its version. It will fail if it is not installed
+    conda --version
 
 
 
@@ -93,19 +93,19 @@ Install
 -----------------------------------------------------------------------
     Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*.
     
-    *To install Snakemake in a dedicated "Snakemake" environment*::
+*To install Snakemake in a dedicated "Snakemake" environment*::
 
-    # Install snakemake in a environment named "Snakemake"
-    conda create -c bioconda -n snakemake  snakemake
+# Install snakemake in a environment named "Snakemake"
+conda create -c bioconda -n snakemake  snakemake
 
 
 Test
 -----------------------------------------------------------------------
 
-    *To test if Snakemake is installed*::
+*To test if Snakemake is installed*::
 
-    # To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
-    snakemake --version
+# To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
+snakemake --version
 
 
 *Singularity* 
@@ -124,10 +124,10 @@ Install
 Test
 -----------------------------------------------------------------------
 
-    *To test if Singularity is installed*::
+*To test if Singularity is installed*::
 
-        # To test if Singularity is installed, make it print its version. It will fail if it is not installed
-        singularity --version
+    # To test if Singularity is installed, make it print its version. It will fail if it is not installed
+    singularity --version
 
 
 
