@@ -3,115 +3,117 @@
 Pipeline execution
 ########################################################################
 
+.. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
+
+.. Note:: The instructions hereunder assume that the pipeline setup was completed (see :ref:`setup`), including the preprocessing of the taxonomy reference database (see :ref:`DB_preprocessing`).
+
+
 ************************************************************************
 1. Select a method to define sequencing read files as input
 ************************************************************************
 
-Before executing RSP4ABM, you need to define how you will provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs. 
+Before executing RSP4ABM, you need to define how you provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs. 
 
 A. Sample column
 =======================================================================
 
-Rational:
------------------------------------------------------------------------
-The easy, but not completely foolproof, way to run the pipeline. 
+    Rational:
+    -----------------------------------------------------------------------
+    The easy, but not completely foolproof, way to run the pipeline. 
 
-Working principle:
------------------------------------------------------------------------
-A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script will automatically match the sample names with the sequencing read files format located in a directory. 
-    
-Requirements:
------------------------------------------------------------------------
-- The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
+    Working principle:
+    -----------------------------------------------------------------------
+    A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script automatically matches the sample names with the sequencing read files format located in a directory. 
+        
+    Requirements:
+    -----------------------------------------------------------------------
+    - The leftmost column of the *sample sheet* is named "*Sample*" and contains the sample identifiers.  
 
-- All samples have unique, simple names starting by a letter (and not a number).
+    - All samples have unique, simple names starting by a letter (and not a number).
 
-    *e.g. "1" will fail as sample name*
+        *e.g. "1" will fail as sample name*
 
-- All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
+    - All samples names are contained without ambiguity within the filename of the *.fastq.gz* read files.
 
-    *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
+        *e.g. the pipeline will be confused by "Sample2" and "Sample2_bis"*.     
 
-- All reads are located in one single directory.
+    - All reads are located in one single directory.
 
-    *reads can be actually stored in the directory or be represented by symbolic links (recommended)*
+        *reads can be actually stored in the directory or be represented by symbolic links (recommended)*
 
-- The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
+    - The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
 
-- Reads are considered to be paired-end (the pipeline looks for "*R1*" and "*R2*" *.fastq.gz* files) by default. For single-end or mixed reads, the *sample sheet* must contain a "*LibraryLayout*" column indicating "*single*" (or "*paired*").
+    - Reads are considered to be paired-end (the pipeline looks for "*R1*" and "*R2*" *.fastq.gz* files) by default. For single-end or mixed reads, the *sample sheet* must contain a "*LibraryLayout*" column indicating "*single*" (or "*paired*").
 
-- The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
+    - The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
 
 
 B. OldSampleName column
 =======================================================================
 
-Rational:
------------------------------------------------------------------------
-The sample names used for sequencing and contained in the *.fastq.gz* read filenames can impractical or incompatible with our pipeline to be used as Sample identifier (e.g. stars with numbers). In this case, match can be done with an "*OldSampleName*" column instead of the defaut "*Sample*" column. 
+    Rational:
+    -----------------------------------------------------------------------
+    The sample names used for sequencing and contained in the *.fastq.gz* read filenames can be impractical or incompatible to be used as sample identifier (e.g. stars with a number). In this case, match can be done with an "*OldSampleName*" column instead of the default "*Sample*" column. 
 
-Working principle:
------------------------------------------------------------------------
-Same than for *sample column matching* except that the presence of a column named "*OldSampleName*" in the *sample sheet* will force the pipeline to run the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching on this column instead of the leftmost "*Sample*" column. 
+    Working principle:
+    -----------------------------------------------------------------------
+    Same than for `A. Sample column`_ matching except that the presence of a column named "*OldSampleName*" in the *sample sheet* forces the pipeline to run the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching on this column instead of the leftmost "*Sample*" column. 
 
-This method implies that sample will be given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
+    This method implies that sample are given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
 
 
-Requirements:
------------------------------------------------------------------------
-- A column named "*OldSampleName*" where all samples have a unique name contained without ambiguity within their *.fastq.gz* filename.
-- Similar to the *Sample column matching* method for the rest.    
+    Requirements:
+    -----------------------------------------------------------------------
+    - A column named "*OldSampleName*" where all samples have a unique name contained without ambiguity within their *.fastq.gz* filename.
+    - Similar to the *Sample column matching* method for the rest.    
 
 
 C. Absolute path
 =======================================================================
 
-Rational:
------------------------------------------------------------------------
-The foolproof approach, pointing by their absolute path the sequencing read files of each sample. 
+    Rational:
+    -----------------------------------------------------------------------
+    The foolproof approach, pointing by their absolute path the sequencing read files of each sample. 
 
 
-Working principle:
------------------------------------------------------------------------
-In presence of a "*R1*" column in the *sample sheet* (+/- a "*R2*" column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample. 
+    Working principle:
+    -----------------------------------------------------------------------
+    In presence of a "*R1*" column in the *sample sheet* (+/- a "*R2*" column for paired-end reads), the pipeline considers the path indicated in this/these column(s) as the input file(s) for each sample. 
 
-Requirements:
------------------------------------------------------------------------
-- A column named "*R1*" (and a "*R2*" for paired-end reads) with the corresponding path of the *.fastq.gz* read files for each sample. 
+    Requirements:
+    -----------------------------------------------------------------------
+    - A column named "*R1*" (and a "*R2*" for paired-end reads) with the path to the *.fastq.gz* read files for each sample. 
 
-- The presence of a value in a "*R2*" column indicates to the pipeline that the sample was sequenced in paired-end.
+    - The presence of a value in a "*R2*" column indicates to the pipeline that the sample was sequenced in paired-end.
 
-- The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
+    - The path to the *sample sheet* describing your samples is indicated by the "*local_samples*" parameter in the *config file*.
 
 
 
 D. Sample Read Archive (SRA)
 =======================================================================
 
-Rational:
------------------------------------------------------------------------
-RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (`SRA <https://en.wikipedia.org/wiki/Sequence_Read_Archive>`_). 
+    Rational:
+    -----------------------------------------------------------------------
+    RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (`SRA <https://en.wikipedia.org/wiki/Sequence_Read_Archive>`_). 
 
-Working principle:
------------------------------------------------------------------------
-Reads stored on the SRA are designated by their *Run* identifier in the *sample sheet*. The sequencing data are automatically downloaded and then processed by the pipeline.  
+    Working principle:
+    -----------------------------------------------------------------------
+    Reads stored on the SRA are designated by their *Run* identifier in the *sample sheet*. The sequencing data are automatically downloaded and then processed by the pipeline.  
 
-Requirements:
------------------------------------------------------------------------
-- The leftmost column of the *sample sheet*  is named "*Run*" and matches "*Run*" identifiers from SRA. 
+    Requirements:
+    -----------------------------------------------------------------------
+    - The leftmost column of the *sample sheet*  is named "*Run*" and matches "*Run*" identifiers from SRA. 
 
-- A "*LibraryLayout*" column in the *sample sheet* indicates the sequencing layout ("*single*" or "*paired*").
+    - A "*LibraryLayout*" column in the *sample sheet* indicates the sequencing layout ("*single*" or "*paired*").
 
-- The path to the *sample sheet* describing your samples is indicated by the "*sra_samples*" parameter in the *config file*.
+    - The path to the *sample sheet* describing your samples is indicated by the "*sra_samples*" parameter in the *config file*.
 
 
 
 ************************************************************************
 2. Create a working directory
 ************************************************************************
-
-.. Note:: Provided command-line examples are given as example for a standard unix terminal in bash.
-
 
 Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).
 
@@ -130,7 +132,7 @@ The *config file*, *the sample sheet* and eventually the *links/* directory (see
 ******************************************************************************
 3. Create a *links* directory (*for Sample and OldSampleName column as input*)
 ******************************************************************************
-When using the method of the *Sample column* or the *OldSampleName* for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory but another path can be defined by the "*link_directory*" parameter of the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
+When using the method of the `A. Sample column`_ or the `B. OldSampleName column`_ for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory, but another path can be defined by the "*link_directory*" parameter of the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
 
 *for instance*::
 
@@ -144,7 +146,7 @@ When using the method of the *Sample column* or the *OldSampleName* for the defi
 ************************************************************************
 4. Write a *config file*
 ************************************************************************
-Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a config file in the "*.yaml*" format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (*"link_directory", *"sra_samples"* and *"local_samples"*) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the :ref:`under_the_hood` page.
+Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a *config file* in the `yaml <https://en.wikipedia.org/wiki/YAML>` format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (*"link_directory", *"sra_samples"* and *"local_samples"*) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the :ref:`under_the_hood` page.
 
 *for instance*::
 
@@ -163,7 +165,7 @@ Parameters must be provided to adapt the pipeline to the specificities of the an
 ************************************************************************
 5. Write a *sample sheet* (aka *metadata table*):
 ************************************************************************
-The pipeline requires a spreadsheet in `*tabulation-separated values (tsv)* format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ listing all the file in the analysis and where:
+The pipeline requires a spreadsheet in `tabulation-separated values (tsv) format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ listing all the file in the analysis and where:
 
 - The leftmost column ("*Sample*" or "*Run*") is the sample identifier. 
 
@@ -200,7 +202,7 @@ The pipeline requires a spreadsheet in `*tabulation-separated values (tsv)* form
 ************************************************************************
 6. Make sure Snakemake is available
 ************************************************************************
-The recommended way to install *Snakemake* is to create a dedicated `*Conda* environment <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_. (see Setup_). Thus, make sure to activate this environment.
+The recommended way to install *Snakemake* is to create a dedicated `Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_. (see :ref:`Setup`). Thus, make sure to activate this environment.
 
 *for instance*::
 

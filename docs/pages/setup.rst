@@ -43,7 +43,7 @@ Software dependencies
     Install
     -----------------------------------------------------------------------
 
-    *Git* is available by default in operating systems. If it is not installed, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
+    *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
     
     Test
@@ -51,7 +51,7 @@ Software dependencies
 
     *To test if git is installed*::
 
-        #To test if git is installed, make it print its version. It will fail if it is not installed
+        # To test if git is installed, make it print its version. It will fail if it is not installed
         git --version
 
 
@@ -63,7 +63,7 @@ Software dependencies
     -----------------------------------------------------------------------
 
     `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* and RSP4ABM to install all the packages required to the execution of the pipeline.
+    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
 
 
     Install
@@ -76,7 +76,7 @@ Software dependencies
 
     *To test if Conda is installed*::
 
-        #To test if Conda is installed, make it print its version. It will fail if it is not installed
+        # To test if Conda is installed, make it print its version. It will fail if it is not installed
         conda --version
 
 
@@ -91,7 +91,12 @@ Software dependencies
 
     Install
     -----------------------------------------------------------------------
-    Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_
+    Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*.
+    
+    *To install Snakemake in a dedicated "Snakemake" environment*::
+
+    # Install snakemake in a environment named "Snakemake"
+    conda create -c bioconda -n snakemake  snakemake
 
 
     Test
@@ -99,8 +104,8 @@ Software dependencies
 
     *To test if Snakemake is installed*::
 
-        #To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
-        snakemake --version
+    # To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
+    snakemake --version
 
 
 *Singularity* 
@@ -108,7 +113,7 @@ Software dependencies
 
     What for?
     -----------------------------------------------------------------------
-    *Singularity* is a container plateform. Its enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional most of the functions in RSP4ABM. Indeed, the user can choose when executing the pipeline between Conda_ or Singularity_ to retrieved all the required tools. However, it recommended to run RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+    *Singularity* is a container plateform. Its enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM. Indeed, the user can choose when executing the pipeline between Conda_ or Singularity_ to retrieved all the required tools. Yet, it recommended to run RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
     Install
@@ -121,7 +126,7 @@ Software dependencies
 
     *To test if Singularity is installed*::
 
-        #To test if Singularity is installed, make it print its version. It will fail if it is not installed
+        # To test if Singularity is installed, make it print its version. It will fail if it is not installed
         singularity --version
 
 
@@ -132,6 +137,8 @@ Clone RSP4ABM
 
 Once all dependencies installed and working, RSP4ABM can be cloned with git::
     git clone https://github.com/metagenlab/microbiome16S_pipeline.git
+
+Please note the path of the directory in which you cloned RSP4ABM since you will have to indicate it when executing the pipeline. 
 
 
 ************************************************************************

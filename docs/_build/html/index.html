@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Under the hood" href="pages/under_the_hood.html" /> 
+    <link rel="next" title="Setup and system requirements" href="pages/setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,10 +82,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and system requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Pipeline execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
 
@@ -154,31 +154,23 @@
             
   <div class="section" id="reproducible-scalable-pipeline-for-amplicon-based-metagenomics-rsp4abm">
 <h1>Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)<a class="headerlink" href="#reproducible-scalable-pipeline-for-amplicon-based-metagenomics-rsp4abm" title="Permalink to this headline">¶</a></h1>
-<p>RSP4ABM is a bioinformatic pipeline designed for convenient, reproducible and scalable amplicon-based metagenomics. RSP4ABM is a compilation of command-line tools and R packages that processes next-generation sequencing (NGS) reads into taxonomic profiles. Scripts launching these tools are embedded in a Snakemake pipeline for reproducible, scalable and easy “<em>one-command-line</em>” execution of all steps, from QC to basic plotting. Tools and packages are made available into Singularity containers and Conda environments for easy, reproducible management of dependencies. RST4ABM processes is capable of processing local <em>fastq</em> or web-stored sequences from the Sequence Reads Archive (SRA). Complementary workflows enables preprocessing of reference taxonomic databases as <em>in silico</em> validation of amplicon amplification and taxonomic assignment based on reference genomes.</p>
-<p>Please note that RSP4ABM compiles number of published tools. We would be very grateful that you acknowledge our work but also the contribution of the developers of these tools in your publications using RSP4ABM.</p>
+<p>RSP4ABM is a bioinformatic pipeline designed for convenient, reproducible and scalable amplicon-based metagenomics. RSP4ABM is a compilation of command-line tools and R packages that processes next-generation sequencing (NGS) from amplicon-based metagenomics reads into taxonomic profiles. Scripts running these tools are embedded in a <em>Snakemake</em> pipeline for reproducible, scalable and easy “<em>one-command-line</em>” execution of all steps, from QC to basic plotting. Tools and packages are made available into <em>Singularity</em> containers and <em>Conda</em> environments for easy and reproducible management of dependencies. RST4ABM is capable of processing local sequencing reads or reads stored on the Sequence Reads Archive (SRA). Complementary workflows enables preprocessing of reference taxonomic databases as well as <em>in silico</em> prediction the taxonomic classification obtained from reference genomes.</p>
+<p>Please note that RSP4ABM is a compilation of a number of published tools. We would be very grateful that you acknowledge our work but also the contribution of the developers of these tools in your publications using RSP4ABM.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#snakemake-environments-and-containers">Snakemake, environments and containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#input-output-definition">Input output definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#logging-and-traceability">Logging and traceability</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#sequencing-reads-qc">Sequencing reads QC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#denoising">Denoising</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#taxonomic-assignment">Taxonomic assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#post-processing">Post-processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#picrust2">Picrust2</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Setup and system requirements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/setup.html#operating-system-and-system-resource">Operating system and system resource</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/setup.html#software-dependencies">Software dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#clone-rsp4abm">Clone RSP4ABM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/setup.html#reference-database">Reference database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#references">References:</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#rational">Rational:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#working-principle">Working principle:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#execution">Execution:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#working-with-without-pipeline-preprocessing">Working with without pipeline preprocessing?:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#references">References:</a></li>
 </ul>
 </li>
@@ -190,6 +182,17 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/execution.html#write-a-sample-sheet-aka-metadata-table">5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/execution.html#make-sure-snakemake-is-available">6. Make sure Snakemake is available</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/execution.html#run-the-pipeline">7. Run the pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#snakemake-environments-and-containers">Snakemake, environments and containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#input-output-definition">Input output definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#logging-and-traceability">Logging and traceability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#sequencing-reads-qc">Sequencing reads QC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#denoising">Denoising</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#taxonomic-assignment">Taxonomic assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#post-processing">Post-processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#picrust2">Picrust2</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a></li>
@@ -205,7 +208,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pages/under_the_hood.html" class="btn btn-neutral float-right" title="Under the hood" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pages/setup.html" class="btn btn-neutral float-right" title="Setup and system requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

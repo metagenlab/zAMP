@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="output.html" />
+    <link rel="next" title="Under the hood" href="under_the_hood.html" />
     <link rel="prev" title="Taxonomic reference database preprocessing" href="ref_DB_preprocessing.html" /> 
 </head>
 
@@ -83,35 +83,14 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a-sample-column">A. Sample column</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#rational">Rational:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#working-principle">Working principle:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Rational:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Working principle:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Requirements:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#c-absolute-path">C. Absolute path</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Rational:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Working principle:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Requirements:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#d-sample-read-archive-sra">D. Sample Read Archive (SRA)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id8">Rational:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id9">Working principle:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10">Requirements:</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#a-sample-column">A. Sample column</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-absolute-path">C. Absolute path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d-sample-read-archive-sra">D. Sample Read Archive (SRA)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-working-directory">2. Create a working directory</a></li>
@@ -122,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">7. Run the pipeline</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
 
@@ -190,21 +170,22 @@
             
   <div class="section" id="pipeline-execution">
 <h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Provided command-line examples are given as examples and are valid for a standard unix bash terminal.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The instructions hereunder assume that the pipeline setup was completed (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), including the preprocessing of the taxonomy reference database (see <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>).</p>
+</div>
 <div class="section" id="select-a-method-to-define-sequencing-read-files-as-input">
 <h2>1. Select a method to define sequencing read files as input<a class="headerlink" href="#select-a-method-to-define-sequencing-read-files-as-input" title="Permalink to this headline">¶</a></h2>
-<p>Before executing RSP4ABM, you need to define how you will provide the sequencing read files (in <em>.fastq.gz</em> format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs.</p>
+<p>Before executing RSP4ABM, you need to define how you provide the sequencing read files (in <em>.fastq.gz</em> format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs.</p>
 <div class="section" id="a-sample-column">
 <h3>A. Sample column<a class="headerlink" href="#a-sample-column" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="rational">
-<h4>Rational:<a class="headerlink" href="#rational" title="Permalink to this headline">¶</a></h4>
-<p>The easy, but not completely foolproof, way to run the pipeline.</p>
-</div>
-<div class="section" id="working-principle">
-<h4>Working principle:<a class="headerlink" href="#working-principle" title="Permalink to this headline">¶</a></h4>
-<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script will automatically match the sample names with the sequencing read files format located in a directory.</p>
-</div>
-<div class="section" id="requirements">
-<h4>Requirements:<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>The easy, but not completely foolproof, way to run the pipeline.</p>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script automatically matches the sample names with the sequencing read files format located in a directory.</p>
 <ul>
 <li><p>The leftmost column of the <em>sample sheet</em> is named “<em>Sample</em>” and contains the sample identifiers.</p></li>
 <li><p>All samples have unique, simple names starting by a letter (and not a number).</p>
@@ -226,72 +207,47 @@
 <li><p>Reads are considered to be paired-end (the pipeline looks for “<em>R1</em>” and “<em>R2</em>” <em>.fastq.gz</em> files) by default. For single-end or mixed reads, the <em>sample sheet</em> must contain a “<em>LibraryLayout</em>” column indicating “<em>single</em>” (or “<em>paired</em>”).</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>local_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
-</div>
+</div></blockquote>
 </div>
 <div class="section" id="b-oldsamplename-column">
 <h3>B. OldSampleName column<a class="headerlink" href="#b-oldsamplename-column" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id1">
-<h4>Rational:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can impractical or incompatible with our pipeline to be used as Sample identifier (e.g. stars with numbers). In this case, match can be done with an “<em>OldSampleName</em>” column instead of the defaut “<em>Sample</em>” column.</p>
-</div>
-<div class="section" id="id2">
-<h4>Working principle:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p>Same than for <em>sample column matching</em> except that the presence of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> will force the pipeline to run the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching on this column instead of the leftmost “<em>Sample</em>” column.</p>
-<p>This method implies that sample will be given a “new” identifier from the <em>Sample</em> leftmost column of the <em>sample sheet</em>, instead of their “old” identifier (the one in the <em>fastq.gz</em> filename and in the <em>OldSampleName</em> column).</p>
-</div>
-<div class="section" id="id4">
-<h4>Requirements:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can be impractical or incompatible to be used as sample identifier (e.g. stars with a number). In this case, match can be done with an “<em>OldSampleName</em>” column instead of the default “<em>Sample</em>” column.</p>
+<p>Same than for <a class="reference internal" href="#a-sample-column">A. Sample column</a> matching except that the presence of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> forces the pipeline to run the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching on this column instead of the leftmost “<em>Sample</em>” column.</p>
+<p>This method implies that sample are given a “new” identifier from the <em>Sample</em> leftmost column of the <em>sample sheet</em>, instead of their “old” identifier (the one in the <em>fastq.gz</em> filename and in the <em>OldSampleName</em> column).</p>
 <ul class="simple">
 <li><p>A column named “<em>OldSampleName</em>” where all samples have a unique name contained without ambiguity within their <em>.fastq.gz</em> filename.</p></li>
 <li><p>Similar to the <em>Sample column matching</em> method for the rest.</p></li>
 </ul>
-</div>
+</div></blockquote>
 </div>
 <div class="section" id="c-absolute-path">
 <h3>C. Absolute path<a class="headerlink" href="#c-absolute-path" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id5">
-<h4>Rational:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<p>The foolproof approach, pointing by their absolute path the sequencing read files of each sample.</p>
-</div>
-<div class="section" id="id6">
-<h4>Working principle:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
-<p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline will consider the path indicated in this/these column(s) as the input file(s) for each sample.</p>
-</div>
-<div class="section" id="id7">
-<h4>Requirements:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>The foolproof approach, pointing by their absolute path the sequencing read files of each sample.</p>
+<p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline considers the path indicated in this/these column(s) as the input file(s) for each sample.</p>
 <ul class="simple">
-<li><p>A column named “<em>R1</em>” (and a “<em>R2</em>” for paired-end reads) with the corresponding path of the <em>.fastq.gz</em> read files for each sample.</p></li>
+<li><p>A column named “<em>R1</em>” (and a “<em>R2</em>” for paired-end reads) with the path to the <em>.fastq.gz</em> read files for each sample.</p></li>
 <li><p>The presence of a value in a “<em>R2</em>” column indicates to the pipeline that the sample was sequenced in paired-end.</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>local_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
-</div>
+</div></blockquote>
 </div>
 <div class="section" id="d-sample-read-archive-sra">
 <h3>D. Sample Read Archive (SRA)<a class="headerlink" href="#d-sample-read-archive-sra" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id8">
-<h4>Rational:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<p>RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
-</div>
-<div class="section" id="id9">
-<h4>Working principle:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
 <p>Reads stored on the SRA are designated by their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data are automatically downloaded and then processed by the pipeline.</p>
-</div>
-<div class="section" id="id10">
-<h4>Requirements:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>The leftmost column of the <em>sample sheet</em>  is named “<em>Run</em>” and matches “<em>Run</em>” identifiers from SRA.</p></li>
 <li><p>A “<em>LibraryLayout</em>” column in the <em>sample sheet</em> indicates the sequencing layout (“<em>single</em>” or “<em>paired</em>”).</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>sra_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
-</div>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="create-a-working-directory">
 <h2>2. Create a working directory<a class="headerlink" href="#create-a-working-directory" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Provided command-line examples are given as example for a standard unix terminal in bash.</p>
-</div>
 <p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
@@ -305,7 +261,7 @@ $ cd new_analysis
 </div>
 <div class="section" id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
 <h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Permalink to this headline">¶</a></h2>
-<p>When using the method of the <em>Sample column</em> or the <em>OldSampleName</em> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
+<p>When using the method of the <a class="reference internal" href="#a-sample-column">A. Sample column</a> or the <a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory, but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;links&quot;
 $ mkdir links
@@ -317,7 +273,7 @@ $ ln -s path/to/a/distant/directory/containing/some/reads/*.fastq.gz links/
 </div>
 <div class="section" id="write-a-config-file">
 <h2>4. Write a <em>config file</em><a class="headerlink" href="#write-a-config-file" title="Permalink to this headline">¶</a></h2>
-<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a config file in the “<em>.yaml</em>” format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <span class="xref std std-ref">under_the_hood</span> page.</p>
+<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a <em>config file</em> in the <cite>yaml &lt;https://en.wikipedia.org/wiki/YAML&gt;</cite> format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <span class="xref std std-ref">under_the_hood</span> page.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
 $ gedit config.yaml
@@ -361,9 +317,8 @@ $ gedit config.yaml
 
 <span class="c1">### Taxonomic assignment ##############################################################################################</span>
 <span class="c1">### Reference database</span>
-<span class="nt">tax_DB_path</span><span class="p">:</span>  <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span>
-<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;ezbiocloud201805.201909&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;ezbiocloud201805.202005&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># must be the name of the folder containing files named &quot;DB_amp.fasta&quot; and &quot;DB_amp_taxonomy.txt&quot; in /data/. Can be multiple.</span>
-
+<span class="nt">tax_DB_path</span><span class="p">:</span>  <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span> <span class="c1"># The path to the reference databases</span>
+<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;ezbiocloud201805.201909&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;ezbiocloud201805.202005&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># The names of the databases. Must be the &quot;tax_DB_name&quot; provided when preprocessing the reference database.</span>
 
 <span class="c1">### Taxonimc classifier.</span>
 <span class="nt">classifier</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;RDP&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;qiimerdp&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;dada2rdp&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;decipher&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># one or more from :&quot;qiimerdp&quot;, &quot;dada2rdp&quot;,&quot;decipher&quot;</span>
@@ -398,7 +353,7 @@ $ gedit config.yaml
 </div>
 <div class="section" id="write-a-sample-sheet-aka-metadata-table">
 <h2>5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):<a class="headerlink" href="#write-a-sample-sheet-aka-metadata-table" title="Permalink to this headline">¶</a></h2>
-<p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">*tabulation-separated values (tsv)* format</a> listing all the file in the analysis and where:</p>
+<p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the file in the analysis and where:</p>
 <ul>
 <li><p>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
 <blockquote>
@@ -443,7 +398,7 @@ MIX7A   QC_1    QC  run1
 </div>
 <div class="section" id="make-sure-snakemake-is-available">
 <h2>6. Make sure Snakemake is available<a class="headerlink" href="#make-sure-snakemake-is-available" title="Permalink to this headline">¶</a></h2>
-<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">*Conda* environment</a>. (see <a href="#id11"><span class="problematic" id="id12">Setup_</span></a>). Thus, make sure to activate this environment.</p>
+<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">Conda environment</a>. (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>). Thus, make sure to activate this environment.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Activate your conda environment
 $ conda activate snakemake
@@ -478,7 +433,7 @@ config.yaml  links  local_sample.tsv
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="output.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="under_the_hood.html" class="btn btn-neutral float-right" title="Under the hood" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ref_DB_preprocessing.html" class="btn btn-neutral float-left" title="Taxonomic reference database preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
