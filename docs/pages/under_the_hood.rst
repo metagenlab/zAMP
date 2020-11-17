@@ -32,7 +32,9 @@ Input output definition
 Input
 =======================================================================
 
-`A set of Python functions <../../../rules/0_preprocessing/scripts/make_input_list.py>`_ is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
+:github:`A set of Python functions <rules/0_preprocessing/scripts/make_input_list.py>` is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
+
+As exposed in :ref:`test <sample_selection>`
 
 
 Local reads
