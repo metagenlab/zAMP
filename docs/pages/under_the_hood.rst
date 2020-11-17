@@ -34,11 +34,13 @@ Input
 
 :github:`A set of Python functions <rules/0_preprocessing/scripts/make_input_list.py>` is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
 
-As exposed in :ref:`test <sample_selection>`
-
+As exposed in :ref:`the sample selection section of the Pipeline execution page <sample_selection>`, RSP4ABM can accept either local or SRA-hosted read files. 
 
 Local reads
 -----------------------------------------------------------------------
+
+In the case of locally stored 
+
 
 SRA reads
 -----------------------------------------------------------------------

@@ -34,7 +34,7 @@ Input
 
 :github:`A set of Python functions <rules/0_preprocessing/scripts/make_input_list.py>` is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
 
-As exposed in :ref:`test <sample_selection>`
+As exposed in :ref:`the sample selection of the Pipeline execution page <sample_selection>`
 
 
 Local reads
