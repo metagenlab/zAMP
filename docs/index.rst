@@ -25,5 +25,4 @@ Please note that RSP4ABM is a compilation of a number of published tools. We wou
    pages/FAQ.rst
 
 
-
-.. |pipeline_path| replace:: https://github.com/metagenlab/microbiome16S_pipeline
+.. |pipeline_path| replace:: https://github.com/metagenlab/microbiome16S_pipeline/
