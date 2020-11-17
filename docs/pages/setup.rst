@@ -34,20 +34,20 @@ Software dependencies
 *Git*
 =======================================================================
 
-    What for?
-    -----------------------------------------------------------------------
+What for?
+-----------------------------------------------------------------------
 
     *Git* is required to download (clone) RSP4ABM. 
 
 
-    Install
-    -----------------------------------------------------------------------
+Install
+-----------------------------------------------------------------------
 
     *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
     
-    Test
-    -----------------------------------------------------------------------
+Test
+-----------------------------------------------------------------------
 
     *To test if git is installed*::
 
@@ -59,20 +59,20 @@ Software dependencies
 *Conda*
 =======================================================================
 
-    What for?
-    -----------------------------------------------------------------------
+What for?
+-----------------------------------------------------------------------
 
     `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
     It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
 
 
-    Install
-    -----------------------------------------------------------------------
+Install
+-----------------------------------------------------------------------
     `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_
 
 
-    Test
-    -----------------------------------------------------------------------
+Test
+-----------------------------------------------------------------------
 
     *To test if Conda is installed*::
 
@@ -84,13 +84,13 @@ Software dependencies
 *Snakemake*
 =======================================================================
 
-    What for?
-    -----------------------------------------------------------------------
+What for?
+-----------------------------------------------------------------------
     *RSP4ABM* is a *Snakemake* [1]_ pipeline. Then, it must be installed and available for each execution of the pipeline. 
 
 
-    Install
-    -----------------------------------------------------------------------
+Install
+-----------------------------------------------------------------------
     Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*.
     
     *To install Snakemake in a dedicated "Snakemake" environment*::
@@ -99,8 +99,8 @@ Software dependencies
     conda create -c bioconda -n snakemake  snakemake
 
 
-    Test
-    -----------------------------------------------------------------------
+Test
+-----------------------------------------------------------------------
 
     *To test if Snakemake is installed*::
 
@@ -111,18 +111,18 @@ Software dependencies
 *Singularity* 
 =======================================================================
 
-    What for?
-    -----------------------------------------------------------------------
+What for?
+-----------------------------------------------------------------------
     *Singularity* is a container plateform. Its enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM. Indeed, the user can choose when executing the pipeline between Conda_ or Singularity_ to retrieved all the required tools. Yet, it recommended to run RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
-    Install
-    -----------------------------------------------------------------------
+Install
+-----------------------------------------------------------------------
     Follow indications on *Singularity* `installation page <https://sylabs.io/guides/3.6/user-guide/quick_start.html#quick-installation-steps>`_
 
 
-    Test
-    -----------------------------------------------------------------------
+Test
+-----------------------------------------------------------------------
 
     *To test if Singularity is installed*::
 
