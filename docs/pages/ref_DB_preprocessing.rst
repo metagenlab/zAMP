@@ -28,7 +28,7 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. It requires the pipeline to be properly setup (setup_ ) of a *config file* 
+A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. It requires the pipeline to be properly :ref:`setup`  of a *config file* 
 
 Config file
 =======================================================================
