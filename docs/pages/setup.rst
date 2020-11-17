@@ -33,53 +33,53 @@ Software dependencies
 *Git*
 =======================================================================
 
-What for?
------------------------------------------------------------------------
+    What for?
+    -----------------------------------------------------------------------
 
-*Git* is required to download (clone) RSP4ABM. 
+    *Git* is required to download (clone) RSP4ABM. 
 
 
-Install
------------------------------------------------------------------------
+    Install
+    -----------------------------------------------------------------------
 
-*Git* is available by default in operating systems. 
+    *Git* is available by default in operating systems. 
 
-*Test if it is installed*::
+    *Test if it is installed*::
 
-    #To test if git is installed, make it print its version. will fail if not installed
-    git --version
+        #To test if git is installed, make it print its version. will fail if not installed
+        git --version
 
-If it is not installed, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
+    If it is not installed, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
 
 
 *Conda*
 =======================================================================
 
-What for?
------------------------------------------------------------------------
+    What for?
+    -----------------------------------------------------------------------
 
-`Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
-It  enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* and RSP4ABM to install all the packages required to the execution of the pipeline.
+    `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
+    It  enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* and RSP4ABM to install all the packages required to the execution of the pipeline.
 
 
-Install
------------------------------------------------------------------------
-`Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_
+    Install
+    -----------------------------------------------------------------------
+    `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_
 
 
 
 *Snakemake*
 =======================================================================
 
-What for?
------------------------------------------------------------------------
-*RSP4ABM* is a *Snakemake* pipeline. Then, is must be installed and available for each execution of the pipeline. 
+    What for?
+    -----------------------------------------------------------------------
+    *RSP4ABM* is a *Snakemake* pipeline. Then, is must be installed and available for each execution of the pipeline. 
 
 
-Install
------------------------------------------------------------------------
-Follow indications on Snakemake `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_
+    Install
+    -----------------------------------------------------------------------
+    Follow indications on Snakemake `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_
 
 
 
