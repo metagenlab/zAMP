@@ -31,72 +31,25 @@ rule Hash_master_files:
         '''
 
 
-rule Import_DB:
+rule Extract_amplicons_cutadapt:
     conda:
-        "../../envs/QIIME2-2020.02.yml"
+        "../../envs/cutadapt.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        "{prefix}/master/original_seqs.fasta"
-    output :
-        temp("{prefix}/QIIME/DB_seq.qza")
-    threads :
-        1
-    shell :
-         '''
-        qiime tools import \
-        --type 'FeatureData[Sequence]' \
-        --input-path {input} \
-        --output-path {output} 
-        '''
-
-
-rule Extract_amplicons:
-    conda:
-        "../../envs/QIIME2-2020.02.yml"
-    container:
-        singularity_envs["qiime2"] 
+        singularity_envs["cutadapt"]
     input:
-        "{prefix}/QIIME/DB_seq.qza"
+        "{prefix}/master/original_seqs.fasta"
     output:
-        temp("{prefix}/QIIME/DB_amp_seq.qza")
+        temp("{prefix}/QIIME/dna-sequences.fasta")
     params:
-        primer_forward = config["forward_primer"],
-        primer_reverse = config["reverse_primer"],
+        forward_primer = config["forward_primer"],
+        reverse_primer = config["reverse_primer"],
         length = config["length_max"]
     log:
-        "{prefix}/logs/QIIME/DB_amp_seq.txt"
+        "{prefix}/logs/QIIME/DB_cutadapt.txt"
     threads :
         1
-    shell :
-         '''
-        qiime feature-classifier extract-reads \
-        --i-sequences {input} \
-        --p-f-primer {params[primer_forward]} \
-        --p-r-primer {params[primer_reverse]} \
-        --p-trunc-len {params[length]} \
-        --o-reads {output} \
-        --verbose 2> {log}
-        '''
-
-
-rule Export_amplicons:
-    conda:
-        "../../envs/QIIME2-2020.02.yml"
-    container:
-        singularity_envs["qiime2"] 
-    input :
-        "{prefix}/QIIME/DB_amp_seq.qza"
-    output :
-        temp("{prefix}/QIIME/dna-sequences.fasta")
-    threads :
-        1
-    shell :
-         '''
-        qiime tools export \
-        --input-path {input} \
-        --output-path $(dirname {output}) 
-        '''
+    script: 
+        "scripts/cutadapt_DB.py"
 
 
 rule Dereplicate_amplicons:
