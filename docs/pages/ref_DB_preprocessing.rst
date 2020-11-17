@@ -5,6 +5,9 @@
 Taxonomic reference database preprocessing
 ########################################################################
 
+.. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
+
+
 ************************************************************************
 Rational:    
 ************************************************************************

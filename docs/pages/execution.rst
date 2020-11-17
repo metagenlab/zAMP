@@ -3,6 +3,11 @@
 Pipeline execution
 ########################################################################
 
+.. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
+
+.. Note:: The instructions hereunder assume that the pipeline setup was completed (see :ref:`setup`), including the preprocessing of the taxonomy reference database (see :ref:`DB_preprocessing`).
+
+
 ************************************************************************
 1. Select a method to define sequencing read files as input
 ************************************************************************

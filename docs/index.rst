@@ -15,10 +15,10 @@ Please note that RSP4ABM compiles number of published tools. We would be very gr
    :maxdepth: 2
    :glob:
 
-   pages/under_the_hood.rst
    pages/setup.rst
    pages/ref_DB_preprocessing.rst
    pages/execution.rst
+   pages/under_the_hood.rst
    pages/output.rst
    pages/downstream_analysis.rst
    pages/FAQ.rst
