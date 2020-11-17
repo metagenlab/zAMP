@@ -52,7 +52,7 @@ Test
 *To test if git is installed*::
 
     # To test if git is installed, make it print its version. It will fail if it is not installed
-    git --version
+    $ git --version
 
 
 
@@ -93,10 +93,11 @@ Install
 -----------------------------------------------------------------------
     Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*.
     
+
 *To install Snakemake in a dedicated "Snakemake" environment*::
 
-# Install snakemake in a environment named "Snakemake"
-conda create -c bioconda -n snakemake  snakemake
+    # Install snakemake in a environment named "Snakemake"
+    conda create -c bioconda -n snakemake  snakemake
 
 
 Test
@@ -104,8 +105,8 @@ Test
 
 *To test if Snakemake is installed*::
 
-# To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
-snakemake --version
+    # To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
+    snakemake --version
 
 
 *Singularity* 
@@ -136,7 +137,9 @@ Clone RSP4ABM
 ************************************************************************
 
 Once all dependencies installed and working, RSP4ABM can be cloned with git::
+
     git clone https://github.com/metagenlab/microbiome16S_pipeline.git
+
 
 Please note the path of the directory in which you cloned RSP4ABM since you will have to indicate it when executing the pipeline. 
 
@@ -149,7 +152,7 @@ The very last step of setup and before the first execution of the pipeline, a de
 
 
 ************************************************************************
-References:
+References
 ************************************************************************
 
 .. [1] Köster J, Rahmann S. Snakemake-a scalable bioinformatics workflow engine. Bioinformatics. 2012. 
