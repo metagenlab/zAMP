@@ -68,7 +68,7 @@ What for?
 
 Install
 -----------------------------------------------------------------------
-    `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_
+    `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_.
 
 
 Test

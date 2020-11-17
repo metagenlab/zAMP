@@ -8,6 +8,8 @@ Pipeline execution
 .. Note:: The instructions hereunder assume that the pipeline setup was completed (see :ref:`setup`), including the preprocessing of the taxonomy reference database (see :ref:`DB_preprocessing`).
 
 
+.. _sample_selection:
+
 ************************************************************************
 1. Select a method to define sequencing read files as input
 ************************************************************************

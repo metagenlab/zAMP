@@ -26,6 +26,8 @@ Input output definition
 Input
 =======================================================================
 
+`A set of Python functions <|pipeline_path|rules/0_preprocessing/scripts/make_input_list.py>`_ is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
+
 Local reads
 -----------------------------------------------------------------------
 

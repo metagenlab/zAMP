@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setup and system requirements" href="setup.html" />
-    <link rel="prev" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" href="overall_description.html" /> 
+    <link rel="next" title="&lt;no title&gt;" href="output.html" />
+    <link rel="prev" title="Pipeline execution" href="execution.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,7 +83,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#snakemake">Snakemake</a></li>
@@ -142,8 +144,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#picrust2">Picrust2</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
 
@@ -228,6 +228,7 @@
 <h2>Input output definition<a class="headerlink" href="#input-output-definition" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="input">
 <h3>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="|pipeline_path|rules/0_preprocessing/scripts/make_input_list.py">A set of Python functions</a> is run at each execution of the RSP4ABM to match sequencing read files to each sample.</p>
 <div class="section" id="local-reads">
 <h4>Local reads<a class="headerlink" href="#local-reads" title="Permalink to this headline">¶</a></h4>
 </div>
@@ -327,10 +328,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="setup.html" class="btn btn-neutral float-right" title="Setup and system requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="output.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="overall_description.html" class="btn btn-neutral float-left" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="execution.html" class="btn btn-neutral float-left" title="Pipeline execution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
