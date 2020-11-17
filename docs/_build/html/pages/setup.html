@@ -108,18 +108,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#reference-database">Reference database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reference-sequences-format">Reference sequences format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reference-taxonomy-format">Reference taxonomy format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#available-options">Available options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#ezbiocloud-16s-rrna-bacteria">EzBioCloud (16S rRNA  - Bacteria)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#silvia-16-18s-rrna-23-28s-rrna-bacteria-and-eukarya">Silvia (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#unite">UNITE</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#reference-database-preparation">Reference database preparation</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#reference-database">Reference database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
@@ -191,7 +180,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="setup-and-system-requirements">
-<h1>Setup and system requirements<a class="headerlink" href="#setup-and-system-requirements" title="Permalink to this headline">¶</a></h1>
+<span id="setup"></span><h1>Setup and system requirements<a class="headerlink" href="#setup-and-system-requirements" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Provided command-line examples are given as example for a standard unix terminal in bash.</p>
@@ -230,7 +219,7 @@
 <span class="n">git</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
-<p>If it is not installed, <a class="reference external" href="https://git-scm.com/downloads">follow the indications on the git installation page.</a></p>
+<p>If it is not installed, <a class="reference external" href="https://git-scm.com/downloads">follow the indications on the git installation page.</a>.</p>
 </div>
 </div>
 <div class="section" id="conda">
@@ -259,49 +248,7 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
 </div>
 <div class="section" id="reference-database">
 <h2>Reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h2>
-<p>RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original QIIME format :</p>
-<div class="section" id="reference-sequences-format">
-<h3>Reference sequences format<a class="headerlink" href="#reference-sequences-format" title="Permalink to this headline">¶</a></h3>
-<p>The first file must be a <cite>*.fasta* file &lt;https://en.wikipedia.org/wiki/FASTA_format&gt;</cite> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
-<p><em>For instance</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
-<span class="n">CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA</span>
-<span class="o">&gt;</span><span class="mi">2</span>
-<span class="n">AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="reference-taxonomy-format">
-<h3>Reference taxonomy format<a class="headerlink" href="#reference-taxonomy-format" title="Permalink to this headline">¶</a></h3>
-<p>The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
-<p><em>For instance</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
-<span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="available-options">
-<h3>Available options<a class="headerlink" href="#available-options" title="Permalink to this headline">¶</a></h3>
-<p>We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list of available options.</p>
-<div class="section" id="ezbiocloud-16s-rrna-bacteria">
-<h4>EzBioCloud (16S rRNA  - Bacteria)<a class="headerlink" href="#ezbiocloud-16s-rrna-bacteria" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://www.ezbiocloud.net/resources/16s_download">Website</a></p>
-<p><a class="reference external" href="https://doi.org/10.1099/ijsem.0.001755">Publication</a></p>
-</div>
-<div class="section" id="silvia-16-18s-rrna-23-28s-rrna-bacteria-and-eukarya">
-<h4>Silvia (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )<a class="headerlink" href="#silvia-16-18s-rrna-23-28s-rrna-bacteria-and-eukarya" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://www.arb-silva.de/download/arb-files/">Website</a></p>
-<p><a class="reference external" href="https://doi.org/10.1093/nar/gks1219">Publication</a></p>
-<p>ITS (Eukarya)</p>
-</div>
-<div class="section" id="unite">
-<h4>UNITE<a class="headerlink" href="#unite" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://unite.ut.ee/repository.php">Website</a></p>
-</div>
-</div>
-<div class="section" id="reference-database-preparation">
-<h3>Reference database preparation<a class="headerlink" href="#reference-database-preparation" title="Permalink to this headline">¶</a></h3>
-</div>
+<p>Before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>.</p>
 </div>
 </div>
 

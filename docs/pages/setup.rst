@@ -1,8 +1,10 @@
 
 .. _setup:
+
 ########################################################################
 Setup and system requirements
 ########################################################################
+
 
 .. Note:: Provided command-line examples are given as example for a standard unix terminal in bash.
 
@@ -47,7 +49,7 @@ Install
     #To test if git is installed, make it print its version. will fail if not installed
     git --version
 
-If it is not installed, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_
+If it is not installed, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
 
 
@@ -85,58 +87,6 @@ Follow indications on Snakemake `installation page <https://snakemake.readthedoc
 Reference database
 ************************************************************************
 
-RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original QIIME format : 
-
-Reference sequences format
-=======================================================================
-
-The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>` with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
+Before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing`. 
 
 
-*For instance*::
-
-    >1
-    CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA
-    >2
-    AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG
-
-Reference taxonomy format
-=======================================================================
-
-The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
-
-*For instance*::
-
-    1   Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Rhodospirillaceae;Magnetospirillum;Magnetospirillum magnetotacticum
-    2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatu
-
-
-Available options
-=======================================================================
-We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list of available options. 
-
-
-EzBioCloud (16S rRNA  - Bacteria)
------------------------------------------------------------------------
-`Website <https://www.ezbiocloud.net/resources/16s_download>`_ 
-
-`Publication <https://doi.org/10.1099/ijsem.0.001755>`_ 
-
-
-Silvia (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )
------------------------------------------------------------------------
-`Website <https://www.arb-silva.de/download/arb-files/>`_ 
-
-`Publication <https://doi.org/10.1093/nar/gks1219>`_ 
-
-
-ITS (Eukarya)
-
-UNITE
------------------------------------------------------------------------
-`Website <https://unite.ut.ee/repository.php>`_ 
-
-
-
-Reference database preparation
-=======================================================================

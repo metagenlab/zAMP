@@ -89,7 +89,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#rational">Rational:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#working-principle">Working principle:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#execution">Execution:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#taxonomy-database">Taxonomy database</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reference-sequences-format">Reference sequences format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reference-taxonomy-format">Reference taxonomy format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#available-options">Available options</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#config-file">Config file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pipeline-execution">Pipeline execution</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References:</a></li>
@@ -163,61 +170,115 @@
            <div itemprop="articleBody">
             
   <div class="section" id="taxonomic-reference-database-preprocessing">
-<h1>Taxonomic reference database preprocessing<a class="headerlink" href="#taxonomic-reference-database-preprocessing" title="Permalink to this headline">¶</a></h1>
+<span id="db-preprocessing"></span><h1>Taxonomic reference database preprocessing<a class="headerlink" href="#taxonomic-reference-database-preprocessing" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="rational">
 <h2>Rational:<a class="headerlink" href="#rational" title="Permalink to this headline">¶</a></h2>
 <p>After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for some species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics.</p>
-<p>The classifiers included in RSP4ABM (original RDP <a class="footnote-reference brackets" href="#id6" id="id1">1</a>, RDP integrated in Qiime <a class="footnote-reference brackets" href="#id7" id="id2">2</a> and Decipher IDTAXA <a class="footnote-reference brackets" href="#id8" id="id3">3</a>) all have specific formatting requirements and the two last require an initial training.</p>
+<p>The classifiers included in RSP4ABM (original <em>RDP</em> <a class="footnote-reference brackets" href="#id9" id="id1">1</a>, <em>RDP</em> integrated in <em>QIIME</em> <a class="footnote-reference brackets" href="#id10" id="id2">2</a> and <em>Decipher IDTAXA</em> <a class="footnote-reference brackets" href="#id11" id="id3">3</a>) all have specific formatting requirements and the two last require an initial training.</p>
 <p>Thus, to improve the taxonomic classification and to adapt the format of the provided reference database to these multiple classifiers, RSP4ABM includes a dedicated reference database preprocessing workflow.</p>
 </div>
 <div class="section" id="working-principle">
 <h2>Working principle:<a class="headerlink" href="#working-principle" title="Permalink to this headline">¶</a></h2>
 <p>The user indicates to the pipeline the sequences of the used PCR primers and the path to the reference database fasta file and taxonomy annotation file to be formatted.</p>
-<p>With that and using tools from Qiime2 <a class="footnote-reference brackets" href="#id9" id="id4">4</a> and VSEARCH <a class="footnote-reference brackets" href="#id10" id="id5">5</a>, as well as home-made scripts, the pipeline will first extract the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families.</p>
-<p>In addition, the pipeline formats the database and executes the pre-training required for the original RDP classier as well as Decipher IDTAXA.</p>
+<p>Based on this information and using tools from <em>QIIME2</em> <a class="footnote-reference brackets" href="#id12" id="id4">4</a> and <em>VSEARCH</em> <a class="footnote-reference brackets" href="#id13" id="id5">5</a>, as well as home-made scripts, the pipeline will first extract the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families.</p>
+<p>In addition, the pipeline formats the database and executes the pre-training required for the original <em>RDP</em> classier as well as <em>Decipher IDTAXA</em>.</p>
 <p>Finally, the  pipeline will make a copy of the original database as well as computes hashes of all files for traceability purposes.</p>
 </div>
 <div class="section" id="execution">
 <h2>Execution:<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
-<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. It requires the pipeline to be properly <span class="xref std std-ref">setup</span>  of a <em>config file</em></p>
+<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. First, the user must retrieve a database in the right format. Then, a <em>config</em> file must be defined. Then, provided that the pipeline was properly setup (<em>see</em> <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), the dedicated worflow can be executed.</p>
+<div class="section" id="taxonomy-database">
+<h3>Taxonomy database<a class="headerlink" href="#taxonomy-database" title="Permalink to this headline">¶</a></h3>
+<p>RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original <em>QIIME</em> format: a <em>.fasta</em> file of reference genetic sequences of the gene used as marker and a second file describing the taxonomy of these sequences. We use EzBioCloud but other options are available.</p>
+<div class="section" id="reference-sequences-format">
+<h4>Reference sequences format<a class="headerlink" href="#reference-sequences-format" title="Permalink to this headline">¶</a></h4>
+<p>The first file must be a <cite>*.fasta* file &lt;https://en.wikipedia.org/wiki/FASTA_format&gt;</cite> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
+<p><em>For instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
+<span class="n">CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA</span>
+<span class="o">&gt;</span><span class="mi">2</span>
+<span class="n">AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reference-taxonomy-format">
+<h4>Reference taxonomy format<a class="headerlink" href="#reference-taxonomy-format" title="Permalink to this headline">¶</a></h4>
+<p>The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
+<p><em>For instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
+<span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="available-options">
+<h4>Available options<a class="headerlink" href="#available-options" title="Permalink to this headline">¶</a></h4>
+<p>We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list which could be successfully prepared with our pipeline.</p>
+<p><em>EzBioCloud (16S rRNA  - Bacteria)</em></p>
+<blockquote>
+<div><p><a class="reference external" href="https://www.ezbiocloud.net/resources/16s_download">Website</a></p>
+<p><a class="reference external" href="https://doi.org/10.1099/ijsem.0.001755">Publication</a></p>
+</div></blockquote>
+<p><em>Silvia (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )</em></p>
+<blockquote>
+<div><p><a class="reference external" href="https://www.arb-silva.de/download/arb-files/">Website</a></p>
+<p><a class="reference external" href="https://doi.org/10.1093/nar/gks1219">Publication</a></p>
+</div></blockquote>
+<p><em>UNITE (ITS - Eukarya)</em></p>
+<blockquote>
+<div><p><a class="reference external" href="https://unite.ut.ee/repository.php">Website</a></p>
+</div></blockquote>
+</div>
+</div>
 <div class="section" id="config-file">
 <h3>Config file<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Localisation of input database</span>
-<span class="nt">DBpath_seq</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta&quot;</span> <span class="c1"># reference genomic sequence in .fasta file</span>
-<span class="nt">DBpath_tax</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt&quot;</span> <span class="c1"># reference taxonomic of these sequence</span>
+<p>As for the main pipeline, parameters must be provided in an <em>config</em> file in the <em>.yaml</em> format</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
+$ gedit config.yaml
+
+# Or use a command-line text editor, e.g.
+# $ nano config.yaml
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Path to the input database files</span>
+<span class="nt">DBpath_seq</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta&quot;</span> <span class="c1"># reference genomic sequence in .fasta format</span>
+<span class="nt">DBpath_tax</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt&quot;</span> <span class="c1"># reference taxonomy of these sequences. </span>
 
 <span class="c1">## Output</span>
 <span class="nt">tax_DB_path</span><span class="p">:</span> <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span> <span class="c1"># path where to write the output of the database processing pipeline. </span>
-<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="s">&quot;EzBioCloud_version&quot;</span> <span class="c1"># The desired name of processed pipeline. </span>
+<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="s">&quot;EzBioCloud_version&quot;</span> <span class="c1"># desired name of processed database (name of the directory which will contain the output)</span>
 
-<span class="c1">#trimming</span>
+<span class="c1">## Amplicons extraction</span>
 <span class="nt">forward_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CCTACGGGNGGCWGCAG</span> <span class="c1"># the forward PCR primer used to extract the amplicon</span>
 <span class="nt">reverse_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GACTACHVGGGTATCTAATCC</span> <span class="c1"># the reverse PCR primer used to extract the amplicon</span>
 <span class="nt">length_max</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span> <span class="c1"># the max length of the amplicon</span>
 
-<span class="c1">#Filtering</span>
-<span class="nt">numbers_species</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span> <span class="c1"># the max number of species names to be pasted together </span>
-<span class="nt">numbers_genus</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span> <span class="c1"># the max number of genus names to be pasted together </span>
+<span class="c1">## Taxa collapsing</span>
+<span class="nt">numbers_species</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span> <span class="c1"># the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. </span>
+<span class="nt">numbers_genus</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span> <span class="c1"># the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="pipeline-execution">
+<h3>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="references">
 <h2>References:<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Wang Q, Garrity GM, Tiedje JM, Cole JR. Naïve Bayesian classifier for rapid assignment of rRNA sequences into the new bacterial taxonomy. Appl Environ Microbiol. 2007.</p>
 </dd>
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>Caporaso JG, Kuczynski J, Stombaugh J, Bittinger K, Bushman FD, Costello EK, et al. QIIME allows analysis of high-throughput community sequencing data. Nature Methods. 2010.</p>
 </dd>
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
 <dd><p>Murali A, Bhargava A, Wright ES. IDTAXA: A novel approach for accurate taxonomic classification of microbiome sequences. Microbiome. 2018.</p>
 </dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
 <dd><p>Estaki M, Jiang L, Bokulich NA, McDonald D, González A, Kosciolek T, et al. QIIME 2 Enables Comprehensive End-to-End Analysis of Diverse Microbiome Data and Comparative Studies with Publicly Available Data. Curr Protoc Bioinforma. 2020.</p>
 </dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
 <dd><p>Rognes T, Flouri T, Nichols B, Quince C, Mahé F. VSEARCH: A versatile open source tool for metagenomics. PeerJ. 2016</p>
 </dd>
 </dl>
