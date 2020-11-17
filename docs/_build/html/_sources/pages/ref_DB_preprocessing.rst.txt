@@ -10,7 +10,7 @@ Rational:
 ************************************************************************
 After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for some species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
 
-The classifiers included in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
+The classifiers integrated in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
 
 Thus, to improve the taxonomic classification and to adapt the format of the provided reference database to these multiple classifiers, RSP4ABM includes a dedicated reference database preprocessing workflow. 
 
@@ -30,7 +30,6 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-
 A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. First, the user must retrieve a database in the right format. Then, a *config* file must be defined. Then, provided that the pipeline was properly setup (*see* :ref:`setup`), the dedicated worflow can be executed. 
 
 
@@ -43,7 +42,7 @@ RSP4ABM requires a reference taxonomic database for classification. The database
 Reference sequences format
 -----------------------------------------------------------------------
 
-The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>` with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
+The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>`_ with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
 
 
 *For instance*::
@@ -68,9 +67,9 @@ The second file must be a text file where the first column is the sequence ident
 
 
 
-Available options
+Find your own reference database
 -----------------------------------------------------------------------
-We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list which could be successfully prepared with our pipeline. 
+We do not provide a taxonomic reference database. However, here is a short, non-exhaustive list of databases from which we successfully prepare a database with our pipeline. 
 
 
 *EzBioCloud (16S rRNA  - Bacteria)*
@@ -92,17 +91,23 @@ We do not provide a taxonomic reference database. However, here is a short, non-
     `Website <https://unite.ut.ee/repository.php>`_ 
 
 
+Working directory
+=======================================================================
 
+To execute the pipeline place yourself in any directory but preferably not in the directory pipeline. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations are defined in the `config file`_ .) 
 
+*for instance*::
 
-
+    # create a directory to run the database preprocessing workflow
+    $ mkdir DB_processing
+    # Change into this new directory
+    $ cd DB_processing
 
 
 Config file
 =======================================================================
 
-
-As for the main pipeline, parameters must be provided in an *config* file in the *.yaml* format
+As for the main pipeline, parameters must be provided in an *config file* in the *.yaml* format
 
 *for instance*::
 
