@@ -87,6 +87,6 @@ Follow indications on Snakemake `installation page <https://snakemake.readthedoc
 Reference database
 ************************************************************************
 
-Before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing`. 
+As the last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing`. 
 
 

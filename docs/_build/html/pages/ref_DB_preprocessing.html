@@ -90,8 +90,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#working-principle">Working principle:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#execution">Execution:</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#taxonomy-database">Taxonomy database</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#reference-sequences-format">Reference sequences format</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reference-taxonomy-format">Reference taxonomy format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reference-sequences">Reference sequences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#find-your-own-reference-database">Find your own reference database</a></li>
 </ul>
 </li>
@@ -187,12 +187,17 @@
 </div>
 <div class="section" id="execution">
 <h2>Execution:<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
-<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. First, the user must retrieve a database in the right format. Then, a <em>config</em> file must be defined. Then, provided that the pipeline was properly setup (<em>see</em> <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), the dedicated worflow can be executed.</p>
+<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database.</p>
+<p>First, the user must retrieve a database in the right format and a <em>config</em> file must be defined. Then, provided that the pipeline was properly setup (<em>see</em> <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), the dedicated workflow can be executed.</p>
 <div class="section" id="taxonomy-database">
 <h3>Taxonomy database<a class="headerlink" href="#taxonomy-database" title="Permalink to this headline">¶</a></h3>
-<p>RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original <em>QIIME</em> format: a <em>.fasta</em> file of reference genetic sequences of the gene used as marker and a second file describing the taxonomy of these sequences. We use EzBioCloud but other options are available.</p>
-<div class="section" id="reference-sequences-format">
-<h4>Reference sequences format<a class="headerlink" href="#reference-sequences-format" title="Permalink to this headline">¶</a></h4>
+<p>RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original <em>QIIME</em> format:</p>
+<ul class="simple">
+<li><p>a <a class="reference internal" href="#reference-sequences">Reference sequences</a> <em>.fasta</em> file.</p></li>
+<li><p>a <a class="reference internal" href="#reference-taxonomy">Reference taxonomy</a> text file describing with the taxonomic classification of these sequences.</p></li>
+</ul>
+<div class="section" id="reference-sequences">
+<h4>Reference sequences<a class="headerlink" href="#reference-sequences" title="Permalink to this headline">¶</a></h4>
 <p>The first file must be a <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">*.fasta* file</a> with reference genomic sequences. The description of each sequence must be an unique sequence identifier.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="mi">1</span>
@@ -202,8 +207,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="reference-taxonomy-format">
-<h4>Reference taxonomy format<a class="headerlink" href="#reference-taxonomy-format" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="reference-taxonomy">
+<h4>Reference taxonomy<a class="headerlink" href="#reference-taxonomy" title="Permalink to this headline">¶</a></h4>
 <p>The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
@@ -243,13 +248,13 @@ $ cd DB_processing
 </div>
 <div class="section" id="config-file">
 <h3>Config file<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h3>
-<p>As for the main pipeline, parameters must be provided in an <em>config file</em> in the <em>.yaml</em> format</p>
+<p>As for the main pipeline, parameters must be provided in an <em>config file</em> in the <em>.yaml</em> format. Please adapt the following template to your situation.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
 $ gedit config.yaml
 
 # Or use a command-line text editor, e.g.
-# $ nano config.yaml
+# $ nano config_DB.yaml
 </pre></div>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Path to the input database files</span>
@@ -273,6 +278,15 @@ $ gedit config.yaml
 </div>
 <div class="section" id="pipeline-execution">
 <h3>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h3>
+<p>Once the reference database in the right format downloaded and the <em>config file</em> prepared, the database preprocessing pipeline can be executed.</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
+$ gedit config.yaml
+
+# Or use a command-line text editor, e.g.
+# $ nano config.yaml
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="references">

@@ -20,7 +20,7 @@ Working principle:
 
 The user indicates to the pipeline the sequences of the used PCR primers and the path to the reference database fasta file and taxonomy annotation file to be formatted. 
 
-Based on this information and using tools from *QIIME2* [4]_ and *VSEARCH* [5]_, as well as home-made scripts, the pipeline will first extract the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families. 
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline will first extract the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families. 
 
 In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
 
@@ -30,16 +30,21 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. First, the user must retrieve a database in the right format. Then, a *config* file must be defined. Then, provided that the pipeline was properly setup (*see* :ref:`setup`), the dedicated worflow can be executed. 
+A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. 
+
+First, the user must retrieve a database in the right format and a *config* file must be defined. Then, provided that the pipeline was properly setup (*see* :ref:`setup`), the dedicated workflow can be executed. 
 
 
 Taxonomy database
 =======================================================================
 
-RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original *QIIME* format: a *.fasta* file of reference genetic sequences of the gene used as marker and a second file describing the taxonomy of these sequences. We use EzBioCloud but other options are available. 
+RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original *QIIME* format: 
+
+- a `Reference sequences`_ *.fasta* file.
+- a `Reference taxonomy`_ text file describing with the taxonomic classification of these sequences.  
 
 
-Reference sequences format
+Reference sequences
 -----------------------------------------------------------------------
 
 The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_format>`_ with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
@@ -54,7 +59,7 @@ The first file must be a `*.fasta* file <https://en.wikipedia.org/wiki/FASTA_for
 
 
 
-Reference taxonomy format
+Reference taxonomy
 -----------------------------------------------------------------------
 
 The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
@@ -107,7 +112,7 @@ To execute the pipeline place yourself in any directory but preferably not in th
 Config file
 =======================================================================
 
-As for the main pipeline, parameters must be provided in an *config file* in the *.yaml* format
+As for the main pipeline, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
 
 *for instance*::
 
@@ -115,7 +120,7 @@ As for the main pipeline, parameters must be provided in an *config file* in the
     $ gedit config.yaml
 
     # Or use a command-line text editor, e.g. 
-    # $ nano config.yaml 
+    # $ nano config_DB.yaml 
 
 
 
@@ -126,7 +131,11 @@ As for the main pipeline, parameters must be provided in an *config file* in the
 Pipeline execution
 =======================================================================
 
+Once the reference database in the right format downloaded and the *config file* prepared, the database preprocessing pipeline can be executed. 
 
+
+.. literalinclude:: ../../ressources/template_files/DB_snakemake_bash_command.sh 
+    :language: bash
 
 
 
@@ -137,5 +146,6 @@ References:
 .. [1] Wang Q, Garrity GM, Tiedje JM, Cole JR. Naïve Bayesian classifier for rapid assignment of rRNA sequences into the new bacterial taxonomy. Appl Environ Microbiol. 2007. 
 .. [2] Caporaso JG, Kuczynski J, Stombaugh J, Bittinger K, Bushman FD, Costello EK, et al. QIIME allows analysis of high-throughput community sequencing data. Nature Methods. 2010. 
 .. [3] Murali A, Bhargava A, Wright ES. IDTAXA: A novel approach for accurate taxonomic classification of microbiome sequences. Microbiome. 2018.
-.. [4] Estaki M, Jiang L, Bokulich NA, McDonald D, González A, Kosciolek T, et al. QIIME 2 Enables Comprehensive End-to-End Analysis of Diverse Microbiome Data and Comparative Studies with Publicly Available Data. Curr Protoc Bioinforma. 2020. 
+.. [4] Compeau PEC, Pevzner PA, Tesler G, Papoutsoglou G, Roscito JG, Dahl A, et al. Cutadapt removes adapter sequences from high-throughput sequencing reads kenkyuhi hojokin gan rinsho kenkyu jigyo. EMBnet.journal. 2013.  
 .. [5] Rognes T, Flouri T, Nichols B, Quince C, Mahé F. VSEARCH: A versatile open source tool for metagenomics. PeerJ. 2016
+.. [6] R Core Development Team. R: A language and environment for statistical computing. Vienna, Austria. 2019. 
