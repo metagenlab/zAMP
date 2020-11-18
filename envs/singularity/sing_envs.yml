@@ -1,7 +1,7 @@
 sra-toolkit: docker://ncbi/sra-toolkit:2.9.4-1
 fastqc: docker://quay.io/biocontainers/fastqc:0.11.9--0
 multiqc: docker://quay.io/biocontainers/multiqc:1.7--py_4
-cutadapt: docker://metagenlab/amplicons_cutadapt:v.1.0
+cutadapt: docker://metagenlab/amplicons_cutadapt:v.2.0
 pandaseq: docker://quay.io/biocontainers/pandaseq:2.11--2
 vsearch: docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0
 dada2: docker://quay.io/biocontainers/bioconductor-dada2:1.12.1--r36he1b5a44_0
