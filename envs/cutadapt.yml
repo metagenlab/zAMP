@@ -2,6 +2,6 @@ name: cutadapt
 channels:
  - bioconda
 dependencies:
- - cutadapt = 2.10
+ - cutadapt = 3.0
  - Biopython
 
