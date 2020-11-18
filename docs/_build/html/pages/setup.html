@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Taxonomic reference database preprocessing" href="ref_DB_preprocessing.html" />
-    <link rel="prev" title="Under the hood" href="under_the_hood.html" /> 
+    <link rel="prev" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,7 +83,6 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setup and system requirements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#operating-system-and-system-resource">Operating system and system resource</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#operating-system">Operating system</a></li>
@@ -94,25 +93,37 @@
 <li class="toctree-l3"><a class="reference internal" href="#git"><em>Git</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#what-for">What for?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test">Test</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#conda"><em>Conda</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">What for?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id2">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Test</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#snakemake"><em>Snakemake</em></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">What for?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">What for?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Test</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#singularity"><em>Singularity</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id8">What for?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">Test</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#clone-rsp4abm">Clone RSP4ABM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reference-database">Reference database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
 
@@ -183,20 +194,22 @@
 <span id="setup"></span><h1>Setup and system requirements<a class="headerlink" href="#setup-and-system-requirements" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Provided command-line examples are given as example for a standard unix terminal in bash.</p>
+<p>Provided command-line examples are given as examples and are valid for a standard unix bash terminal.</p>
 </div>
 <div class="section" id="operating-system-and-system-resource">
 <h2>Operating system and system resource<a class="headerlink" href="#operating-system-and-system-resource" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="operating-system">
 <h3>Operating system<a class="headerlink" href="#operating-system" title="Permalink to this headline">¶</a></h3>
-<p>RST4ABM was designed on <em>Ubuntu 18.04*</em> (Linux) but should compatible with all system capable of installing the dependencies listed on this page.</p>
+<p>RST4ABM was designed on <em>Ubuntu 18.04</em> (Linux) but should compatible with all system capable of installing the dependencies listed on this page.</p>
 </div>
 <div class="section" id="ram-memory">
 <h3>RAM memory<a class="headerlink" href="#ram-memory" title="Permalink to this headline">¶</a></h3>
-<p>Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced parameters indicated in the config file. The bottleneck usually is the taxonomic assignment. Factors which can raise your RAM requirements are:
-- the number of samples
-- the bacterial diversity within your samples
-- the number of cores (start by reducing the number of core in snakemake if facing issues)</p>
+<p>Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced by parameters set in the <em>config file</em>. The bottleneck usually is the taxonomic assignment. Factors which can increase the RAM requirement are:</p>
+<ul class="simple">
+<li><p>the number of samples</p></li>
+<li><p>the bacterial diversity within your samples</p></li>
+<li><p>the number of cores</p></li>
+</ul>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>In practice, 16 to 32 GB are usually required.</p>
@@ -209,46 +222,123 @@
 <h3><em>Git</em><a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="what-for">
 <h4>What for?<a class="headerlink" href="#what-for" title="Permalink to this headline">¶</a></h4>
-<p><em>Git</em> is required to download (clone) RSP4ABM.</p>
+<blockquote>
+<div><p><em>Git</em> is required to download (clone) RSP4ABM.</p>
+</div></blockquote>
 </div>
 <div class="section" id="install">
 <h4>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h4>
-<p><em>Git</em> is available by default in operating systems.</p>
-<p><em>Test if it is installed</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#To test if git is installed, make it print its version. will fail if not installed</span>
-<span class="n">git</span> <span class="o">--</span><span class="n">version</span>
+<blockquote>
+<div><p><em>Git</em> is available by default in operating systems. If not, <a class="reference external" href="https://git-scm.com/downloads">follow the indications on the git installation page.</a>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="test">
+<h4>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h4>
+<p><em>To test if git is installed</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># To test if git is installed, make it print its version. It will fail if it is not installed
+$ git --version
 </pre></div>
 </div>
-<p>If it is not installed, <a class="reference external" href="https://git-scm.com/downloads">follow the indications on the git installation page.</a>.</p>
 </div>
 </div>
 <div class="section" id="conda">
 <h3><em>Conda</em><a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id1">
 <h4>What for?<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://docs.conda.io/en/latest">Conda is a convenient python-based package and environment manager.</a>
-It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be used (as an alternative to <em>Singularity containers</em>) by <em>Snakemake</em> and RSP4ABM to install all the packages required to the execution of the pipeline.</p>
+<blockquote>
+<div><p><a class="reference external" href="https://docs.conda.io/en/latest">Conda is a convenient python-based package and environment manager.</a>
+It enables the easy installation of <em>Snakemake</em>. Furthermore, it can be used (as an alternative to <em>Singularity containers</em>) by <em>Snakemake</em> to retrieve all the packages required for the execution of the RSP4ABM.</p>
+</div></blockquote>
 </div>
 <div class="section" id="id2">
 <h4>Install<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Follow the Miniconda3 installation recommendation</a></p>
+<blockquote>
+<div><p><a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Follow the Miniconda3 installation recommendation</a></p>
+</div></blockquote>
+</div>
+<div class="section" id="id3">
+<h4>Test<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p><em>To test if Conda is installed</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># To test if Conda is installed, make it print its version. It will fail if it is not installed</span>
+<span class="n">conda</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="snakemake">
 <h3><em>Snakemake</em><a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id3">
-<h4>What for?<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p><em>RSP4ABM</em> is a <em>Snakemake</em> pipeline. Then, is must be installed and available for each execution of the pipeline.</p>
-</div>
 <div class="section" id="id4">
-<h4>Install<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<p>Follow indications on Snakemake <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">installation page</a></p>
+<h4>What for?<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p><em>RSP4ABM</em> is a <em>Snakemake</em> <a class="footnote-reference brackets" href="#id13" id="id5">1</a> pipeline. Then, it must be installed and available for each execution of the pipeline.</p>
+</div></blockquote>
+</div>
+<div class="section" id="id6">
+<h4>Install<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Follow indications on <em>Snakemake</em> <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">installation page</a>. It is good practice to create a dedicated <em>Conda</em> environment for <em>Snakemake</em>.</p>
+</div></blockquote>
+<p><em>To install Snakemake in a dedicated “Snakemake” environment</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install snakemake in a environment named &quot;Snakemake&quot;</span>
+<span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="o">-</span><span class="n">n</span> <span class="n">snakemake</span>  <span class="n">snakemake</span>
+</pre></div>
 </div>
 </div>
+<div class="section" id="id7">
+<h4>Test<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p><em>To test if Snakemake is installed</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># To test if Snakmeake is installed, make it print its version. It will fail if it is not installed</span>
+<span class="n">snakemake</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="singularity">
+<h3><em>Singularity</em><a class="headerlink" href="#singularity" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h4>What for?<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p><em>Singularity</em> is a container plateform. Its enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of <em>Singularity</em> is optional for most of the functions in RSP4ABM. Indeed, the user can choose when executing the pipeline between <a class="reference internal" href="#conda">Conda</a> or <a class="reference internal" href="#singularity">Singularity</a> to retrieved all the required tools. Yet, it recommended to run RSP4ABM with <em>Singularity</em> containers since it enables the best level of reproducibility <a class="footnote-reference brackets" href="#id14" id="id9">2</a>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="id10">
+<h4>Install<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Follow indications on <em>Singularity</em> <a class="reference external" href="https://sylabs.io/guides/3.6/user-guide/quick_start.html#quick-installation-steps">installation page</a></p>
+</div></blockquote>
+</div>
+<div class="section" id="id12">
+<h4>Test<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<p><em>To test if Singularity is installed</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># To test if Singularity is installed, make it print its version. It will fail if it is not installed</span>
+<span class="n">singularity</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="clone-rsp4abm">
+<h2>Clone RSP4ABM<a class="headerlink" href="#clone-rsp4abm" title="Permalink to this headline">¶</a></h2>
+<p>Once all dependencies installed and working, RSP4ABM can be cloned with git:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">metagenlab</span><span class="o">/</span><span class="n">microbiome16S_pipeline</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>Please note the path of the directory in which you cloned RSP4ABM since you will have to indicate it when executing the pipeline.</p>
 </div>
 <div class="section" id="reference-database">
 <h2>Reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h2>
-<p>Before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>.</p>
+<p>The very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
+<dd><p>Köster J, Rahmann S. Snakemake-a scalable bioinformatics workflow engine. Bioinformatics. 2012.</p>
+</dd>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id9">2</a></span></dt>
+<dd><p>Grüning B, Chilton J, Köster J, Dale R, Soranzo N, van den Beek M, et al. Practical Computational Reproducibility in the Life Sciences. Cell Systems. 2018.</p>
+</dd>
+</dl>
 </div>
 </div>
 
@@ -263,7 +353,7 @@ It  enables the easy installation of <em>Snakemake</em>. Furthermore, it can be 
         <a href="ref_DB_preprocessing.html" class="btn btn-neutral float-right" title="Taxonomic reference database preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="under_the_hood.html" class="btn btn-neutral float-left" title="Under the hood" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

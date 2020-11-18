@@ -32,9 +32,8 @@ R_extected_error: 6 # 8 recommended, increase if too much reads are filtered out
 
 ### Taxonomic assignment ##############################################################################################
 ### Reference database
-tax_DB_path:  "/data/databases/amplicon_based_metagenomics/16S/"
-tax_DB_name: ["ezbiocloud201805.201909", "ezbiocloud201805.202005"] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
-
+tax_DB_path:  "/data/databases/amplicon_based_metagenomics/16S/" # The path to the reference databases
+tax_DB_name: ["ezbiocloud201805.201909", "ezbiocloud201805.202005"] # The names of the databases. Must be the "tax_DB_name" provided when preprocessing the reference database.
 
 ### Taxonimc classifier.
 classifier: ["RDP", "qiimerdp", "dada2rdp","decipher"] # one or more from :"qiimerdp", "dada2rdp","decipher"

@@ -15,6 +15,7 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 
 
 ## Include the pipeline rules
+include: "rules/0_preprocessing/make_input_list.rules"
 include: "rules/0_preprocessing/make_output_list_files.rules"
 include: "rules/0_preprocessing/get_reads.rules"
 include: "rules/0_preprocessing/logging.rules"
