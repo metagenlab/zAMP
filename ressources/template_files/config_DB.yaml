@@ -9,8 +9,12 @@ tax_DB_name: "EzBioCloud_version" # desired name of processed database (name of 
 ## Amplicons extraction
 forward_primer: CCTACGGGNGGCWGCAG # the forward PCR primer used to extract the amplicon
 reverse_primer: GACTACHVGGGTATCTAATCC # the reverse PCR primer used to extract the amplicon
-length_max: 500 # the max length of the amplicon
+amplicon_min_length: 300 # the min length of the amplicon
+amplicon_max_length: 500 # the max length of the amplicon
+excepted_errors: 4 # the accepted number of mistmach per primer
+amplicon_min_coverage: 0.9 # the proportion of the primers that must be found in the reference sequences. 
 
 ## Taxa collapsing
 numbers_species: 4 # the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. 
 numbers_genus: 2 # the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.
+
