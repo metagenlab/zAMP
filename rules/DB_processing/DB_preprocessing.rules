@@ -88,7 +88,7 @@ rule Export_amplicons:
     input :
         "{prefix}/QIIME/DB_amp_seq.qza"
     output :
-        temp("{prefix}/QIIME/dna-sequences.fasta")
+        "{prefix}/QIIME/dna-sequences.fasta"
     threads :
         1
     shell :
