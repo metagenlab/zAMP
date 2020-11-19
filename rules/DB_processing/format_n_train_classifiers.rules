@@ -1,0 +1,192 @@
+
+
+## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
+rule DADA2_prep_tax_db:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    container:
+        singularity_envs["r_utils"]
+    input:
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt"
+    output:
+        King_to_Species ="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
+    log:
+       "{prefix}/logs/dada2rdp/DB_amp_taxonomy_dada2_prep.log"
+    threads:
+        1
+    script:
+        "scripts/dada2_prep_tax.R"
+
+
+rule Hash_DADA2:
+    input :
+        King_to_Species ="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
+        King_to_Genus = "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
+        Genus_species =  "{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt"
+    output :
+        hash = "{prefix}/dada2rdp/DADA2_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.King_to_Species} {input.King_to_Genus} {input.Genus_species} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+## Rules to format taxonomy to fit the requirements of the original RDP.
+### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
+### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
+### See 'RDP_validations.rules' for more validatino based on RDP authors' recommendations
+
+rule Preformat_for_cannonical_rdp:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    container:
+        singularity_envs["r_utils"]  
+    input:
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+    output:
+        formatted_table = "{prefix}/RDP/formatted_tax_table.tsv",
+    log:
+       "{prefix}/logs/RDP/formatted_tax_table.log",
+    threads:
+        1
+    script:
+        "scripts/rdp_prep_tax.R"
+
+
+rule Format_rdp_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    container:
+        singularity_envs["python27"] 
+    input:
+        table = "{prefix}/RDP/formatted_tax_table.tsv",
+	script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
+    output:
+        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+    threads:
+        1
+    shell:
+        '''
+        python2.7 {input.script} {input.table} > {output[0]}
+        '''
+
+ 
+rule Format_rdp_add_lineages:
+    conda:
+        "../../envs/Python2.yml"
+    container:
+        singularity_envs["python27"] 
+    input:
+        taxonomy = "{prefix}/RDP/formatted_tax_table.tsv",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+        script =  workflow.basedir + "/rules/DB_processing/scripts/addFullLineage.py"
+    output:
+        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+    threads:
+        1
+    shell:
+        '''
+        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}       
+        '''
+
+
+rule Train_rdp_classifier:
+    conda:
+        "../../envs/rdp_tools.yml"
+    container:
+        singularity_envs["rdptools"]
+    input:
+       read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+       read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+    output:
+        formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
+        properties = "{prefix}/RDP/rRNAClassifier.properties"
+    log:
+       "{prefix}/logs/RDP/RDP_train.log",
+    threads:
+        1
+    resources:
+        mem_mb=30000
+    shell:
+        '''
+        classifier -Xmx30g train \
+        -o $(dirname {output[0]}) \
+        -s {input[0]} \
+        -t {input[1]} && \
+        echo "bergeyTree=bergeyTrainingTree.xml
+        probabilityList=genus_wordConditionalProbList.txt
+        probabilityIndex=wordConditionalProbIndexArr.txt
+        wordPrior=logWordPrior.txt
+        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
+	    '''
+
+rule Hash_RDP:
+    input :
+        read4train_fasta = "{prefix}/RDP/ready4train_seqs.fasta",
+        read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
+        formatted_table = "{prefix}/RDP/bergeyTrainingTree.xml",
+        properties = "{prefix}/RDP/rRNAClassifier.properties"
+    output :
+        hash = "{prefix}/RDP/RDP_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.read4train_fasta} {input.read4train_tax} {input.formatted_table} {input.properties} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
+rule Decipher_prep_fasta:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    container:
+        singularity_envs["r_utils"]  
+    input:
+        ref_tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        ref_seqs = "{prefix}/QIIME/DB_amp.fasta",
+    output:
+        decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
+    log:
+       "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_fasta.log"
+    threads:
+        1
+    script:
+        "scripts/decipher_prep_tax.R"
+
+
+rule Decipher_train_tax:
+    conda:
+        "../../envs/decipher.yml"
+    container:
+        singularity_envs["decipher"]
+    input:
+        decipher_seqs = "{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta"
+    output:
+        trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
+        training_plot = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
+    log:
+       "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+    threads:
+        1
+    script:
+        "scripts/decipher_train_tax.R"
+
+
+rule Hash_Decipher:
+    input :
+        trained_tax = "{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
+    output :
+        hash = "{prefix}/decipher/decipher_DB.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.trained_tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''

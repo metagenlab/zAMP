@@ -7,6 +7,7 @@ tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/" # path where to 
 tax_DB_name: "EzBioCloud_version" # desired name of processed database (name of the directory which will contain the output)
 
 ## Amplicons extraction
+extract_and_merge: True # False to skip the extraction of gerne region and merging of taxa with identical sequence on this region.
 forward_primer: CCTACGGGNGGCWGCAG # the forward PCR primer used to extract the amplicon
 reverse_primer: GACTACHVGGGTATCTAATCC # the reverse PCR primer used to extract the amplicon
 amplicon_min_length: 300 # the min length of the amplicon

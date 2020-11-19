@@ -1,0 +1,35 @@
+## We recommend to format the taxonomy database to extract the region of gene of interest and merge the taxonomy of taxa that have 
+# identical sequences on this shorter gene region. However, in case where "extract_and_merge" is set to False in config file, these 
+# set of rules will be used to bypass the preprocessing of the database.
+
+rule copy_untreated_DB:
+    input:
+        tax = "{prefix}/master/original_tax.txt",
+        fasta = "{prefix}/master/original_seqs.fasta",
+    output:
+        tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+    threads :
+        1
+    shell :
+        '''
+        cp {input.tax} {output.tax} && \
+        cp {input.fasta} {output.fasta}
+        '''
+
+
+rule Hash_untreated_tax:
+    input :
+        tax = "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        fasta = "{prefix}/QIIME/DB_amp.fasta",
+    output :
+        hash = "{prefix}/QIIME/DB_formatted.hash",
+    threads :
+        1
+    shell :
+        '''
+        md5sum {input.tax} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        '''
+
+
+
