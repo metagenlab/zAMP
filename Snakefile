@@ -15,6 +15,12 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 
 
 ## Include the pipeline rules
+### Sets of script to handle logs, input files and list of output:
+include: "rules/0_preprocessing/scripts/logging.py"
+include: "rules/0_preprocessing/scripts/make_input_lists.py"
+include: "rules/0_preprocessing/scripts/make_output_lists.py"
+
+### Snakemake rules to do the job: 
 include: "rules/0_preprocessing/get_inputs.rules"
 include: "rules/0_preprocessing/QC_raw_reads.rules"
 include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"

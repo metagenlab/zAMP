@@ -1,7 +1,7 @@
 ## Define lits of outputs as that will be called by function from the Snakefile depending from the values in config.
 
 ### Import list of functions to handle the output
-include: "make_output_list_fcts.rules"
+include: "make_output_fcts.py"
 
 ### Basic output
 #### MuliQC
