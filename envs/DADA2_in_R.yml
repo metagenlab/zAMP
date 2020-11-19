@@ -3,6 +3,6 @@ channels:
  - conda-forge
  - bioconda
 dependencies:
-  - bioconductor-DADA2=1.12.1
-  - mscorefonts
+ - bioconductor-DADA2=1.12.1
+ - mscorefonts
 

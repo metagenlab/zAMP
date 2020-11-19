@@ -16,7 +16,7 @@ MAINTAINER Valentin Scherz
 ################## INSTALLATION ######################
 ENV DEBIAN_FRONTEND noninteractive
 
-COPY ./envs/decipher.yml ./DADA2_in_R.yml
+COPY ./envs/DADA2_in_R.yml ./DADA2_in_R.yml
 
 RUN conda config --add channels bioconda && \
     conda config --add channels conda-forge && \ 
