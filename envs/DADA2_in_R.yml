@@ -4,4 +4,5 @@ channels:
  - bioconda
 dependencies:
   - bioconductor-DADA2=1.12.1
+  - mscorefonts
 
