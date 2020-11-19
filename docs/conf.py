@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'RSP4ABM'
-copyright = '2020, Valentin Scherz'
+copyright = '2020, MetaGenLab'
 author = 'Valentin Scherz'
 
 # The full version, including alpha/beta/rc tags

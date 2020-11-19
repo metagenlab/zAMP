@@ -1,4 +1,5 @@
 
+
 ########################################################################
 Pipeline execution
 ########################################################################
@@ -167,7 +168,7 @@ Parameters must be provided to adapt the pipeline to the specificities of the an
 ************************************************************************
 5. Write a *sample sheet* (aka *metadata table*):
 ************************************************************************
-The pipeline requires a spreadsheet in `tabulation-separated values (tsv) format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ listing all the file in the analysis and where:
+The pipeline requires a spreadsheet in `tabulation-separated values (tsv) format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ listing all the samples in the analysis and where:
 
 - The leftmost column ("*Sample*" or "*Run*") is the sample identifier. 
 
