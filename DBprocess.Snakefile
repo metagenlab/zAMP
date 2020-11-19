@@ -16,7 +16,7 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 config["logging_folder"] = config["tax_DB_path"] + config["tax_DB_name"] + "/logs/"
 
 
-include: "rules/0_preprocessing/logging.rules"
+include: "rules/0_preprocessing/scripts/logging.py"
 include: "rules/DB_processing/DB_preprocessing.rules"
 include: "rules/DB_processing/RDP_validation.rules"
 
