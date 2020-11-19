@@ -15,7 +15,7 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 include: config["assembly_finder_Snakefile"]
 
 ## Include the pipeline rules
-include: "rules/0_preprocessing/logging.rules"
+include: "rules/0_preprocessing/scripts/logging.py"
 include: "rules/3_tax_assignment/tax_assign.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/PICRUSt2/picrust.rules"
