@@ -7,11 +7,12 @@ Taxonomic reference database preprocessing
 
 .. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
 
+.. Hint:: In principle, the preprocessing of the reference database exposed here will have to be conducted only once. 
 
 ************************************************************************
 Rational:    
 ************************************************************************
-After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have a close to exact same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
+After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have close to the exact same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
 
 The classifiers integrated in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and, *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
 
@@ -25,7 +26,11 @@ The user indicates to the pipeline:
 
 - the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences) (#DAJ what happens when the threshold is reached?). An error is raised when the same sequence is observed across different families or ranks above (#DAJ what happens to those amplicons ? The pipline stops or they are discarded?).
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance::
+
+    # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicated this discrepancy.
+
+    Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae/Erythrobacteraceae;Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2);Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
 
 In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
 
@@ -112,6 +117,7 @@ To execute the pipeline place yourself in any directory, but preferably not in t
     # Change into this new directory
     $ cd DB_processing
 
+.. Hint:: For traceability and reproducibility, create this working directory and place your processed database in a location where it will not be erased by error
 
 Config file
 =======================================================================
@@ -142,12 +148,85 @@ Once the reference database in the right format downloaded and the *config file*
     :language: bash
 
 
+.. Hint:: The "extract_and_merge" parameter in config enable to skip the preprocessing and only to format the provided database and train the classifiers. 
 
-************************************************************************
-Working with without pipeline preprocessing?:
-************************************************************************
+.. Hint:: "forward_primer" and "reverse_primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. It allows for instance `indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract V1V2 amplicons. Indeed, the 5' primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing "AGMGTTYGATYMTGGCTCAG;optional" to the "forward_primer" enables to make it optional. 
 
-TO BE EXPLAINED!
+.. Hint:: "excepted_errors" is fed to `cutadapt to define the number of accepted mismatches <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`. The "amplicon_min_coverage" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`. Emprically, 4 for the "excepted_errors" and 0.9 for the "amplicon_min_coverage" seems to be a good values not to loose to much sequences but that may be something to play with. 
+
+
+## Taxa collapsing
+numbers_species: 4 # the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. 
+numbers_genus: 2 # the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.
+
+
+
+Validate output
+=======================================================================
+Based on what was indicated in the *config file*, the preprocessed database will be located in::
+
+    <tax_DB_path>/<tax_DB_name>/
+
+.. attention:: Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
+
+
+Generated output
+=======================================================================
+
+    ::
+
+    ├── dada2rdp # DB formatted for RDP implemented in DADA2
+    │   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
+    │   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
+    │   ├── DADA2_DB_amp_taxonomy_King_to_Species.txt
+    │   └── DADA2_DB.hash
+    ├── decipher # DB formatted for IDTAXA (decipher)
+    │   └── Decipher_DB_amp_taxonomy.fasta
+    ├── logs # Logs of the DB preprocessing 
+    │   ├── 2020
+    │   │   └── 11
+    │   │       └── 19
+    │   │           └── 14_15_15_98
+    │   │               ├── cmd.txt
+    │   │               ├── config.yaml       
+    │   │               ├── git.txt
+    │   │               └── user.txt
+    │   ├── dada2rdp
+    │   │   └── DB_amp_taxonomy_dada2_prep.log
+    │   ├── decipher
+    │   │   ├── DB_amp_taxonomy_decipher_fasta.log
+    │   │   └── DB_amp_taxonomy_decipher_tax_tree.log
+    │   ├── QIIME
+    │   │   ├── DB_cutadapt.txt
+    │   │   ├── derep_and_merge.log
+    │   │   └── vsearch_dereplicate_ampli.log
+    │   └── RDP
+    │       ├── formatted_tax_table.log
+    │       └── RDP_train.log
+    ├── master # Copies of original DB for traceability
+    │   ├── original.hash
+    │   ├── original_seqs.fasta
+    │   └── original_tax.txt
+    ├── QIIME # Processed DB in original QIIME format
+    │   ├── DB_amp_all_taxonomy.txt # All identifiers collapsed, without placeholders
+    │   ├── DB_amp.fasta # deplicated sequences after amplicon extraction
+    │   ├── DB_amp_taxonomy.txt # final taxonomy after collapsing 
+    │   ├── DB_amp.uc # vsearch based clustering of identical sequences
+    │   ├── DB_formatted.hash 
+    │   ├── dna-sequences.fasta # extracted amplicons
+    │   └── problematic_taxa.txt # sequences with collapsed taxa above the genus rank
+    └── RDP # DB formatted for the original RDP
+        ├── bergeyTrainingTree.xml
+        ├── formatted_tax_table.tsv
+        ├── genus_wordConditionalProbList.txt
+        ├── logWordPrior.txt
+        ├── RDP_DB.hash
+        ├── ready4train_lineages.txt
+        ├── ready4train_seqs.fasta
+        ├── rRNAClassifier.properties
+        └── wordConditionalProbIndexArr.txt
+
+
 
 ************************************************************************
 References:
