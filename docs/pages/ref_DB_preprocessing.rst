@@ -122,7 +122,7 @@ To execute the pipeline place yourself in any directory, but preferably not in t
 Config file
 =======================================================================
 
-As for the main pipeline (#DAJ not sure what is the main pipeline here? The genomic?), parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+As for the `main workflow <pipeline_execution>`_, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
 
 *for instance*::
 
