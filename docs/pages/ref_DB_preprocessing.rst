@@ -11,11 +11,11 @@ Taxonomic reference database preprocessing
 ************************************************************************
 Rational:    
 ************************************************************************
-After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for some species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
+After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have a close to exact same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
 
-The classifiers integrated in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
+The classifiers integrated in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and, *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
 
-Thus, to improve the taxonomic classification and to render to the end-user an information regarding the risk of confusion of certain taxa, the a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conduct the training required by some of them. 
+Thus, to improve the taxonomic classification and to provide to the end-user an information regarding the risk of confusion of certain taxa, a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conducts the training required by some of them. 
 
 ************************************************************************
 Working principle:
@@ -25,7 +25,7 @@ The user indicates to the pipeline:
 
 - the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families or ranks above.
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences) (#DAJ what happens when the threshold is reached?). An error is raised when the same sequence is observed across different families or ranks above (#DAJ what happens to those amplicons ? The pipline stops or they are discarded?).
 
 In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
 
@@ -35,7 +35,7 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database. 
+A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primer and reference database. 
 
 First, the user must retrieve a database in the right format and a *config* file must be defined. Then, provided that the pipeline was properly setup (*see* :ref:`setup`), the dedicated workflow can be executed. 
 
@@ -72,7 +72,7 @@ The second file must be a text file where the first column is the sequence ident
 *For instance*::
 
     1   Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Rhodospirillaceae;Magnetospirillum;Magnetospirillum magnetotacticum
-    2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatu
+    2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatum
 
 
 
@@ -116,11 +116,11 @@ To execute the pipeline place yourself in any directory, but preferably not in t
 Config file
 =======================================================================
 
-As for the main pipeline, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+As for the main pipeline (#DAJ not sure what is the main pipeline here? The genomic?), parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
 
 *for instance*::
 
-    # Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it. 
+    # Open a graphic text editor and create a config file. Once opened, copy and paste the example below and adapt it. 
     $ gedit config_DB.yaml
 
     # Or use a command-line text editor, e.g. 

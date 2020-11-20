@@ -135,7 +135,7 @@ The *config file*, *the sample sheet* and eventually the *links/* directory (see
 ******************************************************************************
 3. Create a *links* directory (*for Sample and OldSampleName column as input*)
 ******************************************************************************
-When using the method of the `A. Sample column`_ or the `B. OldSampleName column`_ for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*"and is found in the working directory, but another path can be defined by the "*link_directory*" parameter of the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
+When using the method `A. Sample column`_ or the method `B. OldSampleName column`_ for the definition of the sequencing read files used as input, all the *.fastq.gz* files must be located within one single directory. By default, this directory is named "*links/*" and is found in the working directory, but another path can be defined by the "*link_directory*" parameter of the *config file*. It is recommended to create symbolic links of the original reads into this *links/* directory.
 
 *for instance*::
 
