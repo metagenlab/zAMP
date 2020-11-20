@@ -28,6 +28,7 @@ The user indicates to the pipeline:
 
 Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. 
 
+
 Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance::
 
     # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
@@ -160,7 +161,7 @@ Once the reference database in the right format downloaded and the *config file*
 
 
 
-Validate output
+Observe output
 =======================================================================
 Based on what was indicated in the *config file*, the preprocessed database will be located in::
 
