@@ -26,9 +26,11 @@ The user indicates to the pipeline:
 
 - the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance::
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. 
 
-    # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicated this discrepancy.
+Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance::
+
+    # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
 
     Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae/Erythrobacteraceae;Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2);Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
 
@@ -108,7 +110,7 @@ We do not provide a taxonomic reference database. However, here is a short, non-
 Working directory
 =======================================================================
 
-To execute the pipeline place yourself in any directory, but preferably not in the directory pipeline. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations will be defined in the `config file`_ .) 
+To execute the pipeline place yourself in any directory. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations will be defined in the `config file`_.) 
 
 *for instance*::
 
@@ -117,12 +119,13 @@ To execute the pipeline place yourself in any directory, but preferably not in t
     # Change into this new directory
     $ cd DB_processing
 
-.. Hint:: For traceability and reproducibility, create this working directory and place your processed database in a location where it will not be erased by error
+.. Hint:: For traceability and reproducibility, create this working directory and place your processed taxonomy database in a location where it will not be erased by error.
 
 Config file
 =======================================================================
 
-As for the `main workflow <pipeline_execution>`_, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+As for the :ref:`main workflow <pipeline_execution>`, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+
 
 *for instance*::
 
@@ -138,6 +141,14 @@ As for the `main workflow <pipeline_execution>`_, parameters must be provided in
     :language: yaml
 
 
+.. Hint:: The "extract_and_merge" parameter in config enable to skip the preprocessing and only to format the provided database and train the classifiers. 
+
+.. Hint:: "forward_primer" and "reverse_primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract V1V2 amplicons: the 5' primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing "FPRIMERSEQUENCE;optional" to the "forward_primer" enables to make it optional. 
+
+.. Hint:: "excepted_errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. The "amplicon_min_coverage" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. Emprically, 4 for the "excepted_errors" and 0.9 for the "amplicon_min_coverage" seems to be good values, not to loose to much sequences. Yet that may be something to play with. 
+
+
+
 Pipeline execution
 =======================================================================
 
@@ -146,18 +157,6 @@ Once the reference database in the right format downloaded and the *config file*
 
 .. literalinclude:: ../../ressources/template_files/DB_snakemake_bash_command.sh 
     :language: bash
-
-
-.. Hint:: The "extract_and_merge" parameter in config enable to skip the preprocessing and only to format the provided database and train the classifiers. 
-
-.. Hint:: "forward_primer" and "reverse_primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. It allows for instance `indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract V1V2 amplicons. Indeed, the 5' primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing "AGMGTTYGATYMTGGCTCAG;optional" to the "forward_primer" enables to make it optional. 
-
-.. Hint:: "excepted_errors" is fed to `cutadapt to define the number of accepted mismatches <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`. The "amplicon_min_coverage" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`. Emprically, 4 for the "excepted_errors" and 0.9 for the "amplicon_min_coverage" seems to be a good values not to loose to much sequences but that may be something to play with. 
-
-
-## Taxa collapsing
-numbers_species: 4 # the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. 
-numbers_genus: 2 # the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.
 
 
 
@@ -173,7 +172,7 @@ Based on what was indicated in the *config file*, the preprocessed database will
 Generated output
 =======================================================================
 
-    ::
+::
 
     ├── dada2rdp # DB formatted for RDP implemented in DADA2
     │   ├── DADA2_DB_amp_taxonomy_Genus_species.txt

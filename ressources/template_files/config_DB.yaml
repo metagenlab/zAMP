@@ -1,10 +1,10 @@
 ## Path to the input database files
-DBpath_seq: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta" # reference genomic sequence in .fasta format
-DBpath_tax: "/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt" # reference taxonomy of these sequences. 
+DBpath_seq: "path/to/your/referenceDB/sequences.fasta" # reference genomic sequence in .fasta format
+DBpath_tax: path/to/your/referenceDB/taxonomy.txt" # reference taxonomy of these sequences. 
 
 ## Output
-tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/" # path where to write the output of the database processing pipeline. 
-tax_DB_name: "EzBioCloud_version" # desired name of processed database (name of the directory which will contain the output)
+tax_DB_path: "path/to/where/you/store/databases/" # path where to write the output of the database processing pipeline. 
+tax_DB_name: "Name_of_your_database" # desired name of processed database (name of the directory which will contain the output)
 
 ## Amplicons extraction
 extract_and_merge: True # False to skip the extraction of gerne region and merging of taxa with identical sequence on this region.
