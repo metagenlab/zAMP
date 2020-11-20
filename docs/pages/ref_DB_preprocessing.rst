@@ -11,7 +11,7 @@ Taxonomic reference database preprocessing
 ************************************************************************
 Rational:    
 ************************************************************************
-After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for some species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
+After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for different species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
 
 The classifiers integrated in RSP4ABM (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
 
