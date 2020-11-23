@@ -97,9 +97,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#working-directory">Working directory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-file">Config file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pipeline-execution">Pipeline execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observe-output">Observe output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generated-output">Generated output</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-without-pipeline-preprocessing">Working with without pipeline preprocessing?:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References:</a></li>
 </ul>
 </li>
@@ -177,11 +178,15 @@
 <p class="admonition-title">Note</p>
 <p>Provided command-line examples are given as examples and are valid for a standard unix bash terminal.</p>
 </div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>In principle, the preprocessing of the reference database exposed here will have to be conducted only once.</p>
+</div>
 <div class="section" id="rational">
 <h2>Rational:<a class="headerlink" href="#rational" title="Permalink to this headline">¶</a></h2>
-<p>After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected for some species to have more or less exactly the same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics.</p>
-<p>The classifiers integrated in RSP4ABM (original <em>RDP</em> <a class="footnote-reference brackets" href="#id11" id="id1">1</a>, <em>RDP</em> integrated in <em>QIIME</em> <a class="footnote-reference brackets" href="#id12" id="id2">2</a> and <em>Decipher IDTAXA</em> <a class="footnote-reference brackets" href="#id13" id="id3">3</a>) all have specific formatting requirements and the two last require an initial training.</p>
-<p>Thus, to improve the taxonomic classification and to render to the end-user an information regarding the risk of confusion of certain taxa, the a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conduct the training required by some of them.</p>
+<p>After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have close to the exact same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics.</p>
+<p>The classifiers integrated in RSP4ABM (original <em>RDP</em> <a class="footnote-reference brackets" href="#id11" id="id1">1</a>, <em>RDP</em> integrated in <em>QIIME</em> <a class="footnote-reference brackets" href="#id12" id="id2">2</a> and, <em>Decipher IDTAXA</em> <a class="footnote-reference brackets" href="#id13" id="id3">3</a>) all have specific formatting requirements and the two last require an initial training.</p>
+<p>Thus, to improve the taxonomic classification and to provide to the end-user an information regarding the risk of confusion of certain taxa, a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conducts the training required by some of them.</p>
 </div>
 <div class="section" id="working-principle">
 <h2>Working principle:<a class="headerlink" href="#working-principle" title="Permalink to this headline">¶</a></h2>
@@ -189,13 +194,19 @@
 <ul class="simple">
 <li><p>the sequences of the used PCR primers and the path to the input reference database <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a> file and taxonomy annotation file to be formatted.</p></li>
 </ul>
-<p>Based on this information and using tools from <em>Cutadapt</em> <a class="footnote-reference brackets" href="#id14" id="id4">4</a> and <em>VSEARCH</em> <a class="footnote-reference brackets" href="#id15" id="id5">5</a>, as well as home-made R <a class="footnote-reference brackets" href="#id16" id="id6">6</a> scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species (up to a user-defined number of occurrences). An error is raised in cases where the same sequence is observed across different families or ranks above.</p>
+<p>Based on this information and using tools from <em>Cutadapt</em> <a class="footnote-reference brackets" href="#id14" id="id4">4</a> and <em>VSEARCH</em> <a class="footnote-reference brackets" href="#id15" id="id5">5</a>, as well as home-made R <a class="footnote-reference brackets" href="#id16" id="id6">6</a> scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a <a class="reference external" href="https://en.wikipedia.org/wiki/Placeholder_name">placeholder</a> (“gen.”/”sp.”). In all cases, the number of taxonomic identifers is indicated as well between parentheses.</p>
+<p>Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). &quot;Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)&quot; at the genus and species levels indicate this discrepancy.</span>
+
+<span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Sphingomonadales</span><span class="p">;</span><span class="n">Sphingomonadaceae</span><span class="o">/</span><span class="n">Erythrobacteraceae</span><span class="p">;</span><span class="n">Disc</span><span class="o">.</span><span class="n">Fam_Sphingomonadaceae</span><span class="o">/</span><span class="n">Erythrobacteraceae</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="n">Disc</span><span class="o">.</span><span class="n">Fam_Sphingomonadaceae</span><span class="o">/</span><span class="n">Erythrobacteraceae</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>In addition, the pipeline formats the database and executes the pre-training required for the original <em>RDP</em> classier as well as <em>Decipher IDTAXA</em>.</p>
 <p>Finally, the  pipeline will make a copy of the original database as well as computes hashes of all files for traceability purposes.</p>
 </div>
 <div class="section" id="execution">
 <h2>Execution:<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
-<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow is to be run only one time for each set of PCR primer and reference database.</p>
+<p>A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primer and reference database.</p>
 <p>First, the user must retrieve a database in the right format and a <em>config</em> file must be defined. Then, provided that the pipeline was properly setup (<em>see</em> <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), the dedicated workflow can be executed.</p>
 <div class="section" id="taxonomy-database">
 <h3>Taxonomy database<a class="headerlink" href="#taxonomy-database" title="Permalink to this headline">¶</a></h3>
@@ -220,7 +231,7 @@
 <p>The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by “;” (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.</p>
 <p><em>For instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Proteobacteria</span><span class="p">;</span><span class="n">Alphaproteobacteria</span><span class="p">;</span><span class="n">Rhodospirillales</span><span class="p">;</span><span class="n">Rhodospirillaceae</span><span class="p">;</span><span class="n">Magnetospirillum</span><span class="p">;</span><span class="n">Magnetospirillum</span> <span class="n">magnetotacticum</span>
-<span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatu</span>
+<span class="mi">2</span>   <span class="n">Bacteria</span><span class="p">;</span><span class="n">Fusobacteria</span><span class="p">;</span><span class="n">Fusobacteria_c</span><span class="p">;</span><span class="n">Fusobacteriales</span><span class="p">;</span><span class="n">Fusobacteriaceae</span><span class="p">;</span><span class="n">Fusobacterium</span><span class="p">;</span><span class="n">Fusobacterium</span> <span class="n">nucleatum</span>
 </pre></div>
 </div>
 </div>
@@ -245,7 +256,7 @@
 </div>
 <div class="section" id="working-directory">
 <h3>Working directory<a class="headerlink" href="#working-directory" title="Permalink to this headline">¶</a></h3>
-<p>To execute the pipeline place yourself in any directory, but preferably not in the directory pipeline. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations will be defined in the <a class="reference internal" href="#config-file">config file</a> .)</p>
+<p>To execute the pipeline place yourself in any directory. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations will be defined in the <a class="reference internal" href="#config-file">config file</a>.)</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># create a directory to run the database preprocessing workflow
 $ mkdir DB_processing
@@ -253,12 +264,16 @@ $ mkdir DB_processing
 $ cd DB_processing
 </pre></div>
 </div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>For traceability and reproducibility, create this working directory and place your processed taxonomy database in a location where it will not be erased by error.</p>
+</div>
 </div>
 <div class="section" id="config-file">
 <h3>Config file<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h3>
-<p>As for the main pipeline, parameters must be provided in an <em>config file</em> in the <em>.yaml</em> format. Please adapt the following template to your situation.</p>
+<p>As for the <span class="xref std std-ref">main workflow</span>, parameters must be provided in an <em>config file</em> in the <em>.yaml</em> format. Please adapt the following template to your situation.</p>
 <p><em>for instance</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy and paste the example below and adapt it.
 $ gedit config_DB.yaml
 
 # Or use a command-line text editor, e.g.
@@ -266,22 +281,38 @@ $ gedit config_DB.yaml
 </pre></div>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Path to the input database files</span>
-<span class="nt">DBpath_seq</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp.fasta&quot;</span> <span class="c1"># reference genomic sequence in .fasta format</span>
-<span class="nt">DBpath_tax</span><span class="p">:</span> <span class="s">&quot;/home/master_students/bin/microbiome16S_pipeline/data/ezbiocloud201805/DB_amp_taxonomy.txt&quot;</span> <span class="c1"># reference taxonomy of these sequences. </span>
+<span class="nt">DBpath_seq</span><span class="p">:</span> <span class="s">&quot;path/to/your/referenceDB/sequences.fasta&quot;</span> <span class="c1"># reference genomic sequence in .fasta format</span>
+<span class="nt">DBpath_tax</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">path/to/your/referenceDB/taxonomy.txt&quot;</span> <span class="c1"># reference taxonomy of these sequences. </span>
 
 <span class="c1">## Output</span>
-<span class="nt">tax_DB_path</span><span class="p">:</span> <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span> <span class="c1"># path where to write the output of the database processing pipeline. </span>
-<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="s">&quot;EzBioCloud_version&quot;</span> <span class="c1"># desired name of processed database (name of the directory which will contain the output)</span>
+<span class="nt">tax_DB_path</span><span class="p">:</span> <span class="s">&quot;path/to/where/you/store/databases/&quot;</span> <span class="c1"># path where to write the output of the database processing pipeline. </span>
+<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="s">&quot;Name_of_your_database&quot;</span> <span class="c1"># desired name of processed database (name of the directory which will contain the output)</span>
 
 <span class="c1">## Amplicons extraction</span>
+<span class="nt">extract_and_merge</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># False to skip the extraction of gerne region and merging of taxa with identical sequence on this region.</span>
 <span class="nt">forward_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CCTACGGGNGGCWGCAG</span> <span class="c1"># the forward PCR primer used to extract the amplicon</span>
 <span class="nt">reverse_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GACTACHVGGGTATCTAATCC</span> <span class="c1"># the reverse PCR primer used to extract the amplicon</span>
-<span class="nt">length_max</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span> <span class="c1"># the max length of the amplicon</span>
+<span class="nt">amplicon_min_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300</span> <span class="c1"># the min length of the amplicon</span>
+<span class="nt">amplicon_max_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span> <span class="c1"># the max length of the amplicon</span>
+<span class="nt">excepted_errors</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span> <span class="c1"># the accepted number of mistmach per primer</span>
+<span class="nt">amplicon_min_coverage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.9</span> <span class="c1"># the proportion of the primers that must be found in the reference sequences. </span>
 
 <span class="c1">## Taxa collapsing</span>
 <span class="nt">numbers_species</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span> <span class="c1"># the max number of species names to be pasted together. Over this number, taxonomic names will be replaced by a space holder. </span>
 <span class="nt">numbers_genus</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span> <span class="c1"># the max number of genus names to be pasted together. Over this number, taxonomic names will be replaced by a space holder.</span>
 </pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>The “extract_and_merge” parameter in config enable to skip the preprocessing and only to format the provided database and train the classifiers.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>“forward_primer” and “reverse_primer” are fed to <a class="reference external" href="https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter">cutadapt linked adapter argument</a>. It for instance allows to indicate which primer is optional &lt;<a class="reference external" href="https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required">https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required</a>&gt;`_. It is particularly useful when trying to extract V1V2 amplicons: the 5’ primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing “FPRIMERSEQUENCE;optional” to the “forward_primer” enables to make it optional.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>“excepted_errors” is fed to <a class="reference external" href="https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches">cutadapt to define the number of accepted mismatches per primer</a>. The “amplicon_min_coverage” is used with the length of the provided primers to feed <a class="reference external" href="https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches">cutadapt with a minimal overlap</a>. Emprically, 4 for the “excepted_errors” and 0.9 for the “amplicon_min_coverage” seems to be good values, not to loose to much sequences. Yet that may be something to play with.</p>
 </div>
 </div>
 <div class="section" id="pipeline-execution">
@@ -296,10 +327,72 @@ $ gedit config_DB.yaml
 </pre></div>
 </div>
 </div>
+<div class="section" id="observe-output">
+<h3>Observe output<a class="headerlink" href="#observe-output" title="Permalink to this headline">¶</a></h3>
+<p>Based on what was indicated in the <em>config file</em>, the preprocessed database will be located in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">tax_DB_path</span><span class="o">&gt;/&lt;</span><span class="n">tax_DB_name</span><span class="o">&gt;/</span>
+</pre></div>
 </div>
-<div class="section" id="working-with-without-pipeline-preprocessing">
-<h2>Working with without pipeline preprocessing?:<a class="headerlink" href="#working-with-without-pipeline-preprocessing" title="Permalink to this headline">¶</a></h2>
-<p>TO BE EXPLAINED!</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Please, observe the &lt;tax_DB_path&gt;/&lt;tax_DB_name&gt;/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank.</p>
+</div>
+</div>
+<div class="section" id="generated-output">
+<h3>Generated output<a class="headerlink" href="#generated-output" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── dada2rdp # DB formatted for RDP implemented in DADA2
+│   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
+│   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
+│   ├── DADA2_DB_amp_taxonomy_King_to_Species.txt
+│   └── DADA2_DB.hash
+├── decipher # DB formatted for IDTAXA (decipher)
+│   └── Decipher_DB_amp_taxonomy.fasta
+├── logs # Logs of the DB preprocessing
+│   ├── 2020
+│   │   └── 11
+│   │       └── 19
+│   │           └── 14_15_15_98
+│   │               ├── cmd.txt
+│   │               ├── config.yaml
+│   │               ├── git.txt
+│   │               └── user.txt
+│   ├── dada2rdp
+│   │   └── DB_amp_taxonomy_dada2_prep.log
+│   ├── decipher
+│   │   ├── DB_amp_taxonomy_decipher_fasta.log
+│   │   └── DB_amp_taxonomy_decipher_tax_tree.log
+│   ├── QIIME
+│   │   ├── DB_cutadapt.txt
+│   │   ├── derep_and_merge.log
+│   │   └── vsearch_dereplicate_ampli.log
+│   └── RDP
+│       ├── formatted_tax_table.log
+│       └── RDP_train.log
+├── master # Copies of original DB for traceability
+│   ├── original.hash
+│   ├── original_seqs.fasta
+│   └── original_tax.txt
+├── QIIME # Processed DB in original QIIME format
+│   ├── DB_amp_all_taxonomy.txt # All identifiers collapsed, without placeholders
+│   ├── DB_amp.fasta # deplicated sequences after amplicon extraction
+│   ├── DB_amp_taxonomy.txt # final taxonomy after collapsing
+│   ├── DB_amp.uc # vsearch based clustering of identical sequences
+│   ├── DB_formatted.hash
+│   ├── dna-sequences.fasta # extracted amplicons
+│   └── problematic_taxa.txt # sequences with collapsed taxa above the genus rank
+└── RDP # DB formatted for the original RDP
+    ├── bergeyTrainingTree.xml
+    ├── formatted_tax_table.tsv
+    ├── genus_wordConditionalProbList.txt
+    ├── logWordPrior.txt
+    ├── RDP_DB.hash
+    ├── ready4train_lineages.txt
+    ├── ready4train_seqs.fasta
+    ├── rRNAClassifier.properties
+    └── wordConditionalProbIndexArr.txt
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="references">
 <h2>References:<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -347,7 +440,7 @@ $ gedit config_DB.yaml
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Valentin Scherz
+        &copy; Copyright 2020, MetaGenLab
 
     </p>
   </div>

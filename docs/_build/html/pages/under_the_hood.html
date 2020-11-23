@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setup and system requirements" href="setup.html" />
-    <link rel="prev" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" href="overall_description.html" /> 
+    <link rel="next" title="&lt;no title&gt;" href="output.html" />
+    <link rel="prev" title="Pipeline execution" href="execution.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,7 +83,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overall_description.html">Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#snakemake">Snakemake</a></li>
@@ -140,10 +142,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#picrust2">Picrust2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 </ul>
 
@@ -228,28 +229,59 @@
 <h2>Input output definition<a class="headerlink" href="#input-output-definition" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="input">
 <h3>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_lists.py">A Python script</a> is run at each execution of the RSP4ABM to match sequencing read files to each sample.</p>
+<p>As exposed in <a class="reference internal" href="execution.html#sample-selection"><span class="std std-ref">the sample selection section of the Pipeline execution page</span></a>, this function can accept either local or SRA-hosted read files.</p>
 <div class="section" id="local-reads">
 <h4>Local reads<a class="headerlink" href="#local-reads" title="Permalink to this headline">¶</a></h4>
+<p>Reads are considered to be located locally <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_list.py">by the script pointing toward the input read files</a> in presence of the “local_samples:” argument in <em>the config file</em>. This parameters must point to a <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/ressources/template_files/example_local_samples.tsv">sample sheet</a>, which is a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the files in the analysis. The script matches by default the values found in the leftmost “Sample” column of the <em>sample sheet</em> with the filenames of the “.fastq.gz” locales in a directory defined by the “link_directory” parameter of the <em>config file</em>. This default behavior can be altered by two conditions encoded in the <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_list.py">Python script</a> :</p>
+<ul class="simple">
+<li><p>In presence of a column named “OldSampleName”, the match with the filenames of the sequencing read files is done with this column, instead of the leftmost “Sample” column.</p></li>
+<li><p>In presence of a “R1” column, the absolute path to the forward reads in considered instead of a name-based matching of the sequencing read files. In this case, and for paired-end reads, a “R2” column must point to the reverse read files.</p></li>
+</ul>
+<p>In all cases (i.e. <em>Sample column match</em>, <em>OldSampleName column match</em> or <em>absolute paths indicated by R1 and R2 columns</em>), <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will temporarily copy the read files into a <em>raw_reads</em> directory.</p>
 </div>
 <div class="section" id="sra-reads">
 <h4>SRA reads<a class="headerlink" href="#sra-reads" title="Permalink to this headline">¶</a></h4>
+<p>Reads are considered by <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_lists.py">the Python scripts</a> to be located on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>) in presence of the “sra_samples:” argument in the <em>config file</em>.</p>
+<p>In this case <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will use <a class="reference external" href="https://github.com/ncbi/sra-tools">SRA Toolkit</a> to download the reads and convert them to “.fastq.gz” format into the <em>raw_reads</em> directory.</p>
 </div>
 </div>
 <div class="section" id="output">
 <h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+<p>Upon each execution of the pipeline, <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_output_lists.py">Python scripts</a> will parse the <em>config file</em> and the <em>sample sheet</em> to generate lists of outputs. These lists are then fed to the <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/Snakefile">pipeline Snakefile</a> which instructs the pipeline the output to generate.</p>
 </div>
 </div>
 <div class="section" id="logging-and-traceability">
 <h2>Logging and traceability<a class="headerlink" href="#logging-and-traceability" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="snakemake-logs">
 <h3>Snakemake logs<a class="headerlink" href="#snakemake-logs" title="Permalink to this headline">¶</a></h3>
+<p>Upon each execution, <em>Snakemake</em> automatically creates a log file where all the standard output is recorded. These can be found from the <em>working directory</em> into:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">snakemake</span><span class="o">/</span><span class="n">log</span><span class="o">/</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="rsp4abm-logs">
 <h3>RSP4ABM logs<a class="headerlink" href="#rsp4abm-logs" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the default <em>Snakemake</em>’s logs, <em>RSP4ABM</em> create a log directory upon each execution in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="o">/&lt;</span><span class="n">year</span><span class="o">&gt;/&lt;</span><span class="n">months</span><span class="o">&gt;/&lt;</span><span class="n">day</span><span class="o">&gt;/&lt;</span><span class="n">time</span><span class="o">&gt;/</span>
+</pre></div>
+</div>
+<p>This directory contains:</p>
+<ul class="simple">
+<li><p>a copy of the executed <em>Snakemake</em> command (<em>cmd.txt</em>)</p></li>
+<li><p>the git commit hash which indicates the version of the RST4ABM (<em>git.txt</em>)</p></li>
+<li><p>the ID of the user who run the pipeline (<em>user.txt</em>)</p></li>
+<li><p>a copy of the sample sheet (<em>local_samples.tsv</em> or <em>sra_samples.tsv</em>)</p></li>
+<li><p>a copy of the <em>config file</em> (<em>config.yaml</em>)</p></li>
+</ul>
+<p>In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subfolders of the log directory, mirroring the structure of the main pipeline.</p>
 </div>
 </div>
 <div class="section" id="sequencing-reads-qc">
 <h2>Sequencing reads QC<a class="headerlink" href="#sequencing-reads-qc" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/QC_raw_reads.rules">QC rules</a> assess the sequencing quality of all each sample with FastQC <a class="footnote-reference brackets" href="#id4" id="id2">1</a>. Then, a MultiQC <a class="footnote-reference brackets" href="#id5" id="id3">2</a> report is generated for each sequencing run (based on values of the <em>sample sheet</em> column indicated by the “run_column” parameter of the <em>config file</em>)</p>
+</div></blockquote>
 </div>
 <div class="section" id="denoising">
 <h2>Denoising<a class="headerlink" href="#denoising" title="Permalink to this headline">¶</a></h2>
@@ -317,6 +349,17 @@
 <div class="section" id="picrust2">
 <h2>Picrust2<a class="headerlink" href="#picrust2" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>Andrews S, Krueger F, Seconds-Pichon A, Biggins F, Wingett S. FastQC. A quality control tool for high throughput sequence data. Babraham Bioinformatics. Babraham Institute. 2015.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016;</p>
+</dd>
+</dl>
+</div>
 </div>
 
 
@@ -327,10 +370,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="setup.html" class="btn btn-neutral float-right" title="Setup and system requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="output.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="overall_description.html" class="btn btn-neutral float-left" title="Reproducible Scalable Pipeline For Amplicon-based Metagenomics (RSP4ABM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="execution.html" class="btn btn-neutral float-left" title="Pipeline execution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -340,7 +383,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Valentin Scherz
+        &copy; Copyright 2020, MetaGenLab
 
     </p>
   </div>

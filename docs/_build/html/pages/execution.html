@@ -169,7 +169,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="pipeline-execution">
-<h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
+<span id="pipeline-selection"></span><h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Provided command-line examples are given as examples and are valid for a standard unix bash terminal.</p>
@@ -179,7 +179,7 @@
 <p>The instructions hereunder assume that the pipeline setup was completed (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), including the preprocessing of the taxonomy reference database (see <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>).</p>
 </div>
 <div class="section" id="select-a-method-to-define-sequencing-read-files-as-input">
-<h2>1. Select a method to define sequencing read files as input<a class="headerlink" href="#select-a-method-to-define-sequencing-read-files-as-input" title="Permalink to this headline">¶</a></h2>
+<span id="sample-selection"></span><h2>1. Select a method to define sequencing read files as input<a class="headerlink" href="#select-a-method-to-define-sequencing-read-files-as-input" title="Permalink to this headline">¶</a></h2>
 <p>Before executing RSP4ABM, you need to define how you provide the sequencing read files (in <em>.fastq.gz</em> format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs.</p>
 <div class="section" id="a-sample-column">
 <h3>A. Sample column<a class="headerlink" href="#a-sample-column" title="Permalink to this headline">¶</a></h3>
@@ -261,7 +261,7 @@ $ cd new_analysis
 </div>
 <div class="section" id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
 <h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Permalink to this headline">¶</a></h2>
-<p>When using the method of the <a class="reference internal" href="#a-sample-column">A. Sample column</a> or the <a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>”and is found in the working directory, but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
+<p>When using the method <a class="reference internal" href="#a-sample-column">A. Sample column</a> or the method <a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>” and is found in the working directory, but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;links&quot;
 $ mkdir links
@@ -353,7 +353,7 @@ $ gedit config.yaml
 </div>
 <div class="section" id="write-a-sample-sheet-aka-metadata-table">
 <h2>5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):<a class="headerlink" href="#write-a-sample-sheet-aka-metadata-table" title="Permalink to this headline">¶</a></h2>
-<p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the file in the analysis and where:</p>
+<p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the samples in the analysis and where:</p>
 <ul>
 <li><p>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
 <blockquote>
@@ -446,7 +446,7 @@ config.yaml  links  local_sample.tsv
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Valentin Scherz
+        &copy; Copyright 2020, MetaGenLab
 
     </p>
   </div>
