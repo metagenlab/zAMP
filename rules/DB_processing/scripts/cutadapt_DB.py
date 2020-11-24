@@ -21,4 +21,4 @@ shell("""cutadapt \
 --discard-untrimmed \
 --minimum-length {snakemake.params[min_length]} \
 --maximum-length {snakemake.params[max_length]} \
-{snakemake.input[0]}""")
+{snakemake.input[0]} >> {snakemake.log[0]}""")

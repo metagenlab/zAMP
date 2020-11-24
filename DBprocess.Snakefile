@@ -26,7 +26,7 @@ processed_DB_path = path_to_DB + processed_DB_dir
 
 
 ## Set logging into the same directory that the DB output by adding logging folder which will be taken in account in the logginf rules
-config["logging_folder"] = processed_DB_path + "/logs/"
+config["logging_folder"] = processed_DB_path + "logs/"
 
 
 ## Include rules:

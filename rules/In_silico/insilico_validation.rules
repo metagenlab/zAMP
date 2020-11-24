@@ -96,7 +96,7 @@ rule cutadapt_trim_for_In_silico:
         -b '{params[forward_primer]}' \
         -b '{params[reverse_primer]}' \
         --match-read-wildcards \
-        {input[raw_reads]} >> {log}
+        {input[raw_reads]} 2> {log}
         '''
 
 

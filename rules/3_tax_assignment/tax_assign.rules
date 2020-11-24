@@ -28,7 +28,7 @@ rule QIIME1_assign_taxonomy_rdp:
           -o $(dirname {output[0]}) \
           -c 0.5 \
           --rdp_max_memory {resources[mem_mb]}
-           >> {log[0]}
+           2> {log[0]}
         '''
 
 rule dada2_assign_taxonomy_rdp:
@@ -75,7 +75,7 @@ rule rdp_classify:
         -c 0.5 \
         -f allrank \
         -t {input[0]} \
-        -o {output[0]} {input[1]}  >> {log[0]}
+        -o {output[0]} {input[1]}  2> {log[0]}
 	    '''
 
 

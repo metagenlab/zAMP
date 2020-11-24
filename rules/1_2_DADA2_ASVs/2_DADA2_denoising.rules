@@ -271,7 +271,7 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
         logging_folder + "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.txt"
     shell:
         """
-        fastqc {input} -o $(dirname {output[0]}) >> {log[0]}
+        fastqc {input} -o $(dirname {output[0]}) 2> {log[0]}
         """
 
 
@@ -292,5 +292,5 @@ rule create_filtered_reads_multiqc_report:
 #        configfile = multiqc_configfile
     shell:
         """
-        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" >> {log[0]}
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" 2> {log[0]}
         """
