@@ -33,6 +33,7 @@ rule physeq_initial_import:
     script:
         "scripts/physeq_initial_import.R"
 
+
 ### Export the phyloseq objects in individual components
 rule physeq_export_object:
     conda:
@@ -142,6 +143,7 @@ rule Phyloseq_collapse_taxa:
     script:
         "scripts/physeq_collapse_taxa.R"
 
+
 ### Reformat count and metadata tables
 rule transpose_and_meta_count_table:
     conda:
@@ -157,7 +159,7 @@ rule transpose_and_meta_count_table:
     priority:
         1
     log:
-        logging_folder + "{prefix}/count_table_transposed.log"
+        logging_folder + "{prefix}/count_table_transposed.txt"
     script:
         "scripts/transpose_and_add_meta_count_table.R"
 

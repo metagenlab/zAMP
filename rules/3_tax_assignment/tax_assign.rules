@@ -11,7 +11,7 @@ rule QIIME1_assign_taxonomy_rdp:
         report("{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="Qiime_rdp_{tax_DB}"),
         "{denoiser}/3_classified/qiimerdp_{tax_DB}/dna-sequences_tax_assignments.log"
     log:
-        logging_folder + "{denoiser}/3_classified/qiime_rdp_{tax_DB}/dna-sequences_tax_assignments_log.txt"
+        logging_folder + "{denoiser}/3_classified/qiime_rdp_{tax_DB}/dna-sequences_tax_assignments.txt"
     threads:
         1
     resources:
@@ -44,7 +44,7 @@ rule dada2_assign_taxonomy_rdp:
     output:
         tax = report("{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DADA2_rdp_{tax_DB}"),
     log:
-        logging_folder + "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.log"
+        logging_folder + "{denoiser}/3_classified/dada2rdp_{tax_DB}/dna-sequences_tax_assignments.txt"
     threads:
         4
     resources:
@@ -75,7 +75,7 @@ rule rdp_classify:
         -c 0.5 \
         -f allrank \
         -t {input[0]} \
-        -o {output[0]} {input[1]}
+        -o {output[0]} {input[1]}  >> {log[0]}
 	    '''
 
 
@@ -89,7 +89,7 @@ rule rdp_format_output:
     output:
        formatted_output = report("{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="Orig_rdp_{tax_DB}"),
     log:
-        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.log",
+        "{denoiser}/3_classified/RDP_{tax_DB}/dna-sequences_tax_assignments.txt",
     threads:
         10
     resources:
@@ -111,7 +111,7 @@ rule decipher_tax_assign:
         tax = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DECIPHER_rdp_{tax_DB}"),
         tax_plot = report("{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.pdf", caption="report/tax_assignment.rst", category="Taxonomic classification", subcategory="DECIPHER_rdp_{tax_DB}"),
     log:
-      logging_folder + "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.log"
+      logging_folder + "{denoiser}/3_classified/decipher_{tax_DB}/dna-sequences_tax_assignments.txt"
     threads:
         4
     resources:

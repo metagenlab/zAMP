@@ -57,7 +57,7 @@ rule vsearch_derepicate_all:
     output:
         temp("vsearch/1c_derep/derep_merged_all.fasta")
     log:
-         logging_folder + "vsearch/1c_all_merged_sequences/dereplicate_all.txt"
+         logging_folder + "vsearch/1c_all_merged_sequences/merged_all.txt"
     shell:
         '''
         vsearch --derep_fulllength {input} \
@@ -133,7 +133,7 @@ rule vsearch_derep_to_consesus_sequences :
     output:
         report("vsearch/2_denoised/dna-sequences.fasta", caption="report/vsearch_output.rst", category="vsearch", subcategory="Output")
     log:
-         logging_folder + "vsearch/2_denoised/chimera_filtering.txt"
+         logging_folder + "vsearch/2_denoised/nochimeras_min2.txt"
     threads:
         1
     shell:
@@ -158,7 +158,7 @@ rule vsearch_count_occurences :
     output:
         "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv",
     log:
-         logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv"
+         logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt"
     threads:
         1
     shell:
@@ -184,7 +184,7 @@ rule create_vsearch_count_table :
     output:
         count_table = report("vsearch/2_denoised/count_table.tsv", caption="report/vsearch_output.rst", category="vsearch", subcategory="Output")
     log:
-        logging_folder +  "vsearch/2_denoised/count_table.tsv"
+        logging_folder +  "vsearch/2_denoised/count_table.txt"
     script:
         "scripts/create_count_table_from_vsearch.R"
 
