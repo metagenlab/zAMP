@@ -1,5 +1,7 @@
+## Reproduced from https://github.com/GLBRC-TeamMicrobiome/python_scripts
+
 #!/usr/bin/env python
-#Benli Chai, June 24, 2016
+
 #used to convert a taxonomy in tab-delimited file containing the taxonomic hierarchical structure to RDP Classifier taxonomy training file
 #Approach:each taxon is uniquely identified by the combination of its tax id and depth from the root rank, its attributes comprise: name, parent taxid, and level of depth from the root rank. 
 import sys, string
