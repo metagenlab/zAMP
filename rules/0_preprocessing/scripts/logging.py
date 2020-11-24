@@ -21,7 +21,7 @@ today = datetime.datetime.now()
 date = today.strftime("%Y_%m_%d")
 time = today.strftime('%H_%M_%S_%f')[:-4]
 time_tag = str(date + "_" + time)
-timed_logging_folder = logging_folder + "/" + time_tag + "/"
+timed_logging_folder = logging_folder + time_tag + "/"
 
 ## Except for dryrun execution, create a log folder. This will be filled by execution parameters and be provided to all rules to record their standard ouput or specific log files. 
 if "--dryrun" not in sys.argv and "-n" not in sys.argv:
