@@ -1,6 +1,4 @@
 
-.. |pipeline_path| replace:: https://github.com/metagenlab/microbiome16S_pipeline/
-
 .. _under_the_hood:
 ########################################################################
 Under the hood
