@@ -65,20 +65,20 @@ if "local_samples" in config.keys():
         raise ValueError("Forbidden character in sample name in sample name file")
     ## Extract path if indicated in "R1" column
     if "R1" in list(local_data):
-        for sample_name, sample_data in local_data.iterrows():
-            if sample_name in paths:
+        for sample, sample_data in local_data.iterrows():
+            if sample in paths:
                 ## Check for sample names to be unique
                 raise IOError("Identical sample name used multiple times: %s" % sample_name)
-            paths[sample_name] =[sample_data.loc["R1"]] 
-            reads_ext[sample_name] = "single"
-            layout[sample_name] = "single"
+            paths[sample] =[sample_data.loc["R1"]] 
+            reads_ext[sample] = "single"
+            layout[sample] = "single"
             if 'R2' in local_data.columns.values:
                 if "R1" in str(sample_data.loc["R2"]):
                     raise IOError("ATTENTION! R1 flag within R2 filename: %s", sample_data.loc["R2"])
                 if (str(sample_data.loc["R2"]).strip()) != "nan":
-                    paths[sample_name].append(sample_data.loc["R2"])
-                    reads_ext[sample_name] = ["R1", "R2"]
-                    layout[sample_name] = "paired"
+                    paths[sample].append(sample_data.loc["R2"])
+                    reads_ext[sample] = ["R1", "R2"]
+                    layout[sample] = "paired"
         all_samples = local_data   
         paths = {**paths}
     
@@ -93,51 +93,54 @@ if "local_samples" in config.keys():
         if "OldSampleName" not in list(local_data):
 
             ## i vs sample et correct vs original à checker!!!!
-            for i in list(local_data.index):
-                regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % i) # this regex ensures that the matching of the sample names end at the end of the str, to prevent S1 matching S10 for instance
+            for sample in list(local_data.index):
+                regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % sample) # this regex ensures that the matching of the sample names end at the end of the str, to prevent S1 matching S10 for instance
                 match = [bool(re.match(regex, x)) for x in sorted(list(original_names.keys()))]
                 if sum(match) != 1: #there must be one and only one entry matching one sample name
-                    raise ValueError("Problem matching SampleName to read file names")
-                sample = str(sorted(list(original_names.keys()))[match.index(True)])
-                original_correct[i] = original_names[sample]
-                read_correct[i] = reads_local[sample]
-                paths[i] = expand(link_directory + sample + "_{reads}" ,  reads = read_correct[i]) 
-
-                if "LibraryLayout" in list(local_data):
-                    if local_data.loc[i, "LibraryLayout"].lower()=="paired":
-                        reads_ext[i]=["R1", "R2"]
-                        layout[i] = "paired"
-                    elif local_data.loc[i, "LibraryLayout"].lower()=="single":
-                        reads_ext[i]=["single"]
-                        layout[i] = "single"
-                    else:
-                        raise ValueError("Problem in the sra file, LibraryLayout badly defined")
-                else:
-                    reads_ext[i]=["R1", "R2"]
-                    layout[i] = "paired"
-
-                
-        else:
-            for i in list(local_data["OldSampleName"]):
-                regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % i)
-                match = [bool(re.match(regex, x)) for x in sorted(list(original_names.keys()))]
-                if sum(match) != 1:
-                    raise ValueError("Problem matching OldSampleName to read file names")
-                old_sample_name=str(sorted(list(original_names.keys()))[match.index(True)])
-                sample=str(local_data.index[local_data['OldSampleName'] == i][0])
-                original_correct[sample] = original_names[old_sample_name]
-                read_correct[i] = reads_local[old_sample_name]
-                paths[i] = link_directory + read_correct[i] 
+                    raise ValueError("Problem matching SampleName to read file names: " +  sample)
+                read_name = str(sorted(list(original_names.keys()))[match.index(True)]) # Sample name with _SX
+                original_correct[sample] = original_names[read_name]
+                read_correct[sample] = reads_local[read_name]
+                paths[sample] = expand(link_directory + read_name + "_{reads}" ,  reads = read_correct[sample]) 
 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
                         reads_ext[sample]=["R1", "R2"]
-                    elif local_data.loc[i, "LibraryLayout"].lower()=="single":
+                        layout[sample] = "paired"
+                    elif local_data.loc[sample, "LibraryLayout"].lower()=="single":
                         reads_ext[sample]=["single"]
+                        layout[sample] = "single"
                     else:
-                        raise ValueError("Problem in the sra file, LibraryLayout badly defined")
+                        raise ValueError("Problem in the Local_sample file, LibraryLayout badly defined")
                 else:
                     reads_ext[sample]=["R1", "R2"]
+                    layout[sample] = "paired"
+
+                
+        else:
+            for Old in list(local_data["OldSampleName"]):
+                regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % Old)
+                match = [bool(re.match(regex, x)) for x in sorted(list(original_names.keys()))]
+                if sum(match) != 1:
+                    raise ValueError("Problem matching OldSampleName to read file names : " + Old)
+                read_name=str(sorted(list(original_names.keys()))[match.index(True)]) # Sample with have SX to unify with above
+                sample = str(local_data.index[local_data['OldSampleName'] == Old][0])
+                original_correct[sample] = original_names[read_name]
+                read_correct[sample] = reads_local[read_name]
+                paths[sample] = expand(link_directory + read_name + "_{reads}" ,  reads = read_correct[sample])
+                
+                if "LibraryLayout" in list(local_data):
+                    if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
+                        reads_ext[sample]=["R1", "R2"]
+                        layout[sample] = "paired"
+                    elif local_data.loc[sample, "LibraryLayout"].lower()=="single":
+                        reads_ext[sample]=["single"]
+                        layout[sample] = "single"
+                    else:
+                        raise ValueError("Problem in the Local_sample file, LibraryLayout badly defined")
+                else:
+                    reads_ext[sample]=["R1", "R2"]
+                    layout[sample] = "paired"
 
         original_names = original_correct
         reads_local = read_correct
@@ -154,15 +157,15 @@ if "sra_samples" in config.keys():
     all_sra_sample_names = "".join(list(sra_data.index))
     if "(" in all_sra_sample_names or ")" in all_sra_sample_names or "_-_" in all_sra_sample_names:
         raise ValueError("Forbidden character in sample name in sra file")
-    for i in list(sra_data.index):
-        sample_name = str(i).replace(" ", "_").replace("&", "and").replace(":", "-")
+    for sra_sample in list(sra_data.index):
+        sample_name = str(sra_sample).replace(" ", "_").replace("&", "and").replace(":", "-")
         if sample_name in reads_sra.keys(): # if the sample name is already used, add _(n+1) at the end
             sample_name = sample_name+"_"+str(list(reads_sra.keys()).count(sample_name))
-        reads_sra[sample_name]=str(i)
-        if sra_data.loc[i, "LibraryLayout"].lower()=="paired":
+        reads_sra[sample_name]=str(sra_sample)
+        if sra_data.loc[sra_sample, "LibraryLayout"].lower()=="paired":
             sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
             reads_ext[sample_name]=["R1", "R2"]
-        elif sra_data.loc[i, "LibraryLayout"].lower()=="single":
+        elif sra_data.loc[sra_sample, "LibraryLayout"].lower()=="single":
             sras_ext[sample_name] = ["fastq.gz"]
             reads_ext[sample_name]=["single"]
         else:
