@@ -11,10 +11,24 @@ rule copy_fastq_paired_from_link:
         max_copy=1
     shell:
         """
-        cp {input[0]} {output[0]}
-        cp {input[1]} {output[1]}
-        gzip -t {output[0]}
-        gzip -t {output[1]}
+        if gzip -t {input[0]}
+        then
+            cp {input[0]} {output[0]}
+        else 
+            cp {input[0]} $(dirname {output[0]})
+            gzip -qc $(dirname "{output[0]}")/$(basename "{input[0]}") > {output[0]}
+            rm $(dirname "{output[0]}")/$(basename "{input[0]}")
+        fi
+
+        if gzip -t {input[1]}
+        then
+            cp {input[1]} {output[1]}
+        else 
+            cp {input[1]} $(dirname {output[1]})
+            gzip -qc $(dirname "{output[1]}")/$(basename "{input[1]}") > {output[1]}
+            rm $(dirname "{output[1]}")/$(basename "{input[1]}")
+        fi            
+
         """
 
 
@@ -27,8 +41,14 @@ rule copy_fastq_single_from_link:
         max_copy=1
     shell:
         """
-        gzip -t {input[0]}
-        cp {input[0]} {output[0]}
+        if gzip -t {input[0]}
+        then
+            cp {input[0]} {output[0]}
+        else 
+            cp {input[0]} $(dirname {output[0]})
+            gzip -qc $(dirname "{output[0]}")/$(basename "{input[0]}") > {output[0]}
+            rm $(dirname "{output[0]}")/$(basename "{input[0]}")
+        fi
         """
         
         
