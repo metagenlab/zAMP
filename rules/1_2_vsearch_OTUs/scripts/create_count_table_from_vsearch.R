@@ -20,29 +20,32 @@
     count_table <- snakemake@output[["count_table"]]
 
 ## Reformat
-    otus_table<-as.data.frame(array(dim=c(1,3)))
-    colnames(otus_table) <- c("Sample", "V1", "V2")
+otus_table <- data.frame(array(dim=c(0,3)))
 
-    for (xx in count_table_samples){
-        sample <- gsub("_count_table.tsv", "", basename(xx))
-        table <- read.table(file = xx, sep="\t", as.is=T, header=F)
-        table <- cbind("Sample"=sample, table)
-        otus_table <- rbind(otus_table, table)
-        }
+### Loop over each sample file. If it is empty, then we just add the factor in the levels to have it then
+for (file_path in count_table_samples){
+  sample_name <- gsub("_count_table.tsv", "", basename(file_path))
+  sample_otu_table <- read.table(file = file_path, sep="\t", as.is=T, check.names = F, header=T, comment.char = "",  skipNul = TRUE)
+  if (nrow(sample_otu_table)>0){
+    sample_otu_table <- cbind("Sample"=sample_name, sample_otu_table)
+    otus_table <- rbind(otus_table, sample_otu_table)
+  }else if (nrow(sample_otu_table) == 0){
+    levels(otus_table$Sample) <- c(levels(otus_table$Sample), sample_name)
+  }
+}
 
-    otus_table <- otus_table[-1,]
-    colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
-
+colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
 
 ## Transform this table to have a wide format where we have a column by sample
-    transf_vsearch_table <- otus_table %>%
-      group_by(Sample, OTU_ID) %>%
-      summarise(counts = sum(counts)) %>%
-      dcast(OTU_ID ~ Sample)
+transf_vsearch_table <- otus_table %>% 
+  dplyr::group_by(Sample, OTU_ID, .drop = FALSE) %>%
+  dplyr::summarise(counts = sum(counts)) %>%
+  reshape2::dcast(OTU_ID ~ Sample) %>%
+  dplyr::filter(!is.na(OTU_ID))
 
 ## Set OTU as rownames
-    transf_vsearch_table <- set_rownames(x = transf_vsearch_table, value = transf_vsearch_table$OTU_ID)
-    transf_vsearch_table[,1] <- NULL
+transf_vsearch_table <- set_rownames(x = transf_vsearch_table, value = transf_vsearch_table$OTU_ID)
+transf_vsearch_table[,1] <- NULL
 
 ## Write output
     write.table(x = transf_vsearch_table, file = count_table, sep="\t", quote=F, na = "0")

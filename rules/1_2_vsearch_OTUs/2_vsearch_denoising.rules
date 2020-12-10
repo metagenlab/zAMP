@@ -26,11 +26,24 @@ rule vsearch_dereplicate_samples:
         1
     shell:
         '''
-        vsearch --derep_fulllength {input} \
-                --sizeout \
-                --output {output[0]} \
+        if [ -s {input} ]
+        then
+            vsearch --derep_fulllength {input} \
+            --sizeout \
+            --output {output[0]} \
+            --uc {output[1]} 
                 --uc {output[1]} 
-                2> {log}
+            --uc {output[1]} 
+                --uc {output[1]} 
+            --uc {output[1]} 
+                --uc {output[1]} 
+            --uc {output[1]} 
+            2> {log}
+        else
+            echo "{input} is empty"
+            echo "> \n" > {output[0]}
+            touch {output[1]}
+        fi
         '''
 
 
