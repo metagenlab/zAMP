@@ -13,3 +13,4 @@ rdptools: docker://quay.io/biocontainers/rdptools:2.0.3--0
 python27: docker://python:2.7
 picrust2: docker://quay.io/biocontainers/picrust2:2.3.0_b--py_0
 simulatePCR: docker://metagenlab/amplicons_simulatepcr:v.1.0
+TreeShrink: docker://metagenlab/amplicons_treeshrink:v.1.0

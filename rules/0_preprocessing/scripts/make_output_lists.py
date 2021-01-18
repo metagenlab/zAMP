@@ -121,6 +121,20 @@ phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineag
                    prev_value = config["min_prevalence"]))
 
 
+### Potentially spurious ASVs
+phyloseq.append(expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base_export/tree_treeshrink/output.txt",
+            denoiser = config["denoiser"],
+            classifier = config["classifier"],
+            tax_DB = config["tax_DB_name"],
+            collapse_key = get_taxa_collapse_level_key(config["phyloseq_tax_ranks"]),
+            rarefaction_value = get_rarefaction_key(config["rarefaction_value"]),
+            filter_tax_rank = config["filter_tax_rank"],
+            filter_lineage = config["filter_lineage"],
+            norm_value = config["normalization"], 
+            abund_value = config["min_abundance"], 
+            prev_value = config["min_prevalence"]))
+
+
 #### Melted Phyloseq set of output
 #### Not filtered
 phyloseq_melted = expand("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/{rarefaction_value}/{collapse_key}/base_with_tree_melted.tsv",
