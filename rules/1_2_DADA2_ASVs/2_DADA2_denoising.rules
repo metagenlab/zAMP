@@ -255,6 +255,7 @@ rule DADA2_filter_stats:
         "scripts/2e_big_data_DADA2_filtering_stats.R"
 
 
+
 ### Accessory rules to generate QC reports after q-score filtering. Not in regular use
 rule assess_quality_paired_filtered_reads_with_fastqc :
     conda:
@@ -262,18 +263,32 @@ rule assess_quality_paired_filtered_reads_with_fastqc :
     container:
         singularity_envs["fastqc"]
     input:
-        "DADA2/1b_q_score_filtered/{sample}_filtered_R1.fastq.gz",
-        "DADA2/1b_q_score_filtered/{sample}_filtered_R2.fastq.gz",
+        "DADA2/1b_q_score_filtered/{sample}_filtered_{suffix}.fastq.gz",
     output:
-        temp("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip"),
-        temp("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip"),
+        temp("QC/FastQC/DADA2_filtered/{sample}_filtered_{suffix}_fastqc.zip"),
     log:
-        logging_folder + "QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.txt"
+        logging_folder + "QC/FastQC/DADA2_filtered/{sample}_filtered_{suffix}_fastqc.txt"
     shell:
         """
         fastqc {input} -o $(dirname {output[0]}) 2> {log[0]}
         """
 
+
+## Functions that call single or paired rules for QC, based on sample layout. 
+def sample_list_run_DADA2_QC():
+    sample_list = []
+    samples =  list(all_samples.index.values)
+    for s in samples:
+        sample_layout = layout[s]
+        if sample_layout == "single":
+            trim_stat = [logging_folder + "DADA2/1a_trimmed_primers/"+ s +"_trimmed_single.txt"]
+            filtered = ["QC/FastQC/DADA2_filtered/"+ s +"_filtered_single_fastqc.zip"]
+        elif sample_layout == "paired":
+            trim_stat = [logging_folder + "DADA2/1a_trimmed_primers/"+ s +"_trimmed_paired.txt" ]
+            filtered = ["QC/FastQC/DADA2_filtered/"+ s +"_filtered_R1_fastqc.zip", "QC/FastQC/DADA2_filtered/"+ s +"_filtered_R2_fastqc.zip"]          
+        sample_list = sample_list + trim_stat + filtered
+
+    return(sample_list)
 
 rule create_filtered_reads_multiqc_report:
     conda:
@@ -281,13 +296,11 @@ rule create_filtered_reads_multiqc_report:
     container:
         singularity_envs["multiqc"]
     input:
-       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R1_fastqc.zip", sample = list(all_samples.index.values)),
-       expand("QC/FastQC/DADA2_filtered/{sample}_filtered_R2_fastqc.zip", sample = list(all_samples.index.values)),
-       expand(logging_folder + "DADA2/1a_trimmed_primers/{sample}_trimmed.txt", sample = list(all_samples.index.values))
+       sample_list_run_DADA2_QC()
     output:
-        report("QC/multiqc_DADA2_filtered_reads_report.html", caption="report/DADA2_output.rst", category="DADA2", subcategory="MultiQC")
+        report("QC/multiqc_DADA2_filtered_paired_reads_report.html", caption="report/DADA2_output.rst", category="DADA2", subcategory="MultiQC")
     log:
-        logging_folder + "QC/multiqc_DADA2_filtered_reads_report.txt"
+        logging_folder + "QC/multiqc_DADA2_filtered_paired_reads_report.txt"
 #    params:
 #        configfile = multiqc_configfile
     shell:

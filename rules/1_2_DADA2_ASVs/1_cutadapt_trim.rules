@@ -12,7 +12,7 @@ rule cutadapt_trim_paired_for_DADA2:
         R1_trimmed_reads = temp("{denoiser}/1a_trimmed_primers/{sample}_trimmed_R1.fastq.gz"),
         R2_trimmed_reads = temp("{denoiser}/1a_trimmed_primers/{sample}_trimmed_R2.fastq.gz"),
     log:
-        logging_folder + "{denoiser}/1a_trimmed_primers/{sample}_trimmed.txt"
+        logging_folder + "{denoiser}/1a_trimmed_primers/{sample}_trimmed_paired.txt"
     params:
         amplicon_type = config["ITS_or_16S"],
         forward_primer = config["forward_primer"],
@@ -33,7 +33,7 @@ rule cutadapt_trim_single_for_DADA2:
     output:
         R1_trimmed_reads = temp("{denoiser}/1a_trimmed_primers/{sample}_trimmed_single.fastq.gz")
     log:
-        logging_folder + "{denoiser}/1a_trimmed_primers/{sample}_trimmed.txt"
+        logging_folder + "{denoiser}/1a_trimmed_primers/{sample}_trimmed_single.txt"
     params:
         amplicon_type = config["ITS_or_16S"],
         forward_primer = config["forward_primer"],
