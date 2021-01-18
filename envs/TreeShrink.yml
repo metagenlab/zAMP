@@ -1,0 +1,6 @@
+name: treeshrink
+channels:
+- smirarab
+dependencies:
+- r-base==3.6.3
+- treeshrink = 1.3.7
