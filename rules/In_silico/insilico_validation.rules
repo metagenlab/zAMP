@@ -65,6 +65,25 @@ rule Extract_amplicon:
 
           '''
 
+## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
+rule reverse_complement:
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    container:
+        singularity_envs["r_utils"]  
+    input:
+        simple_fasta = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+    output:
+        fasta_with_rev = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
+    log:
+        logging_folder + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.txt",
+    threads:
+        1
+    script: 
+        "scripts/reverse_complement.R"
+
+
+
 
 rule cutadapt_trim_in_silico:
     conda:
@@ -72,7 +91,7 @@ rule cutadapt_trim_in_silico:
     container:
         singularity_envs["cutadapt"]
     input:
-        R1_raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+        R1_raw_reads = "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
     output:
         R1_trimmed_reads = temp("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta"),
     log:
