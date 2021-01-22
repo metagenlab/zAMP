@@ -87,7 +87,7 @@ rule cutadapt_trim_in_silico:
     threads:
         1
     script: 
-        "../scripts/DB_processing/scripts/cutadapt_DB.py"
+        "../DB_processing/scripts/cutadapt_DB.py"
 
 def list_amplicons(wildcards):
     checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
