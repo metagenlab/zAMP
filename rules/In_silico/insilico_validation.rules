@@ -81,8 +81,8 @@ rule cutadapt_trim_in_silico:
         forward_primer = config["forward_primer"],
         reverse_primer = config["reverse_primer"],
         excepted_errors = config["excepted_errors"], 
-        min_length = config["amplicon_min_length"],
-        max_length = config["amplicon_max_length"], 
+        min_length = config["merged_min_length"],
+        max_length = config["merged_max_length"], 
         coverage = config["amplicon_min_coverage"], 
     threads:
         1
