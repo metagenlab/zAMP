@@ -43,9 +43,10 @@ rule export_DADA2_QuerySequences :
     params:
         merged_min_length = config["merged_min_length"],
         merged_max_length = config["merged_max_length"]
+    log:
+        logging_folder + "QualityControl/DADA2/{sample}/dna-sequences.log",
     script:
         "scripts/extract_DADA2_sequences.R"
-
 
 
 
@@ -59,6 +60,8 @@ rule vsearch_count_occurences_for_QC :
         uc = "vsearch/1c_derep/{sample}_derep.uc"
     output:
         count_table = "QualityControl/vsearch/{sample}/count_table.tsv"
+    log:
+        logging_folder + "QualityControl/vsearch/{sample}/count_table.log",
     script:
         "scripts/extract_vsearch_counts.R"
 
@@ -213,6 +216,8 @@ rule mismatch_table_per_sample :
         missmatch_plot_path = "QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",
     params:
         RUN = lambda wildcards : get_RUN(wildcards.sample)
+    log:
+        logging_folder +  "QualityControl/{denoiser}/export_{sample}/with_counts.log"
     threads :
         1
     script:
@@ -236,6 +241,8 @@ rule Compare_mismatch_per_run :
     output :
         missmatch_plot = "QualityControl/{denoiser}/{RUN}_compare_quality.png",
         merged_mismatch_table = "QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
+    log:
+        logging_folder +  "QualityControl/{denoiser}/{RUN}_compare_quality_table.log",
     threads :
         1
     script:
@@ -253,6 +260,8 @@ rule Compare_mismatch_all :
     output :
         missmatch_plot = "QualityControl/{denoiser}/compare_quality.pdf",
         merged_mismatch_table = "QualityControl/{denoiser}/compare_quality_table.tsv",
+    log:
+        logging_folder +  "QualityControl/{denoiser}/compare_quality.log",
     threads :
         1
     script:
