@@ -1,11 +1,11 @@
-
+## Import the sequence predicted from the Insilico validation pipeline
 rule Import_ReferenceSequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
     container:
         singularity_envs["qiime2"] 
     input :
-        trimmed_reads = "InSilico/2_denoised/dna-sequences.fasta"
+        trimmed_reads = config["In_silico_tax_assign_output"] + "InSilico/2_denoised/dna-sequences.fasta"
     output :
         "QualityControl/Amplicons_reference_seq.qza"
     threads :
@@ -19,30 +19,14 @@ rule Import_ReferenceSequences :
         '''
 
 
-### Count the number of occurences of the representative sequences in the samples.
-rule vsearch_count_occurences_for_QC :
-    conda:
-        "../../envs/amplicons_r_utils.yml"
-    container:
-        singularity_envs["r_utils"]  
-    input:
-        uc = "vsearch/1c_derep/{sample}_derep.uc"
-    output:
-        count_table = "QualityControl/vsearch/{sample}/count_table.tsv"
-    script:
-        "scripts/extract_vsearch_counts.R"
-
-
-
-
 def get_DADA2_samples_path(sample):
     RUN = all_samples.at[sample, config["run_column"]]
-    path = "DADA2/2_denoised/"+RUN+"/"+sample+"_infer_seq_tab.rds"
-    print(path)
+    sample_layout = layout[sample]
+    path = "DADA2/2_denoised/"+RUN+"/"+sample+"_"+sample_layout+"_infer_seq_tab.rds"
     return(path)
 
 
-
+### Take the squences after denoising
 rule export_DADA2_QuerySequences :
     conda:
         "../../envs/DADA2_in_R.yml"
@@ -64,6 +48,22 @@ rule export_DADA2_QuerySequences :
 
 
 
+
+### Count the number of occurences of the representative sequences in the samples. I takes the sequences before clustering, i.e. their "raw sequence"
+rule vsearch_count_occurences_for_QC :
+    conda:
+        "../../envs/amplicons_r_utils.yml"
+    container:
+        singularity_envs["r_utils"]  
+    input:
+        uc = "vsearch/1c_derep/{sample}_derep.uc"
+    output:
+        count_table = "QualityControl/vsearch/{sample}/count_table.tsv"
+    script:
+        "scripts/extract_vsearch_counts.R"
+
+
+### Import sequence in "raw" vsearch output
 rule Import_Vsearch_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -83,7 +83,7 @@ rule Import_Vsearch_QuerySequences :
         --output-path {output} 
         '''
 
-
+### Import Denoised sequences
 rule Import_DADA2_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -103,7 +103,7 @@ rule Import_DADA2_QuerySequences :
         --output-path {output} 
         '''
 
-
+### Only keep sequences matching the query 
 rule filter_QuerySequences :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -129,7 +129,7 @@ rule filter_QuerySequences :
       --o-sequence-misses {output[out]}
         '''
 
-
+### Compare mismatch expected sequences and raw amplicons
 rule  Quality_Control_raw :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -150,6 +150,8 @@ rule  Quality_Control_raw :
         --o-visualization {output}
          '''
 
+
+### Compare mismatch expected sequences and denoised amplicons
 rule  Quality_Control_denoised :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -171,7 +173,7 @@ rule  Quality_Control_denoised :
         --p-show-alignments
          '''
 
-
+### Export output
 rule  Export_quality_Control_raw :
     conda :
         "../../envs/QIIME2-2020.02.yml"
@@ -217,6 +219,12 @@ rule mismatch_table_per_sample :
         "scripts/abundance_to_mismatches.R"
 
 
+def select_samples(RUN):
+    selected_samples = all_samples.index.values[(all_samples[config["select_column"]] == config["select_value"]) & (all_samples[config["run_column"]] == RUN)] 
+    selected_paths = expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = selected_samples)
+
+    return(selected_paths)
+
 
 rule Compare_mismatch_per_run :
     conda:
@@ -224,7 +232,7 @@ rule Compare_mismatch_per_run :
     container:
         singularity_envs["r_utils"]  
     input :
-        mismatch_tables_path = lambda wildcards : expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = all_samples.index.values[all_samples[config["run_column"]] == wildcards.RUN])
+        mismatch_tables_path = lambda wildcards : select_samples(wildcards.RUN) 
     output :
         missmatch_plot = "QualityControl/{denoiser}/{RUN}_compare_quality.png",
         merged_mismatch_table = "QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
