@@ -126,8 +126,8 @@ rule filter_QuerySequences :
       --i-query-sequences {input[Query]} \
       --i-reference-sequences {input[Amplicons]}  \
       --p-method blast \
-      --p-perc-identity 0.97 \
-      --p-perc-query-aligned 0.97 \
+      --p-perc-identity 0.99 \
+      --p-perc-query-aligned 0.99 \
       --o-sequence-hits {output[filtered]} \
       --o-sequence-misses {output[out]}
         '''
@@ -256,7 +256,7 @@ rule Compare_mismatch_all :
     container:
         singularity_envs["r_utils"]  
     input :
-        mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = all_samples[config["run_column"]])
+        mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = set(all_samples[config["run_column"]]))
     output :
         missmatch_plot = "QualityControl/{denoiser}/compare_quality.pdf",
         merged_mismatch_table = "QualityControl/{denoiser}/compare_quality_table.tsv",

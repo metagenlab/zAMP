@@ -26,12 +26,11 @@ count_table_path <- snakemake@input[["count_table_path"]]
     library(stringr)
 
 
-save.image(file= paste0(getwd(), "/myEnvironment.RData"))
 
 mismatches_table <- read.table(mismatch_tables_path, header = TRUE, sep = "\t")
 
 count_table <- read.table(count_table_path, header = FALSE, sep = "\t",row.names = 1)
-head(count_table, 10)
+
 names(count_table)[1] <- "ID"
 names(count_table)[2] <- "Counts"
 
