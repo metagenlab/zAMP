@@ -34,8 +34,8 @@ rule PANDAseq_trim_pair_reads:
         -G {log} \
         -w {output[paired_trimmed_reads]} \
         -B \
-	    -T {threads} \
-	    -o {params[min_overlap]} \
+	-T {threads} \
+	-o {params[min_overlap]} \
         -N
         '''
 
@@ -70,7 +70,7 @@ rule PANDAseq_pair_reads:
         -G {log} \
         -w {output[paired_trimmed_reads]} \
         -B \
-	    -T {threads} \
-	    -o {params[min_overlap]} \
+	-T {threads} \
+	-o {params[min_overlap]} \
         -N
         '''
