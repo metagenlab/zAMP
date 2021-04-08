@@ -11,8 +11,8 @@ if "--use-singularity" in sys.argv:
 singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/singularity/sing_envs.yml"), 'r'))
 
 
-
-include: config["assembly_finder_Snakefile"]
+## Include Assembly Finder
+include: "assembly_finder/Snakefile"
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/scripts/logging.py"
