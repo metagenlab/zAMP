@@ -31,6 +31,8 @@ Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual 
 Software dependencies
 ************************************************************************
 
+.. _git:
+
 *Git*
 =======================================================================
 
@@ -81,6 +83,8 @@ Test
 
 
 
+ .. _snakemake:    
+ 
 *Snakemake*
 =======================================================================
 
@@ -108,6 +112,8 @@ Test
     # To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
     snakemake --version
 
+
+.. _singularity:   
 
 *Singularity* 
 =======================================================================
