@@ -5,8 +5,11 @@
 Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
+excepted_errors: 0.1
+amplicon_min_coverage: 0.8
 
-### Merged sequences length-based filtering (appied to DADA2 and vsearch approaches)
+
+### Merged sequences length-based filtering (applied to DADA2 and vsearch approaches)
 merged_min_length: 390 # from 390 to 400 for V3V4
 merged_max_length: 500 # from 450 to 500 for V3V4
 mismatch: 3 #0 - 3 mismatch
