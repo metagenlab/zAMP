@@ -144,7 +144,7 @@ Clone RSP4ABM
 
 Once all dependencies installed and working, RSP4ABM can be cloned with git::
 
-    git clone https://github.com/metagenlab/microbiome16S_pipeline.git
+    git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
 
 
 Please note the path of the directory in which you cloned RSP4ABM since you will have to indicate it when executing the pipeline. 

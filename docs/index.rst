@@ -23,4 +23,5 @@ Please note that RSP4ABM is a compilation of a number of published tools. We wou
    pages/output.rst
    pages/downstream_analysis.rst
    pages/FAQ.rst
+   pages/insilico_validation.rst
 
