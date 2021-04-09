@@ -15,7 +15,7 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 ### Provide default values for a variable required by assembly_finder
 config['community_name'] = "genomes"
 if config.get('update_ete3', 'Not Found') == 'Not Found':
-    config['update_ete3'] = True
+    config['update_ete3'] = False
 
 include: "assembly_finder/Snakefile"
 

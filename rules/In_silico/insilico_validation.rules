@@ -6,9 +6,9 @@ import re
 
 rule decompress_assemblies:
     input:
-        'assembly_gz/{sample}.fna.gz'
+        'assembly_gz/genomes/{sample}_genomic.fna.gz'
     output:
-        temp('assembly_gz/{sample}.fna')
+        temp('assembly_gz/genomes/{sample}.fna')
     shell:
         "zcat {input[0]} > {output[0]}"
 
@@ -31,7 +31,7 @@ rule Extract_amplicon:
         singularity_envs["simulatePCR"]
     input :
         "InSilico/PCR/Primers.fasta",
-        "assembly_gz/{sample}.fna"
+        "assembly_gz/genomes/{sample}.fna"
     output :
         "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
         temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
@@ -108,16 +108,15 @@ rule cutadapt_trim_in_silico:
     script: 
         "../DB_processing/scripts/cutadapt_DB.py"
 
+
 def list_amplicons(wildcards):
     checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
-    print(checkpoint_output)
-    table=pd.read_csv(checkpoint_output,delimiter='\t')
-    acc=list(table['AssemblyNames'])
-    expd=expand("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",sample=acc)
+    directory = '/'.join((checkpoint_output.split('/')[0:2]))
+    assemblynames = glob_wildcards(os.path.join(directory, '{i}_genomic.fna.gz')).i
+    expd=expand("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",sample=assemblynames)
     return expd
 
 #primer enlever
-
 
 ### Combine all extracted sequences in one big fasta
 rule Insilico_merge_all_in_one_fasta:
@@ -186,12 +185,11 @@ rule InSilico_count_occurences :
         '''
 
 
-
 def list_samples_counts(wildcards):
     checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
-    table=pd.read_csv(checkpoint_output,delimiter='\t')
-    acc=list(table['AssemblyNames'])
-    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",sample=acc)
+    directory = '/'.join((checkpoint_output.split('/')[0:2]))
+    assemblynames = glob_wildcards(os.path.join(directory, '{i}_genomic.fna.gz')).i
+    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",sample=assemblynames)
     return expd
 
 
