@@ -83,7 +83,34 @@ Test
 
 
 
- .. _snakemake:    
+*Mamba*
+=======================================================================
+
+What for?
+-----------------------------------------------------------------------
+
+    `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
+    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
+
+
+Install
+-----------------------------------------------------------------------
+    `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_.
+
+
+Test
+-----------------------------------------------------------------------
+
+*To test if Conda is installed*::
+
+    # To test if Conda is installed, make it print its version. It will fail if it is not installed
+    conda --version
+
+
+
+
+
+.. _snakemake:    
  
 *Snakemake*
 =======================================================================
