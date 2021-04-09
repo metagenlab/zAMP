@@ -12,8 +12,11 @@ singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/sin
 
 
 ## Include Assembly Finder
-### Provide a value for a variable required by assembly_finder
+### Provide default values for a variable required by assembly_finder
 config['community_name'] = "genomes"
+if not len(config['update_ete3']):
+    config['update_ete3'] = "genomes"
+    
 include: "assembly_finder/Snakefile"
 
 ## Include the pipeline rules
