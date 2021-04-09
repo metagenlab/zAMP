@@ -109,7 +109,7 @@ rule cutadapt_trim_in_silico:
         "../DB_processing/scripts/cutadapt_DB.py"
 
 def list_amplicons(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
     expd=expand("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",sample=acc)
@@ -187,7 +187,7 @@ rule InSilico_count_occurences :
 
 
 def list_samples_counts(wildcards):
-    checkpoint_output = checkpoints.combine_assembly_tables.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
     table=pd.read_csv(checkpoint_output,delimiter='\t')
     acc=list(table['AssemblyNames'])
     expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",sample=acc)
