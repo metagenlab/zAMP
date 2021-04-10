@@ -11,7 +11,7 @@ Aim
 
 This dedicated aims at predicting *in silico* if specific taxa are:
     
-    1. amplified by a set of PCR primers
+    1. amplified by a set of PCR primers used for amplicon-based metagenomics
     2. accurately taxonomically classified based on the generated amplicon
    
 
@@ -19,23 +19,20 @@ This dedicated aims at predicting *in silico* if specific taxa are:
 Working principle
 ************************************************************************
 
-Based on a user-defined list, genome assemblies are downloaded from the NCBI database with `Assembly Finder
-<https://github.com/metagenlab/assembly_finder>`_. Then, PCR primers sequences provided by the user are used to run an *in silico* PCR with `Simulate_PCR <https://doi.org/10.1186/1471-2105-15-237>`. The generated in silico* amplicons are then treated by the pipeline at they would with our main pipeline (primers trimming, taxonomic classification). 
+Based on a user-defined list, genome assemblies are downloaded from the NCBI database with `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. Then, PCR primer sequences provided by the user are used to run an *in silico* PCR with `Simulate_PCR <https://doi.org/10.1186/1471-2105-15-237>`_. To the their discriminative power, the generated *in silico* amplicons are  treated by the pipeline as they would if they were the results of sequencing reads (primers trimming, taxonomic classification). 
 
-Finally, this tool provides a table with, for each of the downloaded assembly, a description of the amplicons predicted to be amplified with the tested PCR primers (number of sequence variants, number of copies, expected and obtained taxonomic classification). 
+Finally, this tool provides a table with, for each of the downloaded assembly, a description of the amplicons predicted to be amplified with the PCR primers (number of sequence variants, number of copies, expected and obtained taxonomic classification). 
 
 
 ************************************************************************
 Requirements
 ************************************************************************
-This tools shares :ref:`requirements with the RSP4ABM main pipeline <_setup>` and in particular: 
+This tools shares :ref:`requirements with the RSP4ABM main pipeline <_setup>`. Thus, it requires: 
 
 - a local copy of RSP4ABM (:ref:`(cloned with git) <git>`) (with the --recursive flag to obtain Assembly Finder at the same time)
 - :ref:`Snakemake <snakemake>`
 - :ref:`Singularity <singularity>` (here required and not only optional)
-- :ref:`a preprocessed taxonomic database <DB_preprocessing>`
-
-In addition, the  external pipeline is required 
+- :ref:`A taxonomic database preprocessed with our dedicated pipeline <DB_preprocessing>`
 
 
 ************************************************************************
@@ -47,12 +44,12 @@ To execute the pipeline, one needs:
 1. Input table
 =======================================================================
 
-.. Note:: It is recommended to generate a new folder (outside of the pipeline itself) where these files are created and the pipeline will be executed. 
+.. Note:: It is recommended to generate a new folder (outside of the pipeline itself) where these files are created and the pipeline executed. 
 
-This table contains a list of taxa to be tested. First column must contain taxonomic identifiers matching the `identifiers from the NCBI taxonomy database <https://www.ncbi.nlm.nih.gov/taxonomy/>`. Alternatively, instead of their names, taxa can also be indentified by their taxID. Then, a second column must describe the number of assemblies. The two columns should be separated by a tabulation.
+This table contains a list of taxa to be tested. First column must contain taxonomic identifiers matching the `identifiers from the NCBI taxonomy database <https://www.ncbi.nlm.nih.gov/taxonomy/>`_. Alternatively, instead of their names, taxa can also be indentified by their taxID. Then, a second column must describe the number of assemblies. The two columns should be separated by a tabulation.
 
 
-.. Note:: The number of assemblies from a given taxa should not exceed the number of assemblies available on the NCBI. 
+.. Hint:: The number of assemblies from a given taxa should not exceed the number of assemblies available on the NCBI. 
 
 
 **Input file example:**
@@ -64,7 +61,7 @@ This table contains a list of taxa to be tested. First column must contain taxon
 2. Config file
 =======================================================================
 
-The config files specifies the different parameters of the pipeline as well as parameters of Assembly Finder. 
+The config files specifies the different parameters of the pipeline as well as parameters for `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. 
 
 **Config file example:**
 
@@ -80,7 +77,7 @@ https://github.com/metagenlab/microbiome16S_pipeline/blob/master/ressources/temp
 Execution
 ************************************************************************
 
-Once all the requirements installed and the input files ready, one can exectute the pipeline. In an environment where Snakemake is available, it can be run as follows: 
+Once all the requirements installed and the input files ready, one can exectute the pipeline. In an environment where :ref:`Snakemake <snakemake>` is available, it can be run as follows: 
 
 .. code-block:: console
 

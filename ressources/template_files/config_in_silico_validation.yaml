@@ -1,20 +1,19 @@
-
 ################ Validation config ################
 
-### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)
-Trim_primers: True # False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)
+### Input table, listing the taxonomy and number of assemblies to test from
+input_table_path: '16S_input_table_insilico.tsv'
+
+### In silico PCR parameters, used by Simulate_PCR
 forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
 reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
-excepted_errors: 0.1
-amplicon_min_coverage: 0.8
-
-
-### Merged sequences length-based filtering (applied to DADA2 and vsearch approaches)
-merged_min_length: 390 # from 390 to 400 for V3V4
-merged_max_length: 500 # from 450 to 500 for V3V4
 mismatch: 3 #0 - 3 mismatch
 threeprime: 2 # Number of match at the 3' end for a hit to be considered
 
+### Amplicon triming parameters, used by cutadapt
+excepted_errors: 0.1 ## Proportion of mismatch tolerated allowed in the primers to be trimmed
+amplicon_min_coverage: 0.8 ## Covered proporition of the primer to be trimmed 
+merged_min_length: 390 # from 390 to 400 for V3V4
+merged_max_length: 500 # from 450 to 500 for V3V4
 
 ### Database used for taxonomic assignment
 tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/"
@@ -25,24 +24,20 @@ classifier: ["qiimerdp"]
 viz_replace_empty_tax: TRUE
 
 ########### Assembly finder config ################
-
-input_table_path: '16S_input_table_insilico.tsv'
-
 NCBI_key: '6dce38824889f62e188a25ae35c52a083c08'
 NCBI_email: 'valentin.scherz@chuv.ch'
 
 ##Parameters for search_assemblies function
 #This set of parameters is to search all possible assemblies
-complete_assemblies: False
-reference_assemblies: False
-representative_assemblies: False
-exclude_from_metagenomes: True
-Genbank_assemblies: True
-Refseq_assemblies: True
+complete_assemblies: True ## Keep only complete assemblies
+reference_assemblies: False ## Keep only reference assemblies
+representative_assemblies: False ## Keep only representative assemblies
+exclude_from_metagenomes: True ## Excluse from metagenome
+Genbank_assemblies: True ## Take from Genbank
+Refseq_assemblies: True ## Take from Refseq
 
 
 ##Parameters for the filtering function
-
 Rank_to_filter_by: 'None'
 #None: Assemblies are ranked by their assembly status (complete or not)
 #and Refseq category (reference, representative ...)
