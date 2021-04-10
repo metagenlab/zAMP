@@ -82,6 +82,7 @@ Execution
 
 Once all the requirements installed and the input files ready, one can exectute the pipeline. In an environment where Snakemake is available, it can be run as follows: 
 
+.. code-block:: console
 
     snakemake --snakefile {path_to_pipeline}/Insilico_taxa_assign.Snakefile  --use-singularity --singularity-prefix {path_to_singularity_images} --cores {number of cores} --configfile {path_to_config} --resources ncbi_requests={number of request to NCBI} -k
 
