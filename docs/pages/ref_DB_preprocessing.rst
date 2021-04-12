@@ -123,10 +123,10 @@ Path to this directory will be defined in the pipeline's `config file`_.)
 
 .. Hint:: For traceability and reproducibility, create this working directory and place your processed taxonomy database in a location where it will not be erased by error.
 
-Config file
+config_DB file
 =======================================================================
 
-As for the :ref:`main workflow <pipeline_execution>`, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+For the database processing execution, parameters must be provided in a *config file* with the *.yaml* format. Please adapt the following template to your situation.
 
 
 *for instance*::
@@ -154,7 +154,7 @@ As for the :ref:`main workflow <pipeline_execution>`, parameters must be provide
 Pipeline execution
 =======================================================================
 
-Once the reference database in the right format downloaded and the *config file* prepared, the database preprocessing pipeline can be executed. 
+Once the reference database in the right format downloaded and the *config_DB file* prepared, the pipeline can be executed for processing the database of interest. 
 
 
 .. literalinclude:: ../../ressources/template_files/DB_snakemake_bash_command.sh 
