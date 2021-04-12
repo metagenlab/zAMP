@@ -26,10 +26,10 @@ The user indicates to the pipeline:
 
 - the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing de database), the taxonomic identifier is remplaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. 
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing the database), the taxonomic identifier will be replaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. 
 
 
-Cases where identical sequences belong to different families or above after collapsing of identifiers are writted in a dedicated file. Futhermore, all ranks below the rank of disagreement are remplaced by an indicator of the disagreement. For instance::
+Cases, where identical sequences belong to different families or above after collapsing of identifiers, are written in a dedicated file. Furthermore, all ranks below the rank of disagreement are replaced by an indicator of the disagreement. For instance::
 
     # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
 
@@ -37,7 +37,7 @@ Cases where identical sequences belong to different families or above after coll
 
 In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
 
-Finally, the  pipeline will make a copy of the original database as well as computes hashes of all files for traceability purposes. 
+Finally, the  pipeline will make a copy of the original database as well as computing hashes of all files for traceability purposes. 
 
 ************************************************************************
 Execution:
@@ -45,7 +45,7 @@ Execution:
 
 A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primer and reference database. 
 
-First, the user must retrieve a database in the right format and a *config* file must be defined. Then, provided that the pipeline was properly setup (*see* :ref:`setup`), the dedicated workflow can be executed. 
+First, the user must retrieve a database in the right format and a *config* file must be defined. After that, with providing proper set up for the pipeline, (*see* :ref:`setup`), the dedicated workflow can be executed. 
 
 
 Taxonomy database
@@ -54,7 +54,7 @@ Taxonomy database
 RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original *QIIME* format: 
 
 - a `Reference sequences`_ `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file.
-- a `Reference taxonomy`_ text file describing with the taxonomic classification of these sequences.  
+- a `Reference taxonomy`_ text file describing the taxonomic classification of these sequences.  
 
 
 Reference sequences
@@ -111,7 +111,8 @@ We do not provide a taxonomic reference database. However, here is a short, non-
 Working directory
 =======================================================================
 
-To execute the pipeline place yourself in any directory. It does not have to be where the input reference database files are, nor where you desire to save the output (these locations will be defined in the `config file`_.) 
+To execute the pipeline place yourself in any directory called DB_processing that in the end contains config_DB.yaml and the original database to be processed.
+Path to this directory will be defined in the pipeline's `config file`_.) 
 
 *for instance*::
 
@@ -122,10 +123,10 @@ To execute the pipeline place yourself in any directory. It does not have to be 
 
 .. Hint:: For traceability and reproducibility, create this working directory and place your processed taxonomy database in a location where it will not be erased by error.
 
-Config file
+config_DB file
 =======================================================================
 
-As for the :ref:`main workflow <pipeline_execution>`, parameters must be provided in an *config file* in the *.yaml* format. Please adapt the following template to your situation.
+For the database processing execution, parameters must be provided in a *config file* with the *.yaml* format. Please adapt the following template to your situation.
 
 
 *for instance*::
@@ -153,7 +154,7 @@ As for the :ref:`main workflow <pipeline_execution>`, parameters must be provide
 Pipeline execution
 =======================================================================
 
-Once the reference database in the right format downloaded and the *config file* prepared, the database preprocessing pipeline can be executed. 
+Once the reference database in the right format downloaded and the *config_DB file* prepared, the pipeline can be executed for processing the database of interest. 
 
 
 .. literalinclude:: ../../ressources/template_files/DB_snakemake_bash_command.sh 
