@@ -11,8 +11,13 @@ if "--use-singularity" in sys.argv:
 singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/singularity/sing_envs.yml"), 'r'))
 
 
+## Include Assembly Finder
+### Provide default values for a variable required by assembly_finder
+config['community_name'] = "genomes"
+if config.get('update_ete3', 'Not Found') == 'Not Found':
+    config['update_ete3'] = False
 
-include: config["assembly_finder_Snakefile"]
+include: "assembly_finder/Snakefile"
 
 ## Include the pipeline rules
 include: "rules/0_preprocessing/scripts/logging.py"

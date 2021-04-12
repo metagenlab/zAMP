@@ -31,6 +31,8 @@ Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual 
 Software dependencies
 ************************************************************************
 
+.. _git:
+
 *Git*
 =======================================================================
 
@@ -81,6 +83,41 @@ Test
 
 
 
+*Mamba*
+=======================================================================
+
+What for?
+-----------------------------------------------------------------------
+
+    `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
+    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
+
+
+Install
+-----------------------------------------------------------------------
+    `Follow the Mamba installation recommendation <https://github.com/mamba-org/mamba>`_.
+
+
+*Installed Mamba with Conda*::
+    
+    mamba install xtensor-r -c conda-forge
+
+
+
+Test
+-----------------------------------------------------------------------
+
+*To test if Mamba is installed*::
+
+    # To test if Mamba is installed, make it print its version. It will fail if it is not installed
+    mamba --version
+
+
+
+
+
+.. _snakemake:    
+ 
 *Snakemake*
 =======================================================================
 
@@ -91,13 +128,13 @@ What for?
 
 Install
 -----------------------------------------------------------------------
-    Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*.
+    Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
     
 
 *To install Snakemake in a dedicated "Snakemake" environment*::
 
-    # Install snakemake in a environment named "Snakemake"
-    conda create -c bioconda -n snakemake  snakemake
+    # Install Snakemake version 5.26.1 in a environment named "snakemake5261"
+    mamba create -c bioconda -n snakemake5261  snakemake=5.26.1
 
 
 Test
@@ -109,11 +146,14 @@ Test
     snakemake --version
 
 
+.. _singularity:   
+
 *Singularity* 
 =======================================================================
 
 What for?
 -----------------------------------------------------------------------
+
     *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
@@ -138,17 +178,17 @@ Clone RSP4ABM
 
 Once all dependencies installed and working, RSP4ABM can be cloned with git::
 
-    git clone https://github.com/metagenlab/microbiome16S_pipeline.git
+    git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
 
 
-Please note the path of the directory in which you cloned RSP4ABM since you will have to indicate it when executing the pipeline. 
+.. Hint:: Please note the path of the directory in which you cloned RSP4ABM since you will need it to execute the pipeline. 
 
 
 ************************************************************************
 Reference database
 ************************************************************************
 
-The very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing`. 
+The very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing` page. 
 
 
 ************************************************************************
