@@ -114,7 +114,7 @@ Test
 
 What for?
 -----------------------------------------------------------------------
-    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
 Install
