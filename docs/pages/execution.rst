@@ -12,24 +12,30 @@ Pipeline execution
 .. Note:: The instructions hereunder assume that the pipeline setup was completed (see :ref:`setup`), including the preprocessing of the taxonomy reference database (see :ref:`DB_preprocessing`).
 
 
+
+
+
+
+
+
 .. _sample_selection:
 
 ************************************************************************
 1. Select a method to define sequencing read files as input
 ************************************************************************
 
-Before executing RSP4ABM, you need to define how you provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs. 
+Before executing RSP4ABM, you need to define how you provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts 4 different methods to define the input read files, with different requirements. Please first read hereunder to define the method of input definition that bests fits to your needs. 
 
 A. Sample column
 =======================================================================
 
     Rational:
     -----------------------------------------------------------------------
-    The easy, but not completely foolproof, way to run the pipeline. 
+    The easy, but not completely foolproof, way to run the pipeline. The one to favor when you have *.fastq* reads all stored in a folder, with simples identifers matching your sample names. 
 
     Working principle:
     -----------------------------------------------------------------------
-    A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script automatically matches the sample names with the sequencing read files format located in a directory. 
+    A `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based script automatically matches the sample names with the names of te sequencing read files found in a directory. 
         
     Requirements:
     -----------------------------------------------------------------------
@@ -45,7 +51,7 @@ A. Sample column
 
     - All reads are located in one single directory.
 
-        *reads can be actually stored in the directory or be represented by symbolic links (recommended)*
+        *reads can be actually stored in the directory or be represented by symbolic links*
 
     - The path of the directory containing the reads is designated by the "*link_directory*" parameter in the *config file* ("*links/*" by default). 
 

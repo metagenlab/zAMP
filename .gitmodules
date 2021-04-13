@@ -1,4 +1,4 @@
 [submodule "assembly_finder"]
 	path = assembly_finder
 	url = https://github.com/metagenlab/assembly_finder
-	branch = container
+	branch = master

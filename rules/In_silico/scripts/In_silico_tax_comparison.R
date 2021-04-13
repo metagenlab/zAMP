@@ -38,16 +38,17 @@
   print("reading count table")
   count_table <- read.table(file = count_table, header = TRUE, check.names=FALSE)
   transposed_counts <- t(count_table)
+  head(transposed_counts)
 
 ### Read sample_data
   print("reading metadata")
   metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
-
+  head(metadata)
 
 ### Read and format taxonomy table
   print("reading taxonomy table")
   taxonomy_table <- read.table(file = taxonomy_table, header = FALSE, sep = "\t")
-
+  head(taxonomy_table)
 
 ### Convert the table into a tabular split version
   taxonomy_table_split<-taxonomy_table %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
@@ -93,7 +94,6 @@
 
 ## Loop over the Assemblies
   for (i in comparison$AssemblyNames){
-    print(i)
     ### Keep the row of the assembly
     transposed_counts_i <- transposed_counts[rownames(transposed_counts)==i,]
     ### Keep ony variants with non-null counts
@@ -126,7 +126,7 @@
   count_table_tax <- cbind(count_table, taxonomy_table$V2[m])
   colnames(count_table_tax)[colnames(count_table_tax)=="taxonomy_table$V2[m]"] <- "Class_tax"
 
-print(1)
+
 ## Melt it in long
   melt_table <- melt(count_table_tax, id.vars = c("Feature.ID", "Class_tax"), variable.name = "AssemblyNames") %>% filter(value>0)
 
