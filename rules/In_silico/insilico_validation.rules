@@ -146,7 +146,7 @@ rule InSilico_derepicate_all:
         '''
         vsearch --derep_fulllength {input} \
                 --minuniquesize 1 \
-                --relabel OTU_ \
+                --relabel Seq_ \
                 --output {output} \
                 2> {log}
         '''
@@ -163,9 +163,9 @@ rule InSilico_count_occurences :
         samples = "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
         rep_seq = "InSilico/2_denoised/dna-sequences.fasta"
     output:
-        "InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",
+        "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
     log:
-         logging_folder + "InSilico/2_denoised/countOTUs/{sample}_count_table.tsv"
+         logging_folder + "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv"
     shell:
         '''       
         if [ -s "{input[samples]}" ]
@@ -189,7 +189,7 @@ def list_samples_counts(wildcards):
     checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
     directory = '/'.join((checkpoint_output.split('/')[0:2]))
     assemblynames = glob_wildcards(os.path.join(directory, '{i}_genomic.fna.gz')).i
-    expd=expand("InSilico/2_denoised/countOTUs/{sample}_count_table.tsv",sample=assemblynames)
+    expd=expand("InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",sample=assemblynames)
     return expd
 
 

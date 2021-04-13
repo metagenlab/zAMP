@@ -91,7 +91,6 @@
 ## Create a metadata table to work with
   comparison <- metadata
 
-
 ## Loop over the Assemblies
   for (i in comparison$AssemblyNames){
     ### Keep the row of the assembly
@@ -119,7 +118,7 @@
   comparison <- left_join(comparison, sum_of_count)
 
 ## Create a table with the same informations but in a long format
-## Create an OTU column
+## Create an Seq column
   count_table$Feature.ID <- rownames(count_table)
 ## Match the position between the count and tax table and joined them
   m <- match(count_table$Feature.ID, taxonomy_table$V1)

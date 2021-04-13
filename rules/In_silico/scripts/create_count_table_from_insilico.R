@@ -43,17 +43,17 @@
     }
 
     otus_table <- otus_table[-1,]
-    colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
+    colnames(otus_table) <- c("Sample", "Seq_ID", "counts")
 
 
 ## Transform this table to have a wide format where we have a column by sample
     transf_vsearch_table <- otus_table %>%
-      group_by(Sample, OTU_ID) %>%
+      group_by(Sample, Seq_ID) %>%
       summarise(counts = sum(counts)) %>%
-      dcast(OTU_ID ~ Sample)
+      dcast(Seq_ID ~ Sample)
 
 ## Set OTU as rownames
-    transf_vsearch_table <- set_rownames(x = transf_vsearch_table, value = transf_vsearch_table$OTU_ID)
+    transf_vsearch_table <- set_rownames(x = transf_vsearch_table, value = transf_vsearch_table$Seq_ID)
     transf_vsearch_table[,1] <- NULL
 
 ## Write output
