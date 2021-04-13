@@ -134,8 +134,13 @@ _______________________________________________________________________
 -----------------------------------------------------------------------
 
 What for?
+<<<<<<< HEAD
 _______________________________________________________________________
     *RSP4ABM* is a *Snakemake* [1]_ pipeline. Then, it must be installed and available for each execution of the pipeline. 
+=======
+-----------------------------------------------------------------------
+    *RSP4ABM* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
+>>>>>>> 388588b5a24d26d5267e3d905a9eb91bc515315f
 
 
 Install
@@ -164,8 +169,14 @@ _______________________________________________________________________
 -----------------------------------------------------------------------
 
 What for?
+<<<<<<< HEAD
 _______________________________________________________________________
     *Singularity* is a container plateform. Its enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for all pipelines embeded in RSP4ABM, except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, users can choose when executing the pipeline between Conda_ or Singularity_ to retrieved all the required tools. Yet, it recommended to run RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+=======
+-----------------------------------------------------------------------
+
+    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+>>>>>>> 388588b5a24d26d5267e3d905a9eb91bc515315f
 
     
 Install

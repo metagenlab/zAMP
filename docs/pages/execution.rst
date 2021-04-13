@@ -65,18 +65,18 @@ B. OldSampleName column
 
     Rational:
     -----------------------------------------------------------------------
-    The sample names used for sequencing and contained in the *.fastq.gz* read filenames can be impractical or incompatible to be used as sample identifier (e.g. stars with a number). In this case, match can be done with an "*OldSampleName*" column instead of the default "*Sample*" column. 
+    The sample names used for sequencing and contained in the *.fastq.gz* read filenames can be impractical or incompatible to be used as sample identifier (e.g. starts with a number). In this case, match can be done with an "*OldSampleName*" column instead of the default "*Sample*" column. 
 
     Working principle:
     -----------------------------------------------------------------------
-    Same than for `A. Sample column`_ matching except that the presence of a column named "*OldSampleName*" in the *sample sheet* forces the pipeline to run the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching on this column instead of the leftmost "*Sample*" column. 
+    Same as `A. Sample column`_ matching the presence of a column named "*OldSampleName*" in the *sample sheet* forces the pipeline to run the `regex <https://en.wikipedia.org/wiki/Regular_expression>`_-based matching on this column instead of the leftmost "*Sample*" column. 
 
     This method implies that sample are given a "new" identifier from the *Sample* leftmost column of the *sample sheet*, instead of their "old" identifier (the one in the *fastq.gz* filename and in the *OldSampleName* column).
 
 
     Requirements:
     -----------------------------------------------------------------------
-    - A column named "*OldSampleName*" where all samples have a unique name contained without ambiguity within their *.fastq.gz* filename.
+    - A column named "*OldSampleName*" where all samples have a unique name without ambiguity within their *.fastq.gz* filename.
     - Similar to the *Sample column matching* method for the rest.    
 
 
@@ -85,7 +85,7 @@ C. Absolute path
 
     Rational:
     -----------------------------------------------------------------------
-    The foolproof approach, pointing by their absolute path the sequencing read files of each sample. 
+    As the foolproof approach, sequencing read files for each sample will be pointed by their absolute path. 
 
 
     Working principle:
@@ -111,11 +111,11 @@ D. Sample Read Archive (SRA)
 
     Working principle:
     -----------------------------------------------------------------------
-    Reads stored on the SRA are designated by their *Run* identifier in the *sample sheet*. The sequencing data are automatically downloaded and then processed by the pipeline.  
+    Reads stored on the SRA are designated by their *Run* identifier in the *sample sheet*. The sequencing data will be automatically downloaded and then processed by the pipeline.  
 
     Requirements:
     -----------------------------------------------------------------------
-    - The leftmost column of the *sample sheet*  is named "*Run*" and matches "*Run*" identifiers from SRA. 
+    - In this case, the leftmost column of the *sample sheet*  is named "*Run*" and matches "*Run*" identifiers from SRA. 
 
     - A "*LibraryLayout*" column in the *sample sheet* indicates the sequencing layout ("*single*" or "*paired*").
 
@@ -156,26 +156,7 @@ When using the method `A. Sample column`_ or the method `B. OldSampleName column
 
 
 ************************************************************************
-4. Write a *config file*
-************************************************************************
-Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a *config file* in the `yaml <https://en.wikipedia.org/wiki/YAML>` format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (*"link_directory", *"sra_samples"* and *"local_samples"*) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the :ref:`under_the_hood` page.
-
-*for instance*::
-
-    # Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it. 
-    $ gedit config.yaml
-
-    # Or use a command-line text editor, e.g. 
-    # $ nano config.yaml 
-
-
-**Config file example:**
-
-.. literalinclude:: ../../ressources/template_files/config.yaml
-    :language: yaml
-
-************************************************************************
-5. Write a *sample sheet* (aka *metadata table*):
+4. Write a *sample sheet* (aka *metadata table*):
 ************************************************************************
 The pipeline requires a spreadsheet in `tabulation-separated values (tsv) format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ listing all the samples in the analysis and where:
 
@@ -204,11 +185,31 @@ The pipeline requires a spreadsheet in `tabulation-separated values (tsv) format
     *In this recommended to provide clinical or experimental description of each sample, which will support later interpretation of the data.*
 
 
-*For instance:*
+*sample sheet example:*
 
 .. literalinclude:: ../../ressources/template_files/example_local_samples.tsv 
     :language: tsv
     :start-after: #Example:
+
+
+************************************************************************
+5. Write a *config file*
+************************************************************************
+Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a *config file* in the `yaml <https://en.wikipedia.org/wiki/YAML>` format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (*"link_directory", *"sra_samples"* and *"local_samples"*) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the :ref:`under_the_hood` page.
+
+*for instance*::
+
+    # Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it. 
+    $ gedit config.yaml
+
+    # Or use a command-line text editor, e.g. 
+    # $ nano config.yaml 
+
+
+**Config file example:**
+
+.. literalinclude:: ../../ressources/template_files/config.yaml
+    :language: yaml
 
 
 ************************************************************************
