@@ -41,11 +41,17 @@ else:
     link_directory = "links/"
 
 ###[Modification 1] Modifications: Sedreh, April 14, 2021
-## Chech path of database and if it is not correct show explanation error to user
+##[Modification 1] Check the directory path for database
+
+
 if os.path.isdir(config['tax_DB_path']) is False:
    raise IOError("Path does not exist for '{}' variable.".format('tax_DB_path'))
 else:
     pass
+
+
+##________________________________
+
 
 ## Create a set of dictionaries to store sample characteristics
 sras_ext = {}
@@ -56,7 +62,11 @@ reads_ext = {}
 paths  = {}
 layout = {}
 
-###[Modification 2] Modifications: Sedreh, April 14, 2021
+## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
+if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
+    raise ValueError("No samples defined in the config file")
+
+
 ##[Modification 2] Check the sample tsv for the following vaiables in config: 'sample_label', 'grouping_column', 'run_column'.
 ##Sometimes there could be a mismatch between input column name for 'sample_label', 'grouping_column', 'run_column' from config file 
 ##and sample metadata TSV file. This error is being handeled in the following code:
