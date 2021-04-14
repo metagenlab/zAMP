@@ -40,6 +40,13 @@ if "link_directory" in config.keys():
 else:
     link_directory = "links/"
 
+###[Modification 1] Modifications: Sedreh, April 14, 2021
+## Chech path of database and if it is not correct show explanation error to user
+if os.path.isdir(config['tax_DB_path']) is False:
+   raise IOError("Path does not exist for '{}' variable.".format('tax_DB_path'))
+else:
+    pass
+
 ## Create a set of dictionaries to store sample characteristics
 sras_ext = {}
 reads_sra = {}
@@ -49,36 +56,52 @@ reads_ext = {}
 paths  = {}
 layout = {}
 
-###[Modification 1] Modifications: Sedreh, April 14, 2021
-##[Modification 1] Check the directory path for '/' or simply if the path exists
-
-for value in config['tax_DB_path']:
-    if os.path.isdir(value) is False:
-        raise IOError("Please correct the path for '{}' variable. Paths should begin with a '/' or the path does not exist.".format('tax_DB_path'))
-    else:
-        pass
-##________________________________
-
-## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
-
-if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
-    raise ValueError("No samples defined in the config file")
-
 ###[Modification 2] Modifications: Sedreh, April 14, 2021
-##[Modification 2] Check the sample tsv for the following columns: 'sample_group', 'sample_label', and 'seq_run'
+##[Modification 2] Check the sample tsv for the following vaiables in config: 'sample_label', 'grouping_column', 'run_column'.
+##Sometimes there could be a mismatch between input column name for 'sample_label', 'grouping_column', 'run_column' from config file 
+##and sample metadata TSV file. This error is being handeled in the following code:
 
+# read sample dataframe from config file
 df = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
 
-to_check = ['sample_label', 'sample_group', 'seq_run'] # a list of important columns that should be in the dataframe
+# get metadata from sample dataframe
+df_colnames = df.columns
 
-if not set(to_check).issubset(set(df.columns)): 
-	"""if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
-    message = f"{' and '.join(set(to_check).difference(df.columns))} are not available in the dataframe" 
+
+to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of important columns that should be in the dataframe
+x = (dict((k, config[k]) for k in to_check))
+
+check_list = x.values() # list containing the user defined columns from the metadata
+
+# columns to check in the sample metadata
+df_check_columns = []
+for i in df_colnames:
+    df_check_columns.append(i)
+
+# function to return key for any value in a dictionary
+def get_key(dictionary, val):
+    for key, value in dictionary.items():
+         if val == value:
+             return key
+ 
+    return "key doesn't exist"
+
+if not set(check_list).issubset(set(df_check_columns)): 
+    diff = set(check_list).difference(df_check_columns)
+    not_available = []
+
+    for item in diff:
+        not_available.append(get_key(x, item))
+    
+    """if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
+    message = f"{' and '.join(not_available)} not available in the sample TSV file."
     raise IOError(message)
 else:
     pass
 
+
 ##________________________________
+
 
 ## In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
 if "local_samples" in config.keys():
