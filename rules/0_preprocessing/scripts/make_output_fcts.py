@@ -1,12 +1,14 @@
 
 ### Define values of grouping keys
 def get_grouping_key(column_of_interest):
-
     file_list = []
-
-    for i in set(column_of_interest):
+    ## Convert to list if provided as a string in config
+    if isinstance(column_of_interest,str):
+        column_of_interest=[column_of_interest]
+    unique_col=list(set(column_of_interest))
+    for i in unique_col:
         combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(all_samples[i])))
-        file_list = file_list + combined_values
+        file_list.append(combined_values)
     return(file_list)
 
 ### Define rarefaction levels (values in config + no rarefaction)
