@@ -40,17 +40,15 @@ if "link_directory" in config.keys():
 else:
     link_directory = "links/"
 
-###[Modification 1] Modifications: Sedreh, April 14, 2021
-##[Modification 1] Check the directory path for database
+## Check that "tax_DB_path" ends with "/". Otherwise, correct. 
+if not config["link_directory"].endswith("/"):
+    config["link_directory"] = config["link_directory"] + "/"
 
-
+## Check for the existence/accessbility of tax_DB_path   
 if os.path.isdir(config['tax_DB_path']) is False:
-   raise IOError("Path does not exist for '{}' variable.".format('tax_DB_path'))
+   raise IOError("Cannot access to '{}' variable.".format('tax_DB_path'))
 else:
     pass
-
-
-##________________________________
 
 
 ## Create a set of dictionaries to store sample characteristics
@@ -65,30 +63,30 @@ layout = {}
 ## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
+    
+if "local_samples" in config.keys():
+    metadata = config["local_samples"] 
+elif "sra_samples" in config.keys():
+    metadata = config["sra_samples"] 
+   
+## Check the local_samples/sra_samples tables for the presence of following variables in config: 'sample_label', 'grouping_column', 'run_column'.
+### read sample dataframe from config file
+df = pandas.read_csv(metadata, sep="\t", index_col=0)
 
-
-##[Modification 2] Check the sample tsv for the following vaiables in config: 'sample_label', 'grouping_column', 'run_column'.
-##Sometimes there could be a mismatch between input column name for 'sample_label', 'grouping_column', 'run_column' from config file 
-##and sample metadata TSV file. This error is being handeled in the following code:
-
-# read sample dataframe from config file
-df = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
-
-# get metadata from sample dataframe
+### get metadata from sample dataframe
 df_colnames = df.columns
-
 
 to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of important columns that should be in the dataframe
 x = (dict((k, config[k]) for k in to_check))
 
 check_list = x.values() # list containing the user defined columns from the metadata
 
-# columns to check in the sample metadata
+### columns to check in the sample metadata
 df_check_columns = []
 for i in df_colnames:
     df_check_columns.append(i)
 
-# function to return key for any value in a dictionary
+### function to return key for any value in a dictionary
 def get_key(dictionary, val):
     for key, value in dictionary.items():
          if val == value:
@@ -109,8 +107,6 @@ if not set(check_list).issubset(set(df_check_columns)):
 else:
     pass
 
-
-##________________________________
 
 
 ## In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
