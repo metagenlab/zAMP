@@ -41,8 +41,8 @@ else:
     link_directory = "links/"
 
 ## Check that "tax_DB_path" ends with "/". Otherwise, correct. 
-if not config["link_directory"].endswith("/"):
-    config["link_directory"] = config["link_directory"] + "/"
+if not config["tax_DB_path"].endswith("/"):
+    config["tax_DB_path"] = config["tax_DB_path"] + "/"
 
 ## Check for the existence/accessbility of tax_DB_path   
 if os.path.isdir(config['tax_DB_path']) is False:
