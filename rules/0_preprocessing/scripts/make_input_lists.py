@@ -29,7 +29,8 @@ def get_read_naming_patterns(directory):
                 extension[samp].append(re.sub("^_", "", read.pattern))
     return(extension)
 
-all_samples=pandas.DataFrame()
+
+all_samples=pandas.DataFrame() ## Needed?
 
 
 ## Check for the presence of a directory for .fastq in config. If none, will be "links".
@@ -51,15 +52,6 @@ else:
     pass
 
 
-## Create a set of dictionaries to store sample characteristics
-sras_ext = {}
-reads_sra = {}
-reads_local = {}
-original_names = {}
-reads_ext = {}
-paths  = {}
-layout = {}
-
 ## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
     raise ValueError("No samples defined in the config file")
@@ -75,7 +67,6 @@ df = pandas.read_csv(metadata, sep="\t", index_col=0)
 
 ### get metadata from sample dataframe
 df_colnames = df.columns
-
 to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of important columns that should be in the dataframe
 x = (dict((k, config[k]) for k in to_check))
 
@@ -108,8 +99,19 @@ else:
     pass
 
 
+## Generate a list of input files, either local (when "local_samples" is in config, or SRA-hosted (when "sra_samples" is in config))
 
-## In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
+### Create a set of dictionaries to store sample characteristics
+sras_ext = {}
+reads_sra = {}
+reads_local = {}
+original_names = {}
+reads_ext = {}
+paths  = {}
+layout = {}
+
+
+### In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
 if "local_samples" in config.keys():
     ## Read the metadata table
     local_data = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
@@ -138,6 +140,7 @@ if "local_samples" in config.keys():
         paths = {**paths}
     
 
+    ## In absence of a "R1" column indicating file paths, try to match the sample names with the content of the "links" folder
     else:
         
         reads_local = get_read_naming_patterns(link_directory)            
@@ -145,9 +148,9 @@ if "local_samples" in config.keys():
         read_correct = {}
         original_correct = {}
 
+        ## In absence of a "OldSampleName", the leftmost column is used to match with "links" content
         if "OldSampleName" not in list(local_data):
 
-            ## i vs sample et correct vs original à checker!!!!
             for sample in list(local_data.index):
                 regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % sample) # this regex ensures that the matching of the sample names end at the end of the str, to prevent S1 matching S10 for instance
                 match = [bool(re.match(regex, x)) for x in sorted(list(original_names.keys()))]
@@ -158,6 +161,7 @@ if "local_samples" in config.keys():
                 read_correct[sample] = reads_local[read_name]
                 paths[sample] = expand(link_directory + read_name + "_{reads}" ,  reads = read_correct[sample]) 
 
+                ## In presence of a "LibraryLayout" column, samples can be specifid to be "single" or "paired". 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
                         reads_ext[sample]=["R1", "R2"]
@@ -167,11 +171,12 @@ if "local_samples" in config.keys():
                         layout[sample] = "single"
                     else:
                         raise ValueError("Problem in the Local_sample file, LibraryLayout badly defined")
+                ## Otherwise, "paired" is assumed
                 else:
                     reads_ext[sample]=["R1", "R2"]
                     layout[sample] = "paired"
 
-                
+        ## In presence of a "OldSampleName", the this column is used to match with "links" content
         else:
             for Old in list(local_data["OldSampleName"]):
                 regex = re.compile(r'%s([^a-zA-Z0-9]|$)' % Old)
@@ -184,6 +189,7 @@ if "local_samples" in config.keys():
                 read_correct[sample] = reads_local[read_name]
                 paths[sample] = expand(link_directory + read_name + "_{reads}" ,  reads = read_correct[sample])
                 
+                ## In presence of a "LibraryLayout" column, samples can be specifid to be "single" or "paired". 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
                         reads_ext[sample]=["R1", "R2"]
@@ -193,6 +199,7 @@ if "local_samples" in config.keys():
                         layout[sample] = "single"
                     else:
                         raise ValueError("Problem in the Local_sample file, LibraryLayout badly defined")
+                ## Otherwise, "paired" is assumed
                 else:
                     reads_ext[sample]=["R1", "R2"]
                     layout[sample] = "paired"
@@ -206,7 +213,7 @@ if "local_samples" in config.keys():
 
 
 
-
+### In case of sra-hosted samples, work our way through the "sra_table" to extract LibraryLayout and clean sample names.
 if "sra_samples" in config.keys():
     sra_data = pandas.read_csv(config["sra_samples"], sep="\t", index_col=0).drop_duplicates()
     all_sra_sample_names = "".join(list(sra_data.index))
