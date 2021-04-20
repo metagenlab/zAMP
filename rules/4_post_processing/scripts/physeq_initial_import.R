@@ -40,7 +40,7 @@ count_table <- read.table(file = count_table, header = TRUE, check.names=FALSE)
 
 ### Read sample_data
 print("reading metadata")
-metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
+metadata <- read.delim(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
 
 ### Read taxonomic tree
 print("reading taxonomic tree")
