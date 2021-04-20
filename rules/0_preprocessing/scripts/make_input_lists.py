@@ -2,6 +2,7 @@
 ### Match reads with sample list. By default will take the first column as Sample ID. If OldSampleName present, this column will be used instead to match the rows with the reads. They will be then renamed by the content of the first column.
 import pandas
 import re
+import itertools
 
 ## Define a function to extract the .fastq name pattern
 def get_read_naming_patterns(directory):
@@ -71,6 +72,8 @@ to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of importa
 x = (dict((k, config[k]) for k in to_check))
 
 check_list = x.values() # list containing the user defined columns from the metadata
+
+print(unpack(check_list))
 
 ### columns to check in the sample metadata
 df_check_columns = []
