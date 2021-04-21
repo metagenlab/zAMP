@@ -14,7 +14,7 @@
     raw_to_filtered_reads_stats_path <- snakemake@input[["raw_to_filtered_reads_stats"]]
     raw_to_filtered_reads_stats <- read.table(file = raw_to_filtered_reads_stats_path, sep = "\t", header = TRUE)
     metadata_path <- snakemake@input[["Metadata_table"]]
-    metadata <- read.table(file = metadata_path, sep = "\t", header = TRUE)
+    metadata <- read.delim(file = metadata_path, sep = "\t", header = TRUE)
     multi_QC_report_path <- snakemake@input[["multi_QC_report_path"]]
     multi_QC_report <- read.table(multi_QC_report_path, header = T)
 

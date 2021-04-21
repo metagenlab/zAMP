@@ -42,7 +42,7 @@
 
 ### Read sample_data
   print("reading metadata")
-  metadata <- read.table(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
+  metadata <- read.delim(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
   head(metadata)
 
 ### Read and format taxonomy table
