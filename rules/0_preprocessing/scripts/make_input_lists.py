@@ -65,41 +65,37 @@ elif "sra_samples" in config.keys():
 ## Check the local_samples/sra_samples tables for the presence of following variables in config: 'sample_label', 'grouping_column', 'run_column'.
 ### read sample dataframe from config file
 df = pandas.read_csv(metadata, sep="\t", index_col=0)
+df_colnames = set(df.columns)
 
-### get metadata from sample dataframe
-df_colnames = df.columns
-to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of important columns that should be in the dataframe
-x = (dict((k, config[k]) for k in to_check))
+### Get values for which presence should be tested in dataframe
+to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of config values describing columns that should be in the dataframe
+to_check_dict = (dict((k, config[k]) for k in to_check))
 
-check_list = x.values() # list containing the user defined columns from the metadata
+## Set a function to flatten the list of columns in config is some were provided as lists
+def flatten(A):
+    rt = []
+    for i in A:
+        if isinstance(i,list): rt.extend(flatten(i))
+        else: rt.append(i)
+    return rt
 
-print(unpack(check_list))
 
-### columns to check in the sample metadata
-df_check_columns = []
-for i in df_colnames:
-    df_check_columns.append(i)
-
-### function to return key for any value in a dictionary
-def get_key(dictionary, val):
-    for key, value in dictionary.items():
-         if val == value:
-             return key
- 
-    return "key doesn't exist"
-
-if not set(check_list).issubset(set(df_check_columns)): 
-    diff = set(check_list).difference(df_check_columns)
-    not_available = []
-
-    for item in diff:
-        not_available.append(get_key(x, item))
+for key in to_check_dict.keys():
+    print(key)
+    to_check_values = to_check_dict[key]
+    print(to_check_values)
     
-    """if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
-    message = f"{' and '.join(not_available)} not available in the sample TSV file."
-    raise IOError(message)
-else:
-    pass
+    if to_check_values not in df_colnames:
+        diff = to_check_values.difference(df_colnames)
+
+        for item in diff:
+            not_available.append(get_key(x, item))
+               
+            """if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
+            message = f"{' and '.join(not_available)} not available in the sample TSV file."
+            raise IOError(message)
+    else:
+        pass
 
 
 ## Generate a list of input files, either local (when "local_samples" is in config, or SRA-hosted (when "sra_samples" is in config))
