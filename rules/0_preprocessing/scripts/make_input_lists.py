@@ -31,9 +31,6 @@ def get_read_naming_patterns(directory):
     return(extension)
 
 
-## Create the final pandas dataframe that will be completed
-all_samples=pandas.DataFrame()
-
 ## Check for the presence of a directory for .fastq in config. If none, will be "links".
 if "link_directory" in config.keys():
     link_directory = config["link_directory"]
@@ -49,21 +46,18 @@ if not config["tax_DB_path"].endswith("/"):
 ## Check for the existence/accessbility of tax_DB_path   
 if os.path.isdir(config['tax_DB_path']) is False:
    raise IOError("Cannot access to '{}' variable.".format('tax_DB_path'))
-else:
-    pass
 
 
 ## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")
 if "local_samples" not in config.keys() and "sra_samples" not in config.keys():
-    raise ValueError("No samples defined in the config file")
+    raise ValueError("No samples defined in the config file. local_samples or sra_samples must be defined in config")
     
+## Check the local_samples/sra_samples tables for the presence of following variables in config: 'sample_label', 'grouping_column', 'run_column'.
+### read sample dataframe from config file
 if "local_samples" in config.keys():
     metadata = config["local_samples"] 
 elif "sra_samples" in config.keys():
-    metadata = config["sra_samples"] 
-   
-## Check the local_samples/sra_samples tables for the presence of following variables in config: 'sample_label', 'grouping_column', 'run_column'.
-### read sample dataframe from config file
+    metadata = config["sra_samples"]    
 df = pandas.read_csv(metadata, sep="\t", index_col=0)
 df_colnames = set(df.columns)
 
@@ -71,11 +65,11 @@ df_colnames = set(df.columns)
 to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of config values describing columns that should be in the dataframe
 to_check_dict = (dict((k, config[k]) for k in to_check))
 
-## Set a function to compare list
+### Set a function to compare list
 def list_diff(list1, list2): 
 	return (list(set(list1) - set(list2))) 
 
-## Loop over the values of config variable to check
+### Loop over the values of config variable to check
 for key in to_check_dict.keys():
 
     ## Extract values from dictionnary
@@ -108,6 +102,8 @@ for key in to_check_dict.keys():
 
 
 ## Generate a list of input files, either local (when "local_samples" is in config, or SRA-hosted (when "sra_samples" is in config))
+### Create the final pandas dataframe that will be completed
+all_samples=pandas.DataFrame()
 
 ### Create a set of dictionaries to store sample characteristics
 sras_ext = {}
