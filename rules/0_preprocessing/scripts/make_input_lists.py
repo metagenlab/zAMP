@@ -31,8 +31,8 @@ def get_read_naming_patterns(directory):
     return(extension)
 
 
-all_samples=pandas.DataFrame() ## Needed?
-
+## Create the final pandas dataframe that will be completed
+all_samples=pandas.DataFrame()
 
 ## Check for the presence of a directory for .fastq in config. If none, will be "links".
 if "link_directory" in config.keys():
@@ -71,31 +71,40 @@ df_colnames = set(df.columns)
 to_check = ['sample_label', 'grouping_column', 'run_column'] # a list of config values describing columns that should be in the dataframe
 to_check_dict = (dict((k, config[k]) for k in to_check))
 
-## Set a function to flatten the list of columns in config is some were provided as lists
-def flatten(A):
-    rt = []
-    for i in A:
-        if isinstance(i,list): rt.extend(flatten(i))
-        else: rt.append(i)
-    return rt
+## Set a function to compare list
+def list_diff(list1, list2): 
+	return (list(set(list1) - set(list2))) 
 
-
+## Loop over the values of config variable to check
 for key in to_check_dict.keys():
-    print(key)
-    to_check_values = to_check_dict[key]
-    print(to_check_values)
-    
-    if to_check_values not in df_colnames:
-        diff = to_check_values.difference(df_colnames)
 
-        for item in diff:
-            not_available.append(get_key(x, item))
-               
-            """if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
+    ## Extract values from dictionnary
+    to_check_values = to_check_dict[key]
+
+    ## If it is a single value, test that it is in the columns of the metadata
+    if isinstance(to_check_values, str):
+
+        ## if the column name list is not in the column names of df dataframe then raise an error
+        if to_check_values not in df_colnames:                
             message = f"{' and '.join(not_available)} not available in the sample TSV file."
             raise IOError(message)
+
+    ## If it is a list, check that it contained in metadata
+    elif isinstance(to_check_values, list):
+        
+        diff = []
+        diff = list_diff(to_check_values, df_colnames)
+
+        ## if the set of column names in to_check list is not in the column names of df dataframe then raise an error
+        if diff:
+            for item in diff:
+                """if the set of column names in to_check list is not a subset of column names of df dataframe then raise an error"""
+                message = f"{' and '.join(diff)} not available in the sample TSV file."
+                raise IOError(message)
+
     else:
-        pass
+        message = f"{key} should be a string or a list of string"
+        raise IOError(message)
 
 
 ## Generate a list of input files, either local (when "local_samples" is in config, or SRA-hosted (when "sra_samples" is in config))
