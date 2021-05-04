@@ -80,7 +80,7 @@ for key in to_check_dict.keys():
 
         ## if the column name list is not in the column names of df dataframe then raise an error
         if to_check_values not in df_colnames:                
-            message = f"{' and '.join(not_available)} not available in the sample TSV file."
+            message = f"{' and '.join(to_check_values)} not available in the sample TSV file."
             raise IOError(message)
 
     ## If it is a list, check that it contained in metadata
