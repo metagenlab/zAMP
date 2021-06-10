@@ -8,7 +8,7 @@ def get_grouping_key(column_of_interest):
     unique_col=list(set(column_of_interest))
     for i in unique_col:
         combined_values = expand("{column_of_interest}/{column_values}", column_of_interest = i, column_values = list(set(all_samples[i])))
-        file_list.append(combined_values)
+        file_list.extend(combined_values)
     return(file_list)
 
 ### Define rarefaction levels (values in config + no rarefaction)
