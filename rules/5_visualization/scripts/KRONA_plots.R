@@ -42,8 +42,23 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
       write.table(unique(df[which(df[, 2] == lvl), -2]), file = paste0(output_folder,"/",grouping_filter_column_value, "/", lvl, "taxonomy.txt"), sep = "\t", row.names = F, col.names = F, na = "", quote = F)
     }
 
-    krona_args <- paste0(output_folder,"/", grouping_filter_column_value, "/", levels(df[, 2]), "taxonomy.txt,", levels(df[, 2]), collapse = " ")
+#As it is possible that some negative controls or samples have no reads, here we are tryuing to say if the entire sample is empty then make a log file with the message that sample has no read! otherwise make krona plt.
+if (all(df[,2] == 0) == 1){
+     dir.create(file.path(output_folder,"/",grouping_filter_column_value))
+  cat(format(Sys.time(), "%a %b %d %Y %X TZ(%z)")," ", "All samples have 0 abundance for this sample group.",file= paste0(output_folder,"/",grouping_filter_column_value,".html"))
+ 
+} else {
+    
+     dir.create(file.path(output_folder,"/",grouping_filter_column_value))
+    for (lvl in levels(df[, 2])) {
+      write.table(unique(df[which(df[, 2] == lvl), -2]), file = paste0(output_folder,"/",grouping_filter_column_value, "/", lvl, "taxonomy.txt"), sep = "\t", row.names = F, col.names = F, na = "", quote = F)
+      }
+    
+
+    krona_args <- paste0(output_folder,"/", grouping_filter_column_value, "/", levels(df[,2]), "taxonomy.txt,", levels(df[, 2]), collapse = " ")
     output <- paste0(output_folder,"/",grouping_filter_column_value,".html")
     system(paste("ktImportText", krona_args, "-o", output, sep = " "))
-
+    
+  
+}
 
