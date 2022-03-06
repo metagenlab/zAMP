@@ -1,5 +1,4 @@
 
-
 .. _under_the_hood:
 ########################################################################
 Under the hood
@@ -78,18 +77,21 @@ This directory contains:
 - a copy of the sample sheet (*local_samples.tsv* or *sra_samples.tsv*)
 - a copy of the *config file* (*config.yaml*)
 
-In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subfolders of the log directory, mirroring the structure of the main pipeline.  
+In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subdirectories of the log directory, mirroring the structure of the main pipeline.  
+
 
 ************************************************************************
 Sequencing reads QC
 ************************************************************************
- :github:`QC rules <rules/0_preprocessing/QC_raw_reads.rules>` assess the sequencing quality of all each sample with FastQC [1]_. Then, a MultiQC [2]_ report is generated for each sequencing run (based on values of the *sample sheet* column indicated by the "run_column" parameter of the *config file*) 
 
+ :github:`QC rules <rules/0_preprocessing/QC_raw_reads.rules>` assess the sequencing quality of all each sample with FastQC [1]_. Then, a MultiQC [2]_ report generates a report for each sequencing run (based on values of the *sample sheet* column indicated by the "run_column" parameter of the *config file*). A global MultiQC report is generated as well, but without interactive features to deal with the high number of samples  
 
 
 ************************************************************************
 Denoising
 ************************************************************************
+
+
 
 Vsearch (OTU clustering)
 =======================================================================
