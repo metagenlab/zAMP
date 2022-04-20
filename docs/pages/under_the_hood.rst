@@ -11,6 +11,9 @@ Snakemake, environments and containers
 Snakemake
 =======================================================================
 
+Snakemake is the center-piece of this pipeline. It is a Python-based worflow-manager that enables processing of a large sets of amplicon-based metagenomics sequencing reads into actionable output. It relies on a system of rules that are as many required processing steps. Each rule specifies input files, an Conda environment (or as an alternative a Singularity container) that includes all required softwares, and command line or a script to be executed the expected output files. 
+
+`tabulation-separated values (tsv) format <https://en.wikipedia.org/wiki/Tab-separated_values>`_ 
 
 Conda environments
 =======================================================================

@@ -9,8 +9,12 @@ System requirements and setup
 Short description 
 ************************************************************************
 
-**TO BE WRITTEN**
-
+In short, the requirements of the pipeline are:
+- suitable hardware and operating system, typically a Linux system, but with some adaptation other operating systems may work.
+- the pipeline itself in the form of a cloned git deposit 
+- Snakemake, preferably installed with the python-based Conda package manger.
+- Optionally, Singularity containers management system, for enhanced reproducibility and stability
+- A taxonomy reference database in a suitable format, that has ton be pre-processed once before the first execution of the pipeline 
 
 
 ************************************************************************
@@ -48,6 +52,7 @@ Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual 
 Software dependencies
 =======================================================================
 
+
 .. _git:
 
 *Git*
@@ -72,6 +77,21 @@ _______________________________________________________________________
 
     # To test if git is installed, make it print its version. It will fail if it is not installed
     $ git --version
+
+
+
+.. _pipeline:
+
+Clone RSP4ABM
+=======================================================================
+
+Once all dependencies installed and working, RSP4ABM can be cloned with git::
+
+    git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
+
+
+.. Hint:: Please take note of the path of the directory in which you cloned RSP4ABM. You will need it to execute the pipeline. 
+
 
 
 
@@ -186,19 +206,6 @@ _______________________________________________________________________
 
     # To test if Singularity is installed, make it print its version. It will fail if it is not installed
     singularity --version
-
-
-
-
-Clone RSP4ABM
-=======================================================================
-
-Once all dependencies installed and working, RSP4ABM can be cloned with git::
-
-    git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
-
-
-.. Hint:: Please take note of the path of the directory in which you cloned RSP4ABM. You will need it to execute the pipeline. 
 
 
 
