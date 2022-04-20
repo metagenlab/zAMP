@@ -16,7 +16,12 @@ Short description
 ************************************************************************
 Detailed description 
 ************************************************************************
-
+.. toctree::
+   :maxdepth: 3
+   :glob:
+   setup.rst
+   :includehidden:
+   Short description
 
 .. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
 
@@ -36,7 +41,7 @@ Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual 
 - the bacterial diversity within your samples
 - the number of cores
 
-.. Hint:: In practice, 16 to 32 GB are usually required. 
+.. Hint:: In practice with normal sized datasets (dozens to hundreds of samples of human microbiome datasets), 16 to 32 GB are usually required. 
 
 
 
@@ -193,7 +198,7 @@ Once all dependencies installed and working, RSP4ABM can be cloned with git::
     git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
 
 
-.. Hint:: Please note the path of the directory in which you cloned RSP4ABM since you will need it to execute the pipeline. 
+.. Hint:: Please take note of the path of the directory in which you cloned RSP4ABM. You will need it to execute the pipeline. 
 
 
 
