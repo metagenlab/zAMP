@@ -12,13 +12,13 @@ Snakemake
 =======================================================================
 
 
-Conda environments
+Conda environments <br />
 Conda is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
 Switching between environments is simple because they can be easily activated or deactivated. 
 
 
 
-Singularity containers
+Singularity containers <br />
 
 
 The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access. 
