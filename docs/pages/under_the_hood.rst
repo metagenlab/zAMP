@@ -18,7 +18,9 @@ Switching between environments is simple because they can be easily activated or
 
 
 
-Singularity_ containers
+Singularity containers
+
+
 The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access. 
 
 
@@ -190,4 +192,4 @@ References
 
 
 
-.. _Singularity: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
+.. _`Singularity Containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
