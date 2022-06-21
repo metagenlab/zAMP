@@ -14,7 +14,7 @@ Snakemake
 
 **Conda environments** 
 
-Conda is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
+Conda is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require [VSEARCH](https://github.com/torognes/vsearch/releases)2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
 Switching between environments is simple because they can be easily activated or deactivated. 
 
 
