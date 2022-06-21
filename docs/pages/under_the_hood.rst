@@ -194,5 +194,6 @@ References
 
 
 .. _`Snakemake`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/rules
+.. _`Conda environments`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs
 .. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
 .. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
