@@ -8,8 +8,10 @@ Under the hood
 Snakemake, environments and containers
 ************************************************************************
 
-Snakemake
-=======================================================================
+**Snakemake**
+
+Snakemake is the center-piece of this pipeline. Snakemakie is a Python-based worflow-manager that enables processing of a large set of amplicon-based metagenomics sequencing reads into actionable output. It relies on a system of rules which are as many required processing steps. Each rule specifies input files, a Conda environment (or as an alternative a Singularity container) that includes all required softwares, and command line or a script to be executed the expected output files.
+
 
 
 **Conda environments** 
@@ -191,6 +193,6 @@ References
 
 
 
-
+.. _`Snakemake`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/rules
 .. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
- .. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
+.. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
