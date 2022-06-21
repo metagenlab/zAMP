@@ -193,4 +193,4 @@ References
 
 
 .. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
- .. _`VSEARCH 2.20.0`: https://github.com/torognes/vsearch/releases 
+ .. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
