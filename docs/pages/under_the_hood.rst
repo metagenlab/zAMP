@@ -18,7 +18,7 @@ Switching between environments is simple because they can be easily activated or
 
 
 
-[Singularity containers](https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity)
+Singularity_ containers
 The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access. 
 
 
@@ -184,3 +184,10 @@ References
 ************************************************************************
 .. [1] Andrews S, Krueger F, Seconds-Pichon A, Biggins F, Wingett S. FastQC. A quality control tool for high throughput sequence data. Babraham Bioinformatics. Babraham Institute. 2015. 
 .. [2] Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016; 
+
+
+
+
+
+
+.. _Singularity: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
