@@ -192,4 +192,4 @@ References
 
 
 
-.. _`Singularity Containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
+.. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
