@@ -32,9 +32,9 @@ The concept of reproducible analysis in bioinformatics extends beyond good docum
 **Input**
 =======================================================================
 
-:github:`A Python script <rules/0_preprocessing/scripts/make_input_lists.py>` is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
+:github:`A Python script <rules/0_preprocessing/scripts/make_input_lists.py>` is run at each execution of the [zAMP](https://github.com/metagenlab/zAMP) to match sequencing read files to each sample. 
 
-As exposed in :ref:`the **sample selection** section of the **pipeline execution** page <sample_selection>`, this function can accept either local or SRA-hosted read files. 
+As exposed in :ref:`the **sample selection** section of the **pipeline execution** page <sample_selection>`, this function can accept either local or [SRA-hosted read files](https://www.ncbi.nlm.nih.gov/sra/docs/). 
 
 Local reads
 -----------------------------------------------------------------------
