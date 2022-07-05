@@ -10,13 +10,13 @@ Snakemake, environments and containers
 
 :github:`Snakemake <rules>` 
 
-Snakemake is the center-piece of this pipeline. Snakemake is a Python-based worflow-manager that enables processing of a large set of amplicon-based metagenomics sequencing reads into actionable output. It relies on a system of rules which are as many required processing steps. Each rule specifies input files, a Conda environment (or as an alternative a Singularity container) that includes all required softwares, and command line or a script to be executed the expected output files.
+Snakemake is the center-piece of this pipeline. [Snakemake](https://pages.github.com/) is a Python-based worflow-manager that enables processing of a large set of amplicon-based metagenomics sequencing reads into actionable output. It relies on a system of rules which are as many required processing steps. Each rule specifies input files, a Conda environment (or as an alternative a Singularity container) that includes all required softwares, and command line or a script to be executed the expected output files.
 
 
 
 :github:`Conda environments <envs>` 
 
-Conda is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
+[Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html) is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
 Switching between environments is simple because they can be easily activated or deactivated. 
 
 
@@ -193,7 +193,6 @@ References
 
 
 .. _`Snakemake`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/rules
-.. _`Snakemake`: https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html
 .. _`Conda environments`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs
 .. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
 .. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
