@@ -6,10 +6,6 @@ The Snakemake pipeline can be exectued by cloning this repository and relying on
 
 
 
-
-
-
-
 ################### TO BE UPDATED #######################
 
 
