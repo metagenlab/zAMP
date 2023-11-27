@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'RSP4ABM'
+project = 'zAMP'
 copyright = '2020, MetaGenLab'
 author = 'Valentin Scherz'
 
