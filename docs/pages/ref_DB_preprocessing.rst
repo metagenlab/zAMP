@@ -12,11 +12,11 @@ Taxonomic reference database preprocessing
 ************************************************************************
 Rational:    
 ************************************************************************
-After processing of sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have close to the exact same sequence on the gene used as marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
+After processing sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have close to the exact same sequence on the gene used as a marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that is even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
 
-The classifiers integrated in zAMP (original *RDP* [1]_, *RDP* integrated in *QIIME* [2]_ and, *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require an initial training. 
+The classifiers integrated into zAMP (original *RDP* [1]_, *RDP* integrated into *QIIME* [2]_ and, *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require initial training. 
 
-Thus, to improve the taxonomic classification and to provide to the end-user an information regarding the risk of confusion of certain taxa, a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conducts the training required by some of them. 
+Thus, to improve the taxonomic classification and to provide the end-user an information regarding the risk of confusion of certain taxa, a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conducts the training required by some of them. 
 
 ************************************************************************
 Working principle:
@@ -26,24 +26,24 @@ The user indicates to the pipeline:
 
 - the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as home-made R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing the database), the taxonomic identifier will be replaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifers is indicated as well between parentheses. 
+Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as homemade R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing the database), the taxonomic identifier will be replaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifiers is indicated as well between parentheses. 
 
 
 Cases, where identical sequences belong to different families or above after collapsing of identifiers, are written in a dedicated file. Furthermore, all ranks below the rank of disagreement are replaced by an indicator of the disagreement. For instance::
 
-    # A exemple of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
+    # An example of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
 
     Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae/Erythrobacteraceae;Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2);Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
 
 In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
 
-Finally, the  pipeline will make a copy of the original database as well as computing hashes of all files for traceability purposes. 
+Finally, the  pipeline will make a copy of the original database as well as compute hashes of all files for traceability purposes. 
 
 ************************************************************************
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primer and reference database. 
+A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primers and reference database. 
 
 First, the user must retrieve a database in the right format and a *config* file must be defined. After that, with providing proper set up for the pipeline, (*see* :ref:`setup`), the dedicated workflow can be executed. 
 
@@ -143,7 +143,7 @@ For the database processing execution, parameters must be provided in a *config 
     :language: yaml
 
 
-.. Hint:: The "extract_and_merge" parameter in config enable to skip the preprocessing and only to format the provided database and train the classifiers. 
+.. Hint:: The "extract_and_merge" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
 
 .. Hint:: "forward_primer" and "reverse_primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract V1V2 amplicons: the 5' primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing "FPRIMERSEQUENCE;optional" to the "forward_primer" enables to make it optional. 
 
