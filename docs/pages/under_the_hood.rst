@@ -69,9 +69,9 @@ Upon each execution, *Snakemake* automatically creates a log file where all the 
 
     .snakemake/log/
 
-RSP4ABM logs
+zAMP logs
 =======================================================================
-In addition to the default *Snakemake*'s logs, *RSP4ABM* create a log directory upon each execution in ::
+In addition to the default *Snakemake*'s logs, *zAMP* create a log directory upon each execution in ::
 
     logs/<year>/<months>/<day>/<time>/
 
