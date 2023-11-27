@@ -107,7 +107,7 @@ D. Sample Read Archive (SRA)
 
     Rational:
     -----------------------------------------------------------------------
-    RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (`SRA <https://en.wikipedia.org/wiki/Sequence_Read_Archive>`_). 
+    zAMP is capable to automatically download and process reads stored on the Sequence Read Archive (`SRA <https://en.wikipedia.org/wiki/Sequence_Read_Archive>`_). 
 
     Working principle:
     -----------------------------------------------------------------------
