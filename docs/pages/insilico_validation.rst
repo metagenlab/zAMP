@@ -27,9 +27,9 @@ Finally, this tool provides a table with, for each of the downloaded assembly, a
 ************************************************************************
 Requirements
 ************************************************************************
-This tools shares :ref:`requirements with the RSP4ABM main pipeline <_setup>`. Thus, it requires: 
+This tools shares :ref:`requirements with the zAMP main pipeline <_setup>`. Thus, it requires: 
 
-- a local copy of RSP4ABM (:ref:`(cloned with git) <git>`) (with the --recursive flag to obtain Assembly Finder at the same time)
+- a local copy of zAMP (:ref:`(cloned with git) <git>`) (with the --recursive flag to obtain Assembly Finder at the same time)
 - :ref:`Snakemake <snakemake>`
 - :ref:`Singularity <singularity>` (here required and not only optional)
 - :ref:`A taxonomic database preprocessed with our dedicated pipeline <DB_preprocessing>`
