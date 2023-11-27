@@ -51,7 +51,7 @@ Software dependencies
 What for?
 _______________________________________________________________________
 
-    *Git* is required to download (clone) RSP4ABM. 
+    *Git* is required to download (clone) zAMP. 
 
 
 Install
