@@ -26,11 +26,11 @@ Operating system and system resource
 
 Operating system
 -----------------------------------------------------------------------
-RST4ABM was designed on *Ubuntu 18.04* (Linux) but should compatible with all system capable of installing the dependencies listed on this page.
+zAMP was designed on *Ubuntu 18.04* (Linux) but should be compatible with all systems capable of installing the dependencies listed on this page.
 
 RAM memory
 -----------------------------------------------------------------------
-Some tools embedded in RST4ABM can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced by parameters set in the *config file*. The bottleneck usually is the taxonomic assignment. Factors which can increase the RAM requirement are:
+Some tools embedded in zAMP can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced by parameters set in the *config file*. The bottleneck usually is the taxonomic assignment. Factors which can increase the RAM requirement are:
 
 - the number of samples
 - the bacterial diversity within your samples
@@ -77,7 +77,7 @@ What for?
 _______________________________________________________________________
 
     `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
+    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
 
 
 Install
@@ -102,7 +102,7 @@ What for?
 _______________________________________________________________________
 
     `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the RSP4ABM.
+    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
 
 
 Install
@@ -135,12 +135,12 @@ _______________________________________________________________________
 
 What for?
 -----------------------------------------------------------------------
-    *RSP4ABM* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
+    *zAMP* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
 
 
 Install
 _______________________________________________________________________
-    Follow indications on *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
+    Follow indications on the *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
     
 
 *To install Snakemake in a dedicated "Snakemake" environment*::
@@ -166,7 +166,7 @@ _______________________________________________________________________
 What for?
 -----------------------------------------------------------------------
 
-    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in RSP4ABM except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running RSP4ABM with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in zAMP except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running zAMP with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
 Install
@@ -185,22 +185,22 @@ _______________________________________________________________________
 
 
 
-Clone RSP4ABM
+Clone zAMP
 =======================================================================
 
-Once all dependencies installed and working, RSP4ABM can be cloned with git::
+Once all dependencies are installed and working, zAMP can be cloned with git::
 
     git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
 
 
-.. Hint:: Please note the path of the directory in which you cloned RSP4ABM since you will need it to execute the pipeline. 
+.. Hint:: Please note the path of the directory in which you cloned zAMP since you will need it to execute the pipeline. 
 
 
 
 Reference database
 =======================================================================
 
-The very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing` page. 
+In the very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing` page. 
 
 
 
