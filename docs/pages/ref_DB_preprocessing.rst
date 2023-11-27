@@ -43,7 +43,7 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in RSP4ABM for database preprocessing. This workflow must be run only one time for each set of PCR primers and reference database. 
+A dedicated workflow is embedded in zAMP for database preprocessing. This workflow must be run only one time for each set of PCR primers and reference database. 
 
 First, the user must retrieve a database in the right format and a *config* file must be defined. After that, with providing proper set up for the pipeline, (*see* :ref:`setup`), the dedicated workflow can be executed. 
 
