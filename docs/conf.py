@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'RSP4ABM'
+project = 'zAMP'
 copyright = '2020, MetaGenLab'
-author = 'Valentin Scherz'
+author = 'Valentin Scherz, Sedreh Nassirnia'
 
 # The full version, including alpha/beta/rc tags
 release = 'v.0.9.15'
@@ -50,7 +50,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # a list of builtin themes.
 #
 #html_theme = 'alabaster'
-html_theme = 'sphinx_rtd_theme'
+#html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
