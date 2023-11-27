@@ -24,7 +24,7 @@ Pipeline execution
 1. Select a method to define sequencing read files as input
 ************************************************************************
 
-Before executing RSP4ABM, you need to define how you provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts 4 different methods to define the input read files, with different requirements. Please first read hereunder to define the method of input definition that bests fits to your needs. 
+Before executing zAMP, you need to define how you provide the sequencing read files (in *.fastq.gz* format) to the pipeline. The pipeline accepts 4 different methods to define the input read files, with different requirements. Please first read hereunder to define the method of input definition that bests fits to your needs. 
 
 A. Sample column
 =======================================================================
