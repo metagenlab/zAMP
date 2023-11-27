@@ -51,7 +51,7 @@ First, the user must retrieve a database in the right format and a *config* file
 Taxonomy database
 =======================================================================
 
-RSP4ABM requires a reference taxonomic database for classification. The database provided to RSP4ABM must be organized into two files, following the original *QIIME* format: 
+zAMP requires a reference taxonomic database for classification. The database provided to zAMP must be organized into two files, following the original *QIIME* format: 
 
 - a `Reference sequences`_ `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file.
 - a `Reference taxonomy`_ text file describing the taxonomic classification of these sequences.  
