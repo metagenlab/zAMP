@@ -4,7 +4,7 @@ import yaml
 import os
 from snakemake.utils import min_version
 
-min_version("5.14")
+min_version("8.10.6")
 
 
 
