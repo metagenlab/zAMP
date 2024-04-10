@@ -117,7 +117,6 @@ layout = {}
 
 ### In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
 if "local_samples" in config.keys():
-    
     ## Read the metadata table
     local_data = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
     local_data.index = [str(x) for x in local_data.index]
@@ -143,7 +142,7 @@ if "local_samples" in config.keys():
                     layout[sample] = "paired"
         all_samples = local_data   
         paths = {**paths}
-    
+   
 
     ## In absence of a "R1" column indicating file paths, try to match the sample names with the content of the "links" folder
     else:
@@ -165,7 +164,7 @@ if "local_samples" in config.keys():
                 original_correct[sample] = original_names[read_name]
                 read_correct[sample] = reads_local[read_name]
                 paths[sample] = expand(link_directory + read_name + "_{reads}" ,  reads = read_correct[sample]) 
-
+               
                 ## In presence of a "LibraryLayout" column, samples can be specifid to be "single" or "paired". 
                 if "LibraryLayout" in list(local_data):
                     if local_data.loc[sample, "LibraryLayout"].lower()=="paired":
@@ -212,7 +211,7 @@ if "local_samples" in config.keys():
         original_names = original_correct
         reads_local = read_correct
         reads_ext = reads_ext
-        
+
 
         all_samples=local_data
 
@@ -230,22 +229,22 @@ if "sra_samples" in config.keys():
             sample_name = sample_name+"_"+str(list(reads_sra.keys()).count(sample_name))
         reads_sra[sample_name]=str(sra_sample)
         if sra_data.loc[sra_sample, "LibraryLayout"].lower()=="paired":
-            sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
+            sras_ext[sample_name]=["R1.fastq.gz", "R2.fastq.gz"]
             reads_ext[sample_name]=["R1", "R2"]
             layout[sample_name] = "paired"
+            paths[sample_name] = expand(link_directory + sample_name + "_{reads}",  reads = sras_ext[sample_name])
         elif sra_data.loc[sra_sample, "LibraryLayout"].lower()=="single":
             sras_ext[sample_name] = ["fastq.gz"]
             reads_ext[sample_name]=["single"]
             layout[sample_name] = "single"
+            paths[sample_name] = expand(link_directory + sample_name + "_{reads}",  reads = sras_ext[sample_name])
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
     all_samples=sra_data
-    print (all_samples)
     config["local_samples"] =  config["sra_samples"]
 
         # all_samples.loc[sample_name, "Replicate"]=sra_data.loc[i, "Replicate"]
 read_naming = {**reads_local, **sras_ext}
 original_names = {**original_names, **reads_sra}
-
 
 
