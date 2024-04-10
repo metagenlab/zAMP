@@ -15,7 +15,7 @@ rule copy_fastq_paired_from_link:
         then
             cp {input[0]} {output[0]}
         else 
-            cp {input[0]} $(dirname {output[0]})
+            cp {input[0]} $(dirname {output[0]})    
             gzip -qc $(dirname "{output[0]}")/$(basename "{input[0]}") > {output[0]}
             rm $(dirname "{output[0]}")/$(basename "{input[0]}")
         fi
@@ -83,8 +83,8 @@ rule sra_convert_to_fastq_paired:
     input:
         "ncbi/public/sra/{sample}.sra",
     output:
-         temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
-         temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
+        temp(link_directory + "{sample,[A-Za-z0-9]+}_R1.fastq.gz"),
+        temp(link_directory + "{sample,[A-Za-z0-9]+}_R2.fastq.gz"),
     log:
         logging_folder + "sra_download/{sample}_dump.txt",
     shell:

@@ -117,6 +117,7 @@ layout = {}
 
 ### In case of local samples, work our way through the local_samples table to extract read paths (if indicated in the R1/R2 columns) or extract match it with .fastq found in the "links" directory.
 if "local_samples" in config.keys():
+    
     ## Read the metadata table
     local_data = pandas.read_csv(config["local_samples"], sep="\t", index_col=0)
     local_data.index = [str(x) for x in local_data.index]
@@ -211,7 +212,7 @@ if "local_samples" in config.keys():
         original_names = original_correct
         reads_local = read_correct
         reads_ext = reads_ext
-
+        
 
         all_samples=local_data
 
@@ -231,12 +232,15 @@ if "sra_samples" in config.keys():
         if sra_data.loc[sra_sample, "LibraryLayout"].lower()=="paired":
             sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
             reads_ext[sample_name]=["R1", "R2"]
+            layout[sample_name] = "paired"
         elif sra_data.loc[sra_sample, "LibraryLayout"].lower()=="single":
             sras_ext[sample_name] = ["fastq.gz"]
             reads_ext[sample_name]=["single"]
+            layout[sample_name] = "single"
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
     all_samples=sra_data
+    print (all_samples)
     config["local_samples"] =  config["sra_samples"]
 
         # all_samples.loc[sample_name, "Replicate"]=sra_data.loc[i, "Replicate"]
