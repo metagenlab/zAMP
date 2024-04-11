@@ -5,6 +5,4 @@ channels:
 dependencies:
  - bioconductor-DADA2=1.12.1
  - mscorefonts
- - r-tidyr=1.3.1
-
 

@@ -4,7 +4,7 @@ multiqc: docker://quay.io/biocontainers/multiqc:1.7--py_4
 cutadapt: docker://metagenlab/amplicons_cutadapt:v.2.0
 pandaseq: docker://quay.io/biocontainers/pandaseq:2.11--2
 vsearch: docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0
-dada2: docker://metagenlab/amplicons_dada2:v.1.1
+dada2: docker://metagenlab/amplicons_dada2:v.1.0
 r_utils: docker://metagenlab/amplicons_r_utils:v.1.0
 qiimerdp: docker://metagenlab/amplicons_qiime1_rdp:v.1.0
 qiime2: docker://qiime2/core:2020.2
