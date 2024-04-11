@@ -123,7 +123,7 @@ rule DADA2_infer_paired_ASV:
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
-        x_column_value = lambda wildcards: all_samples[config["sample_label"]][wildcards.sample],
+        x_column_value = lambda wildcards: all_samples.loc[wildcards.sample, config["sample_label"]],
 	min_overlap =  config["min_overlap"]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
@@ -148,7 +148,7 @@ rule DADA2_infer_single_ASV:
     params:
         sample_name = lambda wildcards: wildcards.sample,
         run = lambda wildcards: wildcards.RUN,
-        x_column_value = lambda wildcards: all_samples[config["sample_label"]][wildcards.sample],
+        x_column_value = lambda wildcards: all_samples.loc[wildcards.sample, config["sample_label"]],
 	min_overlap =  config["min_overlap"]
     log:
         logging_folder + "DADA2/2_denoised/{RUN}/{sample}_DADA2_2_infer_ASV.txt"
