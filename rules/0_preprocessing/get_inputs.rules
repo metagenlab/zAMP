@@ -31,8 +31,6 @@ rule copy_fastq_paired_from_link:
 
         """
 
-print(paths)
-
 rule copy_fastq_single_from_link:
     input:
         unpack(lambda wildcards: paths[wildcards.sample])
