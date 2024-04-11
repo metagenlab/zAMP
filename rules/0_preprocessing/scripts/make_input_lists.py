@@ -212,7 +212,6 @@ if "local_samples" in config.keys():
         reads_local = read_correct
         reads_ext = reads_ext
 
-
         all_samples=local_data
 
 
@@ -229,7 +228,7 @@ if "sra_samples" in config.keys():
             sample_name = sample_name+"_"+str(list(reads_sra.keys()).count(sample_name))
         reads_sra[sample_name]=str(sra_sample)
         if sra_data.loc[sra_sample, "LibraryLayout"].lower()=="paired":
-            sras_ext[sample_name]=["R1.fastq.gz", "R2.fastq.gz"]
+            sras_ext[sample_name]=["1.fastq.gz", "2.fastq.gz"]
             reads_ext[sample_name]=["R1", "R2"]
             layout[sample_name] = "paired"
             paths[sample_name] = expand(link_directory + sample_name + "_{reads}",  reads = sras_ext[sample_name])
@@ -246,5 +245,4 @@ if "sra_samples" in config.keys():
         # all_samples.loc[sample_name, "Replicate"]=sra_data.loc[i, "Replicate"]
 read_naming = {**reads_local, **sras_ext}
 original_names = {**original_names, **reads_sra}
-
 
