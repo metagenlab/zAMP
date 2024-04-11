@@ -1,11 +1,10 @@
 FROM continuumio/miniconda3:4.7.12
 
-
 ################## METADATA ######################
  
 LABEL base.image="miniconda3:4.7.12"
 LABEL version="v.1.1"
-LABEL software="DADA2"
+LABEL software="DECIPHER"
 LABEL software.version="1.12.1"
 LABEL description="DADA2 (https://doi.org/10.1038/nmeth.3869) with msfont to fix missing characters in plots"
 LABEL tags="Genomics"
