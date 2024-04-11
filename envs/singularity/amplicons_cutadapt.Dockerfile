@@ -3,7 +3,7 @@ FROM continuumio/miniconda3:4.7.12
 
 ################## METADATA ######################
  
-LABEL base.image="mambaorg/micromamba:1.5-lunar"
+LABEL base.image="miniconda3:4.7.12"
 LABEL version="v.3.0"
 LABEL software="amplicons_cutadapt"
 LABEL software.version="4.7"
