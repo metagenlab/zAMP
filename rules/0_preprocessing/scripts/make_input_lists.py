@@ -236,7 +236,7 @@ if "sra_samples" in config.keys():
             sras_ext[sample_name] = ["fastq.gz"]
             reads_ext[sample_name]=["single"]
             layout[sample_name] = "single"
-            paths[sample_name] = expand(link_directory + sample_name + "_{reads}",  reads = sras_ext[sample_name])
+            paths[sample_name] = expand(link_directory + sample_name + ".{reads}",  reads = sras_ext[sample_name])
         else:
             raise ValueError("Problem in the sra file, LibraryLayout badly defined")
     all_samples=sra_data

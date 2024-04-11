@@ -31,6 +31,7 @@ rule copy_fastq_paired_from_link:
 
         """
 
+print(paths)
 
 rule copy_fastq_single_from_link:
     input:
@@ -100,7 +101,7 @@ rule sra_convert_to_fastq_single:
     container:
         singularity_envs["sra-toolkit"]
     input:
-        "ncbi/public/sra/{sample}.sra"
+        "ncbi/public/sra/{sample}/{sample}.sra"
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:
