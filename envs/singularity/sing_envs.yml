@@ -1,5 +1,5 @@
 sra-toolkit: docker://metagenlab/amplicons_sratoolkit:v.1.0
-fastqc: docker://quay.io/biocontainers/fastqc:0.11.9--0
+fastqc: docker://quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
 multiqc: docker://quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 cutadapt: docker://metagenlab/amplicons_cutadapt:v.3.0
 pandaseq: docker://quay.io/biocontainers/pandaseq:2.11--2
