@@ -145,7 +145,7 @@ formatted_tax <- multiple_tax %>%
                                          # If there are an acceptable number of, then we collapse them.
                                          n_distinct(Genus) > 1 & n_distinct(Genus) <= n_genus ~ paste0(paste(unique(Genus), collapse = "/"), "(", n_distinct(Genus), ")"),
                                          # Otherwise, we use a spaceholder
-                                         n_distinct(Genus) > n_genus ~ paste0("gen.(", n_distinct(Genus),")"),
+                                         n_distinct(Genus) > n_genus ~ paste0(paste(unique(Family), collapse = "/"), " ", "gen.(", n_distinct(Genus),")"),
                                          )
               ),
 

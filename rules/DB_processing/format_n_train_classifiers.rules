@@ -66,7 +66,7 @@ rule Format_rdp_lineages:
         singularity_envs["python27"] 
     input:
         table = "{prefix}/RDP/formatted_tax_table.tsv",
-	    script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
+        script =  workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py"
     output:
         read4train_tax = "{prefix}/RDP/ready4train_lineages.txt",
     threads:
@@ -113,7 +113,7 @@ rule Train_rdp_classifier:
         mem_mb=30000
     shell:
         '''
-        classifier -Xmx30g train \
+        classifier -Xmx30g -XX:ConcGCThreads=1 train \
         -o $(dirname {output[0]}) \
         -s {input[0]} \
         -t {input[1]} && \
