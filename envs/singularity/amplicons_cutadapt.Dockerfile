@@ -4,9 +4,9 @@ FROM continuumio/miniconda3:4.7.12
 ################## METADATA ######################
  
 LABEL base.image="miniconda3:4.7.12"
-LABEL version="v.2.0"
+LABEL version="v.3.0"
 LABEL software="amplicons_cutadapt"
-LABEL software.version="3.0"
+LABEL software.version="4.7"
 LABEL description="Cutadapt http://dx.doi.org/10.14806/ej.17.1.200 with Biopython"
 LABEL tags="Genomics"
  

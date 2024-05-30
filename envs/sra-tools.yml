@@ -3,4 +3,4 @@ channels:
  - bioconda
  - conda-forge
 dependencies:
- - sra-tools = 2.9.4
+ - sra-tools = 3.1.0

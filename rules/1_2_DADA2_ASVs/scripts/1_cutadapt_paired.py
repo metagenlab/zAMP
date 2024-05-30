@@ -1,11 +1,10 @@
 from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
 from snakemake import shell
 
 if snakemake.params['amplicon_type'] == "ITS":
     print("ITS Trimming")
-    forward_primer_compl = Seq.reverse_complement(Seq(snakemake.params['forward_primer'], IUPAC.ambiguous_dna))
-    reverse_primer_compl = Seq.reverse_complement(Seq(snakemake.params['reverse_primer'], IUPAC.ambiguous_dna))
+    forward_primer_compl = Seq.reverse_complement(Seq(snakemake.params['forward_primer']))
+    reverse_primer_compl = Seq.reverse_complement(Seq(snakemake.params['reverse_primer']))
     shell("""cutadapt \
     --cores {snakemake.threads} \
     --error-rate 0.1 \

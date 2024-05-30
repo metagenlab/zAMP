@@ -1,11 +1,10 @@
 ## Import modules
 from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
 from snakemake import shell
 
 ## Compute some values to be fed to cutadapt
-forward_primer_compl = Seq.reverse_complement(Seq(snakemake.params['forward_primer'], IUPAC.ambiguous_dna))
-reverse_primer_compl = Seq.reverse_complement(Seq(snakemake.params['reverse_primer'], IUPAC.ambiguous_dna))
+forward_primer_compl = Seq.reverse_complement(Seq(snakemake.params['forward_primer']))
+reverse_primer_compl = Seq.reverse_complement(Seq(snakemake.params['reverse_primer']))
 f_length = len(snakemake.params['forward_primer'])
 r_length = len(snakemake.params['reverse_primer'])
 f_min_coverage = round(f_length*snakemake.params['coverage'])

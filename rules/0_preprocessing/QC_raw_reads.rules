@@ -46,7 +46,7 @@ rule create_per_run_multiqc_report:
         100
     shell:
         """
-        multiqc --interactive -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" 2> {log[0]}
+        multiqc --interactive -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl-config "max_table_rows: 100000" 2> {log[0]}
         """
 
 def sample_list_overall_QC():
@@ -79,5 +79,5 @@ rule create_overall_raw_reads_multiqc_report:
         100
     shell:
         """
-        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" 2> {log[0]}
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl-config "max_table_rows: 100000" 2> {log[0]}
         """

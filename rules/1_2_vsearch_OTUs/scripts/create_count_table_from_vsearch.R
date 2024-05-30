@@ -21,11 +21,13 @@
 
 ## Reformat
 otus_table <- data.frame(array(dim=c(0,3)))
+colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
 
 ### Loop over each sample file. If it is empty, then we just add the factor in the levels to have it then
 for (file_path in count_table_samples){
   sample_name <- gsub("_count_table.tsv", "", basename(file_path))
   sample_otu_table <- read.table(file = file_path, sep="\t", as.is=T, check.names = F, header=T, comment.char = "",  skipNul = TRUE)
+  colnames(sample_otu_table) <- c("OTU_ID", "counts")
   if (nrow(sample_otu_table)>0){
     sample_otu_table <- cbind("Sample"=sample_name, sample_otu_table)
     otus_table <- rbind(otus_table, sample_otu_table)
@@ -34,7 +36,7 @@ for (file_path in count_table_samples){
   }
 }
 
-colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
+
 
 ## Transform this table to have a wide format where we have a column by sample
 transf_vsearch_table <- otus_table %>% 

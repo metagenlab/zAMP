@@ -105,14 +105,13 @@ if(is.numeric(min_prevalence)){
 }
 
 ## Repopulate physeq object (identical script than for taxa filter)
-print(1)
+
 physeq_filtered <- physeq
 sample_names(physeq_filtered)
 head(filtered_data)
 otu_table(physeq_filtered) <- otu_table(round(filtered_data, digits = 0), taxa_are_rows = TRUE)
 filtered_taxa <- prune_taxa(taxa_sums(physeq_filtered) > 0, physeq_filtered) ## Removes taxa not at least present in one sample
 
-print(2)
 
 ## Recompute alpha diversity indexes after this filtration
 ### Remove the previously computed values

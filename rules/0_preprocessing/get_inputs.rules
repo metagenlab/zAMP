@@ -15,7 +15,7 @@ rule copy_fastq_paired_from_link:
         then
             cp {input[0]} {output[0]}
         else 
-            cp {input[0]} $(dirname {output[0]})
+            cp {input[0]} $(dirname {output[0]})    
             gzip -qc $(dirname "{output[0]}")/$(basename "{input[0]}") > {output[0]}
             rm $(dirname "{output[0]}")/$(basename "{input[0]}")
         fi
@@ -30,7 +30,6 @@ rule copy_fastq_paired_from_link:
         fi            
 
         """
-
 
 rule copy_fastq_single_from_link:
     input:
@@ -54,6 +53,7 @@ rule copy_fastq_single_from_link:
         
 ## Alternatively, obtain reads from SRA. 
 
+
 rule download_sra:
     conda:
         "../../envs/sra-tools.yml"
@@ -61,7 +61,7 @@ rule download_sra:
         singularity_envs["sra-toolkit"]
     output:
         # /home/pipeline_user/ncbi/public
-        temp("ncbi/public/sra/{sample}.sra"),
+        temp("ncbi/public/sra/{sample}/{sample}.sra"),
     log:
         logging_folder + "samples/{sample}/sras/dump.txt"
     params:
@@ -72,7 +72,7 @@ rule download_sra:
         """
         #cache_dir=$(vdb-config --cfg -o n | grep "/repository/user/main/public/root" | cut -f2 -d'=' | sed "s/\\"//g")
         vdb-config --restore-defaults
-        prefetch -v {wildcards.sample} --max-size 100000000 &> {log}
+        prefetch -v {wildcards.sample} -O "ncbi/public/sra/"  --max-size 100000000 &> {log}
         """
 
 rule sra_convert_to_fastq_paired:
@@ -81,10 +81,10 @@ rule sra_convert_to_fastq_paired:
     container:
         singularity_envs["sra-toolkit"]
     input:
-        "ncbi/public/sra/{sample}.sra",
+        "ncbi/public/sra/{sample}/{sample}.sra",
     output:
-         temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
-         temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
+        temp(link_directory + "{sample,[A-Za-z0-9]+}_1.fastq.gz"),
+        temp(link_directory + "{sample,[A-Za-z0-9]+}_2.fastq.gz"),
     log:
         logging_folder + "sra_download/{sample}_dump.txt",
     shell:
@@ -99,7 +99,7 @@ rule sra_convert_to_fastq_single:
     container:
         singularity_envs["sra-toolkit"]
     input:
-        "ncbi/public/sra/{sample}.sra"
+        "ncbi/public/sra/{sample}/{sample}.sra"
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:

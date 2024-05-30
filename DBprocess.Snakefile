@@ -6,9 +6,9 @@ import os
 ## When using singularity
 if "--use-singularity" in sys.argv:    
     ### Bind the directory of the database to the singularity containers.
-    workflow.singularity_args += f' -B {config["tax_DB_path"]}:{config["tax_DB_path"]}'
+    workflow.deployment_settings.apptainer_args += f' -B {config["tax_DB_path"]}:{config["tax_DB_path"]}'
     ### Bind the workflow directory to the singularity containers.
-    workflow.singularity_args += f' -B {workflow.basedir}:{workflow.basedir}'
+    workflow.deployment_settings.apptainer_args += f' -B {workflow.basedir}:{workflow.basedir}'
 #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/singularity/sing_envs.yml"), 'r'))
 

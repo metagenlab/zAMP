@@ -8,7 +8,7 @@ def rafe_value_fct(wildcards):
   if wildcards == "norarefaction":
     raise NameError('"rarefaction_value" must not contain "norareraction, it is anyway computed')
   else :
-    value = re.findall('\d+',wildcards)
+    value = re.findall(r'\d+',wildcards)
     return value
 
 
