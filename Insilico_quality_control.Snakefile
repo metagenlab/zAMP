@@ -5,7 +5,9 @@ import os
 
 #### Load a dictionnary of singularity containers that will be called from each rule
 
-singularity_envs = yaml.safe_load(open(os.path.join(workflow.basedir,  "envs/singularity/sing_envs.yml"), 'r'))
+singularity_envs = yaml.safe_load(
+    open(os.path.join(workflow.basedir, "envs/singularity/sing_envs.yml"), "r")
+)
 
 
 ## Include the pipeline rules
@@ -18,6 +20,10 @@ include: "rules/1_2_vsearch_OTUs/2_vsearch_denoising.rules"
 include: "rules/5_visualization/QIIME2_import.rules"
 include: "rules/In_silico/amplicons_reference.rules"
 
+
 rule check_amplicon_quality:
     input:
-        expand("QualityControl/{denoiser}/compare_quality_table.tsv", denoiser = config["denoiser"])
+        expand(
+            "QualityControl/{denoiser}/compare_quality_table.tsv",
+            denoiser=config["denoiser"],
+        ),
