@@ -1,49 +1,46 @@
-## Set of rules to backup the input database and generate a hash code of these input files and the output files. 
+## Set of rules to backup the input database and generate a hash code of these input files and the output files.
 
 
 rule Back_up_master:
-    input :
-        seqs = config["DBpath_seq"],
-        tax = config["DBpath_tax"],
-    output :
-        seqs = "{prefix}/master/original_seqs.fasta",
-        tax = "{prefix}/master/original_tax.txt",
-    threads :
-        1
-    shell :
-        '''
+    input:
+        seqs=config["DBpath_seq"],
+        tax=config["DBpath_tax"],
+    output:
+        seqs="{prefix}/master/original_seqs.fasta",
+        tax="{prefix}/master/original_tax.txt",
+    threads: 1
+    shell:
+        """
         cp {input.seqs} {output.seqs} && \
         cp {input.tax} {output.tax}
-        '''
+        """
 
 
 rule Hash_master_files:
-    input :
-        seqs = "{prefix}/master/original_seqs.fasta",
-        tax = "{prefix}/master/original_tax.txt"
-    output :
-        hash = "{prefix}/master/original.hash",
-    threads :
-        1
-    shell :
-        '''
+    input:
+        seqs="{prefix}/master/original_seqs.fasta",
+        tax="{prefix}/master/original_tax.txt",
+    output:
+        hash="{prefix}/master/original.hash",
+    threads: 1
+    shell:
+        """
         md5sum {input.seqs} {input.tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
-        '''
+        """
 
-        
+
 ## Generate a hash from all relevant files to insure that we always work with the same reference databases
 rule hash_global_DB:
     input:
-        master = "{prefix}/master/original.hash",
-        QIIME = "{prefix}/QIIME/DB_formatted.hash",
-        DADA2 = "{prefix}/dada2rdp/DADA2_DB.hash",
-        RDP = "{prefix}/RDP/RDP_DB.hash",
-        decipher = "{prefix}/decipher/decipher_DB.hash",
+        master="{prefix}/master/original.hash",
+        QIIME="{prefix}/QIIME/DB_formatted.hash",
+        DADA2="{prefix}/dada2rdp/DADA2_DB.hash",
+        RDP="{prefix}/RDP/RDP_DB.hash",
+        decipher="{prefix}/decipher/decipher_DB.hash",
     output:
-        trained_tax = "{prefix}/DB.hash",
-    threads:
-        1
-    shell :
-        '''
+        trained_tax="{prefix}/DB.hash",
+    threads: 1
+    shell:
+        """
         md5sum {input.master} {input.QIIME} {input.DADA2} {input.RDP} {input.decipher} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
-        '''
+        """

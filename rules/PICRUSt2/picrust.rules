@@ -1,27 +1,28 @@
 ## Run PICRUSt2 with all possible outputs
 
-rule picrust2_custom_tree :
+
+rule picrust2_custom_tree:
     conda:
         "../../envs/picrust2.yml"
     container:
-        singularity_envs["picrust2"]  
+        singularity_envs["picrust2"]
     input:
-        seqs = "{denoiser}/2_denoised/dna-sequences_all_UPPER.fasta",
-        table = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom"
+        seqs="{denoiser}/2_denoised/dna-sequences_all_UPPER.fasta",
+        table="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/no_collapse/base_export/otu_biom.biom",
     output:
-        directory("{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/")
+        directory(
+            "{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/"
+        ),
     log:
-        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt"
-    threads:
-        4
+        logging_folder
+        + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt",
+    threads: 4
     shell:
-        '''
+        """
         picrust2_pipeline.py \
             --in_traits COG,EC,KO,PFAM,TIGRFAM \
             -s {input[seqs]} \
             -i {input[table]} \
             -o {output}/output \
             -p {threads}
-        '''
-
-
+        """
