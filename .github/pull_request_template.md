@@ -4,6 +4,10 @@ PR for version
 
 # Details
 
+## `Additions`
+
+* [commit hash] commit summary
+
 ## `Changes`
 
 * [commit hash] commit summary
