@@ -2,14 +2,19 @@
 ruleorder: physeq_tax_filtering > physeq_rarefy
 ruleorder: Phyloseq_collapse_taxa > physeq_filter_norm_transf
 
+
 ## Small function to extract numbers from rarefaction values
 import re
+
+
 def rafe_value_fct(wildcards):
-  if wildcards == "norarefaction":
-    raise NameError('"rarefaction_value" must not contain "norareraction, it is anyway computed')
-  else :
-    value = re.findall(r'\d+',wildcards)
-    return value
+    if wildcards == "norarefaction":
+        raise NameError(
+            '"rarefaction_value" must not contain "norareraction, it is anyway computed'
+        )
+    else:
+        value = re.findall(r"\d+", wildcards)
+        return value
 
 
 ### Import for the first time everything into a phyloseq object
@@ -17,19 +22,25 @@ rule physeq_initial_import:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        count_table = "{denoiser}/2_denoised/count_table.tsv",
-        Metadata_table = config["local_samples"],
-        taxonomy_table = "{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
-        rep_seqs = "{denoiser}/2_denoised/dna-sequences.fasta",
-        tax_tree = "{denoiser}/2_denoised/tree.nwk"
+        count_table="{denoiser}/2_denoised/count_table.tsv",
+        Metadata_table=config["local_samples"],
+        taxonomy_table="{denoiser}/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
+        rep_seqs="{denoiser}/2_denoised/dna-sequences.fasta",
+        tax_tree="{denoiser}/2_denoised/tree.nwk",
     output:
-        phyloseq_object = report("{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds", caption="report/physeq.rst", category="Physeq objects", subcategory="Initial import"),
+        phyloseq_object=report(
+            "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Initial import",
+        ),
     params:
-        viz_replace_empty_tax = config["viz_replace_empty_tax"]
+        viz_replace_empty_tax=config["viz_replace_empty_tax"],
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/initial_import.txt"
+        logging_folder
+        + "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/initial_import.txt",
     script:
         "scripts/physeq_initial_import.R"
 
@@ -39,15 +50,40 @@ rule physeq_export_object:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        phyloseq_object = "{prefix1}.rds"
+        phyloseq_object="{prefix1}.rds",
     output:
-        tree_path = report("{prefix1}_export/tree.tree", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
-        meta_path = report("{prefix1}_export/metadata_table.tsv", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
-        taxonomy_path = report("{prefix1}_export/dna-sequences_tax_assignments.txt", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
-        OTU_path = report("{prefix1}_export/count_table.tsv", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
-        rep_seq_path = report("{prefix1}_export/dna-sequences.fasta", caption="report/physeq.rst", category="Physeq objects", subcategory="Export"),
+        tree_path=report(
+            "{prefix1}_export/tree.tree",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Export",
+        ),
+        meta_path=report(
+            "{prefix1}_export/metadata_table.tsv",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Export",
+        ),
+        taxonomy_path=report(
+            "{prefix1}_export/dna-sequences_tax_assignments.txt",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Export",
+        ),
+        OTU_path=report(
+            "{prefix1}_export/count_table.tsv",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Export",
+        ),
+        rep_seq_path=report(
+            "{prefix1}_export/dna-sequences.fasta",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Export",
+        ),
     log:
         logging_folder + "{prefix1}_export/export.txt",
     script:
@@ -59,38 +95,40 @@ rule physeq_tax_filtering:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds"
+        phyloseq_object="{denoiser}/4_physeq/{classifier}_{tax_DB}/nofiltering/norarefaction/no_collapse/base.rds",
     output:
-        phyloseq_filtered_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
+        phyloseq_filtered_object="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/norarefaction/no_collapse/base.rds",
     params:
-        filter_tax_rank = lambda wildcards: wildcards.filter_tax_rank,
-        filter_lineage = lambda wildcards: wildcards.filter_lineage,
-        filter_out_tax_rank = config["filter_out_tax_rank"],
-        filter_out_lineage = config["filter_out_lineage"]
+        filter_tax_rank=lambda wildcards: wildcards.filter_tax_rank,
+        filter_lineage=lambda wildcards: wildcards.filter_lineage,
+        filter_out_tax_rank=config["filter_out_tax_rank"],
+        filter_out_lineage=config["filter_out_lineage"],
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.txt",
+        logging_folder
+        + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_lineage}_in_{filter_tax_rank}/no_collapse/base.txt",
     script:
         "scripts/physeq_filter_taxa.R"
+
 
 ### Rarefy counts
 rule physeq_rarefy:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/norarefaction/no_collapse/base.rds"
+        phyloseq_object="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/norarefaction/no_collapse/base.rds",
     output:
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.rds",
+        phyloseq_object="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.rds",
     params:
-        rarefaction_value = lambda wildcards: rafe_value_fct(wildcards.rarefaction_value)
+        rarefaction_value=lambda wildcards: rafe_value_fct(wildcards.rarefaction_value),
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
+        logging_folder
+        + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/rarefaction_{rarefaction_value}/no_collapse/base.txt",
     script:
         "scripts/physeq_rarefy.R"
-
 
 
 ### Add an updated phylogenetic tree into phyloseq objects
@@ -98,14 +136,20 @@ rule physeq_new_tree:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        new_tree = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
-        phyloseq_object = "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds"
+        new_tree="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_export/tree.nwk",
+        phyloseq_object="{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base.rds",
     output:
-        phyloseq_object = report("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds", caption="report/physeq.rst", category="Physeq objects", subcategory="Updated after filtration"),
+        phyloseq_object=report(
+            "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.rds",
+            caption="report/physeq.rst",
+            category="Physeq objects",
+            subcategory="Updated after filtration",
+        ),
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt"
+        logging_folder
+        + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/base_with_tree.txt",
     script:
         "scripts/physeq_add_new_tree.R"
 
@@ -115,13 +159,16 @@ rule melt_Phyloseq_object:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}.rds",
     output:
-        report("{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv")
+        report(
+            "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.tsv"
+        ),
     log:
-        logging_folder + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt"
+        logging_folder
+        + "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filtered_or_not}/{raref_or_not}/{collapsed_or_not}/{prefix1}_melted.txt",
     script:
         "scripts/physeq_melt_table.R"
 
@@ -131,15 +178,16 @@ rule Phyloseq_collapse_taxa:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/no_collapse/{prefix}.rds",
     output:
-        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.rds"
+        "{denoiser}/4_physeq/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.rds",
     params:
-        collapse_level = lambda wildcards: wildcards.collapse_level,
+        collapse_level=lambda wildcards: wildcards.collapse_level,
     log:
-        logging_folder + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.txt"
+        logging_folder
+        + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filter_or_not}/{raref_or_not}/collap_{collapse_level}/{prefix}.txt",
     script:
         "scripts/physeq_collapse_taxa.R"
 
@@ -149,35 +197,36 @@ rule transpose_and_meta_count_table:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        count_table = "{prefix}/count_table.tsv",
-        meta = "{prefix}/metadata_table.tsv"
+        count_table="{prefix}/count_table.tsv",
+        meta="{prefix}/metadata_table.tsv",
     output:
-        transposed_table = "{prefix}/count_table_transposed.txt",
-        merged_meta = "{prefix}/count_table_transposed_with_meta.txt"
-    priority:
-        1
+        transposed_table="{prefix}/count_table_transposed.txt",
+        merged_meta="{prefix}/count_table_transposed_with_meta.txt",
+    priority: 1
     log:
-        logging_folder + "{prefix}/count_table_transposed.txt"
+        logging_folder + "{prefix}/count_table_transposed.txt",
     script:
         "scripts/transpose_and_add_meta_count_table.R"
+
 
 ### Transform and normalize counts
 rule physeq_filter_norm_transf:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        phyloseq_object = "{prefix}.rds"
+        phyloseq_object="{prefix}.rds",
     output:
-        phyloseq_norm = "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.rds",
+        phyloseq_norm="{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.rds",
     params:
-        normalization =  lambda wildcards: wildcards.norm_value,
-        min_abundance_value =  lambda wildcards: wildcards.abund_value,
-        min_prevalence_value =  lambda wildcards: wildcards.prev_value,
+        normalization=lambda wildcards: wildcards.norm_value,
+        min_abundance_value=lambda wildcards: wildcards.abund_value,
+        min_prevalence_value=lambda wildcards: wildcards.prev_value,
     log:
-        logging_folder + "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.txt",
+        logging_folder
+        + "{prefix}_norm{norm_value}_abund{abund_value}_prev{prev_value}.txt",
     script:
         "scripts/transf_norm.R"

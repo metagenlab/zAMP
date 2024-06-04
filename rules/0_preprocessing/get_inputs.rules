@@ -1,14 +1,14 @@
-
 ## Get local reads.
+
 
 rule copy_fastq_paired_from_link:
     input:
-        unpack(lambda wildcards: paths[wildcards.sample])
+        unpack(lambda wildcards: paths[wildcards.sample]),
     output:
         temp("raw_reads/{sample}_R1.fastq.gz"),
-        temp("raw_reads/{sample}_R2.fastq.gz")
+        temp("raw_reads/{sample}_R2.fastq.gz"),
     resources:
-        max_copy=1
+        max_copy=1,
     shell:
         """
         if gzip -t {input[0]}
@@ -31,13 +31,14 @@ rule copy_fastq_paired_from_link:
 
         """
 
+
 rule copy_fastq_single_from_link:
     input:
-        unpack(lambda wildcards: paths[wildcards.sample])
+        unpack(lambda wildcards: paths[wildcards.sample]),
     output:
-        temp("raw_reads/{sample}_single.fastq.gz")
+        temp("raw_reads/{sample}_single.fastq.gz"),
     resources:
-        max_copy=1
+        max_copy=1,
     shell:
         """
         if gzip -t {input[0]}
@@ -49,9 +50,9 @@ rule copy_fastq_single_from_link:
             rm $(dirname "{output[0]}")/$(basename "{input[0]}")
         fi
         """
-        
-        
-## Alternatively, obtain reads from SRA. 
+
+
+## Alternatively, obtain reads from SRA.
 
 
 rule download_sra:
@@ -63,17 +64,18 @@ rule download_sra:
         # /home/pipeline_user/ncbi/public
         temp("ncbi/public/sra/{sample}/{sample}.sra"),
     log:
-        logging_folder + "samples/{sample}/sras/dump.txt"
+        logging_folder + "samples/{sample}/sras/dump.txt",
     params:
-        sra_dir = "$HOME/ncbi/public"
+        sra_dir="$HOME/ncbi/public",
     resources:
-        max_copy=1
+        max_copy=1,
     shell:
         """
         #cache_dir=$(vdb-config --cfg -o n | grep "/repository/user/main/public/root" | cut -f2 -d'=' | sed "s/\\"//g")
         vdb-config --restore-defaults
         prefetch -v {wildcards.sample} -O "ncbi/public/sra/"  --max-size 100000000 &> {log}
         """
+
 
 rule sra_convert_to_fastq_paired:
     conda:
@@ -99,11 +101,11 @@ rule sra_convert_to_fastq_single:
     container:
         singularity_envs["sra-toolkit"]
     input:
-        "ncbi/public/sra/{sample}/{sample}.sra"
+        "ncbi/public/sra/{sample}/{sample}.sra",
     output:
         temp(link_directory + "{sample,[A-Za-z0-9]+}.fastq.gz"),
     log:
-        logging_folder + "logs/sra_download/{sample}_dump.txt"
+        logging_folder + "logs/sra_download/{sample}_dump.txt",
     shell:
         """
         fastq-dump --gzip --outdir $(dirname {output[0]}) --log-level 0 --disable-multithreading --minReadLen 0 {wildcards.sample} &> {log}

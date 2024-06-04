@@ -1,65 +1,72 @@
 ## Import the sequence predicted from the Insilico validation pipeline
-rule Import_ReferenceSequences :
-    conda :
+rule Import_ReferenceSequences:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        trimmed_reads = config["In_silico_tax_assign_output"] + "InSilico/2_denoised/dna-sequences.fasta"
-    output :
-        "QualityControl/Amplicons_reference_seq.qza"
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        trimmed_reads=config["In_silico_tax_assign_output"]
+        + "InSilico/2_denoised/dna-sequences.fasta",
+    output:
+        "QualityControl/Amplicons_reference_seq.qza",
+    threads: 1
+    shell:
+        """
         qiime tools import \
         --type 'FeatureData[Sequence]' \
         --input-path {input} \
         --output-path {output} 
-        '''
+        """
 
 
 def get_DADA2_samples_path(sample):
     RUN = all_samples.at[sample, config["run_column"]]
     sample_layout = layout[sample]
-    path = "DADA2/2_denoised/"+RUN+"/"+sample+"_"+sample_layout+"_infer_seq_tab.rds"
-    return(path)
+    path = (
+        "DADA2/2_denoised/"
+        + RUN
+        + "/"
+        + sample
+        + "_"
+        + sample_layout
+        + "_infer_seq_tab.rds"
+    )
+    return path
 
 
 ### Take the squences after denoising
-rule export_DADA2_QuerySequences :
+rule export_DADA2_QuerySequences:
     conda:
         "../../envs/DADA2_in_R.yml"
     container:
         singularity_envs["dada2"]
-    input :
-        dada2_rds = lambda wildcards: get_DADA2_samples_path(wildcards.sample)
-    output :
-        no_chim = "QualityControl/DADA2/{sample}/dna-sequences_no_chim.rds",
-        length_filtered = "QualityControl/DADA2/{sample}/dna-sequences_long_names.rds",
-        rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta",
-        count_table = "QualityControl/DADA2/{sample}/count_table.tsv",
-        length_histo = "QualityControl/DADA2/{sample}/merged_reads_length.png"
+    input:
+        dada2_rds=lambda wildcards: get_DADA2_samples_path(wildcards.sample),
+    output:
+        no_chim="QualityControl/DADA2/{sample}/dna-sequences_no_chim.rds",
+        length_filtered="QualityControl/DADA2/{sample}/dna-sequences_long_names.rds",
+        rep_seqs="QualityControl/DADA2/{sample}/dna-sequences.fasta",
+        count_table="QualityControl/DADA2/{sample}/count_table.tsv",
+        length_histo="QualityControl/DADA2/{sample}/merged_reads_length.png",
     params:
-        merged_min_length = config["merged_min_length"],
-        merged_max_length = config["merged_max_length"]
+        merged_min_length=config["merged_min_length"],
+        merged_max_length=config["merged_max_length"],
     log:
         logging_folder + "QualityControl/DADA2/{sample}/dna-sequences.log",
     script:
         "scripts/extract_DADA2_sequences.R"
 
 
-
 ### Count the number of occurences of the representative sequences in the samples. I takes the sequences before clustering, i.e. their "raw sequence"
-rule vsearch_count_occurences_for_QC :
+rule vsearch_count_occurences_for_QC:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
+        singularity_envs["r_utils"]
     input:
-        uc = "vsearch/1c_derep/{sample}_derep.uc"
+        uc="vsearch/1c_derep/{sample}_derep.uc",
     output:
-        count_table = "QualityControl/vsearch/{sample}/count_table.tsv"
+        count_table="QualityControl/vsearch/{sample}/count_table.tsv",
     log:
         logging_folder + "QualityControl/vsearch/{sample}/count_table.log",
     script:
@@ -67,61 +74,60 @@ rule vsearch_count_occurences_for_QC :
 
 
 ### Import sequence in "raw" vsearch output
-rule Import_Vsearch_QuerySequences :
-    conda :
+rule Import_Vsearch_QuerySequences:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
+        singularity_envs["qiime2"]
+    input:
         "vsearch/1c_derep/{sample}_derep.fasta",
-    output :
-        "QualityControl/vsearch_{sample}_query_seq.qza"
-    threads :
-        1
-    shell :
-         '''
+    output:
+        "QualityControl/vsearch_{sample}_query_seq.qza",
+    threads: 1
+    shell:
+        """
         qiime tools import \
         --type 'FeatureData[Sequence]' \
         --input-path {input} \
         --output-path {output} 
-        '''
+        """
+
 
 ### Import Denoised sequences
-rule Import_DADA2_QuerySequences :
-    conda :
+rule Import_DADA2_QuerySequences:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        rep_seqs = "QualityControl/DADA2/{sample}/dna-sequences.fasta"
-    output :
-        "QualityControl/DADA2_{sample}_query_seq.qza"
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        rep_seqs="QualityControl/DADA2/{sample}/dna-sequences.fasta",
+    output:
+        "QualityControl/DADA2_{sample}_query_seq.qza",
+    threads: 1
+    shell:
+        """
         qiime tools import \
         --type 'FeatureData[Sequence]' \
         --input-path {input[rep_seqs]} \
         --output-path {output} 
-        '''
+        """
 
-### Only keep sequences matching the query 
-rule filter_QuerySequences :
-    conda :
+
+### Only keep sequences matching the query
+rule filter_QuerySequences:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/{denoiser}_{sample}_query_seq.qza",
-    output :
-         filtered = "QualityControl/{denoiser}_{sample}_query_seq_filtered.qza",
-         out = "QualityControl/{denoiser}_{sample}_query_seq_out.qza",
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        Amplicons="QualityControl/Amplicons_reference_seq.qza",
+        Query="QualityControl/{denoiser}_{sample}_query_seq.qza",
+    output:
+        filtered="QualityControl/{denoiser}_{sample}_query_seq_filtered.qza",
+        out="QualityControl/{denoiser}_{sample}_query_seq_out.qza",
+    threads: 1
+    shell:
+        """
     qiime quality-control exclude-seqs \
       --i-query-sequences {input[Query]} \
       --i-reference-sequences {input[Amplicons]}  \
@@ -130,139 +136,141 @@ rule filter_QuerySequences :
       --p-perc-query-aligned 0.99 \
       --o-sequence-hits {output[filtered]} \
       --o-sequence-misses {output[out]}
-        '''
+        """
+
 
 ### Compare mismatch expected sequences and raw amplicons
-rule  Quality_Control_raw :
-    conda :
+rule Quality_Control_raw:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/vsearch_{sample}_query_seq_filtered.qza"
-    output :
-        "QualityControl/vsearch_{sample}_eval_seqs_test.qzv"
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        Amplicons="QualityControl/Amplicons_reference_seq.qza",
+        Query="QualityControl/vsearch_{sample}_query_seq_filtered.qza",
+    output:
+        "QualityControl/vsearch_{sample}_eval_seqs_test.qzv",
+    threads: 1
+    shell:
+        """
         qiime quality-control evaluate-seqs \
         --i-query-sequences {input[Query]} \
         --i-reference-sequences {input[Amplicons]} \
         --o-visualization {output}
-         '''
+         """
 
 
 ### Compare mismatch expected sequences and denoised amplicons
-rule  Quality_Control_denoised :
-    conda :
+rule Quality_Control_denoised:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        Amplicons = "QualityControl/Amplicons_reference_seq.qza",
-        Query = "QualityControl/DADA2_{sample}_query_seq_filtered.qza"
-    output :
-        "QualityControl/DADA2_{sample}_eval_seqs_test.qzv"
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        Amplicons="QualityControl/Amplicons_reference_seq.qza",
+        Query="QualityControl/DADA2_{sample}_query_seq_filtered.qza",
+    output:
+        "QualityControl/DADA2_{sample}_eval_seqs_test.qzv",
+    threads: 1
+    shell:
+        """
         qiime quality-control evaluate-seqs \
         --i-query-sequences {input[Query]} \
         --i-reference-sequences {input[Amplicons]} \
         --o-visualization {output} \
         --p-show-alignments
-         '''
+         """
+
 
 ### Export output
-rule  Export_quality_Control_raw :
-    conda :
+rule Export_quality_Control_raw:
+    conda:
         "../../envs/QIIME2-2020.02.yml"
     container:
-        singularity_envs["qiime2"] 
-    input :
-        "QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv"
-    output :
-        "QualityControl/{denoiser}_{sample}_export/results.tsv"
-    threads :
-        1
-    shell :
-         '''
+        singularity_envs["qiime2"]
+    input:
+        "QualityControl/{denoiser}_{sample}_eval_seqs_test.qzv",
+    output:
+        "QualityControl/{denoiser}_{sample}_export/results.tsv",
+    threads: 1
+    shell:
+        """
         qiime tools export \
           --input-path {input} \
           --output-path $(dirname {output[0]})
-         '''
-
+         """
 
 
 def get_RUN(sample):
     RUN = all_samples.at[sample, config["run_column"]]
-    return(RUN)
+    return RUN
 
 
-
-rule mismatch_table_per_sample :
+rule mismatch_table_per_sample:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
-    input :
-        mismatch_tables_path =  "QualityControl/{denoiser}_{sample}_export/results.tsv",
-        count_table_path = "QualityControl/{denoiser}/{sample}/count_table.tsv"
-    output :
-        merged_mismatch_table_path = "QualityControl/{denoiser}/export_{sample}/with_counts.tsv",
-        missmatch_plot_path = "QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",
+        singularity_envs["r_utils"]
+    input:
+        mismatch_tables_path="QualityControl/{denoiser}_{sample}_export/results.tsv",
+        count_table_path="QualityControl/{denoiser}/{sample}/count_table.tsv",
+    output:
+        merged_mismatch_table_path="QualityControl/{denoiser}/export_{sample}/with_counts.tsv",
+        missmatch_plot_path="QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",
     params:
-        RUN = lambda wildcards : get_RUN(wildcards.sample)
+        RUN=lambda wildcards: get_RUN(wildcards.sample),
     log:
-        logging_folder +  "QualityControl/{denoiser}/export_{sample}/with_counts.log"
-    threads :
-        1
+        logging_folder + "QualityControl/{denoiser}/export_{sample}/with_counts.log",
+    threads: 1
     script:
         "scripts/abundance_to_mismatches.R"
 
 
 def select_samples(RUN):
-    selected_samples = all_samples.index.values[(all_samples[config["select_column"]] == config["select_value"]) & (all_samples[config["run_column"]] == RUN)] 
-    selected_paths = expand("QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv", sample = selected_samples)
+    selected_samples = all_samples.index.values[
+        (all_samples[config["select_column"]] == config["select_value"])
+        & (all_samples[config["run_column"]] == RUN)
+    ]
+    selected_paths = expand(
+        "QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv",
+        sample=selected_samples,
+    )
 
-    return(selected_paths)
+    return selected_paths
 
 
-rule Compare_mismatch_per_run :
+rule Compare_mismatch_per_run:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
-    input :
-        mismatch_tables_path = lambda wildcards : select_samples(wildcards.RUN) 
-    output :
-        missmatch_plot = "QualityControl/{denoiser}/{RUN}_compare_quality.png",
-        merged_mismatch_table = "QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
+        singularity_envs["r_utils"]
+    input:
+        mismatch_tables_path=lambda wildcards: select_samples(wildcards.RUN),
+    output:
+        missmatch_plot="QualityControl/{denoiser}/{RUN}_compare_quality.png",
+        merged_mismatch_table="QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
     log:
-        logging_folder +  "QualityControl/{denoiser}/{RUN}_compare_quality_table.log",
-    threads :
-        1
+        logging_folder + "QualityControl/{denoiser}/{RUN}_compare_quality_table.log",
+    threads: 1
     script:
         "scripts/compare_mismatches.R"
 
 
-
-rule Compare_mismatch_all :
+rule Compare_mismatch_all:
     conda:
         "../../envs/amplicons_r_utils.yml"
     container:
-        singularity_envs["r_utils"]  
-    input :
-        mismatch_tables_path = expand("QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv", RUN = set(all_samples[config["run_column"]]))
-    output :
-        missmatch_plot = "QualityControl/{denoiser}/compare_quality.pdf",
-        merged_mismatch_table = "QualityControl/{denoiser}/compare_quality_table.tsv",
+        singularity_envs["r_utils"]
+    input:
+        mismatch_tables_path=expand(
+            "QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv",
+            RUN=set(all_samples[config["run_column"]]),
+        ),
+    output:
+        missmatch_plot="QualityControl/{denoiser}/compare_quality.pdf",
+        merged_mismatch_table="QualityControl/{denoiser}/compare_quality_table.tsv",
     log:
-        logging_folder +  "QualityControl/{denoiser}/compare_quality.log",
-    threads :
-        1
+        logging_folder + "QualityControl/{denoiser}/compare_quality.log",
+    threads: 1
     script:
         "scripts/compare_all_mismatches.R"
