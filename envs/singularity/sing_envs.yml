@@ -14,3 +14,4 @@ python27: docker://python:2.7
 picrust2: docker://quay.io/biocontainers/picrust2:2.5.2--pyhdfd78af_0
 simulatePCR: docker://metagenlab/amplicons_simulatepcr:v.1.0
 TreeShrink: docker://metagenlab/amplicons_treeshrink:v.1.0
+pandas: docker://quay.io/biocontainers/pandas:2.2.1
