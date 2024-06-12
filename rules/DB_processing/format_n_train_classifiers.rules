@@ -57,9 +57,9 @@ rule Preformat_for_cannonical_rdp:
 
 rule Format_rdp_lineages:
     conda:
-        "../../envs/Python2.yml"
+        "../../envs/python.yml"
     container:
-        singularity_envs["python27"]
+        singularity_envs["python"]
     input:
         table="{prefix}/RDP/formatted_tax_table.tsv",
         script=workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py",
@@ -74,9 +74,9 @@ rule Format_rdp_lineages:
 
 rule Format_rdp_add_lineages:
     conda:
-        "../../envs/Python2.yml"
+        "../../envs/python.yml"
     container:
-        singularity_envs["python27"]
+        singularity_envs["python"]
     input:
         taxonomy="{prefix}/RDP/formatted_tax_table.tsv",
         fasta="{prefix}/QIIME/DB_amp.fasta",
