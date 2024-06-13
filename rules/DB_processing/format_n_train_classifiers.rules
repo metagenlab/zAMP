@@ -35,7 +35,7 @@ rule Hash_DADA2:
 ## Rules to format taxonomy to fit the requirements of the original RDP.
 ### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
 ### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
-### See 'RDP_validations.rules' for more validatino based on RDP authors' recommendations
+### See 'RDP_validations.rules' for more validation based on RDP authors' recommendations
 
 
 rule Preformat_for_cannonical_rdp:
