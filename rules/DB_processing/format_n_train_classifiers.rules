@@ -68,7 +68,7 @@ rule Format_rdp_lineages:
     threads: 1
     shell:
         """
-        python2.7 {input.script} {input.table} > {output[0]}
+        python {input.script} {input.table} > {output[0]}
         """
 
 
@@ -86,7 +86,7 @@ rule Format_rdp_add_lineages:
     threads: 1
     shell:
         """
-        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}       
+        python {input.script} {input.taxonomy} {input.fasta} > {output}       
         """
 
 
