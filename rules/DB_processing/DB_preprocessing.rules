@@ -69,6 +69,7 @@ rule Dereplicate_amplicons:
 #     script:
 #         "scripts/DB_tax_formatting.R"
 
+
 rule Derep_and_merge_taxonomy:
     conda:
         "../../envs/pandas.yml"
@@ -84,8 +85,7 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
-        numbers_species=config["numbers_species"],
-        numbers_genus=config["numbers_genus"],
+        tax_collapse=config["tax_collapse"],
     threads: 1
     script:
         "scripts/tax_formatting.py"
