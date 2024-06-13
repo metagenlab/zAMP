@@ -92,9 +92,9 @@ rule Format_rdp_add_lineages:
 
 rule Train_rdp_classifier:
     conda:
-        "../../envs/rdp_tools.yml"
+        "../../envs/rdp_classifier.yml"
     container:
-        singularity_envs["rdptools"]
+        singularity_envs["rdp_classifier"]
     input:
         read4train_fasta="{prefix}/RDP/ready4train_seqs.fasta",
         read4train_tax="{prefix}/RDP/ready4train_lineages.txt",

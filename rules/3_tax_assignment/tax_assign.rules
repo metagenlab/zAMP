@@ -69,9 +69,9 @@ rule dada2_assign_taxonomy_rdp:
 
 rule rdp_classify:
     conda:
-        "../../envs/rdp_tools.yml"
+        "../../envs/rdp_classifier.yml"
     container:
-        singularity_envs["rdptools"]
+        singularity_envs["rdp_classifier"]
     input:
         trained_ref=config["tax_DB_path"] + "{tax_DB}/RDP/rRNAClassifier.properties",
         query_seqs="{denoiser}/2_denoised/dna-sequences.fasta",
