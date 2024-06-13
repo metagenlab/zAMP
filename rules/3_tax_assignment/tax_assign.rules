@@ -84,7 +84,7 @@ rule rdp_classify:
         mem_mb=30000,
     shell:
         """
-        classifier -Xmx30g -XX:ConcGCThreads=1 classify \
+        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 classify \
         -c 0.5 \
         -f allrank \
         -t {input[0]} \

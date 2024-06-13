@@ -50,7 +50,7 @@ rule Accuracy_seqs_testing_rdp:
         mem_mb=30000,
     shell:
         """
-        classifier -Xmx30g loot \
+        rdp_classifier -Xmx30g loot \
         -q {input.seqs} \
         -s {input.seqs} \
         -t {input.tax} \
@@ -77,7 +77,7 @@ rule Accuracy_taxon_testing_rdp:
         mem_mb=30000,
     shell:
         """
-        classifier -Xmx30g loot -h \
+        rdp_classifier -Xmx30g loot -h \
         -q {input.seqs} \
         -s {input.seqs} \
         -t {input.tax} \
@@ -104,7 +104,7 @@ rule Cross_validate__rdp:
         mem_mb=30000,
     shell:
         """
-        classifier -Xmx30g crossvalidate \
+        rdp_classifier -Xmx30g crossvalidate \
         -s {input.seqs} \
         -t {input.tax} \
         -l 400 \

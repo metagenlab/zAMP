@@ -106,7 +106,7 @@ rule Train_rdp_classifier:
         mem_mb=30000,
     shell:
         """
-        classifier -Xmx30g -XX:ConcGCThreads=1 train \
+        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 train \
         -o $(dirname {output[0]}) \
         -s {input[0]} \
         -t {input[1]} && \
