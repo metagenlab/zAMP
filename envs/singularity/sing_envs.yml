@@ -9,7 +9,7 @@ r_utils: docker://metagenlab/amplicons_r_utils:v.1.0
 qiimerdp: docker://metagenlab/amplicons_qiime1_rdp:v.1.0
 qiime2: docker://qiime2/core:2020.2
 decipher: docker://metagenlab/amplicons_decipher:v.1.0
-rdptools: docker://quay.io/biocontainers/rdptools:2.0.3--0
+rdp_classifier: docker://quay.io/biocontainers/rdp_classifier:2.14--hdfd78af_0
 python: docker://python:3.12.3-slim-bullseye
 picrust2: docker://quay.io/biocontainers/picrust2:2.5.2--pyhdfd78af_0
 simulatePCR: docker://metagenlab/amplicons_simulatepcr:v.1.0
