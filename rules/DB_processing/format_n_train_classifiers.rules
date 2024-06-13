@@ -114,7 +114,7 @@ rule Train_rdp_classifier:
         probabilityList=genus_wordConditionalProbList.txt
         probabilityIndex=wordConditionalProbIndexArr.txt
         wordPrior=logWordPrior.txt
-        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.5, May 2012" > {output[1]}
+        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.14, August 2023" > {output[1]}
         """
 
 
