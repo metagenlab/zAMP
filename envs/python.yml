@@ -1,5 +1,5 @@
-name: Python2
+name: python
 channels:
 - conda-forge
 dependencies:
-- python=2.7.15
+- python=3.12.3

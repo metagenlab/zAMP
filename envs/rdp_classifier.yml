@@ -1,0 +1,5 @@
+name: rdp_classifier
+channels:
+- bioconda
+dependencies:
+- rdp_classifier=2.14
