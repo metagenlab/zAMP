@@ -85,6 +85,7 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
+        db_version = config["db_version"],
         tax_collapse=config["tax_collapse"],
     threads: 1
     script:
