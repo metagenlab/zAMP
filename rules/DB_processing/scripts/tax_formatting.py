@@ -3,6 +3,23 @@ import numpy as np
 
 
 # Functions
+
+
+def replace_duplicates_with_nan(row):
+    """
+    Function to replace duplicate values across ranks with NaN
+    """
+    seen = set()
+    new_row = []
+    for value in row:
+        if value in seen:
+            new_row.append(np.nan)
+        else:
+            seen.add(value)
+            new_row.append(value)
+    return new_row
+
+
 def propagate_nan(df):
     # Identify columns that have NaN values
     nan_mask = df.isna()
@@ -70,7 +87,17 @@ uc_df = pd.read_csv(
         "target_id",
     ],
 )
+
+
 # Taxonomy table
+if snakemake.params.db_version == "greengenes2":
+    ## Remove spaces after ";" in GTDB taxonomy
+    tax_df.tax = tax_df.tax.str.replace("; ", ";")
+    ## Remove leading k__ to s__ in GTDB taxonomy
+    tax_df.tax = tax_df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+    ## Replace _ in taxa names with - (makes duplicate taxon name and rank for RDP)
+    tax_df.tax = tax_df.tax.replace(to_replace=r"_", value="-", regex=True)
+
 ## Split taxonomy path into one column per rank
 lintax_df = tax_df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
@@ -78,16 +105,33 @@ lintax_df.columns = ranks
 ## Replace empty values by NaN
 lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
 
-## Replace spaces with underscores (some genera names have spaces)
-lintax_df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
+if snakemake.params.db_version == "silva138.1":
+    ## Replace spaces with underscores (some genera names have spaces)
+    lintax_df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
 
-## Replace taxa containing and Unkown or Incertae with NaN
-lintax_df.replace(
-    to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
-)
+    ## Replace taxa containing and Unkown or Incertae with NaN
+    lintax_df.replace(
+        to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
+    )
 
-## Replace endosymbionts by NaN
-lintax_df.replace("endosymbionts", np.nan, inplace=True)
+    ## Replace endosymbionts by NaN
+    lintax_df.replace("endosymbionts", np.nan, inplace=True)
+
+if snakemake.params.db_version == "greengenes2":
+    # In greeengenes2, some sequences have the same taxa name assigned to multiple ranks
+    # the code below iterates over ranks and replaces duplicate names with NaN
+    # This mitigates convergent taxonomy errors in RDP
+    array = lintax_df.to_numpy()
+
+    # Iterate through the array to replace duplicates with NaN
+    for i in range(array.shape[0]):
+        seen = set()
+        for j in range(array.shape[1]):
+            if array[i, j] in seen:
+                array[i, j] = np.nan
+            else:
+                seen.add(array[i, j])
+    lintax_df = pd.DataFrame(array, columns=lintax_df.columns)
 
 
 ## Propagate NaN value to downstream ranks and fill NaN with latest non NaN value
@@ -97,7 +141,7 @@ filled_df = propagate_nan(lintax_df).ffill(axis=1)
 ## Check repeated values and append them with first letter rank suffix
 prop_tax_df = pd.DataFrame()
 for n, rank in enumerate(ranks):
-    if rank != "kingdom":
+    if rank != "Kingdom":
         prev = ranks[n - 1]
         duplicated = (
             filled_df[filled_df[f"{prev}"] == filled_df[f"{rank}"]][f"{rank}"]
@@ -107,13 +151,13 @@ for n, rank in enumerate(ranks):
     else:
         prop_tax_df[f"{rank}"] = filled_df[f"{rank}"]
 
-
-## Get classified species index
-index = ~prop_tax_df["Species"].str.contains("_s")
-## Add genus name in species for classified species
-prop_tax_df.loc[index, "Species"] = (
-    prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
-)
+if snakemake.params.db_version == "silva138.1":
+    ## Get classified species index
+    index = ~prop_tax_df["Species"].str.contains("_s")
+    ## Add genus name in species for classified species
+    prop_tax_df.loc[index, "Species"] = (
+        prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
+    )
 
 
 ## Add seq_id to formatted taxonomy
@@ -141,8 +185,8 @@ clust_df.insert(clust_df.shape[1], "rank_idx", ranks_idxs)
 
 
 ## For unclassified taxa, add index in taxon name for each cluster
-### Example : Two Pseudoclavibacter_s sequences clusterin into clusters
-###           will be named Pseudoclavibacter_s1 and Pseudoclavibacter_s2 for each cluster
+### Example : Two Pseudoclavibacter_s sequences present in two different clusters
+###           will be named Pseudoclavibacter_s1 and Pseudoclavibacter_s2
 for rank in ranks:
     clust_df.loc[clust_df[f"{rank}"].str.contains("_"), f"{rank}"] = clust_df.loc[
         clust_df[f"{rank}"].str.contains("_"), f"{rank}"
