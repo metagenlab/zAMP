@@ -27,13 +27,13 @@ def snake_base(rel_path):
 
 
 def get_version():
-    with open(snake_base(os.path.join("zamp.VERSION")), "r") as f:
+    with open(snake_base("zamp.VERSION"), "r") as f:
         version = f.readline()
     return version
 
 
 def print_citation():
-    with open(snake_base(os.path.join("zamp.CITATION")), "r") as f:
+    with open(snake_base("zamp.CITATION"), "r") as f:
         for line in f:
             echo_click(line)
 
@@ -241,7 +241,7 @@ def preprocess(**kwargs):
 
     run_snakemake(
         # Full path to Snakefile
-        snakefile_path=snake_base(os.path.join("..", "DBprocess.Snakefile")),
+        snakefile_path=snake_base("DBprocess.Snakefile"),
         merge_config=merge_config,
         **kwargs,
     )
@@ -261,7 +261,7 @@ def run(**kwargs):
 
     run_snakemake(
         # Full path to Snakefile
-        snakefile_path=snake_base(os.path.join("..", "Snakefile")),
+        snakefile_path=snake_base("Snakefile"),
         merge_config=merge_config,
         **kwargs,
     )
