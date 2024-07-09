@@ -33,7 +33,7 @@ def cli():
 @common_options
 def preprocess(**kwargs):
     """
-    zAMP database preprocessing
+    Preprocess database for zAMP
     """
     merge_config = {"args": kwargs}
 
