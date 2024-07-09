@@ -70,7 +70,9 @@ ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 ranks_lim = snakemake.params.tax_collapse
 
 # Read tables
-tax_df = pd.read_csv(snakemake.input.tax, sep="\t", names=["seq_id", "tax"])
+tax_df = pd.read_csv(snakemake.input.tax, sep="\t")
+tax_df.columns = ["seq_id", "tax"]
+
 uc_df = pd.read_csv(
     snakemake.input.uc,
     sep="\t",
