@@ -92,6 +92,10 @@ uc_df = pd.read_csv(
 
 
 # Taxonomy table
+if snakemake.params.db_version == "unite10":
+    tax_df.tax = tax_df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+    tax_df.tax = tax_df.tax.replace(to_replace=r"_", value=" ", regex=True)
+
 if snakemake.params.db_version == "greengenes2":
     ## Remove spaces after ";" in GTDB taxonomy
     tax_df.tax = tax_df.tax.str.replace("; ", ";")
@@ -122,7 +126,7 @@ if snakemake.params.db_version == "silva138.1":
 if snakemake.params.db_version == "greengenes2":
     # In greeengenes2, some sequences have the same taxa name assigned to multiple ranks
     # the code below iterates over ranks and replaces duplicate names with NaN
-    # This mitigates convergent taxonomy errors in RDP
+    # This removes convergent taxonomy errors in RDP
     array = lintax_df.to_numpy()
 
     # Iterate through the array to replace duplicates with NaN
@@ -140,14 +144,22 @@ if snakemake.params.db_version == "greengenes2":
 filled_df = propagate_nan(lintax_df).ffill(axis=1)
 
 
+# Make plaheloder name dict
+placeholder = {}
+for rank in ranks:
+    if rank == "Species":
+        placeholder[f"{rank}"] = "_placeholder_" + rank[0:2].lower()
+    else:
+        placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
+
 ## Check repeated values and append them with first letter rank suffix
 prop_tax_df = pd.DataFrame()
 for n, rank in enumerate(ranks):
-    if rank != "Kingdom":
+    if rank != ranks[0]:
         prev = ranks[n - 1]
         duplicated = (
             filled_df[filled_df[f"{prev}"] == filled_df[f"{rank}"]][f"{rank}"]
-            + f"_{rank[0].lower()}"
+            + f"{placeholder[rank]}"
         )
         prop_tax_df[f"{rank}"] = lintax_df[f"{rank}"].combine_first(duplicated)
     else:
@@ -155,7 +167,7 @@ for n, rank in enumerate(ranks):
 
 if snakemake.params.db_version == "silva138.1":
     ## Get classified species index
-    index = ~prop_tax_df["Species"].str.contains("_s")
+    index = ~prop_tax_df["Species"].str.contains(f"{placeholder["Species"]}", regex=False)
     ## Add genus name in species for classified species
     prop_tax_df.loc[index, "Species"] = (
         prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
@@ -190,9 +202,16 @@ clust_df.insert(clust_df.shape[1], "rank_idx", ranks_idxs)
 ### Example : Two Pseudoclavibacter_s sequences present in two different clusters
 ###           will be named Pseudoclavibacter_s1 and Pseudoclavibacter_s2
 for rank in ranks:
-    clust_df.loc[clust_df[f"{rank}"].str.contains("_"), f"{rank}"] = clust_df.loc[
-        clust_df[f"{rank}"].str.contains("_"), f"{rank}"
-    ] + clust_df.loc[clust_df[f"{rank}"].str.contains("_"), "rank_idx"].astype(str)
+    clust_df.loc[
+        clust_df[f"{rank}"].str.contains(f"{placeholder[rank]}", regex=False), f"{rank}"
+    ] = clust_df.loc[
+        clust_df[f"{rank}"].str.contains(f"{placeholder[rank]}", regex=False), f"{rank}"
+    ] + clust_df.loc[
+        clust_df[f"{rank}"].str.contains(f"{placeholder[rank]}", regex=False),
+        "rank_idx",
+    ].astype(
+        str
+    )
 
 ## Count sequences in each cluster
 clust_df["seq_counts"] = clust_df.groupby("clust_id")["seq_id"].transform("count")
@@ -237,6 +256,7 @@ multi_formatted_df = multi_df[
 multi_formatted_df.columns = cols
 collapsed_df = pd.concat([single_df[cols], multi_formatted_df])
 collapsed_df["taxpath"] = collapsed_df[ranks].T.agg(";".join)
+collapsed_df["taxpath"] = collapsed_df["taxpath"].str.replace("_placeholder", "")
 
 # Df with uncollapsed taxonomy
 
@@ -247,7 +267,7 @@ multi_all_df = multi_df[
 multi_all_df.columns = cols
 all_df = pd.concat([single_df[cols], multi_all_df])
 all_df["taxpath"] = all_df[ranks].T.agg(";".join)
-
+all_df["taxpath"] = all_df["taxpath"].str.replace("_placeholder", "")
 ## Flag discrepant taxa as problematic
 all_df.loc[:, "problematic_taxa"] = all_df.apply(problematic_taxa, axis=1)
 
