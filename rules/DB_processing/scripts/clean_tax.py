@@ -20,10 +20,26 @@ df.columns = ["seq_id", "tax"]
 
 ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 
+if snakemake.params.db_version == "unite10":
+    df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+    df.tax = df.tax.replace(to_replace=r"_", value=" ", regex=True)
+
 if snakemake.params.db_version == "greengenes2":
     df.tax = df.tax.str.replace("; ", ";")
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+
+if snakemake.params.db_version == "silva138.1":
+    ## Replace spaces with underscores (some genera names have spaces)
+    df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
+
+    ## Replace taxa containing and Unkown or Incertae with NaN
+    df.replace(
+        to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
+    )
+
+    ## Replace endosymbionts by NaN
+    df.replace("endosymbionts", np.nan, inplace=True)
 
 lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
