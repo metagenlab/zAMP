@@ -20,10 +20,26 @@ df.columns = ["seq_id", "tax"]
 
 ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 
+if snakemake.params.db_version == "unite10":
+    df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+    df.tax = df.tax.replace(to_replace=r"_", value=" ", regex=True)
+
 if snakemake.params.db_version == "greengenes2":
     df.tax = df.tax.str.replace("; ", ";")
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+
+if snakemake.params.db_version == "silva138.1":
+    ## Replace spaces with underscores (some genera names have spaces)
+    df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
+
+    ## Replace taxa containing and Unkown or Incertae with NaN
+    df.replace(
+        to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
+    )
+
+    ## Replace endosymbionts by NaN
+    df.replace("endosymbionts", np.nan, inplace=True)
 
 lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
@@ -37,14 +53,14 @@ if snakemake.params.db_version == "greengenes2":
     array = lintax_df.to_numpy()
 
     # Iterate through the array to replace duplicates with NaN
-for i in range(array.shape[0]):
-    seen = set()
-    for j in range(array.shape[1]):
-        if array[i, j] in seen:
-            array[i, j] = np.nan
-        else:
-            seen.add(array[i, j])
-lintax_df = pd.DataFrame(array, columns=lintax_df.columns)
+    for i in range(array.shape[0]):
+        seen = set()
+        for j in range(array.shape[1]):
+            if array[i, j] in seen:
+                array[i, j] = np.nan
+            else:
+                seen.add(array[i, j])
+    lintax_df = pd.DataFrame(array, columns=lintax_df.columns)
 
 
 filled_df = propagate_nan(lintax_df).ffill(axis=1)
