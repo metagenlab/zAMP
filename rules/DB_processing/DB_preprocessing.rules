@@ -48,28 +48,6 @@ rule Dereplicate_amplicons:
         """
 
 
-# rule Derep_and_merge_taxonomy:
-#     conda:
-#         "../../envs/amplicons_r_utils.yml"
-#     container:
-#         singularity_envs["r_utils"]
-#     input:
-#         tax="{prefix}/master/original_tax.txt",
-#         uc="{prefix}/QIIME/DB_amp.uc",
-#     output:
-#         formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-#         all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-#         problematic="{prefix}/QIIME/problematic_taxa.txt",
-#     log:
-#         "{prefix}/logs/QIIME/derep_and_merge.log",
-#     params:
-#         numbers_species=config["numbers_species"],
-#         numbers_genus=config["numbers_genus"],
-#     threads: 1
-#     script:
-#         "scripts/DB_tax_formatting.R"
-
-
 rule Derep_and_merge_taxonomy:
     conda:
         "../../envs/pandas.yml"
@@ -85,7 +63,7 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
-        db_version = config["db_version"],
+        db_version=config["db_version"],
         tax_collapse=config["tax_collapse"],
     threads: 1
     script:
