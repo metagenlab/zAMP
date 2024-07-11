@@ -3,19 +3,31 @@
 # set of rules will be used to bypass the preprocessing of the database.
 
 
-rule copy_untreated_DB:
+rule copy_fasta:
     input:
-        tax="{prefix}/master/original_tax.txt",
-        fasta="{prefix}/master/original_seqs.fasta",
+        "{prefix}/master/original_seqs.fasta",
     output:
-        tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        fasta="{prefix}/QIIME/DB_amp.fasta",
-    threads: 1
+        "{prefix}/QIIME/DB_amp.fasta",
     shell:
         """
-        cp {input.tax} {output.tax} && \
-        cp {input.fasta} {output.fasta}
+        cp {input} {output}
         """
+
+
+rule clean_unprocessed_DB_taxonomy:
+    conda:
+        "../../envs/pandas.yml"
+    container:
+        singularity_envs["pandas"]
+    input:
+        tax="{prefix}/master/original_tax.txt",
+    output:
+        tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+    params:
+        db_version=config["db_version"],
+    threads: 1
+    script:
+        "scripts/clean_tax.py"
 
 
 rule Hash_untreated_tax:
