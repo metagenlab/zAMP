@@ -29,21 +29,22 @@ if snakemake.params.db_version == "greengenes2":
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
 
-if snakemake.params.db_version == "silva138.1":
-    ## Replace spaces with underscores (some genera names have spaces)
-    df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
-
-    ## Replace taxa containing and Unkown or Incertae with NaN
-    df.replace(
-        to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
-    )
-
-    ## Replace endosymbionts by NaN
-    df.replace("endosymbionts", np.nan, inplace=True)
 
 lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
 lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
+
+if snakemake.params.db_version == "silva138.1":
+    ## Replace spaces with underscores (some genera names have spaces)
+    lintax_df.replace(to_replace=r" ", value="-", regex=True, inplace=True)
+
+    ## Replace taxa containing and Unkown or Incertae with NaN
+    lintax_df.replace(
+        to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
+    )
+
+    ## Replace endosymbionts by NaN
+    lintax_df.replace("endosymbionts", np.nan, inplace=True)
 
 
 if snakemake.params.db_version == "greengenes2":
@@ -79,6 +80,14 @@ for n, rank in enumerate(ranks):
         prop_tax_df[f"{rank}"] = lintax_df[f"{rank}"].combine_first(duplicated)
     else:
         prop_tax_df[f"{rank}"] = filled_df[f"{rank}"]
+
+if snakemake.params.db_version == "silva138.1":
+    ## Get classified species index
+    index = ~prop_tax_df["Species"].str.contains("_sp")
+    ## Add genus name in species for classified species
+    prop_tax_df.loc[index, "Species"] = (
+        prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
+    )
 
 prop_tax_df["taxpath"] = prop_tax_df[ranks].T.agg(";".join)
 df = df.join(prop_tax_df)
