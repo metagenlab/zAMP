@@ -23,7 +23,7 @@ def sorted_set(s):
     return sorted(set(s))
 
 
-def format_discrepant_tax(rank, tax, rank_lim=None, print_desc=True):
+def format_discrepant_tax(rank, tax, rank_lim=None):
     total_nb = len(tax)
     if rank_lim:
         try:
@@ -31,11 +31,12 @@ def format_discrepant_tax(rank, tax, rank_lim=None, print_desc=True):
             tax = list(tax)[0:nb_print]
         except KeyError:
             tax = list(tax)
-
-    if total_nb > 1:
-        return  "/".join(tax) + f"({total_nb})"
+        if total_nb > 1:
+            return  "/".join(tax) + f" ({total_nb})"
+        else:
+            return list(tax)[0]  
     else:
-        return list(tax)[0]
+        return "/".join(tax)
 
 
 def problematic_taxa(row):
@@ -206,7 +207,7 @@ for rank in ranks:
         lambda x: format_discrepant_tax(rank, x, ranks_lim)
     )
     multi_df.loc[:, f"all_{rank}"] = multi_df.loc[:, f"{rank}"].apply(
-        lambda x: format_discrepant_tax(rank, x, print_desc=False)
+        lambda x: format_discrepant_tax(rank, x)
     )
 
 
