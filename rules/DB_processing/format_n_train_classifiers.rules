@@ -90,6 +90,13 @@ rule Format_rdp_add_lineages:
         """
 
 
+from humanfriendly import parse_size
+
+
+def get_mem_mb(mem):
+    return int(parse_size(mem) / 10**6)
+
+
 rule Train_rdp_classifier:
     conda:
         "../../envs/rdp_classifier.yml"
@@ -101,12 +108,14 @@ rule Train_rdp_classifier:
     output:
         formatted_table="{prefix}/RDP/bergeyTrainingTree.xml",
         properties="{prefix}/RDP/rRNAClassifier.properties",
+    params:
+        mem=config["rdp_mem"],
     threads: 1
     resources:
-        mem_mb=30000,
+        mem_mb=get_mem_mb(config["rdp_mem"]),
     shell:
         """
-        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 train \
+        rdp_classifier -Xmx{params.mem} -XX:ConcGCThreads={threads} train \
         -o $(dirname {output[0]}) \
         -s {input[0]} \
         -t {input[1]} && \
