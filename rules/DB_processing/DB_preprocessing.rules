@@ -50,9 +50,9 @@ rule Dereplicate_amplicons:
 
 rule Derep_and_merge_taxonomy:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        "../../envs/pandas.yml"
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["pandas"]
     input:
         tax="{prefix}/master/original_tax.txt",
         uc="{prefix}/QIIME/DB_amp.uc",
@@ -63,11 +63,11 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
-        numbers_species=config["numbers_species"],
-        numbers_genus=config["numbers_genus"],
+        db_name=config["tax_DB_name"],
+        tax_collapse=config["tax_collapse"],
     threads: 1
     script:
-        "scripts/DB_tax_formatting.R"
+        "scripts/tax_formatting.py"
 
 
 rule Hash_derep_tax:
