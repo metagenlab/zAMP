@@ -9,6 +9,7 @@ from .utils import (
     snake_base,
     print_citation,
     common_options,
+    db_options,
     run_snakemake,
 )
 
@@ -30,6 +31,7 @@ def cli():
         help_option_names=["-h", "--help"], ignore_unknown_options=True
     ),
 )
+@db_options
 @common_options
 def db(**kwargs):
     """
