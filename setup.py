@@ -56,6 +56,7 @@ setup(
     install_requires=[
         "snakemake>=8.10.6",
         "Click>=8.1.7",
+        "attrmap>=0.0.7",
         "snaketool-utils>=0.0.5",
         "biopython>=1.83",
     ],
