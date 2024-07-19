@@ -1,0 +1,22 @@
+args:
+  ampcov:
+  classifier:
+  conda_prefix:
+  configfile: 
+  fasta: 
+  fw_primer: 
+  max_mismatch: 
+  maxlen: 
+  minlen: 
+  name: 
+  output: 
+  processing: 
+  rdp_mem: 
+  rv_primer: 
+  singularity_prefix:
+  snake_args: 
+  system_config: 
+  taxonomy: 
+  threads: 
+  use_conda: 
+  use_singularity: 
