@@ -160,16 +160,16 @@ def common_options(func):
         ),
         click.option(
             "--configfile",
-            default="zamp.config.yaml",
+            default="config.yaml",
             show_default=False,
             callback=default_to_output,
-            help="Custom config file [default: (outputDir)/zamp.config.yaml]",
+            help="Custom config file [default: (outputDir)/config.yaml]",
         ),
         click.option(
             "-t",
             "--threads",
             help="Number of threads to use",
-            default=15,
+            default=1,
             show_default=True,
         ),
         click.option(
@@ -199,9 +199,105 @@ def common_options(func):
             show_default=False,
             hidden=True,
         ),
+        click.option(
+            "--system-config",
+            default=snake_base(os.path.join("config", "config.yaml")),
+            hidden=True,
+        ),
         click.argument(
             "snake_args",
             nargs=-1,
+        ),
+    ]
+    for option in reversed(options):
+        func = option(func)
+    return func
+
+
+def db_options(func):
+    """
+    Command line args for database command
+    """
+    options = [
+        click.option(
+            "--fasta",
+            type=click.Path(readable=True),
+            help="Path to database fasta file",
+            required=True,
+        ),
+        click.option(
+            "--taxonomy",
+            type=click.Path(readable=True),
+            help="Path to tab seperated taxonomy file in QIIME format",
+            required=True,
+        ),
+        click.option(
+            "--name",
+            type=str,
+            help="Database name",
+            required=True,
+        ),
+        click.option(
+            "--processing/--no-processing",
+            default=True,
+            help="Extract amplicon regions and merge taxonomy",
+            show_default=True,
+        ),
+        click.option("--tax-collapse", type=dict, default={"Species": 6, "Genus": 5}),
+        click.option(
+            "--fw-primer",
+            type=str,
+            help="Forward primer sequence to extract amplicon",
+        ),
+        click.option(
+            "--rv-primer",
+            type=str,
+            help="Reverse primer sequence to extract amplicon",
+        ),
+        click.option(
+            "--minlen",
+            type=int,
+            help="Minimum amplicon length",
+            default=300,
+            show_default=True,
+        ),
+        click.option(
+            "--maxlen",
+            type=int,
+            help="Maximum amplicon length",
+            default=500,
+            show_default=True,
+        ),
+        click.option(
+            "--ampcov",
+            type=float,
+            help="Minimum amplicon coverage",
+            default=0.9,
+            show_default=True,
+        ),
+        click.option(
+            "--max-mismatch",
+            type=int,
+            help="Maximum number of accepted primer mismatches",
+            default=4,
+            show_default=True,
+        ),
+        click.option(
+            "--rdp-mem",
+            type=str,
+            help="Maximum RAM for RDP training",
+            default="30g",
+            show_default=True,
+        ),
+        click.option(
+            "--classifier",
+            multiple=True,
+            type=click.Choice(
+                ["rdp", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["rdp", "qiimerdp", "dada2rdp"],
+            help="Which classifiers to train on the database",
+            show_default=True,
         ),
     ]
     for option in reversed(options):
