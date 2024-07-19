@@ -31,9 +31,9 @@ def cli():
     ),
 )
 @common_options
-def preprocess(**kwargs):
+def db(**kwargs):
     """
-    Preprocess database for zAMP
+    Prepare database files for zAMP
     """
     merge_config = {"args": kwargs}
 
@@ -71,7 +71,7 @@ def citation(**kwargs):
     print_citation()
 
 
-cli.add_command(preprocess)
+cli.add_command(db)
 cli.add_command(run)
 cli.add_command(citation)
 
