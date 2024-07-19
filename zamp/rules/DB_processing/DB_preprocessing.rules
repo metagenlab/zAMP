@@ -12,17 +12,27 @@ rule Extract_amplicons_cutadapt:
     output:
         "{prefix}/QIIME/dna-sequences.fasta",
     params:
-        forward_primer=config["forward_primer"],
-        reverse_primer=config["reverse_primer"],
-        excepted_errors=config["excepted_errors"],
-        min_length=config["amplicon_min_length"],
-        max_length=config["amplicon_max_length"],
-        coverage=config["amplicon_min_coverage"],
+        errors=ERRORS,
+        adapter=ADAPTER,
+        coverage=COV,
+        minlen=MINLEN,
+        maxlen=MAXLEN,
     log:
         "{prefix}/logs/QIIME/DB_cutadapt.txt",
-    threads: 1
-    script:
-        "scripts/cutadapt_DB.py"
+    threads: 3
+    shell:
+        """
+        cutadapt \
+        --cores {threads} \
+        --error-rate {params.errors} \
+        --times 1 \
+        -o {output} \
+        -g "{params.adapter}" \
+        --discard-untrimmed \
+        --minimum-length {params.minlen} \
+        --maximum-length {params.maxlen} \
+        {input} > {log}
+        """
 
 
 rule Dereplicate_amplicons:
@@ -63,8 +73,8 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
-        db_name=config["tax_DB_name"],
-        tax_collapse=config["tax_collapse"],
+        db_name=DB_NAME,
+        tax_collapse=TAX_COLLAPSE,
     threads: 1
     script:
         "scripts/tax_formatting.py"
