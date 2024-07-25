@@ -4,7 +4,7 @@ import yaml
 import sys
 import subprocess
 import yaml
-
+import json
 
 from snaketool_utils.cli_utils import (
     msg,
@@ -14,6 +14,15 @@ from snaketool_utils.cli_utils import (
     echo_click,
     msg_box,
 )
+
+
+def validate_dict(ctx, param, value):
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        raise click.BadParameter(
+            "Input should be a valid JSON string representing a dictionary."
+        )
 
 
 def snake_base(rel_path):
@@ -200,6 +209,17 @@ def common_options(func):
             hidden=True,
         ),
         click.option(
+            "--snake-default",
+            multiple=True,
+            default=[
+                "--printshellcmds",
+                "--nolock",
+                "--show-failed-logs",
+            ],
+            help="Customise Snakemake runtime args",
+            show_default=True,
+        ),
+        click.option(
             "--system-config",
             default=snake_base(os.path.join("config", "config.yaml")),
             hidden=True,
@@ -243,7 +263,13 @@ def db_options(func):
             help="Extract amplicon regions and merge taxonomy",
             show_default=True,
         ),
-        click.option("--tax-collapse", type=dict, default={"Species": 6, "Genus": 5}),
+        click.option(
+            "--tax-collapse",
+            help="Dictionary of number of ranks to print limit when collapsing names ",
+            default='{"Species": 5, "Genus": 6}',
+            callback=validate_dict,
+            show_default=True,
+        ),
         click.option(
             "--fw-primer",
             type=str,
