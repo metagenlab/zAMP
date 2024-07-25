@@ -19,6 +19,10 @@ df = pd.read_csv(snakemake.input[0], sep="\t")
 df.columns = ["seq_id", "tax"]
 
 ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+# Make plaheloder name dict
+placeholder = {}
+for rank in ranks:
+    placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
 
 if snakemake.params.db_name == "unite10":
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
@@ -65,13 +69,9 @@ prop_tax_df = pd.DataFrame()
 for n, rank in enumerate(ranks):
     if rank != ranks[0]:
         prev = ranks[n - 1]
-        if rank == "Species":
-            placeholder = rank[0:2].lower()
-        else:
-            placeholder = rank[0].lower()
         duplicated = (
             filled_df[filled_df[f"{prev}"] == filled_df[f"{rank}"]][f"{rank}"]
-            + f"_{placeholder}"
+            + f"{placeholder[rank]}"
         )
         prop_tax_df[f"{rank}"] = lintax_df[f"{rank}"].combine_first(duplicated)
     else:
@@ -79,13 +79,14 @@ for n, rank in enumerate(ranks):
 
 if snakemake.params.db_name == "silva138.1":
     ## Get classified species index
-    index = ~prop_tax_df["Species"].str.contains("_sp")
+    index = ~prop_tax_df["Species"].str.contains(placeholder["Species"])
     ## Add genus name in species for classified species
     prop_tax_df.loc[index, "Species"] = (
         prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
     )
 
 prop_tax_df["taxpath"] = prop_tax_df[ranks].T.agg(";".join)
+prop_tax_df.taxpath = prop_tax_df.taxpath.str.replace("_placeholder", "")
 df = df.join(prop_tax_df)
 df[["seq_id", "taxpath"]].to_csv(
     snakemake.output[0], sep="\t", index=False, header=False
