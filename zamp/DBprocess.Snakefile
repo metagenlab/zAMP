@@ -44,7 +44,6 @@ RDP_MEM = config.args.rdp_mem
 PROCESS = config.args.processing
 TAX_COLLAPSE = dict(config.args.tax_collapse)
 
-
 ## Cutadapt args
 ERRORS = config.args.max_mismatch
 FW_PRIMER = config.args.fw_primer

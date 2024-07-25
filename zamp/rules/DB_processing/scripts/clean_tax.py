@@ -29,7 +29,6 @@ if snakemake.params.db_name == "greengenes2":
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
 
-
 lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
 lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
