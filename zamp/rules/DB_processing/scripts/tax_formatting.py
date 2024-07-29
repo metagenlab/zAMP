@@ -23,24 +23,44 @@ def sorted_set(s):
     return sorted(set(s))
 
 
+def collapse_species(taxa):
+    counts = {}
+    # Iterate through each taxon in the list
+    for taxon in taxa:
+        # Split the taxon to get the first word
+        first_word = taxon.split(" ")[0]
+        if "_placeholder_s" in first_word:
+            first_word = first_word.split("_placeholder_s")[0]
+        # Increment the count for this first word
+        if first_word in counts:
+            counts[first_word] += 1
+        else:
+            counts[first_word] = 1
+    # Create the output string
+    return "/".join([f"{key}_s({value})" for key, value in counts.items()])
+
+
 def format_discrepant_tax(rank, tax, rank_lim=None):
     total_nb = len(tax)
     if rank_lim:
-        try:
-            nb_print = rank_lim[f"{rank}"]
-            tax = list(tax)[0:nb_print]
-        except KeyError:
-            tax = list(tax)
-        if total_nb > 1:
-            return  "/".join(tax) + f" ({total_nb})"
+        if rank == "Species" and total_nb >= rank_lim["Species"]:
+            return collapse_species(tax)
         else:
-            return list(tax)[0]  
+            try:
+                nb_print = rank_lim[f"{rank}"]
+                tax = list(tax)[0:nb_print]
+            except KeyError:
+                tax = list(tax)
+            if total_nb > 1:
+                return  "/".join(tax) + f" ({total_nb})"
+            else:
+                return list(tax)[0]  
     else:
         return "/".join(tax)
 
 
 def problematic_taxa(row):
-    return any("/" in str(cell) for cell in row)
+    return any("/" in str(cell) or "_s(" in str(cell) for cell in row)
 
 
 # Ranks list
@@ -120,10 +140,7 @@ filled_df = propagate_nan(lintax_df).ffill(axis=1)
 # Make plaheloder name dict
 placeholder = {}
 for rank in ranks:
-    if rank == "Species":
-        placeholder[f"{rank}"] = "_placeholder_" + rank[0:2].lower()
-    else:
-        placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
+    placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
 
 ## Check repeated values and append them with first letter rank suffix
 prop_tax_df = pd.DataFrame()
@@ -229,7 +246,7 @@ multi_formatted_df = multi_df[
 multi_formatted_df.columns = cols
 collapsed_df = pd.concat([single_df[cols], multi_formatted_df])
 collapsed_df["taxpath"] = collapsed_df[ranks].T.agg(";".join)
-collapsed_df["taxpath"] = collapsed_df["taxpath"].str.replace("_placeholder", "")
+collapsed_df = collapsed_df.replace("_placeholder","", regex=True)
 
 # Df with uncollapsed taxonomy
 
@@ -240,7 +257,7 @@ multi_all_df = multi_df[
 multi_all_df.columns = cols
 all_df = pd.concat([single_df[cols], multi_all_df])
 all_df["taxpath"] = all_df[ranks].T.agg(";".join)
-all_df["taxpath"] = all_df["taxpath"].str.replace("_placeholder", "")
+all_df = all_df.replace("_placeholder", "", regex=True)
 ## Flag discrepant taxa as problematic
 all_df.loc[:, "problematic_taxa"] = all_df.apply(problematic_taxa, axis=1)
 
