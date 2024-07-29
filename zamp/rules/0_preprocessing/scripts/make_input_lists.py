@@ -44,13 +44,13 @@ if "link_directory" in config.keys():
 else:
     link_directory = "links/"
 
-## Check that "tax_DB_path" ends with "/". Otherwise, correct.
-if not config["tax_DB_path"].endswith("/"):
-    config["tax_DB_path"] = config["tax_DB_path"] + "/"
+# ## Check that "tax_DB_path" ends with "/". Otherwise, correct.
+# if not DBPATH.endswith("/"):
+#     DBPATH = DBPATH + "/"
 
-## Check for the existence/accessbility of tax_DB_path
-if os.path.isdir(config["tax_DB_path"]) is False:
-    raise IOError("Cannot access to '{}' variable.".format("tax_DB_path"))
+# ## Check for the existence/accessbility of tax_DB_path
+# if os.path.isdir(DBPATH) is False:
+#     raise IOError("Cannot access to '{}' variable.".format("tax_DB_path"))
 
 
 ## Check for the presence of a metadata table in in config, either for local reads ("local_samples") or distant reads ("sra_samples")

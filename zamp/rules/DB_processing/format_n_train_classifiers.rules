@@ -109,10 +109,10 @@ rule Train_rdp_classifier:
         formatted_table="{prefix}/RDP/bergeyTrainingTree.xml",
         properties="{prefix}/RDP/rRNAClassifier.properties",
     params:
-        mem=config["rdp_mem"],
+        mem=RDP_MEM,
     threads: 1
     resources:
-        mem_mb=get_mem_mb(config["rdp_mem"]),
+        mem_mb=get_mem_mb(RDP_MEM),
     shell:
         """
         rdp_classifier -Xmx{params.mem} -XX:ConcGCThreads={threads} train \
