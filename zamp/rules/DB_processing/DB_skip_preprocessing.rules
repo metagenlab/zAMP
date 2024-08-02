@@ -16,7 +16,7 @@ rule copy_fasta:
 
 rule clean_unprocessed_DB_taxonomy:
     conda:
-        "../../envs/pandas.yml"
+        os.path.join(dir.envs, "pandas.yml")
     container:
         singularity_envs["pandas"]
     input:
