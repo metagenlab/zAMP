@@ -2,16 +2,126 @@ import re
 import yaml
 import os
 from snakemake.utils import min_version
+from attrmap import AttrMap
+import attrmap.utils as au
+import pandas as pd
+import glob
+from metasnek import fastq_finder
+import warnings
 
 min_version("8.10.6")
 
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+)
+
+
+# Concatenate Snakemake's own log file with the master log file
+def copy_log_file():
+    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
+    if not files:
+        return None
+    current_log = max(files, key=os.path.getmtime)
+    shell("cat " + current_log + " >> " + LOG)
+
+
+onsuccess:
+    copy_log_file()
+
+
+onerror:
+    copy_log_file()
+
+
+# config file
+configfile: os.path.join(workflow.basedir, "config", "config.yaml")
+
+
+config = AttrMap(config)
+config = au.convert_state(config, read_only=True)
+
+
+include: os.path.join("rules", "0_preprocessing", "directories.smk")
+include: os.path.join("rules", "0_preprocessing", "functions.smk")
+
+
+OUTPUT = config.args.output
+LOG = os.path.join(OUTPUT, "zamp.log")
+
+
+# Read run args
+## Inputs args
+INPUT = config.args.input
+METADATA = config.args.metadata
+if os.path.isdir(INPUT) and METADATA:
+
+    reads_df = (
+        pd.DataFrame.from_dict(fastq_finder.parse_samples_to_dictionary(INPUT))
+        .T.reset_index()
+        .rename(columns={"index": "fastq"})
+    )
+    meta_df = pd.read_csv(METADATA, sep="\t")
+    SAMPLES = reads_df.merge(meta_df, on="fastq")
+    SAMPLES.set_index("sample", inplace=True)
+elif os.path.isfile(INPUT) and not METADATA:
+    SAMPLES = pd.read_csv(INPUT, sep="\t", index_col="sample")
+
+
+# Add read pairing
+SAMPLES["paired"] = [True if R2 else False for R2 in SAMPLES.R2]
+PAIRING = {
+    sample: ("paired" if SAMPLES.loc[sample, "paired"] else "single")
+    for sample in SAMPLES.index
+}
+## Denoiser
+DENOISER = config.args.denoiser
+## Primers args
+TRIM = config.args.trim
+AMPLICON = config.args.amplicon
+OVERLAP = config.args.min_overlap
+FW_PRIMER = config.args.fw_primer
+RV_PRIMER = config.args.rv_primer
+
+## Merged sequences args
+MINLEN = config.args.minlen
+MAXLEN = config.args.maxlen
+
+## Denoising args
+FW_TRIM = config.args.fw_trim
+RV_TRIM = config.args.rv_trim
+FW_ERRORS = config.args.fw_errors
+RV_ERRORS = config.args.rv_errors
+
+## Database args
+DBPATH = os.path.dirname(os.path.abspath(config.args.database))
+DBNAME = os.listdir(DBPATH)
+
+## Classifier
+CLASSIFIER = config.args.classifier
+
+
+## Post-processing args
+RAREFACTION = config.args.rarefaction.split(",")
+MIN_PREV = config.args.min_prev
+MIN_COUNT = config.args.min_count
+NORM = config.args.normalization.split(",")
+REPL_EMPTY = config.args.replace_empty
+KEEP_RANK = config.args.keep_rank
+KEEP_TAXA = config.args.keep_taxa.split(",")
+EXCL_RANK = config.args.exclude_rank.split(",")
+EXCL_TAXA = config.args.exclude_taxa.split(",")
+
+## Special out args
+MELTED = config.args.melted
+PHYSEQ_RANK = config.args.physeq_rank.split(",")
+TRANSPOSED = config.args.transposed
+QIIME_VIZ = config.args.qiime_viz
 
 ## When using singularity
 if "--use-singularity" in sys.argv:
-    ### Bind the directory of the database to the singularity containers.
-    workflow.deployment_settings.apptainer_args += (
-        f' -B {config["tax_DB_path"]}:{config["tax_DB_path"]}'
-    )
+    ### Mount Database path to singularity containers.
+    workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
     #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
     open(os.path.join(workflow.basedir, "envs/singularity/sing_envs.yml"), "r")
@@ -20,22 +130,20 @@ singularity_envs = yaml.safe_load(
 
 ## Include the pipeline rules
 ### Sets of script to handle logs, input files and list of output:
-include: "rules/0_preprocessing/scripts/logging.py"
-include: "rules/0_preprocessing/scripts/make_input_lists.py"
-include: "rules/0_preprocessing/scripts/make_output_lists.py"
+include: os.path.join("rules", "0_preprocessing", "scripts", "make_output_lists.py")
 ### Snakemake rules to do the job:
-include: "rules/0_preprocessing/get_inputs.rules"
-include: "rules/0_preprocessing/QC_raw_reads.rules"
-include: "rules/1_2_DADA2_ASVs/1_cutadapt_trim.rules"
-include: "rules/1_2_DADA2_ASVs/2_DADA2_denoising.rules"
-include: "rules/1_2_vsearch_OTUs/1_PANDAseq_trim_filter_merge.rules"
-include: "rules/1_2_vsearch_OTUs/2_vsearch_denoising.rules"
-include: "rules/3_tax_assignment/tax_assign.rules"
-include: "rules/4_post_processing/physeq_processing.rules"
-include: "rules/4_post_processing/TreeShrink.rules"
-include: "rules/5_visualization/General_plotting.rules"
-include: "rules/5_visualization/QIIME2_import.rules"
-include: "rules/PICRUSt2/picrust.rules"
+include: os.path.join("rules", "0_preprocessing", "get_inputs.rules")
+include: os.path.join("rules", "0_preprocessing", "QC_raw_reads.rules")
+include: os.path.join("rules", "1_2_DADA2_ASVs", "1_cutadapt_trim.rules")
+include: os.path.join("rules", "1_2_DADA2_ASVs", "2_DADA2_denoising.rules")
+include: os.path.join("rules", "1_2_vsearch_OTUs", "1_PANDAseq_trim_filter_merge.rules")
+include: os.path.join("rules", "1_2_vsearch_OTUs", "2_vsearch_denoising.rules")
+include: os.path.join("rules", "3_tax_assignment", "tax_assign.rules")
+include: os.path.join("rules", "4_post_processing", "physeq_processing.rules")
+include: os.path.join("rules", "4_post_processing", "TreeShrink.rules")
+include: os.path.join("rules", "5_visualization", "General_plotting.rules")
+include: os.path.join("rules", "5_visualization", "QIIME2_import.rules")
+include: os.path.join("rules", "PICRUSt2", "picrust.rules")
 
 
 report: "workflow.rst"
