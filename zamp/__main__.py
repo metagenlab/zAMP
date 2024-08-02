@@ -10,6 +10,7 @@ from .utils import (
     print_citation,
     common_options,
     db_options,
+    run_options,
     run_snakemake,
 )
 
@@ -52,6 +53,7 @@ def db(**kwargs):
         help_option_names=["-h", "--help"], ignore_unknown_options=True
     ),
 )
+@run_options
 @common_options
 def run(**kwargs):
     """
