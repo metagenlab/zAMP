@@ -30,21 +30,22 @@
 
 ## Create a table with the number of raw reads and filtered reads
 ### Raw reads
-    multi_QC_report <- multi_QC_report %>% filter(grepl("R1", Sample)) %>% select(c("Sample","FastQC_mqc.generalstats.fastqc.total_sequences")) # keep only the total of raw sequences. Since it is already twice (R1, R2), keep only R1.
-    multi_QC_report$Sample <- gsub(x=multi_QC_report$Sample, pattern = "_R1", replacement = "") # Remove the "_R1" in label
+    setnames(multi_QC_report, "Sample", "sample")
+    multi_QC_report <- multi_QC_report %>% filter(grepl("R1", sample)) %>% select(c("sample","FastQC_mqc.generalstats.fastqc.total_sequences")) # keep only the total of raw sequences. Since it is already twice (R1, R2), keep only R1.
+    multi_QC_report$sample <- gsub(x=multi_QC_report$sample, pattern = "_R1", replacement = "") # Remove the "_R1" in label
 
 ### Filtered reads
     filtered_reads_counts_df <- data.table(as(sample_data(read_filtering_physeq), "data.frame"), TotalReads_processing = sample_sums(read_filtering_physeq), keep.rownames = TRUE)
-    setnames(filtered_reads_counts_df, "rn", "Sample") # Rename the first column of this news dataframe -> Sample
+    setnames(filtered_reads_counts_df, "rn", "sample") # Rename the first column of this news dataframe -> sample
 
 ### Taxonomically filtered reads
     tax_filtered_reads_counts_df <- data.table(as(sample_data(tax_filtering_physeq), "data.frame"), TotalReads_taxonomy = sample_sums(tax_filtering_physeq), keep.rownames = TRUE)
-    setnames(tax_filtered_reads_counts_df, "rn", "Sample") # Rename the first column of this news dataframe -> Sample
-    tax_filtered_reads_counts_df <- select(tax_filtered_reads_counts_df, c("TotalReads_taxonomy","Sample"))
+    setnames(tax_filtered_reads_counts_df, "rn", "sample") # Rename the first column of this news dataframe -> sample
+    tax_filtered_reads_counts_df <- select(tax_filtered_reads_counts_df, c("TotalReads_taxonomy","sample"))
 
 ### Join the columns of interest
-    merged_columns <- merge(filtered_reads_counts_df, multi_QC_report, by=c("Sample"))
-    merged_columns <- merge(merged_columns, tax_filtered_reads_counts_df, by = c("Sample"))
+    merged_columns <- merge(filtered_reads_counts_df, multi_QC_report, by=c("sample"))
+    merged_columns <- merge(merged_columns, tax_filtered_reads_counts_df, by = c("sample"))
 
 ### Calculate the differences
     merged_columns$reads_processing <- merged_columns$FastQC_mqc.generalstats.fastqc.total_sequences - merged_columns$TotalReads_processing

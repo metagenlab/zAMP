@@ -19,7 +19,7 @@
     output_folder <- (dirname(output_folder)[1])
 
 ## Parameters
-    sample_label <- snakemake@params[["sample_label"]]
+    sample_label <- snakemake@params[["sample"]]
     grouping_column <- snakemake@params[["grouping_column"]]
     grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 

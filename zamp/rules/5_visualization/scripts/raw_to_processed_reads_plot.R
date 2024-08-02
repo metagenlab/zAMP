@@ -22,7 +22,7 @@
     reads_plot_with_filtered <- snakemake@output[["reads_plot_with_filtered"]]
 
 ## Parameters
-    x_axis_column <- snakemake@params[["sample_label"]]
+    x_axis_column <- snakemake@params[["sample"]]
 
 ## Load needed libaries
     library("phyloseq");packageVersion("phyloseq")
@@ -31,11 +31,8 @@
     library("ggplot2");packageVersion("ggplot2")
     library("RColorBrewer"); packageVersion("RColorBrewer")
 
-
 ## Set theme
 theme_set(theme_bw())
-
-
     ### Record data on the distribution of number of reads (useful later to scale plots axis)
         smin <- min(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
         print(smin)
@@ -43,7 +40,6 @@ theme_set(theme_bw())
         print(smean)
         smax <- max(multi_QC_report$FastQC_mqc.generalstats.fastqc.total_sequences)
         print(smax)
-
     ### Order the x axis as in the metadata_table
         raw_to_filtered_reads_stats[[x_axis_column]] = factor(raw_to_filtered_reads_stats[[x_axis_column]], levels = unique(metadata[[x_axis_column]]), ordered = TRUE)
         #raw_to_filtered_reads_stats[[grouping_column]] = factor(raw_to_filtered_reads_stats[[grouping_column]], levels = unique(metadata[[grouping_column]]), ordered = TRUE)

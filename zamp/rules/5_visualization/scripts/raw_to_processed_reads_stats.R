@@ -29,15 +29,16 @@
 ## Create a table with the number of raw reads and filtered reads
 ### Filtered reads
     reads_counts_df <- data.table(as(sample_data(phyloseq_obj), "data.frame"), TotalReads = sample_sums(phyloseq_obj), keep.rownames = TRUE)
-    setnames(reads_counts_df, "rn", "Sample") # Rename the first column of this news dataframe -> Sample
+    setnames(reads_counts_df, "rn", "sample") # Rename the first column of this news dataframe -> sample
 
 ### Raw reads
-    multi_QC_report <- multi_QC_report %>% filter(grepl("R1|single", Sample)) %>% select(c("Sample","FastQC_mqc.generalstats.fastqc.total_sequences")) # keep only the total of raw sequences. Since it is already twice (R1, R2), keep only R1.
-    multi_QC_report$Sample <- gsub(x=multi_QC_report$Sample, pattern = "_R1", replacement = "") # Remove the "_R1"
+    setnames(multi_QC_report, "Sample", "sample") # rename multiQC Sample column to sample 
+    multi_QC_report <- multi_QC_report %>% filter(grepl("R1|single", sample)) %>% select(c("sample","FastQC_mqc.generalstats.fastqc.total_sequences")) # keep only the total of raw sequences. Since it is already twice (R1, R2), keep only R1.
+    multi_QC_report$sample <- gsub(x=multi_QC_report$sample, pattern = "_R1", replacement = "") # Remove the "_R1"
     #or
-    multi_QC_report$Sample <- gsub(x=multi_QC_report$Sample, pattern = "_single", replacement = "") # Remove the "_single"
+    multi_QC_report$sample <- gsub(x=multi_QC_report$sample, pattern = "_single", replacement = "") # Remove the "_single"
 ### Raw reads Join the two dataframes, the one with the filtered reads from phyloseq and the one with the raw reads.
-    reads_counts_df_with_raw <- merge(multi_QC_report, reads_counts_df, by=c("Sample"))
+    reads_counts_df_with_raw <- merge(multi_QC_report, reads_counts_df, by=c("sample"))
 
 ### Raw reads Calculate the difference of reads between the raw and the filtered reads.
     reads_counts_df_with_raw <- mutate(reads_counts_df_with_raw, filtered = FastQC_mqc.generalstats.fastqc.total_sequences - TotalReads)

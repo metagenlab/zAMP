@@ -93,7 +93,7 @@ taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 ## Import as physeq object where needed
 OTU <- otu_table(count_table, taxa_are_rows = TRUE)
 TAX <- taxonomy_table %>% column_to_rownames("Feature.ID") %>% as.matrix() %>% tax_table()
-META <- metadata %>% as.data.frame() %>% column_to_rownames("Sample") %>% sample_data()
+META <- metadata %>% as.data.frame() %>% column_to_rownames("sample") %>% sample_data()
 
 
 ## Merge all in a phyloseq object
