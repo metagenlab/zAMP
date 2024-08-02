@@ -217,7 +217,6 @@ def common_options(func):
                 "--show-failed-logs",
             ],
             help="Customise Snakemake runtime args",
-            show_default=True,
         ),
         click.option(
             "--system-config",
@@ -323,6 +322,218 @@ def db_options(func):
             ),
             default=["rdp", "qiimerdp", "dada2rdp"],
             help="Which classifiers to train on the database",
+            show_default=True,
+        ),
+    ]
+    for option in reversed(options):
+        func = option(func)
+    return func
+
+
+def run_options(func):
+    """
+    Command line args for running zAMP
+    """
+    options = [
+        click.option(
+            "--input",
+            "-i",
+            type=click.Path(exists=True, file_okay=True, dir_okay=True, readable=True),
+            help="Input file/directory for fastq path",
+            required=True,
+        ),
+        click.option(
+            "--metadata",
+            "-m",
+            type=click.Path(exists=True, file_okay=True, readable=True),
+            help="Path to tab seperated metadata file",
+        ),
+        click.option(
+            "--database",
+            "-db",
+            type=click.Path(exists=True, dir_okay=True, readable=True),
+            help="Path to Database directory",
+            required=True,
+        ),
+        click.option(
+            "--denoiser",
+            multiple=True,
+            type=click.Choice(["DADA2", "vsearch"], case_sensitive=False),
+            default=["DADA2"],
+            help="Choose dada2 or vsearch for denoising reads",
+            show_default=True,
+        ),
+        click.option(
+            "--classifier",
+            multiple=True,
+            type=click.Choice(
+                ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["RDP"],
+            help="Which classifiers to train on the database",
+            show_default=True,
+        ),
+        click.option(
+            "--trim/--no-trim",
+            default=True,
+            help="Trim primers or not",
+            show_default=True,
+        ),
+        click.option(
+            "--amplicon",
+            type=click.Choice(["16S", "ITS"]),
+            default="16S",
+            help="Choose 16S or ITS for primer trimming",
+            show_default=True,
+        ),
+        click.option(
+            "--min-overlap",
+            default=10,
+            help="Minimum R1 and R2 overlap for reads merging",
+            show_default=True,
+        ),
+        click.option(
+            "--fw-primer",
+            type=str,
+            help="Forward primer sequence to extract amplicon from reads",
+            required=True,
+        ),
+        click.option(
+            "--rv-primer",
+            type=str,
+            help="Reverse primer sequence to extract amplicon from reads",
+            required=True,
+        ),
+        click.option(
+            "--minlen",
+            default=390,
+            type=int,
+            help="Minimum read length for merged reads",
+            show_default=True,
+        ),
+        click.option(
+            "--maxlen",
+            default=480,
+            type=int,
+            help="Maximum read length for merged reads",
+            show_default=True,
+        ),
+        click.option(
+            "--fw-trim",
+            default=280,
+            type=int,
+            help="Minimum read length to trim low quality ends of R1 for DADA2 denoising",
+            show_default=True,
+        ),
+        click.option(
+            "--rv-trim",
+            default=255,
+            type=int,
+            help="Minimum read length to trim low quality ends of R2 for DADA2 denoising",
+            show_default=True,
+        ),
+        click.option(
+            "--fw-errors",
+            default=10,
+            type=int,
+            help="Maximum expected errors in R1 for DADA2 denoising",
+            show_default=True,
+        ),
+        click.option(
+            "--rv-errors",
+            default=10,
+            type=int,
+            help="Maximum expected errors in R2 for DADA2 denoising",
+            show_default=True,
+        ),
+        click.option(
+            "--rarefaction",
+            type=str,
+            default="50000",
+            help="Comma seperated list of number of reads for rarefaction",
+            show_default=True,
+        ),
+        click.option(
+            "--min-prev",
+            default=0,
+            type=float,
+            help="Proporition (in %) of samples in which the feature has to be found to be kept",
+            show_default=True,
+        ),
+        click.option(
+            "--min-count",
+            default=0,
+            type=int,
+            help="Minimal reads to be kept",
+            show_default=True,
+        ),
+        click.option(
+            "--normalization",
+            type=str,
+            default="NONE",
+            help="Comma seperated list of values for counts normalization",
+            show_default=True,
+        ),
+        click.option(
+            "--replace-empty/--no-replace-empty",
+            default=False,
+            help="Replace empty taxa by placeholders",
+            show_default=True,
+        ),
+        click.option(
+            "--keep-rank",
+            type=click.Choice(
+                ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+            ),
+            default=["Kingdom"],
+            multiple=True,
+            help="Rank to keep taxon",
+            show_default=True,
+        ),
+        click.option(
+            "--keep-taxa",
+            type=str,
+            default="Bacteria",
+            help="Comma seperated list of taxa to keep",
+            show_default=True,
+        ),
+        click.option(
+            "--exclude-rank",
+            type=str,
+            default="Phylum",
+            help="Comma seperated list of ranks to exclude",
+            show_default=True,
+        ),
+        click.option(
+            "--exclude-taxa",
+            type=str,
+            default="Bacteria_phy",
+            help="Comma seperated list of taxa to exclude",
+            show_default=True,
+        ),
+        click.option(
+            "--melted/--no-melted",
+            default=False,
+            help="Generate melted phyloseq table",
+            show_default=True,
+        ),
+        click.option(
+            "--physeq-rank",
+            type=str,
+            help="Comma seperated list of ranks to collapse on in phyloseq output",
+            default="OTU",
+            show_default=True,
+        ),
+        click.option(
+            "--transposed/--no-transposed",
+            default=False,
+            help="Transposed count table",
+            show_default=True,
+        ),
+        click.option(
+            "--qiime-viz",
+            default=True,
+            help="Output QIIME visualisation",
             show_default=True,
         ),
     ]
