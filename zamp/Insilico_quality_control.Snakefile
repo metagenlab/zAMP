@@ -25,5 +25,5 @@ rule check_amplicon_quality:
     input:
         expand(
             "QualityControl/{denoiser}/compare_quality_table.tsv",
-            denoiser=config["denoiser"],
+            denoiser=DENOISER,
         ),

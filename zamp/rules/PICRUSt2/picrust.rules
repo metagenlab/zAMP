@@ -3,7 +3,7 @@
 
 rule picrust2_custom_tree:
     conda:
-        "../../envs/picrust2.yml"
+        os.path.join(dir.envs, "picrust2.yml")
     container:
         singularity_envs["picrust2"]
     input:
@@ -14,7 +14,8 @@ rule picrust2_custom_tree:
             "{denoiser}/6_picrust2/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/"
         ),
     log:
-        logging_folder
+        dir.logs
+        + "/"
         + "{denoiser}/5_visualization/{classifier}_{tax_DB}/{filtering_or_not}/{raref_or_not}/picrust/picrust.txt",
     threads: 4
     shell:

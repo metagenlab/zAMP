@@ -4,7 +4,7 @@
 
 rule Extract_amplicons_cutadapt:
     conda:
-        "../../envs/cutadapt.yml"
+        os.path.join(dir.envs, "cutadapt.yml")
     container:
         singularity_envs["cutadapt"]
     input:
@@ -37,7 +37,7 @@ rule Extract_amplicons_cutadapt:
 
 rule Dereplicate_amplicons:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
@@ -60,7 +60,7 @@ rule Dereplicate_amplicons:
 
 rule Derep_and_merge_taxonomy:
     conda:
-        "../../envs/pandas.yml"
+        os.path.join(dir.envs, "pandas.yml")
     container:
         singularity_envs["pandas"]
     input:

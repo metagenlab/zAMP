@@ -20,15 +20,14 @@ rule Import_ReferenceSequences:
 
 
 def get_DADA2_samples_path(sample):
-    RUN = all_samples.at[sample, config["run_column"]]
-    sample_layout = layout[sample]
+    run = SAMPLES.at[sample, "run"]
     path = (
         "DADA2/2_denoised/"
-        + RUN
+        + run
         + "/"
         + sample
         + "_"
-        + sample_layout
+        + PAIRING[sample]
         + "_infer_seq_tab.rds"
     )
     return path
@@ -37,7 +36,7 @@ def get_DADA2_samples_path(sample):
 ### Take the squences after denoising
 rule export_DADA2_QuerySequences:
     conda:
-        "../../envs/DADA2_in_R.yml"
+        os.path.join(dir.envs, "DADA2_in_R.yml")
     container:
         singularity_envs["dada2"]
     input:
@@ -49,10 +48,10 @@ rule export_DADA2_QuerySequences:
         count_table="QualityControl/DADA2/{sample}/count_table.tsv",
         length_histo="QualityControl/DADA2/{sample}/merged_reads_length.png",
     params:
-        merged_min_length=config["merged_min_length"],
-        merged_max_length=config["merged_max_length"],
+        merged_min_length=MINLEN,
+        merged_max_length=MAXLEN,
     log:
-        logging_folder + "QualityControl/DADA2/{sample}/dna-sequences.log",
+        dir.logs + "/" + "QualityControl/DADA2/{sample}/dna-sequences.log",
     script:
         "scripts/extract_DADA2_sequences.R"
 
@@ -60,7 +59,7 @@ rule export_DADA2_QuerySequences:
 ### Count the number of occurences of the representative sequences in the samples. I takes the sequences before clustering, i.e. their "raw sequence"
 rule vsearch_count_occurences_for_QC:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -68,7 +67,7 @@ rule vsearch_count_occurences_for_QC:
     output:
         count_table="QualityControl/vsearch/{sample}/count_table.tsv",
     log:
-        logging_folder + "QualityControl/vsearch/{sample}/count_table.log",
+        dir.logs + "/" + "QualityControl/vsearch/{sample}/count_table.log",
     script:
         "scripts/extract_vsearch_counts.R"
 
@@ -201,14 +200,14 @@ rule Export_quality_Control_raw:
          """
 
 
-def get_RUN(sample):
-    RUN = all_samples.at[sample, config["run_column"]]
-    return RUN
+def get_run(sample):
+    run = SAMPLES.at[sample, "run"]
+    return run
 
 
 rule mismatch_table_per_sample:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -218,18 +217,18 @@ rule mismatch_table_per_sample:
         merged_mismatch_table_path="QualityControl/{denoiser}/export_{sample}/with_counts.tsv",
         missmatch_plot_path="QualityControl/{denoiser}/export_{sample}/with_counts_plot.png",
     params:
-        RUN=lambda wildcards: get_RUN(wildcards.sample),
+        run=lambda wildcards: get_run(wildcards.sample),
     log:
-        logging_folder + "QualityControl/{denoiser}/export_{sample}/with_counts.log",
+        dir.logs + "/" + "QualityControl/{denoiser}/export_{sample}/with_counts.log",
     threads: 1
     script:
         "scripts/abundance_to_mismatches.R"
 
 
-def select_samples(RUN):
-    selected_samples = all_samples.index.values[
-        (all_samples[config["select_column"]] == config["select_value"])
-        & (all_samples[config["run_column"]] == RUN)
+def select_samples(run):
+    selected_samples = SAMPLES.index.values[
+        (SAMPLES[config["select_column"]] == config["select_value"])
+        & (SAMPLES["run"] == run)
     ]
     selected_paths = expand(
         "QualityControl/{{denoiser}}/export_{sample}/with_counts.tsv",
@@ -241,16 +240,16 @@ def select_samples(RUN):
 
 rule Compare_mismatch_per_run:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
-        mismatch_tables_path=lambda wildcards: select_samples(wildcards.RUN),
+        mismatch_tables_path=lambda wildcards: select_samples(wildcards.run),
     output:
-        missmatch_plot="QualityControl/{denoiser}/{RUN}_compare_quality.png",
-        merged_mismatch_table="QualityControl/{denoiser}/{RUN}_compare_quality_table.tsv",
+        missmatch_plot="QualityControl/{denoiser}/{run}_compare_quality.png",
+        merged_mismatch_table="QualityControl/{denoiser}/{run}_compare_quality_table.tsv",
     log:
-        logging_folder + "QualityControl/{denoiser}/{RUN}_compare_quality_table.log",
+        dir.logs + "/" + "QualityControl/{denoiser}/{run}_compare_quality_table.log",
     threads: 1
     script:
         "scripts/compare_mismatches.R"
@@ -258,19 +257,19 @@ rule Compare_mismatch_per_run:
 
 rule Compare_mismatch_all:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
         mismatch_tables_path=expand(
-            "QualityControl/{{denoiser}}/{RUN}_compare_quality_table.tsv",
-            RUN=set(all_samples[config["run_column"]]),
+            "QualityControl/{{denoiser}}/{run}_compare_quality_table.tsv",
+            run=set(SAMPLES["run"]),
         ),
     output:
         missmatch_plot="QualityControl/{denoiser}/compare_quality.pdf",
         merged_mismatch_table="QualityControl/{denoiser}/compare_quality_table.tsv",
     log:
-        logging_folder + "QualityControl/{denoiser}/compare_quality.log",
+        dir.logs + "/" + "QualityControl/{denoiser}/compare_quality.log",
     threads: 1
     script:
         "scripts/compare_all_mismatches.R"

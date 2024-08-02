@@ -1,5 +1,5 @@
 # Title     : DADA2 - Merge samples
-# Objective : Merge samples from the same RUN
+# Objective : Merge samples from the same run
 # Created by: valentinscherz
 # Created on: 06.06.19
 # Modified from :https://benjjneb.github.io/dada2/bigdata_paired.html

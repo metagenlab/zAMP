@@ -5,9 +5,7 @@ import os
 ## When using singularity
 if "--use-singularity" in sys.argv:
     ### Bind the directory of the database to the singularity containers.
-    workflow.deployment_settings.apptainer_args += (
-        f' -B {config["tax_DB_path"]}:{config["tax_DB_path"]}'
-    )
+    workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
     #### Load a dictionnary of singularity containers that will be called from each rule
 
 singularity_envs = yaml.safe_load(
@@ -35,12 +33,12 @@ rule insilico_validation:
     input:
         expand(
             "InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
-            classifier=config["classifier"],
-            tax_DB=config["tax_DB_name"],
+            classifier=CLASSIFIER,
+            tax_DB=DBNAME,
         ),
         "InSilico/2_denoised/count_table.tsv",
         expand(
             "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv",
-            classifier=config["classifier"],
-            tax_DB=config["tax_DB_name"],
+            classifier=CLASSIFIER,
+            tax_DB=DBNAME,
         ),

@@ -29,10 +29,10 @@
 
 # Merge data from multiple runs (if necessary)
    if (length(seq_tab) == 1){
-	print("Unique RUN, no merging of seq_tabl")
+	print("Unique run, no merging of seq_tabl")
 	st.all <- readRDS(seq_tab)
    }else{
-	print("Multiple RUN, merging")
+	print("Multiple run, merging")
 	st.all <- do.call("mergeSequenceTables", lapply(seq_tab, readRDS))
    }
 

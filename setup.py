@@ -58,6 +58,7 @@ setup(
         "Click>=8.1.3",
         "attrmap>=0.0.7",
         "snaketool-utils>=0.0.5",
+        "metasnek>=0.0.8",
         "biopython>=1.83",
     ],
     entry_points={"console_scripts": ["zamp=zamp.__main__:main"]},

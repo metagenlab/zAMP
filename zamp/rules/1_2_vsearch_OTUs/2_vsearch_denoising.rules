@@ -3,25 +3,27 @@
 
 ## Define trimmed or not trimmed input (for read already trimmed)
 def vsearch_trim_input():
-    if config["Trim_primers"] == True:
-        return ["vsearch/1b_trimmed_paired/{sample}_trimmed_paired.fasta"]
+    if TRIM == True:
+        return os.path.join(
+            dir.out.pandaseq, "1b_trimmed_paired", "{sample}_trimmed_paired.fasta"
+        )
     else:
-        return ["vsearch/1b_paired/{sample}_paired.fasta"]
+        return os.path.join(dir.out.pandaseq, "1b_paired", "{sample}_paired.fasta")
 
 
 ### Keep only once indentical sequences and keep score of their prevalence.
 rule vsearch_dereplicate_samples:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
         vsearch_trim_input(),
     output:
-        temp("vsearch/1c_derep/{sample}_derep.fasta"),
-        temp("vsearch/1c_derep/{sample}_derep.uc"),
+        temp(os.path.join(dir.out.vsearch, "1c_derep", "{sample}_derep.fasta")),
+        temp(os.path.join(dir.out.vsearch, "1c_derep", "{sample}_derep.uc")),
     log:
-        logging_folder + "vsearch/1b_derep/{sample}_derep.txt",
+        os.path.join(dir.logs, "vsearch", "1b_derep", "{sample}_derep.txt"),
     threads: 1
     shell:
         """
@@ -36,16 +38,15 @@ rule vsearch_dereplicate_samples:
             echo "> \n" > {output[0]}
             touch {output[1]}
         fi
-
         """
 
 
 ### Combine all dereplicated sequences in one big fasta
 rule merge_all_in_one_fasta:
     input:
-        expand(vsearch_trim_input(), sample=list(all_samples.index.values)),
+        expand(vsearch_trim_input(), sample=list(SAMPLES.index)),
     output:
-        temp("vsearch/1c_derep/merged_all.fasta"),
+        temp(os.path.join(dir.out.vsearch, "1c_derep", "merged_all.fasta")),
     shell:
         """
         cat {input} >> {output}
@@ -55,15 +56,15 @@ rule merge_all_in_one_fasta:
 ### Again, dereplicate all identical sequences after merging. Sequences must at least be twice in dataset to be kept.
 rule vsearch_derepicate_all:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        "vsearch/1c_derep/merged_all.fasta",
+        os.path.join(dir.out.vsearch, "1c_derep", "merged_all.fasta"),
     output:
-        temp("vsearch/1c_derep/derep_merged_all.fasta"),
+        temp(os.path.join(dir.out.vsearch, "1c_derep", "derep_merged_all.fasta")),
     log:
-        logging_folder + "vsearch/1c_all_merged_sequences/merged_all.txt",
+        os.path.join(dir.logs, "vsearch", "1c_all_merged_sequences", "merged_all.txt"),
     shell:
         """
         vsearch --derep_fulllength {input} \
@@ -77,17 +78,23 @@ rule vsearch_derepicate_all:
 ### Pick clusters which will be the representative sequences
 rule vsearch_cluster:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        "vsearch/1c_derep/derep_merged_all.fasta",
+        os.path.join(dir.out.vsearch, "1c_derep", "derep_merged_all.fasta"),
     output:
-        centroid="vsearch/2_denoised/clustering/centroid_min2.fasta",
-        consout="vsearch/2_denoised/clustering/consout_min2.fasta",
-        profile="vsearch/2_denoised/clustering/profile_min2.fasta",
+        centroid=os.path.join(
+            dir.out.vsearch, "2_denoised", "clustering", "centroid_min2.fasta"
+        ),
+        consout=os.path.join(
+            dir.out.vsearch, "2_denoised", "clustering", "consout_min2.fasta"
+        ),
+        profile=os.path.join(
+            dir.out.vsearch, "2_denoised", "clustering", "profile_min2.fasta"
+        ),
     log:
-        logging_folder + "vsearch/2_denoised/clustering.txt",
+        os.path.join(dir.logs, "vsearch", "2_denoised", "clustering.txt"),
     threads: 4
     shell:
         """
@@ -105,17 +112,23 @@ rule vsearch_cluster:
 ### Detect chimera in representative sequences
 rule vsearch_chimera_detection:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        "vsearch/2_denoised/clustering/consout_min2.fasta",
+        os.path.join(dir.out.vsearch, "2_denoised", "clustering", "consout_min2.fasta"),
     output:
-        non_chimeras="vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta",
-        borderline="vsearch/2_denoised/chimera_filtering/borderline_min2.fasta",
-        chimera_out="vsearch/2_denoised/chimera_filtering/uchimeout_min2.txt",
+        non_chimeras=os.path.join(
+            dir.out.vsearch, "2_denoised", "chimera_filtering", "nochimeras_min2.fasta"
+        ),
+        borderline=os.path.join(
+            dir.out.vsearch, "2_denoised", "chimera_filtering", "borderline_min2.fasta"
+        ),
+        chimera_out=os.path.join(
+            dir.out.vsearch, "2_denoised", "chimera_filtering", "uchimeout_min2.txt"
+        ),
     log:
-        logging_folder + "vsearch/2_denoised/chimera_filtering.txt",
+        os.path.join(dir.logs, "vsearch", "2_denoised", "chimera_filtering.txt"),
     threads: 1
     shell:
         """
@@ -132,20 +145,22 @@ rule vsearch_chimera_detection:
 ### Relabel sequences
 rule vsearch_derep_to_consesus_sequences:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        "vsearch/2_denoised/chimera_filtering/nochimeras_min2.fasta",
+        os.path.join(
+            dir.out.vsearch, "2_denoised", "chimera_filtering", "nochimeras_min2.fasta"
+        ),
     output:
         report(
-            "vsearch/2_denoised/dna-sequences.fasta",
-            caption="report/vsearch_output.rst",
+            os.path.join(dir.out.vsearch, "2_denoised", "dna-sequences.fasta"),
+            caption=os.path.join("report", "vsearch_output.rst"),
             category="vsearch",
             subcategory="Output",
         ),
     log:
-        logging_folder + "vsearch/2_denoised/nochimeras_min2.txt",
+        os.path.join(dir.logs, "vsearch", "2_denoised", "nochimeras_min2.txt"),
     threads: 1
     shell:
         """
@@ -161,16 +176,20 @@ rule vsearch_derep_to_consesus_sequences:
 ### Count the number of occurences of the representative sequences in the samples.
 rule vsearch_count_occurences:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        samples="vsearch/1c_derep/{sample}_derep.fasta",
-        rep_seq="vsearch/2_denoised/dna-sequences.fasta",
+        samples=os.path.join(dir.out.vsearch, "1c_derep", "{sample}_derep.fasta"),
+        rep_seq=os.path.join(dir.out.vsearch, "2_denoised", "dna-sequences.fasta"),
     output:
-        "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv",
+        os.path.join(
+            dir.out.vsearch, "2_denoised", "countOTUs", "{sample}_count_table.tsv"
+        ),
     log:
-        logging_folder + "vsearch/2_denoised/countOTUs/{sample}_count_table.txt",
+        os.path.join(
+            dir.logs, "vsearch", "2_denoised", "countOTUs", "{sample}_count_table.txt"
+        ),
     threads: 1
     shell:
         """
@@ -187,22 +206,24 @@ rule vsearch_count_occurences:
 ### Format count table from vsearch
 rule create_vsearch_count_table:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
         count_table_samples=expand(
-            "vsearch/2_denoised/countOTUs/{sample}_count_table.tsv",
-            sample=list(all_samples.index.values),
+            os.path.join(
+                dir.out.vsearch, "2_denoised", "countOTUs", "{sample}_count_table.tsv"
+            ),
+            sample=list(SAMPLES.index),
         ),
     output:
         count_table=report(
-            "vsearch/2_denoised/count_table.tsv",
-            caption="report/vsearch_output.rst",
+            os.path.join(dir.out.vsearch, "2_denoised", "count_table.tsv"),
+            caption=os.path.join("report", "vsearch_output.rst"),
             category="vsearch",
             subcategory="Output",
         ),
     log:
-        logging_folder + "vsearch/2_denoised/count_table.txt",
+        os.path.join(dir.logs, "vsearch", "2_denoised", "count_table.txt"),
     script:
         "scripts/create_count_table_from_vsearch.R"

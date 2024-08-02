@@ -15,8 +15,8 @@ rule print_primers_to_files:
     output:
         "InSilico/PCR/Primers.fasta",
     params:
-        config["forward_primer"],
-        config["reverse_primer"],
+        FW_PRIMER,
+        RV_PRIMER,
     shell:
         """
         printf \
@@ -34,12 +34,13 @@ rule Extract_amplicon:
         "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
         temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
     params:
-        min_length=config["merged_min_length"],
-        max_length=config["merged_max_length"],
+        min_length=MINLEN,
+        max_length=MAXLEN,
         mismatch=config["mismatch"],
         threeprime=config["threeprime"],
     log:
-        logging_folder
+        dir.logs
+        + "/"
         + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.log",
     threads: 1
     shell:
@@ -67,7 +68,7 @@ rule Extract_amplicon:
 ## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
 rule reverse_complement:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -75,7 +76,8 @@ rule reverse_complement:
     output:
         fasta_with_rev="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
     log:
-        logging_folder
+        dir.logs
+        + "/"
         + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.txt",
     threads: 1
     script:
@@ -84,7 +86,7 @@ rule reverse_complement:
 
 rule cutadapt_trim_in_silico:
     conda:
-        "../../envs/cutadapt.yml"
+        os.path.join(dir.envs, "cutadapt.yml")
     container:
         singularity_envs["cutadapt"]
     input:
@@ -92,13 +94,13 @@ rule cutadapt_trim_in_silico:
     output:
         R1_trimmed_reads=temp("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta"),
     log:
-        logging_folder + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt",
+        dir.logs + "/" + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt",
     params:
-        forward_primer=config["forward_primer"],
-        reverse_primer=config["reverse_primer"],
+        forward_primer=FW_PRIMER,
+        reverse_primer=RV_PRIMER,
         excepted_errors=config["excepted_errors"],
-        min_length=config["merged_min_length"],
-        max_length=config["merged_max_length"],
+        min_length=MINLEN,
+        max_length=MAXLEN,
         coverage=config["amplicon_min_coverage"],
     threads: 1
     script:
@@ -133,7 +135,7 @@ rule Insilico_merge_all_in_one_fasta:
 ### Again, dereplicate all identical sequences after merging.
 rule InSilico_derepicate_all:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
@@ -141,7 +143,7 @@ rule InSilico_derepicate_all:
     output:
         "InSilico/2_denoised/dna-sequences.fasta",
     log:
-        logging_folder + "InSilico/1c_all_merged_sequences/dereplicate_all.txt",
+        dir.logs + "/" + "InSilico/1c_all_merged_sequences/dereplicate_all.txt",
     shell:
         """
         vsearch --derep_fulllength {input} \
@@ -157,7 +159,7 @@ rule InSilico_derepicate_all:
 
 rule InSilico_count_occurences:
     conda:
-        "../../envs/vsearch.yml"
+        os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
@@ -166,7 +168,7 @@ rule InSilico_count_occurences:
     output:
         "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
     log:
-        logging_folder + "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
+        dir.logs + "/" + "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
     shell:
         """       
         if [ -s "{input[samples]}" ]
@@ -199,7 +201,7 @@ def list_samples_counts(wildcards):
 ### Format count table from InSilico
 rule create_InSilico_count_table:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -207,7 +209,7 @@ rule create_InSilico_count_table:
     output:
         count_table="InSilico/2_denoised/count_table.tsv",
     log:
-        logging_folder + "InSilico/2_denoised/count_table.tsv",
+        dir.logs + "/" + "InSilico/2_denoised/count_table.tsv",
     script:
         "scripts/create_count_table_from_insilico.R"
 
@@ -215,7 +217,7 @@ rule create_InSilico_count_table:
 ### Create a table to compare tax assignment
 rule In_silico_tax_compare:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -226,9 +228,10 @@ rule In_silico_tax_compare:
         output_table="InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv",
         output_table_long="InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax_long.tsv",
     params:
-        viz_replace_empty_tax=config["viz_replace_empty_tax"],
+        viz_replace_empty_tax=REPL_EMPTY,
     log:
-        logging_folder
+        dir.logs
+        + "/"
         + "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.log",
     script:
         "scripts/In_silico_tax_comparison.R"

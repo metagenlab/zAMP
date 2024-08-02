@@ -5,7 +5,7 @@
 ### C) plot inta taxon similarity
 rule Visualize_similarity_rdp:  ## Generate a plot for intra taxa similarity. Very long to compute 
     conda:
-        "../../envs/rdp_classifier.yml"
+        os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:
@@ -35,7 +35,7 @@ rule Visualize_similarity_rdp:  ## Generate a plot for intra taxa similarity. Ve
 ### D.1) Leave one sequence out test for accuracy testing
 rule Accuracy_seqs_testing_rdp:
     conda:
-        "../../envs/rdp_classifier.yml"
+        os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:
@@ -62,7 +62,7 @@ rule Accuracy_seqs_testing_rdp:
 ### D.2) Leave one taxon out test for accuracy testing
 rule Accuracy_taxon_testing_rdp:
     conda:
-        "../../envs/rdp_classifier.yml"
+        os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:
@@ -89,7 +89,7 @@ rule Accuracy_taxon_testing_rdp:
 ### E) Cross-validate
 rule Cross_validate__rdp:
     conda:
-        "../../envs/rdp_classifier.yml"
+        os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:

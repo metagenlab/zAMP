@@ -3,74 +3,84 @@
 
 rule PANDAseq_trim_pair_reads:
     conda:
-        "../../envs/PANDAseq.yml"
+        os.path.join(dir.envs, "PANDAseq.yml")
     container:
         singularity_envs["pandaseq"]
     input:
-        R1_raw_reads="raw_reads/{sample}_R1.fastq.gz",
-        R2_raw_reads="raw_reads/{sample}_R2.fastq.gz",
+        R1_raw_reads=os.path.join(dir.out.fastq, "{sample}_R1.fastq.gz"),
+        R2_raw_reads=os.path.join(dir.out.fastq, "{sample}_R2.fastq.gz"),
     output:
         paired_trimmed_reads=temp(
-            "vsearch/1b_trimmed_paired/{sample}_trimmed_paired.fasta"
+            os.path.join(
+                dir.out.pandaseq, "1b_trimmed_paired", "{sample}_trimmed_paired.fasta"
+            )
         ),
     log:
-        logging_folder
-        + "vsearch/1b_q_score_filtered/logs/{sample}_trimmed_paired.log.txt.bz2",
+        os.path.join(
+            dir.logs,
+            "pandaseq",
+            "1b_q_score_filtered",
+            "{sample}_trimmed_paired.log.txt.bz2",
+        ),
     params:
-        forward_primer=config["forward_primer"],
-        reverse_primer=config["reverse_primer"],
-        merged_min_length=config["merged_min_length"],
-        merged_max_length=config["merged_max_length"],
-        min_overlap=config["min_overlap"],
+        forward_primer=FW_PRIMER,
+        reverse_primer=RV_PRIMER,
+        merged_min_length=MINLEN,
+        merged_max_length=MAXLEN,
+        min_overlap=OVERLAP,
     threads: 1
     shell:
         """
         pandaseq \
-        -f {input[R1_raw_reads]} \
-        -r {input[R2_raw_reads]} \
-        -p {params[forward_primer]} \
-        -q {params[reverse_primer]} \
-        -A simple_bayesian \
-        -l {params[merged_min_length]} \
-        -L {params[merged_max_length]} \
-        -G {log} \
-        -w {output[paired_trimmed_reads]} \
-        -B \
-    -T {threads} \
-    -o {params[min_overlap]} \
-        -N
+            -f {input[R1_raw_reads]} \
+            -r {input[R2_raw_reads]} \
+            -p {params[forward_primer]} \
+            -q {params[reverse_primer]} \
+            -A simple_bayesian \
+            -l {params[merged_min_length]} \
+            -L {params[merged_max_length]} \
+            -G {log} \
+            -w {output[paired_trimmed_reads]} \
+            -B \
+            -T {threads} \
+            -o {params[min_overlap]} \
+            -N
         """
 
 
 rule PANDAseq_pair_reads:
     conda:
-        "../../envs/PANDAseq.yml"
+        os.path.join(dir.envs, "PANDAseq.yml")
     container:
         singularity_envs["pandaseq"]
     input:
-        R1_raw_reads="raw_reads/{sample}_R1.fastq.gz",
-        R2_raw_reads="raw_reads/{sample}_R2.fastq.gz",
+        R1_raw_reads=os.path.join(dir.out.fastq, "{sample}_R1.fastq.gz"),
+        R2_raw_reads=os.path.join(dir.out.fastq, "{sample}_R2.fastq.gz"),
     output:
-        paired_trimmed_reads=temp("vsearch/1b_paired/{sample}_paired.fasta"),
+        paired_trimmed_reads=temp(
+            os.path.join(dir.out.pandaseq, "1b_paired", "{sample}_paired.fasta")
+        ),
     log:
-        logging_folder + "vsearch/1b_q_score_filtered/logs/{sample}_paired.log.txt.bz2",
+        os.path.join(
+            dir.logs, "pandaseq", "1b_q_score_filtered", "{sample}_paired.log.txt.bz2"
+        ),
     params:
-        merged_min_length=config["merged_min_length"],
-        merged_max_length=config["merged_max_length"],
-        min_overlap=config["min_overlap"],
+        merged_min_length=MINLEN,
+        merged_max_length=MAXLEN,
+        min_overlap=OVERLAP,
     threads: 1
     shell:
         """
         pandaseq \
-        -f {input[R1_raw_reads]} \
-        -r {input[R2_raw_reads]} \
-        -A simple_bayesian \
-        -l {params[merged_min_length]} \
-        -L {params[merged_max_length]} \
-        -G {log} \
-        -w {output[paired_trimmed_reads]} \
-        -B \
-    -T {threads} \
-    -o {params[min_overlap]} \
-        -N
+            -f {input[R1_raw_reads]} \
+            -r {input[R2_raw_reads]} \
+            -A simple_bayesian \
+            -l {params[merged_min_length]} \
+            -L {params[merged_max_length]} \
+            -G {log} \
+            -w {output[paired_trimmed_reads]} \
+            -B \
+            -T {threads} \
+            -o {params[min_overlap]} \
+            -N
         """

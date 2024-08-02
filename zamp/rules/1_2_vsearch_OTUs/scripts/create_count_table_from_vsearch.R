@@ -21,7 +21,7 @@
 
 ## Reformat
 otus_table <- data.frame(array(dim=c(0,3)))
-colnames(otus_table) <- c("Sample", "OTU_ID", "counts")
+colnames(otus_table) <- c("sample", "OTU_ID", "counts")
 
 ### Loop over each sample file. If it is empty, then we just add the factor in the levels to have it then
 for (file_path in count_table_samples){
@@ -29,10 +29,10 @@ for (file_path in count_table_samples){
   sample_otu_table <- read.table(file = file_path, sep="\t", as.is=T, check.names = F, header=T, comment.char = "",  skipNul = TRUE)
   colnames(sample_otu_table) <- c("OTU_ID", "counts")
   if (nrow(sample_otu_table)>0){
-    sample_otu_table <- cbind("Sample"=sample_name, sample_otu_table)
+    sample_otu_table <- cbind("sample"=sample_name, sample_otu_table)
     otus_table <- rbind(otus_table, sample_otu_table)
   }else if (nrow(sample_otu_table) == 0){
-    levels(otus_table$Sample) <- c(levels(otus_table$Sample), sample_name)
+    levels(otus_table$sample) <- c(levels(otus_table$sample), sample_name)
   }
 }
 
@@ -40,9 +40,9 @@ for (file_path in count_table_samples){
 
 ## Transform this table to have a wide format where we have a column by sample
 transf_vsearch_table <- otus_table %>% 
-  dplyr::group_by(Sample, OTU_ID, .drop = FALSE) %>%
+  dplyr::group_by(sample, OTU_ID, .drop = FALSE) %>%
   dplyr::summarise(counts = sum(counts)) %>%
-  reshape2::dcast(OTU_ID ~ Sample) %>%
+  reshape2::dcast(OTU_ID ~ sample) %>%
   dplyr::filter(!is.na(OTU_ID))
 
 ## Set OTU as rownames

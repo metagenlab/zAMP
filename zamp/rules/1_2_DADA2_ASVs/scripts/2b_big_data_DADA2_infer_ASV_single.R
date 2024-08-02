@@ -40,7 +40,7 @@
     mergers <- vector("list", 1)
     names(mergers) <- sample_name
 
-## Sample inference
+## sample inference
     cat("Processing:", sample_name, "\n")
     ## Forward
         derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
@@ -55,9 +55,9 @@
         infer <- data.frame(denoisedF = getN(ddF))
         infer$denoisedR <- NA
         infer$merged_pairs <- infer$denoisedF
-        infer$Sample <- sample_name
+        infer$sample <- sample_name
         infer$label <- x_column_value
-        infer$RUN <- run
+        infer$run <- run
 
     ### Save the sequences stats for this sample
         saveRDS(infer, file = infer_stats)

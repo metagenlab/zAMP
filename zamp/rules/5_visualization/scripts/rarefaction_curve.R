@@ -122,8 +122,8 @@ calculate_rarefaction_curves <- function(psdata, measures, depths) {
 
     alpha_diversity <- modified_estimated_richness(rarified_psdata, measures = measures)
 
-    # as.matrix forces the use of melt.array, which includes the Sample names (rownames)
-    molten_alpha_diversity <- melt(as.matrix(alpha_diversity), varnames = c('Sample', 'Measure'), value.name = 'Alpha_diversity')
+    # as.matrix forces the use of melt.array, which includes the sample names (rownames)
+    molten_alpha_diversity <- melt(as.matrix(alpha_diversity), varnames = c('sample', 'Measure'), value.name = 'Alpha_diversity')
 
     molten_alpha_diversity
   }
@@ -143,12 +143,12 @@ summary(rarefaction_curve_data)
 
 ####
 
-rarefaction_curve_data_summary <- ddply(rarefaction_curve_data, c('Depth', 'Sample', 'Measure'), summarise, Alpha_diversity_mean = mean(Alpha_diversity), Alpha_diversity_sd = sd(Alpha_diversity))
+rarefaction_curve_data_summary <- ddply(rarefaction_curve_data, c('Depth', 'sample', 'Measure'), summarise, Alpha_diversity_mean = mean(Alpha_diversity), Alpha_diversity_sd = sd(Alpha_diversity))
 
 
 ####
 
-rarefaction_curve_data_summary_verbose <- merge(rarefaction_curve_data_summary, data.frame(sample_data(phyloseq_obj)), by.x = 'Sample', by.y = 'row.names')
+rarefaction_curve_data_summary_verbose <- merge(rarefaction_curve_data_summary, data.frame(sample_data(phyloseq_obj)), by.x = 'sample', by.y = 'row.names')
 
 rarefaction_curve_data_summary_verbose
 
@@ -160,8 +160,8 @@ p <- ggplot(
     ymin = Alpha_diversity_mean - Alpha_diversity_sd,
     ymax = Alpha_diversity_mean + Alpha_diversity_sd,
     colour = get(color_factor),
-    group = get("Sample"))) +
-      labs(col = "Sample type") +
+    group = get("sample"))) +
+      labs(col = "sample type") +
       geom_line(size = 0.15) +
       #geom_pointrange(size = 0.2) +
       facet_wrap(facets = ~ Measure, scales = 'free_y')

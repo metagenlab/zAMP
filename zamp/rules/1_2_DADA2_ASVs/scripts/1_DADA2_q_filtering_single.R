@@ -18,7 +18,7 @@
 
 ## Parameters
     F_length <- snakemake@params[["F_reads_length_trim"]]
-    F_extected_error <- snakemake@params[["F_reads_extected_error"]]
+    FW_ERRORS <- snakemake@params[["FW_expected_errors"]]
     sample_name <- snakemake@params[["sample_name"]]
 
 
@@ -29,9 +29,9 @@
 ### Reads are filtered based on the number of errors expected for the read (integration of the qscore and the length of the read). All reads with uncalled nucleotide (N) are removed too. Remaining phiX reads will be removed too. Finally, reads are cut at a length set in config.
 
 ### Filter and trim. The filtered reads are directly written while the filtering stats are being save for later compilation.
-    filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_F, truncLen=c(F_length), maxN=0, maxEE=c(F_extected_error), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=snakemake@threads, verbose = TRUE)
+    filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_F, truncLen=c(F_length), maxN=0, maxEE=c(FW_ERRORS), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=snakemake@threads, verbose = TRUE)
     filtering_stats <- as.data.frame(filtering_stats)
-    filtering_stats$Sample <- sample_name
+    filtering_stats$sample <- sample_name
 
 ### Save the stats for this sample in a R object
     saveRDS(filtering_stats, file = q_filtering_stats_path)

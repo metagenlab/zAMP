@@ -30,19 +30,19 @@
 ## Load reads with filtered chimera
     no_chimera <- do.call("rowSums", lapply(no_chim, readRDS))
     no_chimera <- as.data.frame(no_chimera)
-    no_chimera$Sample <- row.names(no_chimera)
+    no_chimera$sample <- row.names(no_chimera)
 
 ## Load length_filtered sequences
     length_filtered <- do.call("rowSums", lapply(l_filtered, readRDS))
     length_filtered <- as.data.frame(length_filtered)
-    length_filtered$Sample <- row.names(length_filtered)
+    length_filtered$sample <- row.names(length_filtered)
 
 ## Merge all dataframe together
-    all_stats <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = "Sample", all.x = TRUE),
+    all_stats <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = "sample", all.x = TRUE),
        list(filtration, dada_infer, no_chimera, length_filtered))
 
-## set RUN at the very end of the table
-    all_stats <- all_stats%>%select(Sample, label, RUN, everything())
+## set run at the very end of the table
+    all_stats <- all_stats%>%select(sample, label, run, everything())
 
 ## Compute % of passed reads
     all_stats$passed_reads_pct <- (100*all_stats$length_filtered)/all_stats$reads.in

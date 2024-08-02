@@ -1,7 +1,7 @@
 ## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
 rule DADA2_prep_tax_db:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -40,7 +40,7 @@ rule Hash_DADA2:
 
 rule Preformat_for_cannonical_rdp:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -57,7 +57,7 @@ rule Preformat_for_cannonical_rdp:
 
 rule Format_rdp_lineages:
     conda:
-        "../../envs/python.yml"
+        os.path.join(dir.envs, "python.yml")
     container:
         singularity_envs["python"]
     input:
@@ -74,7 +74,7 @@ rule Format_rdp_lineages:
 
 rule Format_rdp_add_lineages:
     conda:
-        "../../envs/python.yml"
+        os.path.join(dir.envs, "python.yml")
     container:
         singularity_envs["python"]
     input:
@@ -99,7 +99,7 @@ def get_mem_mb(mem):
 
 rule Train_rdp_classifier:
     conda:
-        "../../envs/rdp_classifier.yml"
+        os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:
@@ -145,7 +145,7 @@ rule Hash_RDP:
 ## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
 rule Decipher_prep_fasta:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
@@ -162,7 +162,7 @@ rule Decipher_prep_fasta:
 
 rule Decipher_train_tax:
     conda:
-        "../../envs/decipher.yml"
+        os.path.join(dir.envs, "decipher.yml")
     container:
         singularity_envs["decipher"]
     input:
