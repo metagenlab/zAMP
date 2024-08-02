@@ -18,7 +18,7 @@ count_table_path <- snakemake@input[["count_table_path"]]
     merged_mismatch_table_path <- snakemake@output[["merged_mismatch_table_path"]]
 
 ## Params
-    RUN <- snakemake@params["RUN"]
+    run <- snakemake@params["run"]
 
 ## Libraries
     library(dplyr)
@@ -39,7 +39,7 @@ mismatches_table$Query.id <- str_remove(string = mismatches_table$Query.id, patt
 
 merged_mismatch_table <- left_join(mismatches_table, count_table, by = c("Query.id"= "ID"))
 
-merged_mismatch_table$RUN <- head(as.character(RUN))
+merged_mismatch_table$run <- head(as.character(run))
 
 
 write.table(x = merged_mismatch_table, file = merged_mismatch_table_path, sep = "\t", row.names = FALSE)

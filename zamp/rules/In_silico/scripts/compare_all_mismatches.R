@@ -28,14 +28,14 @@
 # Merge data from multiple runs (if necessary)
 # Merge data from multiple runs (if necessary)
   if (length(mismatch_tables_path) == 1){
-    print("Unique RUN, no merging of seq_tabl")
+    print("Unique run, no merging of seq_tabl")
     st.all <- readRDS(seq_tab)
   }else{
-    print("Multiple RUN, merging")
+    print("Multiple run, merging")
     st.all <- do.call("rbind", lapply(mismatch_tables_path, read.table, header = TRUE, sep = "\t"))
   }
 
-  p <- ggplot(st.all, aes(x=Mismatches, fill=RUN, weight = Counts)) +
+  p <- ggplot(st.all, aes(x=Mismatches, fill=run, weight = Counts)) +
     geom_histogram( color="black", binwidth=1, position = position_dodge2(padding = 0.3, preserve = "single")) +
     theme_bw()
 
