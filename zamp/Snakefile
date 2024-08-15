@@ -66,6 +66,7 @@ if os.path.isdir(INPUT) and METADATA:
     SAMPLES.set_index("sample", inplace=True)
 elif os.path.isfile(INPUT) and not METADATA:
     SAMPLES = pd.read_csv(INPUT, sep="\t", index_col="sample")
+    METADATA = INPUT
 
 
 # Add read pairing
