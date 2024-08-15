@@ -4,23 +4,18 @@ import re
 
 rule decompress_assemblies:
     input:
-        "assembly_gz/genomes/{sample}_genomic.fna.gz",
+        os.path.join(
+            dir.out.base,
+            "InSilico",
+            "assembly_finder",
+            "download",
+            "{sample}_genomic.fna.gz",
+        ),
     output:
-        temp("assembly_gz/genomes/{sample}.fna"),
-    shell:
-        "zcat {input[0]} > {output[0]}"
-
-
-rule print_primers_to_files:
-    output:
-        "InSilico/PCR/Primers.fasta",
-    params:
-        FW_PRIMER,
-        RV_PRIMER,
+        temp(os.path.join(dir.out.base, "InSilico", "{sample}.fna")),
     shell:
         """
-        printf \
-        ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
+        zcat {input} > {output}
         """
 
 
@@ -28,8 +23,8 @@ rule Extract_amplicon:
     container:
         singularity_envs["simulatePCR"]
     input:
-        "InSilico/PCR/Primers.fasta",
-        "assembly_gz/genomes/{sample}.fna",
+        primers=PRIMERS,
+        fasta=os.path.join(dir.out.base, "InSilico", "{sample}.fna"),
     output:
         "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
         temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
@@ -61,7 +56,6 @@ rule Extract_amplicon:
             -genes 1 \
             -extract_amp 1 \
             >> ../../../{log}
-
           """
 
 
