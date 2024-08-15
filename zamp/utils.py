@@ -540,3 +540,120 @@ def run_options(func):
     for option in reversed(options):
         func = option(func)
     return func
+
+
+def insilico_options(func):
+    """
+    Command line args for database command
+    """
+    options = [
+        click.option(
+            "--input-tax",
+            type=click.Path(exists=True, file_okay=True, readable=True),
+            help="Input taxonomy file",
+            required=True,
+        ),
+        click.option(
+            "--primers",
+            type=click.Path(exists=True, file_okay=True, readable=True),
+            help="Primers fasta file",
+            required=True,
+        ),
+        click.option(
+            "--limit",
+            help="Limit number of genomes per query",
+            type=str,
+            default=1,
+        ),
+        click.option("--api-key", type=str, help="NCBI api-key", default=None),
+        click.option(
+            "--compressed",
+            type=bool,
+            help="Download compressed files",
+            default=True,
+            show_default=True,
+        ),
+        click.option(
+            "--include",
+            type=str,
+            help="Comma seperated files to download : genome,rna,protein,cds,gff3,gtf,gbff,seq-report,none",
+            default="genome,seq-report",
+            show_default=True,
+        ),
+        click.option(
+            "--source",
+            type=click.Choice(["refseq", "genbank", "all"], case_sensitive=False),
+            help="Download from refseq or genbank or both",
+            default="all",
+            show_default=True,
+        ),
+        click.option(
+            "--taxon/--accession",
+            help="Are queries taxa names or accession",
+            type=bool,
+            default=True,
+            show_default=True,
+        ),
+        click.option(
+            "--reference",
+            type=bool,
+            help="Limit to reference and representative genomes",
+            default=True,
+            show_default=True,
+        ),
+        click.option(
+            "--assembly-level",
+            help="Comma seperated list of assembly level: complete,chromosome,scaffold,contig",
+            default=None,
+            show_default=True,
+        ),
+        click.option(
+            "--annotated",
+            type=bool,
+            help="Select annotated genomes only",
+            default=False,
+            show_default=True,
+        ),
+        click.option(
+            "--atypical",
+            type=bool,
+            help="Exclude atypical genomes",
+            default=True,
+            show_default=True,
+        ),
+        click.option(
+            "--mag",
+            type=click.Choice(["exclude", "all", "only"], case_sensitive=False),
+            help="Exclude, include or limit to metagenome assembled genomes",
+            default="all",
+            show_default=True,
+        ),
+        click.option(
+            "--rank",
+            help="taxonomic rank to filter by assemblies ",
+            default=None,
+            type=click.Choice(
+                [
+                    "superkingdom",
+                    "phylum",
+                    "class",
+                    "order",
+                    "family",
+                    "genus",
+                    "species",
+                ],
+                case_sensitive=False,
+            ),
+            show_default=True,
+        ),
+        click.option(
+            "--nrank",
+            help="Number of genomes per taxonomic rank",
+            type=int,
+            default=None,
+            show_default=True,
+        ),
+    ]
+    for option in reversed(options):
+        func = option(func)
+    return func
