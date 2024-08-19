@@ -18,6 +18,7 @@ rule Extract_amplicons_cutadapt:
         min_length=config["amplicon_min_length"],
         max_length=config["amplicon_max_length"],
         coverage=config["amplicon_min_coverage"],
+        amplicon_type=config["ITS_or_16S"],
     log:
         "{prefix}/logs/QIIME/DB_cutadapt.txt",
     threads: 1

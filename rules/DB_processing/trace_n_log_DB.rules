@@ -42,5 +42,6 @@ rule hash_global_DB:
     threads: 1
     shell:
         """
-        md5sum {input.master} {input.QIIME} {input.DADA2} {input.RDP} {input.decipher} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input.master} {input.QIIME} {input.DADA2}  {input.RDP}  {input.decipher} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
+ 

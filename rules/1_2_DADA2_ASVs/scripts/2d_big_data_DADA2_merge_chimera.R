@@ -53,7 +53,9 @@
   dev.off()
 
 # Filter based on length
+
 seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% seq(merged_min_length, merged_max_length)]
+
 # Inspect distribution of sequence lengths after filtration
 table(nchar(getSequences(seqtab2)))
 

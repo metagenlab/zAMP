@@ -1,4 +1,3 @@
-## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
 rule DADA2_prep_tax_db:
     conda:
         "../../envs/amplicons_r_utils.yml"
@@ -30,7 +29,6 @@ rule Hash_DADA2:
         """
         md5sum {input.King_to_Species} {input.King_to_Genus} {input.Genus_species} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
-
 
 ## Rules to format taxonomy to fit the requirements of the original RDP.
 ### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
@@ -86,7 +84,7 @@ rule Format_rdp_add_lineages:
     threads: 1
     shell:
         """
-        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}       
+        python2.7 {input.script} {input.taxonomy} {input.fasta} > {output}
         """
 
 

@@ -1,24 +1,23 @@
 ################ Validation config ################
 
 ### Input table, listing the taxonomy and number of assemblies to test from
-input_table_path: '16S_input_table_insilico.tsv'
+input_table_path: 'insilico_ITS_input_taxID.tsv'
 
-### In silico PCR parameters, used by Simulate_PCR
-forward_primer: CCTACGGGNGGCWGCAG # CCTACGGGNGGCWGCAG for Illumina V3V4
-reverse_primer: GACTACHVGGGTATCTAATCC # GACTACHVGGGTATCTAATCC for Illumina V3V4
-mismatch: 3 #0 - 3 mismatch
-threeprime: 2 # Number of match at the 3' end for a hit to be considered
+### In silico PCR parameters, used by dicey
+primer_file: in_silico_primers.fasta # fasta file containing all primers (forward named as for and reverse names as rev)
 
 ### Amplicon triming parameters, used by cutadapt
+forward_primer: CYHRGYYATTTAGAGGWMSTAA # Can use IUPAC ambiguous nomenclature for primer pools
+reverse_primer: RCKDYSTTCWTCRWYGHTGB # Can use IUPAC ambiguous nomenclature for primer pools
 excepted_errors: 0.1 ## Proportion of mismatch tolerated allowed in the primers to be trimmed
 amplicon_min_coverage: 0.8 ## Covered proporition of the primer to be trimmed 
-merged_min_length: 390 # from 390 to 400 for V3V4
-merged_max_length: 500 # from 450 to 500 for V3V4
+merged_min_length: 50 # min amplicon length
+merged_max_length: 900 # max amplicon length 
 
 ### Database used for taxonomic assignment
-tax_DB_path: "/data/databases/amplicon_based_metagenomics/16S/"
-tax_DB_name: [ezbiocloud201805.202005] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" in /data/. Can be multiple.
-classifier: ["qiimerdp"]
+tax_DB_path: "databases/unite_qiime_ver10/"
+tax_DB_name: [unite_qiime_ver10_dynamic] # must be the name of the folder containing files named "DB_amp.fasta" and "DB_amp_taxonomy.txt" 
+classifier: ["RDP"]
 
 ### Processing for comparison of taxonomic assignment
 viz_replace_empty_tax: TRUE
@@ -35,9 +34,7 @@ representative_assemblies: False ## Keep only representative assemblies
 exclude_from_metagenomes: True ## Excluse from metagenome
 Genbank_assemblies: True ## Take from Genbank
 Refseq_assemblies: True ## Take from Refseq
-
-
-##Parameters for the filtering function
+nb_genomes: 1 # Number of assemblies to retrieve per taxID/species if several available. Hint:: The number of assemblies from a given taxa should not exceed the number of assemblies available on the NCBI
 Rank_to_filter_by: 'None'
 #None: Assemblies are ranked by their assembly status (complete or not)
 #and Refseq category (reference, representative ...)

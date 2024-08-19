@@ -1,98 +1,90 @@
 import pandas as pd
 import re
 
-
-rule decompress_assemblies:
+### compress as bgz for dicey
+rule decompress_recompress:
+    conda:
+        "../../envs/dicey.yml"
+    container:
+        singularity_envs["dicey"]
     input:
         "assembly_gz/genomes/{sample}_genomic.fna.gz",
     output:
-        temp("assembly_gz/genomes/{sample}.fna"),
+        "InSilico/PCR/{sample}/{sample}_genomic.fna.gz",
     shell:
-        "zcat {input[0]} > {output[0]}"
+        "zcat {input} | bgzip > {output}"
 
 
-rule print_primers_to_files:
+### need some extra files and folder for dicey...
+rule dicey_extra_files:
     output:
-        "InSilico/PCR/Primers.fasta",
-    params:
-        config["forward_primer"],
-        config["reverse_primer"],
+        repo=directory("InSilico/PCR/dicey"),
     shell:
         """
-        printf \
-        ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
+        wget -P {output.repo} https://github.com/gear-genomics/dicey/archive/refs/tags/v0.3.1.tar.gz 
+        tar xzf {output.repo}/*.tar.gz -C {output.repo}
+        mv {output.repo}/dicey-*/* {output.repo}/
         """
 
 
+### In-silico PCR with dicey
 rule Extract_amplicon:
+    conda:
+        "../../envs/dicey.yml"
     container:
-        singularity_envs["simulatePCR"]
+        singularity_envs["dicey"]
     input:
-        "InSilico/PCR/Primers.fasta",
-        "assembly_gz/genomes/{sample}.fna",
+        repo="InSilico/PCR/dicey/",
+        genome="InSilico/PCR/{sample}/{sample}_genomic.fna.gz",
     output:
-        "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
-        temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
+        index_genome="InSilico/PCR/{sample}/{sample}_genomic.fna.fm9",
+        json="InSilico/PCR/{sample}/dicey_output.json",
+        json_gz="InSilico/PCR/{sample}/dicey_output.json.gz",
+        amplicons="InSilico/PCR/{sample}/dicey_amplicons.tsv",
     params:
-        min_length=config["merged_min_length"],
-        max_length=config["merged_max_length"],
-        mismatch=config["mismatch"],
-        threeprime=config["threeprime"],
-    log:
-        logging_folder
-        + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.log",
+        primers=config["primer_file"],
     threads: 1
     shell:
         """
-        cd $(dirname {output[0]}) && \
-        simulate_PCR \
-            -primers ../../../{input[0]} \
-            -db ../../../{input[1]} \
-            -minlen {params.min_length} \
-            -maxlen {params.max_length} \
-            -mm {params.mismatch} \
-            -3prime {params.threeprime} \
-            -mux 0 \
-            -num_threads {threads} \
-            -max_target_seqs 1000000000 \
-            -word_size 4 \
-            -evalue 100000000 \
-            -genes 1 \
-            -extract_amp 1 \
-            >> ../../../{log}
+        dicey index -o {output.index_genome} {input.genome}
+        dicey search \
+         -i {input.repo}/src/primer3_config \
+         -g {input.genome} {params.primers} > {output.json}
+        gzip -f -c {output.json} > {output.json_gz}
+        python3 {input.repo}/scripts/json2tsv.py -j {output.json_gz} -m amplicon > {output.amplicons}
+        """
 
-          """
-
-
-## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
-rule reverse_complement:
+### extract amplicons into fasta
+rule amplicon_fasta:
     conda:
-        "../../envs/amplicons_r_utils.yml"
+        "../../envs/dicey.yml"
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["dicey"]
     input:
-        simple_fasta="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+        json_gz="InSilico/PCR/{sample}/dicey_output.json.gz",
+        script=workflow.basedir + "/rules/In_silico/scripts/json2fasta.py",
     output:
-        fasta_with_rev="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
-    log:
-        logging_folder
-        + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.txt",
+        "InSilico/PCR/{sample}/dicey_amplicons.fasta",
     threads: 1
-    script:
-        "scripts/reverse_complement.R"
+    shell:
+        """
+        python3 {input.script} {input.json_gz} > {output[0]}
+        """
+    
 
 
+### UPDATE VCS: DO NOT USE SAME SCRIPT AS FOR DB; KEEP SEPARATE (IN DB THE FW PRIMER IS NOT ALWAYS PRESENT; IN AMPLICON IT SHOULD)
 rule cutadapt_trim_in_silico:
     conda:
         "../../envs/cutadapt.yml"
     container:
         singularity_envs["cutadapt"]
     input:
-        R1_raw_reads="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
+        R1_raw_reads="InSilico/PCR/{sample}/dicey_amplicons.fasta",
     output:
-        R1_trimmed_reads=temp("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta"),
+        R1_trimmed_reads="InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
     log:
-        logging_folder + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt",
+        "InSilico/1a_trimmed_primers/{sample}_trimmed.log",
     params:
         forward_primer=config["forward_primer"],
         reverse_primer=config["reverse_primer"],
@@ -102,7 +94,7 @@ rule cutadapt_trim_in_silico:
         coverage=config["amplicon_min_coverage"],
     threads: 1
     script:
-        "../DB_processing/scripts/cutadapt_DB.py"
+        "scripts/cutadapt_amplicons.py"
 
 
 def list_amplicons(wildcards):
@@ -123,7 +115,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons,
     output:
-        temp("InSilico/1c_derep/merged_all.fasta"),
+        "InSilico/1c_derep/merged_all.fasta",
     shell:
         """
         cat {input} >> {output}
@@ -168,7 +160,7 @@ rule InSilico_count_occurences:
     log:
         logging_folder + "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
     shell:
-        """       
+        """
         if [ -s "{input[samples]}" ]
         then
             echo "{input[samples]} has some data." && \
@@ -182,7 +174,7 @@ rule InSilico_count_occurences:
             echo "{input[samples]} is empty." && \
             touch {output}
             # do something as file is empty
-        fi 2> {log}        
+        fi 2> {log}
         """
 
 

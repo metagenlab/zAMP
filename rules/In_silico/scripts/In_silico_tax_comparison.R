@@ -105,15 +105,19 @@
       ## Recover Create columns for each variants, count it, and give the corresponding taxonomy
       comparison[[paste0("Amplicon_", j)]][comparison$AssemblyNames==i] <- names(transposed_counts_i_f)[j]
       comparison[[paste0("Count_", j)]][comparison$AssemblyNames==i] <- transposed_counts_i_f[j]
-      comparison[[paste0("Tax_", j)]][comparison$AssemblyNames==i] <- taxonomy_table_split$Taxonomy[taxonomy_table_split$Feature.ID == names(transposed_counts_i_f)[j]]
+      if(names(transposed_counts_i_f)[j] %in% taxonomy_table_split$Feature.ID){
+        comparison[[paste0("Tax_", j)]][comparison$AssemblyNames==i] <- taxonomy_table_split$Taxonomy[taxonomy_table_split$Feature.ID == names(transposed_counts_i_f)[j]]
+      } else {
+        comparison[[paste0("Tax_", j)]][comparison$AssemblyNames==i] <- "No_amplification_products"
+      }
       j <- NULL
     }
     i <- NULL
   }
 
-## Add the cumulated some for all variants
-  sum_of_count <- data.frame(rowSums(t(count_table)))
-  colnames(sum_of_count)[colnames(sum_of_count)=="rowSums.t.count_table.."] <- "Sum of copies"
+## Add the cumulated sum of all variants (OTUS)
+  sum_of_count <- data.frame(Sum_of_copies = rowSums(t(count_table)))
+  # colnames(sum_of_count)[colnames(sum_of_count)=="rowSums.t.count_table.."] <- "Sum of copies"
   sum_of_count$AssemblyNames <- rownames(sum_of_count)
   comparison <- left_join(comparison, sum_of_count)
 
@@ -121,10 +125,11 @@
 ## Create an Seq column
   count_table$Feature.ID <- rownames(count_table)
 ## Match the position between the count and tax table and joined them
-  m <- match(count_table$Feature.ID, taxonomy_table$V1)
-  count_table_tax <- cbind(count_table, taxonomy_table$V2[m])
-  colnames(count_table_tax)[colnames(count_table_tax)=="taxonomy_table$V2[m]"] <- "Class_tax"
-
+  # m <- match(count_table$Feature.ID, taxonomy_table$V1)
+  # count_table_tax <- cbind(count_table, taxonomy_table$V2[m])
+  # colnames(count_table_tax)[colnames(count_table_tax)=="taxonomy_table$V2[m]"] <- "Class_tax"
+  count_table_tax <- left_join(count_table, taxonomy_table, by = c('Feature.ID' = 'V1'))
+  colnames(count_table_tax)[which(colnames(count_table_tax) == "V2")] <- "Class_tax"
 
 ## Melt it in long
   melt_table <- melt(count_table_tax, id.vars = c("Feature.ID", "Class_tax"), variable.name = "AssemblyNames") %>% filter(value>0)
@@ -136,12 +141,13 @@
 comparison$Genus_agreement <- NA
 comparison$Species_agreement <- NA
 
-for (assembly_ID in unique(compare_long$AssemblyID)){
+for (assembly_ID in comparison$AssemblyID){
+  print(assembly_ID)
   
   observed_taxa <- filter(compare_long, AssemblyID == assembly_ID ) %>%
     tidyr::separate(Class_tax, sep = ";", into = c("Assigned_Kingdom","Assigned_Phylum","Assigned_Class","Assigned_Order","Assigned_Family","Assigned_Genus","Assigned_Species"))
   
-  if(!(unique(observed_taxa$genus) %in% observed_taxa$Assigned_Genus)){
+  if(!(unique(observed_taxa$genus) %in% gsub("^.*__", "", observed_taxa$Assigned_Genus))){
     comparison$Genus_agreement[comparison$AssemblyID == assembly_ID] <- "Discrepant"
     comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Discrepant_Genus" 
     
@@ -150,7 +156,7 @@ for (assembly_ID in unique(compare_long$AssemblyID)){
     comparison$Genus_agreement[comparison$AssemblyID == assembly_ID] <- "Matching"
       
     species <- unique(str_trim(str_remove(string = as.character(observed_taxa$species), as.character(unique(observed_taxa$genus)))))
-    assigned_species <- str_trim(str_remove(string = as.character(observed_taxa$Assigned_Species), as.character(unique(observed_taxa$Assigned_Genus))))
+    assigned_species <- gsub("[[:punct:]]","",str_remove(string = gsub("^.*__","",as.character(observed_taxa$Assigned_Species)), gsub("^.*__","",as.character(unique(observed_taxa$Assigned_Genus)))    ))
 
     if(all(grepl(pattern = species ,  x = assigned_species))) {
       comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Matching"
