@@ -13,6 +13,7 @@ pip install -e zAMP
 ```
 # Usage
 ```sh
+$ zamp -h
 Usage: zamp [OPTIONS] COMMAND [ARGS]...
 
   Snakemake pipeline designed for convenient, reproducible and scalable
