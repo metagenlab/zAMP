@@ -51,7 +51,7 @@ otus_table
     # otus_table <- otus_table[-1,]
     # colnames(otus_table) <- c("Sample", "Seq_ID", "counts")
 
-otus_table$counts <- as.numeric(otus_table$counts)
+otus_table$counts <- as.numeric(as.character(otus_table$counts))
 
 ## Transform this table to have a wide format where we have samples as columns
     # transf_vsearch_table <- otus_table %>%
