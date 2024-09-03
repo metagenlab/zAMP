@@ -1,86 +1,31 @@
 import pandas as pd
 import re
 
-### compress as bgz for dicey
-rule decompress_recompress:
-    conda:
-        "../../envs/dicey.yml"
-    container:
-        singularity_envs["dicey"]
-    input:
-        "assembly_gz/genomes/{sample}_genomic.fna.gz",
-    output:
-        "InSilico/PCR/{sample}/{sample}_genomic.fna.gz",
-    shell:
-        "zcat {input} | bgzip > {output}"
-
-
-### need some extra files and folder for dicey...
-rule dicey_extra_files:
-    output:
-        repo=directory("InSilico/PCR/dicey"),
-    shell:
-        """
-        wget -P {output.repo} https://github.com/gear-genomics/dicey/archive/refs/tags/v0.3.1.tar.gz 
-        tar xzf {output.repo}/*.tar.gz -C {output.repo}
-        mv {output.repo}/dicey-*/* {output.repo}/
-        """
-
-
-### In-silico PCR with dicey
 rule Extract_amplicon:
-    conda:
-        "../../envs/dicey.yml"
-    container:
-        singularity_envs["dicey"]
     input:
-        repo="InSilico/PCR/dicey/",
-        genome="InSilico/PCR/{sample}/{sample}_genomic.fna.gz",
+        genome="assembly_gz/genomes/{sample}_genomic.fna.gz",
+        script=workflow.basedir + "/rules/In_silico/scripts/in_silico_PCR.pl",
     output:
-        index_genome="InSilico/PCR/{sample}/{sample}_genomic.fna.fm9",
-        json="InSilico/PCR/{sample}/dicey_output.json",
-        json_gz="InSilico/PCR/{sample}/dicey_output.json.gz",
-        amplicons="InSilico/PCR/{sample}/dicey_amplicons.tsv",
+        "InSilico/PCR/{sample}/insilico_amplicons.fasta",
+    log:
+        "InSilico/PCR/{sample}/insilico_amplicons.log",
     params:
-        primers=config["primer_file"],
+        forward_pr=config["forward_primer"],
+        reverse_pr=config["reverse_primer"],
+        max_length=config["merged_max_length"],
     threads: 1
     shell:
         """
-        dicey index -o {output.index_genome} {input.genome}
-        dicey search \
-         -i {input.repo}/src/primer3_config \
-         -g {input.genome} {params.primers} > {output.json}
-        gzip -f -c {output.json} > {output.json_gz}
-        python3 {input.repo}/scripts/json2tsv.py -j {output.json_gz} -m amplicon > {output.amplicons}
+        perl {input.script} -s {input.genome} -a {params.forward_pr} -b {params.reverse_pr} -m -r -l {params.max_length} > {log} 2> {output}
         """
 
-### extract amplicons into fasta
-rule amplicon_fasta:
-    conda:
-        "../../envs/dicey.yml"
-    container:
-        singularity_envs["dicey"]
-    input:
-        json_gz="InSilico/PCR/{sample}/dicey_output.json.gz",
-        script=workflow.basedir + "/rules/In_silico/scripts/json2fasta.py",
-    output:
-        "InSilico/PCR/{sample}/dicey_amplicons.fasta",
-    threads: 1
-    shell:
-        """
-        python3 {input.script} {input.json_gz} > {output[0]}
-        """
-    
-
-
-### UPDATE VCS: DO NOT USE SAME SCRIPT AS FOR DB; KEEP SEPARATE (IN DB THE FW PRIMER IS NOT ALWAYS PRESENT; IN AMPLICON IT SHOULD)
 rule cutadapt_trim_in_silico:
     conda:
         "../../envs/cutadapt.yml"
     container:
         singularity_envs["cutadapt"]
     input:
-        R1_raw_reads="InSilico/PCR/{sample}/dicey_amplicons.fasta",
+        R1_raw_reads="InSilico/PCR/{sample}/insilico_amplicons.fasta",
     output:
         R1_trimmed_reads="InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
     log:
@@ -219,6 +164,8 @@ rule In_silico_tax_compare:
         output_table_long="InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax_long.tsv",
     params:
         viz_replace_empty_tax=config["viz_replace_empty_tax"],
+        db_path=config["tax_DB_path"],
+        db_name=config["tax_DB_name"],
     log:
         logging_folder
         + "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.log",
