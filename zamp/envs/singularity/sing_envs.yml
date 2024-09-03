@@ -15,4 +15,4 @@ picrust2: docker://quay.io/biocontainers/picrust2:2.5.2--pyhdfd78af_0
 simulatePCR: docker://metagenlab/amplicons_simulatepcr:v.1.0
 TreeShrink: docker://metagenlab/amplicons_treeshrink:v.1.0
 pandas: docker://quay.io/biocontainers/pandas:2.2.1
-assembly_finder: docker://ghcr.io/metagenlab/assembly_finder:dev
+assembly_finder: docker://ghcr.io/metagenlab/assembly_finder:v0.7.7
