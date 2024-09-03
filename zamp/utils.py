@@ -189,10 +189,9 @@ def common_options(func):
         ),
         click.option(
             "--singularity-prefix",
-            default=snake_base(os.path.join("singularity")),
+            default=os.path.join(os.getcwd(), ".snakemake", "singularity"),
             help="Custom singularity container directory",
             type=click.Path(),
-            show_default=False,
         ),
         click.option(
             "--use-conda/--no-use-conda",
@@ -202,11 +201,9 @@ def common_options(func):
         ),
         click.option(
             "--conda-prefix",
-            default=snake_base(os.path.join("snakemake", "conda")),
+            default=os.path.join(os.getcwd(), ".snakemake", "conda"),
             help="Custom conda env directory",
             type=click.Path(),
-            show_default=False,
-            hidden=True,
         ),
         click.option(
             "--snake-default",
@@ -273,11 +270,13 @@ def db_options(func):
             "--fw-primer",
             type=str,
             help="Forward primer sequence to extract amplicon",
+            required=True,
         ),
         click.option(
             "--rv-primer",
             type=str,
             help="Reverse primer sequence to extract amplicon",
+            required=True
         ),
         click.option(
             "--minlen",
@@ -302,8 +301,7 @@ def db_options(func):
         ),
         click.option(
             "--max-mismatch",
-            type=int,
-            help="Maximum number of accepted primer mismatches",
+            help="Maximum number of accepted primer mismatches, or float between 0 and 1",
             default=4,
             show_default=True,
         ),
@@ -370,7 +368,7 @@ def run_options(func):
                 ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
             ),
             default=["RDP"],
-            help="Which classifiers to train on the database",
+            help="Which classifiers to use for taxonomic assignment",
             show_default=True,
         ),
         click.option(
@@ -554,10 +552,17 @@ def insilico_options(func):
             required=True,
         ),
         click.option(
-            "--primers",
-            type=click.Path(exists=True, file_okay=True, readable=True),
-            help="Primers fasta file",
+            "--database",
+            "-db",
+            type=click.Path(exists=True, dir_okay=True, readable=True),
+            help="Path to Database directory",
             required=True,
+        ),
+        click.option(
+            "--taxonkit",
+            default=lambda: os.path.join(os.getcwd(), ".taxonkit"),
+            help="Define path to taxonkit data-dir",
+            type=click.Path(),
         ),
         click.option(
             "--limit",
@@ -651,6 +656,83 @@ def insilico_options(func):
             help="Number of genomes per taxonomic rank",
             type=int,
             default=None,
+            show_default=True,
+        ),
+        click.option(
+            "--mismatch",
+            help="Number of mismatches",
+            type=int,
+            default=3,
+            show_default=True,
+        ),
+        click.option(
+            "--threeprime",
+            help="Number of match at the 3' end for a hit to be considered",
+            type=int,
+            default=2,
+            show_default=True,
+        ),
+        click.option(
+            "--fw-primer",
+            type=str,
+            help="Forward primer sequence to extract amplicon from reads",
+            required=True,
+        ),
+        click.option(
+            "--rv-primer",
+            type=str,
+            help="Reverse primer sequence to extract amplicon from reads",
+            required=True,
+        ),
+        click.option(
+            "--minlen",
+            type=int,
+            help="Minimum amplicon length",
+            default=300,
+            show_default=True,
+        ),
+        click.option(
+            "--maxlen",
+            type=int,
+            help="Maximum amplicon length",
+            default=500,
+            show_default=True,
+        ),
+        click.option(
+            "--ampcov",
+            type=float,
+            help="Minimum amplicon coverage",
+            default=0.9,
+            show_default=True,
+        ),
+        click.option(
+            "--max-mismatch",
+            help="Maximum number of accepted primer mismatches, or float between 0 and 1",
+            default=0.1,
+            show_default=True,
+        ),
+        click.option(
+            "--classifier",
+            multiple=True,
+            type=click.Choice(
+                ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["RDP"],
+            help="Which classifiers to use for taxonomic assignment",
+            show_default=True,
+        ),
+        click.option(
+            "--denoiser",
+            multiple=True,
+            type=click.Choice(["DADA2", "vsearch"], case_sensitive=False),
+            default=["DADA2"],
+            help="Choose dada2 or vsearch for denoising reads",
+            show_default=True,
+        ),
+        click.option(
+            "--replace-empty/--no-replace-empty",
+            default=False,
+            help="Replace empty taxa by placeholders",
             show_default=True,
         ),
     ]
