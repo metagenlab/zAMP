@@ -23,8 +23,9 @@
 
 ## Input
   count_table <- snakemake@input[["count_table"]]
-  Metadata_table <- snakemake@input[["Metadata_table"]]
-  taxonomy_table <- snakemake@input[["taxonomy_table"]]
+  asm_summary <- snakemake@input[["assembly_summary"]]
+  expected_taxonomy <- snakemake@input[["expected_taxonomy"]]
+  assigned_taxonomy <- snakemake@input[["assigned_taxonomy"]]
 
 ## Ouput
   output_table <- snakemake@output[["output_table"]]
@@ -40,18 +41,23 @@
   transposed_counts <- t(count_table)
   head(transposed_counts)
 
-### Read sample_data
+### Read assembly summary and taxonomy tables
   print("reading metadata")
-  metadata <- read.delim(file = Metadata_table, sep = "\t", header = TRUE, na.strings = "NA")
+  asm_df <- read.delim(file = asm_summary, sep = "\t", header = TRUE, na.strings = "NA", stringsAsFactors = FALSE)
+  asm_df$path <- as.character(asm_df$path)
+  asm_df$assembly_name = sub("_genomic\\.fna\\.gz$","", basename(asm_df$path)) #add column with assembly prefix name
+  subset_asm_df <- asm_df %>% select("accession", "assembly_name")
+  tax_df <- read.delim(file = expected_taxonomy, sep = "\t", header = TRUE)
+  metadata <- merge(subset_asm_df, tax_df, by="accession")
   head(metadata)
 
 ### Read and format taxonomy table
   print("reading taxonomy table")
-  taxonomy_table <- read.table(file = taxonomy_table, header = FALSE, sep = "\t")
-  head(taxonomy_table)
+  assigned_taxonomy <- read.table(file = assigned_taxonomy, header = FALSE, sep = "\t")
+  head(assigned_taxonomy)
 
 ### Convert the table into a tabular split version
-  taxonomy_table_split<-taxonomy_table %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
+  taxonomy_table_split<-assigned_taxonomy %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
 
 ### Replace the not properly named headers into proper ones
   colnames(taxonomy_table_split)[colnames(taxonomy_table_split)=="V1"] <- "Feature.ID"
@@ -92,20 +98,20 @@
   comparison <- metadata
 
 ## Loop over the Assemblies
-  for (i in comparison$AssemblyNames){
+  for (i in comparison$assembly_name){
     ### Keep the row of the assembly
     transposed_counts_i <- transposed_counts[rownames(transposed_counts)==i,]
     ### Keep ony variants with non-null counts
     transposed_counts_i_f <- transposed_counts_i[transposed_counts_i > 0]
     ### Count the number of variants
-    comparison[["Number of variants"]][comparison$AssemblyNames==i] <- length(names(transposed_counts_i_f))
+    comparison[["Number of variants"]][comparison$assembly_name==i] <- length(names(transposed_counts_i_f))
 
     for (j in 1:length(names(transposed_counts_i_f))){
       print(j)
       ## Recover Create columns for each variants, count it, and give the corresponding taxonomy
-      comparison[[paste0("Amplicon_", j)]][comparison$AssemblyNames==i] <- names(transposed_counts_i_f)[j]
-      comparison[[paste0("Count_", j)]][comparison$AssemblyNames==i] <- transposed_counts_i_f[j]
-      comparison[[paste0("Tax_", j)]][comparison$AssemblyNames==i] <- taxonomy_table_split$Taxonomy[taxonomy_table_split$Feature.ID == names(transposed_counts_i_f)[j]]
+      comparison[[paste0("Amplicon_", j)]][comparison$assembly_name==i] <- names(transposed_counts_i_f)[j]
+      comparison[[paste0("Count_", j)]][comparison$assembly_name==i] <- transposed_counts_i_f[j]
+      comparison[[paste0("Tax_", j)]][comparison$assembly_name==i] <- taxonomy_table_split$Taxonomy[taxonomy_table_split$Feature.ID == names(transposed_counts_i_f)[j]]
       j <- NULL
     }
     i <- NULL
@@ -114,20 +120,20 @@
 ## Add the cumulated some for all variants
   sum_of_count <- data.frame(rowSums(t(count_table)))
   colnames(sum_of_count)[colnames(sum_of_count)=="rowSums.t.count_table.."] <- "Sum of copies"
-  sum_of_count$AssemblyNames <- rownames(sum_of_count)
+  sum_of_count$assembly_name <- rownames(sum_of_count)
   comparison <- left_join(comparison, sum_of_count)
 
 ## Create a table with the same informations but in a long format
 ## Create an Seq column
   count_table$Feature.ID <- rownames(count_table)
 ## Match the position between the count and tax table and joined them
-  m <- match(count_table$Feature.ID, taxonomy_table$V1)
-  count_table_tax <- cbind(count_table, taxonomy_table$V2[m])
-  colnames(count_table_tax)[colnames(count_table_tax)=="taxonomy_table$V2[m]"] <- "Class_tax"
+  m <- match(count_table$Feature.ID, assigned_taxonomy$V1)
+  count_table_tax <- cbind(count_table, assigned_taxonomy$V2[m])
+  colnames(count_table_tax)[colnames(count_table_tax)=="assigned_taxonomy$V2[m]"] <- "Class_tax"
 
 
 ## Melt it in long
-  melt_table <- melt(count_table_tax, id.vars = c("Feature.ID", "Class_tax"), variable.name = "AssemblyNames") %>% filter(value>0)
+  melt_table <- melt(count_table_tax, id.vars = c("Feature.ID", "Class_tax"), variable.name = "assembly_name") %>% filter(value>0)
 
   compare_long <- right_join(metadata,melt_table)
   write.table(x = compare_long, file = output_table_long, sep="\t",quote=F, row.names = FALSE)
@@ -136,30 +142,30 @@
 comparison$Genus_agreement <- NA
 comparison$Species_agreement <- NA
 
-for (assembly_ID in unique(compare_long$AssemblyID)){
+for (assembly_ID in unique(compare_long$accession)){
   
-  observed_taxa <- filter(compare_long, AssemblyID == assembly_ID ) %>%
+  observed_taxa <- filter(compare_long, accession == assembly_ID ) %>%
     tidyr::separate(Class_tax, sep = ";", into = c("Assigned_Kingdom","Assigned_Phylum","Assigned_Class","Assigned_Order","Assigned_Family","Assigned_Genus","Assigned_Species"))
-  
+  print(observed_taxa)
   if(!(unique(observed_taxa$genus) %in% observed_taxa$Assigned_Genus)){
-    comparison$Genus_agreement[comparison$AssemblyID == assembly_ID] <- "Discrepant"
-    comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Discrepant_Genus" 
+    comparison$Genus_agreement[comparison$accession == assembly_ID] <- "Discrepant"
+    comparison$Species_agreement[comparison$accession == assembly_ID] <- "Discrepant_Genus" 
     
   }else{
 
-    comparison$Genus_agreement[comparison$AssemblyID == assembly_ID] <- "Matching"
+    comparison$Genus_agreement[comparison$accession == assembly_ID] <- "Matching"
       
     species <- unique(str_trim(str_remove(string = as.character(observed_taxa$species), as.character(unique(observed_taxa$genus)))))
     assigned_species <- str_trim(str_remove(string = as.character(observed_taxa$Assigned_Species), as.character(unique(observed_taxa$Assigned_Genus))))
 
     if(all(grepl(pattern = species ,  x = assigned_species))) {
-      comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Matching"
+      comparison$Species_agreement[comparison$accession == assembly_ID] <- "Matching"
       
     }else  if (any(grepl(pattern = species ,  x = assigned_species))) {
-      comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Partial match"
+      comparison$Species_agreement[comparison$accession == assembly_ID] <- "Partial match"
       
     }else{
-      comparison$Species_agreement[comparison$AssemblyID == assembly_ID] <- "Discrepant"
+      comparison$Species_agreement[comparison$accession == assembly_ID] <- "Discrepant"
 
     }
   }
