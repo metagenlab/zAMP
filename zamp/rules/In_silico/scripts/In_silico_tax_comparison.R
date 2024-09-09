@@ -57,7 +57,7 @@
   head(assigned_taxonomy)
 
 ### Convert the table into a tabular split version
-  taxonomy_table_split<-assigned_taxonomy %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
+  taxonomy_table_split <- assigned_taxonomy %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
 
 ### Replace the not properly named headers into proper ones
   colnames(taxonomy_table_split)[colnames(taxonomy_table_split)=="V1"] <- "Feature.ID"
@@ -141,12 +141,14 @@
 ## Check for Genus/Species assignment agreement
 comparison$Genus_agreement <- NA
 comparison$Species_agreement <- NA
+comparison$Matching_amplicons <- NA
+comparison$Discrepant_amplicons <- NA
 
 for (assembly_ID in unique(compare_long$accession)){
   
   observed_taxa <- filter(compare_long, accession == assembly_ID ) %>%
     tidyr::separate(Class_tax, sep = ";", into = c("Assigned_Kingdom","Assigned_Phylum","Assigned_Class","Assigned_Order","Assigned_Family","Assigned_Genus","Assigned_Species"))
-  print(observed_taxa)
+  
   if(!(unique(observed_taxa$genus) %in% observed_taxa$Assigned_Genus)){
     comparison$Genus_agreement[comparison$accession == assembly_ID] <- "Discrepant"
     comparison$Species_agreement[comparison$accession == assembly_ID] <- "Discrepant_Genus" 
@@ -157,7 +159,6 @@ for (assembly_ID in unique(compare_long$accession)){
       
     species <- unique(str_trim(str_remove(string = as.character(observed_taxa$species), as.character(unique(observed_taxa$genus)))))
     assigned_species <- str_trim(str_remove(string = as.character(observed_taxa$Assigned_Species), as.character(unique(observed_taxa$Assigned_Genus))))
-
     if(all(grepl(pattern = species ,  x = assigned_species))) {
       comparison$Species_agreement[comparison$accession == assembly_ID] <- "Matching"
       
@@ -171,7 +172,17 @@ for (assembly_ID in unique(compare_long$accession)){
   }
 
 }
-  
 
+# If the species was not in your pre-processed DB, an agreement cannot be found
+comparison[comparison$in_DB == FALSE,]$Genus_agreement <- 'Species_not_in_your_DB'
+comparison[comparison$in_DB == FALSE,]$Species_agreement <- 'Species_not_in_your_DB'
+# If there was no amplification product:
+comparison[comparison$Number_of_variants == 0,]$Genus_agreement <- 'No_PCR_amplification'
+comparison[comparison$Number_of_variants == 0,]$Species_agreement <- 'No_PCR_amplification'
+
+# relocate some columns
+comparison <- comparison[,c(1:25, (ncol(comparison)-4):ncol(comparison), 26:(ncol(comparison)-5))]
+print('final table head')
+head(comparison)
 write.table(x = comparison, file = output_table, sep="\t", quote=F, row.names = FALSE)
 
