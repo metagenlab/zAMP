@@ -1,0 +1,68 @@
+## Remove primers from sequences
+
+
+rule cutadapt_trim_paired:
+    conda:
+        os.path.join(dir.envs, "cutadapt.yml")
+    container:
+        singularity_envs["cutadapt"]
+    input:
+        R1_raw_reads=os.path.join(dir.out.fastq, "{sample}_R1.fastq.gz"),
+        R2_raw_reads=os.path.join(dir.out.fastq, "{sample}_R2.fastq.gz"),
+    output:
+        R1_trimmed_reads=temp(
+            os.path.join(
+                dir.out.cutadapt,
+                "{denoiser}",
+                "1a_trimmed_primers",
+                "{sample}_trimmed_R1.fastq.gz",
+            )
+        ),
+        R2_trimmed_reads=temp(
+            os.path.join(
+                dir.out.cutadapt,
+                "{denoiser}",
+                "1a_trimmed_primers",
+                "{sample}_trimmed_R2.fastq.gz",
+            )
+        ),
+    log:
+        os.path.join(
+            dir.logs, "{denoiser}", "1a_trimmed_primers", "{sample}_trimmed_paired.txt"
+        ),
+    params:
+        amplicon_type=AMPLICON,
+        forward_primer=FW_PRIMER,
+        reverse_primer=RV_PRIMER,
+    threads: 1
+    script:
+        "scripts/1_cutadapt_paired.py"
+
+
+rule cutadapt_trim_single:
+    conda:
+        os.path.join(dir.envs, "cutadapt.yml")
+    container:
+        singularity_envs["cutadapt"]
+    input:
+        R1_raw_reads=os.path.join(dir.out.fastq, "{sample}_single.fastq.gz"),
+    output:
+        R1_trimmed_reads=temp(
+            os.path.join(
+                dir.out.cutadapt,
+                "{denoiser}",
+                "1a_trimmed_primers",
+                "{sample}_trimmed_single.fastq.gz",
+            )
+        ),
+    log:
+        os.path.join(
+            dir.logs, "{denoiser}", "1a_trimmed_primers", "{sample}_trimmed_single.txt"
+        ),
+    params:
+        amplicon_type=AMPLICON,
+        forward_primer=FW_PRIMER,
+        reverse_primer=RV_PRIMER,
+    threads: 1
+    script:
+        "scripts/1_cutadapt_single.py"

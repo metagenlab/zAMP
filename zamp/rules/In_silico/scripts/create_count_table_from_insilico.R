@@ -1,0 +1,58 @@
+# Title     : Vsearch count table
+# Objective : Format a count table from vsearch output
+# Created by: valentinscherz & violeta CS
+# Created on: 06.06.1p
+
+## Redirect R output
+    log <- file(snakemake@log[[1]], open="wt")
+    sink(log)
+    sink(log, type="message")
+
+## Load needed library
+    library(dplyr);packageVersion("dplyr")
+    library(tidyr)
+
+## Input
+    count_table_samples <- snakemake@input[["count_table_samples"]]
+
+## Output
+    count_table <- snakemake@output[["count_table"]]
+
+## Reformat
+    otus_table<-as.data.frame(array(dim=c(1,3)))
+    colnames(otus_table) <- c("sample", "V1", "V2")
+
+
+## Reformat
+    otus_table<-as.data.frame(array(dim=c(1,3)))
+    colnames(otus_table) <- c("sample", "V1", "V2")
+
+
+    for (xx in count_table_samples){
+    print(paste("Processing", xx))
+    sample <- gsub("_count_table.tsv", "", basename(xx))
+    print(paste("sample:", sample))
+    table <- as.data.frame(array(dim=c(1,2)))
+    table$V1 <- "No_amp"
+    table$V2 <- 0
+    try(table <-read.table(file = xx, sep="\t", as.is=T, header=F))
+    table <- cbind("sample"=sample, table)
+    print(table)
+    otus_table <- rbind(otus_table, table)
+    }
+
+    otus_table <- otus_table[-1,]
+    colnames(otus_table) <- c("sample", "Seq_ID", "counts")
+
+
+## Transform this table to have a wide format where we have a column by sample
+    transf_vsearch_table <- otus_table %>%
+      group_by(sample, Seq_ID) %>%
+      summarise(counts = sum(counts)) %>%
+      dcast(Seq_ID ~ Sample)
+
+## Set OTU as rownames
+rownames(transf_vsearch_table) <- transf_vsearch_table$Seq_ID
+transf_vsearch_table <- transf_vsearch_table[,-1]
+## Write output
+write.table(x = transf_vsearch_table, file = count_table, sep="\t", quote=FALSE)

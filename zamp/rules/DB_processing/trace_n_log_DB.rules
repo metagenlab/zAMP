@@ -1,0 +1,55 @@
+## Set of rules to backup the input database and generate a hash code of these input files and the output files.
+
+
+rule Back_up_master:
+    input:
+        seqs=FASTA,
+        tax=TAXONOMY,
+    output:
+        seqs="{prefix}/master/original_seqs.fasta",
+        tax="{prefix}/master/original_tax.txt",
+    threads: 1
+    shell:
+        """
+        cp {input.seqs} {output.seqs} && \
+        cp {input.tax} {output.tax}
+        """
+
+
+rule Hash_master_files:
+    input:
+        seqs="{prefix}/master/original_seqs.fasta",
+        tax="{prefix}/master/original_tax.txt",
+    output:
+        hash="{prefix}/master/original.hash",
+    threads: 1
+    shell:
+        """
+        md5sum {input.seqs} {input.tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
+
+
+## Generate a hash from all relevant files to insure that we always work with the same reference databases
+
+hashes = {
+    "rdp": "{prefix}/RDP/RDP_DB.hash",
+    "qiimerdp": "{prefix}/QIIME/DB_formatted.hash",
+    "dada2rdp": "{prefix}/dada2rdp/DADA2_DB.hash",
+    "decipher": "{prefix}/RDP/RDP_DB.hash",
+}
+
+hash_out = ["{prefix}/master/original.hash"]
+for classifier in CLASSIFIERS:
+    hash_out.append(hashes[classifier])
+
+
+rule hash_global_DB:
+    input:
+        hash_out,
+    output:
+        "{prefix}/DB.hash",
+    threads: 1
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """

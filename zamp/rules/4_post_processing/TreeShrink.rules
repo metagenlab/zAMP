@@ -1,0 +1,20 @@
+## Identify oultiers in phylogenetic trees
+rule TreeShrink_identiy_outlier:
+    conda:
+        os.path.join(dir.envs, "TreeShrink.yml")
+    container:
+        singularity_envs["TreeShrink"]
+    input:
+        os.path.join(dir.out.base, "{prefix}.tree"),
+    output:
+        os.path.join(dir.out.base, "{prefix}_treeshrink", "output_summary.txt"),
+        os.path.join(dir.out.base, "{prefix}_treeshrink", "output.tree"),
+        os.path.join(dir.out.base, "{prefix}_treeshrink", "output.txt"),
+    params:
+        quantile=0.05,  #default of the tool
+    log:
+        os.path.join(dir.logs, "{prefix}_treeshrink", "output_summary.log"),
+    shell:
+        """
+        run_treeshrink.py -o $(dirname {output[0]}) -q {params[quantile]} -t {input}
+        """

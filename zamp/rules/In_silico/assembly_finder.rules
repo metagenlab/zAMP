@@ -1,0 +1,57 @@
+af_args = ""
+if not TAXON:
+    af_args += "--accession "
+else:
+    if LIMIT:
+        af_args += f"--limit {LIMIT} "
+
+    if RANK and NRANK:
+        af_args += f"--rank {RANK} --nrank {NRANK}"
+
+    if ASM_LVL:
+        af_args += f"--assembly-level {ASM_LVL} "
+    if SOURCE:
+        ARGS += f"--assembly-source {SOURCE} "
+    if ATYPICAL:
+        ARGS += "--exclude-atypical "
+    if MAG:
+        ARGS += f"--mag {MAG} "
+    if REFERENCE:
+        ARGS += "--reference "
+
+if API_KEY:
+    af_args += f"--api-key {API_KEY} "
+
+GZIP = ""
+if COMPRESSED:
+    GZIP = "--gzip"
+
+
+checkpoint download_assemblies:
+    conda:
+        os.path.join(dir.envs, "assembly_finder.yml")
+    container:
+        singularity_envs["assembly_finder"]
+    input:
+        INSILICO_TAX,
+    output:
+        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+        seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
+        tax=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+    params:
+        args=af_args,
+        taxonkit=TAXONKIT,
+        out=os.path.join(dir.out.base, "assembly_finder"),
+    log:
+        os.path.join(dir.logs, "assembly_finder.log"),
+    threads: 1
+    shell:
+        """
+        assembly_finder \\
+        --no-use-conda \\
+        -i {input} \\
+        --taxonkit {params.taxonkit} \\
+        --threads {threads} \\
+        {params.args} \\
+        -o {params.out} 2> {log}
+        """

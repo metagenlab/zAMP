@@ -1,0 +1,138 @@
+## Generate MultiQC reports
+
+
+rule fastQC_raw_reads:
+    conda:
+        os.path.join(dir.envs, "FastQC.yml")
+    container:
+        singularity_envs["fastqc"]
+    input:
+        os.path.join(dir.out.fastq, "{sample}_{suffix}.fastq.gz"),
+    output:
+        temp(
+            os.path.join(
+                dir.out.qc,
+                "FastQC",
+                "raw_reads",
+                "{run}",
+                "{sample}_{suffix}_fastqc.zip",
+            )
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "QC",
+            "FastQC",
+            "raw_reads",
+            "{run}",
+            "{sample}_{suffix}_fastqc.txt",
+        ),
+    threads: 1
+    shell:
+        """
+        fastqc -t {threads} {input} -o $(dirname {output[0]}) --nogroup 2> {log[0]}
+        """
+
+
+def sample_list_run_QC(run):
+    file_list = []
+    samples = list(SAMPLES[SAMPLES["run"] == run].index)
+    for sample in samples:
+        if SAMPLES.loc[sample, "paired"]:
+            suffix = ["R1", "R2"]
+        else:
+            suffix = ["single"]
+        combined_values = expand(
+            os.path.join(
+                "{qc}", "FastQC", "raw_reads", "{run}", "{sample}_{suffix}_fastqc.zip"
+            ),
+            qc=dir.out.qc,
+            run=run,
+            sample=sample,
+            suffix=suffix,
+        )
+        file_list = file_list + combined_values
+
+    return file_list
+
+
+rule multiQC_per_run:
+    conda:
+        os.path.join(dir.envs, "MultiQC.yml")
+    container:
+        singularity_envs["multiqc"]
+    input:
+        lambda wildcards: sample_list_run_QC(wildcards.run),
+    output:
+        report(
+            os.path.join(dir.out.qc, "{run}_multiqc_raw_reads_report.html"),
+            caption="report/MultiQC.rst",
+            category="MultiQC",
+            subcategory="{run}",
+        ),
+        os.path.join(
+            dir.out.qc,
+            "{run}_multiqc_raw_reads_report_data",
+            "multiqc_general_stats.txt",
+        ),
+    log:
+        os.path.join(dir.logs, "QC", "{run}_multiqc_raw_reads_report.txt"),
+    priority: 100
+    shell:
+        """
+        multiqc --interactive -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl-config "max_table_rows: 100000" 2> {log[0]}
+        """
+
+
+def sample_list_overall_QC():
+    file_list = []
+
+    for run in set(SAMPLES["run"]):
+        samples = list(SAMPLES[SAMPLES["run"] == run].index)
+        for sample in samples:
+            if SAMPLES.loc[sample, "paired"]:
+                suffix = ["R1", "R2"]
+            else:
+                suffix = ["single"]
+            combined_values = expand(
+                os.path.join(
+                    "{qc}",
+                    "FastQC",
+                    "raw_reads",
+                    "{run}",
+                    "{sample}_{suffix}_fastqc.zip",
+                ),
+                qc=dir.out.qc,
+                run=run,
+                sample=sample,
+                suffix=suffix,
+            )
+            file_list = file_list + combined_values
+
+    return file_list
+
+
+rule multiQC_all:
+    conda:
+        os.path.join(dir.envs, "MultiQC.yml")
+    container:
+        singularity_envs["multiqc"]
+    input:
+        sample_list_overall_QC(),
+    output:
+        report(
+            os.path.join(dir.out.qc, "multiqc_raw_reads_report.html"),
+            caption="report/MultiQC.rst",
+            category="MultiQC",
+            subcategory="All run",
+        ),
+        os.path.join(
+            dir.out.qc, "multiqc_raw_reads_report_data/multiqc_general_stats.txt"
+        ),
+    log:
+        os.path.join(dir.logs, "QC", "multiqc_raw_reads_report.txt"),
+    priority: 100
+    shell:
+        """
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl-config "max_table_rows: 100000" 2> {log[0]}
+        """

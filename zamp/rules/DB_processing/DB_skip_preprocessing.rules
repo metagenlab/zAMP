@@ -1,0 +1,43 @@
+## We recommend to format the taxonomy database to extract the region of gene of interest and merge the taxonomy of taxa that have
+# identical sequences on this shorter gene region. However, in case where "extract_and_merge" is set to False in config file, these
+# set of rules will be used to bypass the preprocessing of the database.
+
+
+rule copy_fasta:
+    input:
+        "{prefix}/master/original_seqs.fasta",
+    output:
+        "{prefix}/QIIME/DB_amp.fasta",
+    shell:
+        """
+        cp {input} {output}
+        """
+
+
+rule clean_unprocessed_DB_taxonomy:
+    conda:
+        os.path.join(dir.envs, "pandas.yml")
+    container:
+        singularity_envs["pandas"]
+    input:
+        tax="{prefix}/master/original_tax.txt",
+    output:
+        tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+    params:
+        db_name=DB_NAME,
+    threads: 1
+    script:
+        "scripts/clean_tax.py"
+
+
+rule Hash_untreated_tax:
+    input:
+        tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+        fasta="{prefix}/QIIME/DB_amp.fasta",
+    output:
+        hash="{prefix}/QIIME/DB_formatted.hash",
+    threads: 1
+    shell:
+        """
+        md5sum {input.tax} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """

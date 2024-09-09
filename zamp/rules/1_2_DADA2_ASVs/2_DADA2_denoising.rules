@@ -1,0 +1,523 @@
+# Process trimmed sequences with DADA2 to correct errors and generate ASVs.
+# Adapted from DADA2's "big data" protocol (https://benjjneb.github.io/dada2/bigdata.html)
+# Define trimmed or not trimmed input (for read already trimmed)
+
+
+def DADA2_trim_input_paired(wildcards):
+    if TRIM == True:
+        return expand(
+            os.path.join(
+                dir.out.cutadapt,
+                "DADA2",
+                "1a_trimmed_primers",
+                "{sample}_trimmed_{R}.fastq.gz",
+            ),
+            sample=wildcards.sample,
+            R=["R1", "R2"],
+        )
+    else:
+        return expand(
+            os.path.join(dir.out.fastq, "{sample}_{R}.fastq.gz"),
+            sample=wildcards.sample,
+            R=["R1", "R2"],
+        )
+
+
+def DADA2_trim_input_single():
+    if TRIM == True:
+        return os.path.join(
+            dir.out.cutadapt,
+            "DADA2",
+            "1a_trimmed_primers",
+            "{sample}_trimmed_single.fastq.gz",
+        )
+    else:
+        return os.path.join(dir.out.fastq, "{sample}_single.fastq.gz")
+
+
+### Remove low quality and too short reads
+rule DADA2_q_filtering_paired:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        DADA2_trim_input_paired,
+    output:
+        q_score_filtered_F=temp(
+            os.path.join(
+                dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_R1.fastq.gz"
+            )
+        ),
+        q_score_filtered_R=temp(
+            os.path.join(
+                dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_R2.fastq.gz"
+            )
+        ),
+        q_filtering_stats=os.path.join(
+            dir.out.dada2,
+            "1b_q_score_filtered",
+            "{sample}_q_score_filtering_paired_stats.rds",
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "DADA2",
+            "1b_q_score_filtered",
+            "{sample}_DADA2_1b_q_score_filtering.txt",
+        ),
+    params:
+        F_reads_length_trim=FW_TRIM,
+        R_reads_length_trim=RV_TRIM,
+        FW_expected_errors=FW_ERRORS,
+        RV_expected_errors=RV_ERRORS,
+        sample_name=lambda wildcards: wildcards.sample,
+    threads: 1
+    script:
+        "scripts/1_DADA2_q_filtering_paired.R"
+
+
+rule DADA2_q_filtering_single:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        DADA2_trim_input_single(),
+    output:
+        q_score_filtered_F=temp(
+            os.path.join(
+                dir.out.dada2,
+                "1b_q_score_filtered",
+                "{sample}_filtered_single.fastq.gz",
+            )
+        ),
+        q_filtering_stats=os.path.join(
+            dir.out.dada2,
+            "1b_q_score_filtered",
+            "{sample}_q_score_filtering_single_stats.rds",
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "DADA2",
+            "1b_q_score_filtered",
+            "{sample}_DADA2_1b_q_score_filtering.txt",
+        ),
+    params:
+        F_reads_length_trim=FW_TRIM,
+        FW_expected_errors=FW_ERRORS,
+        sample_name=lambda wildcards: wildcards.sample,
+    threads: 1
+    script:
+        "scripts/1_DADA2_q_filtering_single.R"
+
+
+def error_learn_input(direction, run):
+    return expand(
+        os.path.join(
+            dir.out.dada2,
+            "1b_q_score_filtered",
+            "{sample}_filtered_{R}.fastq.gz",
+        ),
+        sample=list(SAMPLES[SAMPLES.run == run].index),
+        R=direction,
+    )
+
+
+### Learn error profile of the runs
+rule DADA2_learn_errors_paired:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        q_score_filtered_F=lambda wildcards: error_learn_input("R1", wildcards.run),
+        q_score_filtered_R=lambda wildcards: error_learn_input("R2", wildcards.run),
+    output:
+        error_profile_F=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_F.rds"
+        ),
+        error_profile_R=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_R.rds"
+        ),
+        error_profile_F_plot=report(
+            os.path.join(
+                dir.out.dada2, "2_denoised", "{run}", "error_profile_F_plot.png"
+            ),
+            caption=os.path.join("report", "DADA2_error_profile.rst"),
+            category="DADA2",
+            subcategory="Error profile",
+        ),
+        error_profile_R_plot=report(
+            os.path.join(
+                dir.out.dada2, "2_denoised", "{run}", "error_profile_R_plot.png"
+            ),
+            caption=os.path.join("report", "DADA2_error_profile.rst"),
+            category="DADA2",
+            subcategory="Error profile",
+        ),
+    log:
+        os.path.join(dir.logs, "DADA2", "2_denoised", "{run}", "DADA2_learn_errors.txt"),
+    threads: 8
+    script:
+        "scripts/2a_big_data_DADA2_learn_errors_paired.R"
+
+
+rule DADA2_learn_errors_single:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        q_score_filtered_F=lambda wildcards: error_learn_input("single", wildcards.run),
+    output:
+        error_profile_F=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_single.rds"
+        ),
+        error_profile_F_plot=report(
+            os.path.join(
+                dir.out.dada2, "2_denoised", "{run}", "error_profile_single_plot.png"
+            ),
+            caption=os.path.join("report", "DADA2_error_profile.rst"),
+            category="DADA2",
+            subcategory="Error profile",
+        ),
+    log:
+        os.path.join(dir.logs, "DADA2", "2_denoised", "{run}", "DADA2_learn_errors.txt"),
+    threads: 8
+    script:
+        "scripts/2a_big_data_DADA2_learn_errors_single.R"
+
+
+## Correct errors based on profile error of the run
+rule DADA2_infer_paired_ASV:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        q_score_filtered_F=os.path.join(
+            dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_R1.fastq.gz"
+        ),
+        q_score_filtered_R=os.path.join(
+            dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_R2.fastq.gz"
+        ),
+        error_profile_F=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_F.rds"
+        ),
+        error_profile_R=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_R.rds"
+        ),
+    output:
+        infer_stats=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "{sample}_paired_infer_stats.rds"
+        ),
+        sample_seq_tab=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "{sample}_paired_infer_seq_tab.rds"
+        ),
+    params:
+        sample_name=lambda wildcards: wildcards.sample,
+        run=lambda wildcards: wildcards.run,
+        x_column_value=lambda wildcards: wildcards.sample,
+        min_overlap=OVERLAP,
+    log:
+        os.path.join(
+            dir.logs, "DADA2", "2_denoised", "{run}", "{sample}_DADA2_2_infer_ASV.txt"
+        ),
+    threads: 4
+    script:
+        "scripts/2b_big_data_DADA2_infer_ASV_paired.R"
+
+
+rule DADA2_infer_single_ASV:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        q_score_filtered_F=os.path.join(
+            dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_single.fastq.gz"
+        ),
+        error_profile_F=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "error_profile_single.rds"
+        ),
+    output:
+        infer_stats=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "{sample}_single_infer_stats.rds"
+        ),
+        sample_seq_tab=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "{sample}_single_infer_seq_tab.rds"
+        ),
+    params:
+        sample_name=lambda wildcards: wildcards.sample,
+        run=lambda wildcards: wildcards.run,
+        x_column_value=lambda wildcards: wildcards.sample,
+        min_overlap=OVERLAP,
+    log:
+        os.path.join(
+            dir.logs, "DADA2", "2_denoised", "{run}", "{sample}_DADA2_2_infer_ASV.txt"
+        ),
+    threads: 4
+    script:
+        "scripts/2b_big_data_DADA2_infer_ASV_single.R"
+
+
+## Functions that call single or paired rules based on sample layout.
+def sample_list_run_DADA2_merge(run):
+    sample_list = []
+    stat_list = []
+    samples = list(SAMPLES[SAMPLES["run"] == run].index)
+    for sample in samples:
+        if PAIRING[sample] == "single":
+            sample_file = [
+                os.path.join(
+                    dir.out.dada2,
+                    "2_denoised",
+                    run,
+                    f"{sample}_single_infer_seq_tab.rds",
+                )
+            ]
+            stat_file = [
+                os.path.join(
+                    dir.out.dada2, "2_denoised", run, f"{sample}_single_infer_stats.rds"
+                )
+            ]
+        elif PAIRING[sample] == "paired":
+            sample_file = [
+                os.path.join(
+                    dir.out.dada2,
+                    "2_denoised",
+                    run,
+                    f"{sample}_paired_infer_seq_tab.rds",
+                )
+            ]
+            stat_file = [
+                os.path.join(
+                    dir.out.dada2, "2_denoised", run, f"{sample}_paired_infer_stats.rds"
+                )
+            ]
+        sample_list = sample_list + sample_file
+        stat_list = stat_list + stat_file
+
+    return {"sample_seq_tab": sample_list, "infer_stats": stat_list}
+
+
+### Merge the ASVs determined from the different samples
+rule DADA2_merge_sample_ASV:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        unpack(lambda wildcards: sample_list_run_DADA2_merge(wildcards.run)),
+    output:
+        run_stats=os.path.join(dir.out.dada2, "2_denoised", "{run}", "run_stats.rds"),
+        run_seq_table=os.path.join(
+            dir.out.dada2, "2_denoised", "{run}", "run_seq_tab.rds"
+        ),
+    log:
+        os.path.join(
+            dir.logs, "DADA2", "2_denoised", "{run}", "DADA2_2_merge_sample_ASV.txt"
+        ),
+    threads: 1
+    script:
+        "scripts/2c_big_data_DADA2_merge_ASV.R"
+
+
+### Merge data from all run, filter out chimera and remove too short merged sequences
+rule DADA2_merge_runs_filter_chim:
+    conda:
+        os.path.join(dir.envs, "DADA2_in_R.yml")
+    container:
+        singularity_envs["dada2"]
+    input:
+        seq_tab=expand(
+            os.path.join(dir.out.dada2, "2_denoised", "{run}", "run_seq_tab.rds"),
+            run=list(set(SAMPLES["run"])),
+        ),
+    output:
+        no_chim=os.path.join(dir.out.dada2, "2_denoised", "dna-sequences_no_chim.rds"),
+        length_filtered=os.path.join(
+            dir.out.dada2, "2_denoised", "dna-sequences_long_names.rds"
+        ),
+        rep_seqs=report(
+            os.path.join(dir.out.dada2, "2_denoised", "dna-sequences.fasta"),
+            caption=os.path.join("report", "DADA2_output.rst"),
+            category="DADA2",
+            subcategory="Output",
+        ),
+        count_table=report(
+            os.path.join(dir.out.dada2, "2_denoised", "count_table.tsv"),
+            caption=os.path.join("report", "DADA2_output.rst"),
+            category="DADA2",
+            subcategory="Output",
+        ),
+        length_histo=report(
+            os.path.join(dir.out.dada2, "2_denoised", "merged_reads_length.png"),
+            caption=os.path.join("report", "DADA2_output.rst"),
+            category="DADA2",
+            subcategory="Output",
+        ),
+    log:
+        os.path.join(dir.logs, "DADA2", "2_denoised", "DADA2_2_merge_filter_chim.txt"),
+    params:
+        merged_min_length=MINLEN,
+        merged_max_length=MAXLEN,
+    threads: 4
+    script:
+        "scripts/2d_big_data_DADA2_merge_chimera.R"
+
+
+def sample_list_run_DADA2_stats():
+    file_list = []
+    samples = list(SAMPLES.index)
+    for sample in samples:
+        input_file = [
+            os.path.join(
+                dir.out.dada2,
+                "1b_q_score_filtered",
+                f"{sample}_q_score_filtering_{PAIRING[sample]}_stats.rds",
+            )
+        ]
+        file_list = file_list + input_file
+    return file_list
+
+
+### Generate filtration stats
+rule DADA2_filter_stats:
+    conda:
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
+    container:
+        singularity_envs["r_utils"]
+    input:
+        q_filtering_stats=sample_list_run_DADA2_stats(),
+        run_stats=expand(
+            os.path.join(dir.out.dada2, "2_denoised", "{run}", "run_stats.rds"),
+            run=list(set(SAMPLES["run"])),
+        ),
+        no_chim=os.path.join(dir.out.dada2, "2_denoised", "dna-sequences_no_chim.rds"),
+        length_filtered=os.path.join(
+            dir.out.dada2, "2_denoised", "dna-sequences_long_names.rds"
+        ),
+    output:
+        filtering_stats=report(
+            os.path.join(dir.out.dada2, "2_denoised", "DADA2_denoising_stats.tsv"),
+            caption=os.path.join("report", "DADA2_output.rst"),
+            category="DADA2",
+            subcategory="Output",
+        ),
+    log:
+        os.path.join(dir.logs, "DADA2", "2_denoised", "DADA2_denoising_stats.txt"),
+    threads: 1
+    priority: 1
+    script:
+        "scripts/2e_big_data_DADA2_filtering_stats.R"
+
+
+### Accessory rules to generate QC reports after q-score filtering. Not in regular use
+rule assess_quality_paired_filtered_reads_with_fastqc:
+    conda:
+        os.path.join(dir.envs, "FastQC.yml")
+    container:
+        singularity_envs["fastqc"]
+    input:
+        os.path.join(
+            dir.out.dada2, "1b_q_score_filtered", "{sample}_filtered_{suffix}.fastq.gz"
+        ),
+    output:
+        temp(
+            os.path.join(
+                dir.out.qc,
+                "FastQC",
+                "DADA2_filtered",
+                "{sample}_filtered_{suffix}_fastqc.zip",
+            )
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "QC",
+            "FastQC",
+            "DADA2",
+            "DADA2_filtered",
+            "{sample}_filtered_{suffix}_fastqc.txt",
+        ),
+    shell:
+        """
+        fastqc {input} -o $(dirname {output[0]}) 2> {log[0]}
+        """
+
+
+## Functions that call single or paired rules for QC, based on sample layout.
+def sample_list_run_DADA2_QC():
+    sample_list = []
+    samples = list(SAMPLES.index)
+    for sample in samples:
+        if PAIRING[sample] == "single":
+            trim_stat = [
+                os.path.join(
+                    dir.logs,
+                    "DADA2",
+                    "1a_trimmed_primers",
+                    f"{sample}_trimmed_single.txt",
+                )
+            ]
+            filtered = [
+                os.path.join(
+                    dir.out.qc,
+                    "FastQC",
+                    "DADA2_filtered",
+                    f"{sample}_filtered_single_fastqc.zip",
+                )
+            ]
+        elif PAIRING[sample] == "paired":
+            trim_stat = [
+                os.path.join(
+                    dir.logs,
+                    "DADA2",
+                    "1a_trimmed_primers",
+                    f"{sample}_trimmed_paired.txt",
+                )
+            ]
+            filtered = [
+                os.path.join(
+                    dir.out.qc,
+                    "FastQC",
+                    "DADA2_filtered",
+                    f"{sample}_filtered_R1_fastqc.zip",
+                ),
+                os.path.join(
+                    dir.out.qc,
+                    "FastQC",
+                    "DADA2_filtered",
+                    f"{sample}_filtered_R2_fastqc.zip",
+                ),
+            ]
+        sample_list = sample_list + trim_stat + filtered
+
+    return sample_list
+
+
+rule create_filtered_reads_multiqc_report:
+    conda:
+        os.path.join(dir.envs, "MultiQC.yml")
+    container:
+        singularity_envs["multiqc"]
+    input:
+        sample_list_run_DADA2_QC(),
+    output:
+        report(
+            os.path.join(
+                dir.out.qc, "multiqc_DADA2_filtered_paired_reads_report.html"
+            ),
+            caption=os.path.join("report", "DADA2_output.rst"),
+            category="DADA2",
+            subcategory="MultiQC",
+        ),
+    log:
+        os.path.join(dir.logs, "QC", "multiqc_DADA2_filtered_paired_reads_report.txt"),
+    shell:
+        """
+        multiqc -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl_config "max_table_rows: 100000" 2> {log[0]}
+        """

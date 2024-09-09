@@ -1,0 +1,95 @@
+##  Recommedned rules to preprocess the reference taxonomy database to keep only the region of the gene considered by the
+# used primers. Can be skipped by "extract_and_merge" = False parameters in config file.
+
+
+rule Extract_amplicons_cutadapt:
+    conda:
+        os.path.join(dir.envs, "cutadapt.yml")
+    container:
+        singularity_envs["cutadapt"]
+    input:
+        "{prefix}/master/original_seqs.fasta",
+    output:
+        "{prefix}/QIIME/dna-sequences.fasta",
+    params:
+        errors=ERRORS,
+        adapter=ADAPTER,
+        coverage=COV,
+        minlen=MINLEN,
+        maxlen=MAXLEN,
+    log:
+        "{prefix}/logs/QIIME/DB_cutadapt.txt",
+    threads: 3
+    shell:
+        """
+        cutadapt \
+        --cores {threads} \
+        --error-rate {params.errors} \
+        --times 1 \
+        -o {output} \
+        -g "{params.adapter}" \
+        --discard-untrimmed \
+        --minimum-length {params.minlen} \
+        --maximum-length {params.maxlen} \
+        {input} > {log}
+        """
+
+
+rule Dereplicate_amplicons:
+    conda:
+        os.path.join(dir.envs, "vsearch.yml")
+    container:
+        singularity_envs["vsearch"]
+    input:
+        "{prefix}/QIIME/dna-sequences.fasta",
+    output:
+        fasta="{prefix}/QIIME/DB_amp.fasta",
+        uc="{prefix}/QIIME/DB_amp.uc",
+    log:
+        "{prefix}/logs/QIIME/vsearch_dereplicate_ampli.log",
+    threads: 1
+    shell:
+        """
+        vsearch \
+        --derep_fulllength {input} \
+        --output {output[fasta]} \
+        --uc {output[uc]} \
+        2> {log}
+        """
+
+
+rule Derep_and_merge_taxonomy:
+    conda:
+        os.path.join(dir.envs, "pandas.yml")
+    container:
+        singularity_envs["pandas"]
+    input:
+        tax="{prefix}/master/original_tax.txt",
+        uc="{prefix}/QIIME/DB_amp.uc",
+    output:
+        formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+        all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
+        problematic="{prefix}/QIIME/problematic_taxa.txt",
+    log:
+        "{prefix}/logs/QIIME/derep_and_merge.log",
+    params:
+        db_name=DB_NAME,
+        tax_collapse=TAX_COLLAPSE,
+    threads: 1
+    script:
+        "scripts/tax_formatting.py"
+
+
+rule Hash_derep_tax:
+    input:
+        formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+        all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
+        problematic="{prefix}/QIIME/problematic_taxa.txt",
+        fasta="{prefix}/QIIME/DB_amp.fasta",
+    output:
+        hash="{prefix}/QIIME/DB_formatted.hash",
+    threads: 1
+    shell:
+        """
+        md5sum {input.formatted_tax} {input.all} {input.problematic} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
