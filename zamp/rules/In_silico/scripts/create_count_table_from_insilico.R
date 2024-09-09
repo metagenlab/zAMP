@@ -1,6 +1,6 @@
 # Title     : Vsearch count table
 # Objective : Format a count table from vsearch output
-# Created by: valentinscherz
+# Created by: valentinscherz & violeta CS
 # Created on: 06.06.1p
 
 ## Redirect R output
@@ -10,8 +10,7 @@
 
 ## Load needed library
     library(dplyr);packageVersion("dplyr")
-    library(reshape2);packageVersion("reshape2")
-    library(magrittr);packageVersion("magrittr")
+    library(tidyr)
 
 ## Input
     count_table_samples <- snakemake@input[["count_table_samples"]]
@@ -50,11 +49,10 @@
     transf_vsearch_table <- otus_table %>%
       group_by(sample, Seq_ID) %>%
       summarise(counts = sum(counts)) %>%
-      dcast(Seq_ID ~ sample)
+      dcast(Seq_ID ~ Sample)
 
 ## Set OTU as rownames
-    transf_vsearch_table <- set_rownames(x = transf_vsearch_table, value = transf_vsearch_table$Seq_ID)
-    transf_vsearch_table[,1] <- NULL
-
+rownames(transf_vsearch_table) <- transf_vsearch_table$Seq_ID
+transf_vsearch_table <- transf_vsearch_table[,-1]
 ## Write output
-    write.table(x = transf_vsearch_table, file = count_table, sep="\t", quote=F, na = "0")
+write.table(x = transf_vsearch_table, file = count_table, sep="\t", quote=FALSE)
