@@ -2,4 +2,4 @@ name: cutadapt
 channels:
  - bioconda
 dependencies:
- - assembly_finder =0.7.5
+ - assembly_finder =0.7.7
