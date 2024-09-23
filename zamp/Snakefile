@@ -95,7 +95,7 @@ RV_ERRORS = config.args.rv_errors
 
 ## Database args
 DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = os.listdir(DBPATH)
+DBNAME = config.args.name.split(",")
 
 ## Classifier
 CLASSIFIER = config.args.classifier
