@@ -7,13 +7,7 @@ from Bio.Seq import Seq
 import glob
 
 
-# Concatenate Snakemake's own log file with the master log file
-def copy_log_file():
-    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
-    if not files:
-        return None
-    current_log = max(files, key=os.path.getmtime)
-    shell("cat " + current_log + " >> " + LOG)
+include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
 onsuccess:
@@ -33,7 +27,6 @@ config = au.convert_state(config, read_only=True)
 
 
 include: os.path.join("rules", "0_preprocessing", "directories.smk")
-include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
 ## Output and log
@@ -45,26 +38,13 @@ INSILICO_TAX = config.args.input_tax
 
 ## Database args
 DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = os.listdir(DBPATH)
+DBNAME = config.args.name.split(",")
 
 ## Classifier
 CLASSIFIER = config.args.classifier
 
 ## Assembly finder args
-TAXONKIT = config.args.taxonkit
-API_KEY = config.args.api_key
-LIMIT = config.args.limit
-COMPRESSED = config.args.compressed
-SOURCE = config.args.source
-INCLUDE = config.args.include
-TAXON = config.args.taxon
-REFERENCE = config.args.reference
-ASM_LVL = config.args.assembly_level
-ANNOTATED = config.args.annotated
-ATYPICAL = config.args.atypical
-MAG = config.args.mag
-RANK = config.args.rank
-NRANK = config.args.nrank
+AF_ARGS = config.args.af_args
 
 ## In-silico PCR tools
 PCR_TOOL = config.args.pcr_tool
@@ -109,6 +89,10 @@ DENOISER = config.args.denoiser
 if "--use-singularity" in sys.argv:
     ### Mount Database path to singularity containers.
     workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
+    workflow.deployment_settings.apptainer_args += (
+        f" -B {workflow.basedir}:{workflow.basedir}"
+    )
+
     #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
     open(os.path.join(workflow.basedir, dir.envs, "singularity", "sing_envs.yml"), "r")
@@ -116,7 +100,6 @@ singularity_envs = yaml.safe_load(
 
 
 ## Include the pipeline rules
-include: os.path.join("rules", "In_silico", "assembly_finder.rules")
 include: os.path.join("rules", "3_tax_assignment", "tax_assign.rules")
 include: os.path.join("rules", "5_visualization", "QIIME2_import.rules")
 include: os.path.join("rules", "PICRUSt2", "picrust.rules")
