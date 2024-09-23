@@ -2,18 +2,12 @@ from Bio.Seq import Seq
 import re
 import yaml
 import os
-import attrmap as ap
+from attrmap import AttrMap
 import attrmap.utils as au
 import glob
 
 
-# Concatenate Snakemake's own log file with the master log file
-def copy_log_file():
-    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
-    if not files:
-        return None
-    current_log = max(files, key=os.path.getmtime)
-    shell("cat " + current_log + " >> " + LOG)
+include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
 onsuccess:
@@ -25,16 +19,20 @@ onerror:
 
 
 # config file
-configfile: os.path.join(workflow.basedir, "../", "config", "config.yaml")
+configfile: os.path.join(workflow.basedir, "config", "config.yaml")
 
 
-config = ap.AttrMap(config)
+config = AttrMap(config)
+config = au.convert_state(config, read_only=True)
 
+# indclude directories
+include: os.path.join("rules", "0_preprocessing", "directories.smk")
 
+# Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
-# Read config args
+# Config args 
 DB_NAME = config.args.name
 DBPATH = os.path.join(OUTPUT, DB_NAME)
 FASTA = config.args.fasta
@@ -45,13 +43,15 @@ PROCESS = config.args.processing
 TAX_COLLAPSE = dict(config.args.tax_collapse)
 
 ## Cutadapt args
-ERRORS = config.args.max_mismatch
+ERRORS = config.args.errors
 FW_PRIMER = config.args.fw_primer
 RV_PRIMER = config.args.rv_primer
 COV = config.args.ampcov
 MAXLEN = config.args.maxlen
 MINLEN = config.args.minlen
 
+AMPLICON = config.args.amplicon
+ADAPTER = ""
 if FW_PRIMER and RV_PRIMER:
     FW_PRIMER_COMPL = Seq.reverse_complement(Seq(FW_PRIMER))
     FW_LEN = len(FW_PRIMER)
@@ -59,11 +59,12 @@ if FW_PRIMER and RV_PRIMER:
     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
     FW_COV = round(FW_LEN * COV)
     RV_COV = round(RV_LEN * COV)
-    ADAPTER = (
-        f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
-    )
-else:
-    ADAPTER = ""
+    if AMPLICON == "16S":
+        ADAPTER = (
+            f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+        )
+    else:
+        ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};optional...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
 
 
 ## When using singularity
@@ -76,14 +77,16 @@ if "--use-singularity" in sys.argv:
     )
 #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
-    open(os.path.join(workflow.basedir, "envs/singularity/sing_envs.yml"), "r")
+    open(os.path.join(workflow.basedir, "envs", "singularity", "sing_envs.yml"), "r")
 )
 
 
 ## Include rules:
-include: "rules/DB_processing/trace_n_log_DB.rules"
-include: "rules/DB_processing/format_n_train_classifiers.rules"
-include: "rules/DB_processing/RDP_validation.rules"
+
+
+include: os.path.join("rules", "DB_processing", "trace_n_log_DB.rules")
+include: os.path.join("rules", "DB_processing", "format_n_train_classifiers.rules")
+include: os.path.join("rules", "DB_processing", "RDP_validation.rules")
 
 
 ## Taxonomy database can be skipped by config parameters. Include the right rules based on this parameter.
@@ -91,11 +94,11 @@ include: "rules/DB_processing/RDP_validation.rules"
 
 if PROCESS:
 
-    include: "rules/DB_processing/DB_preprocessing.rules"
+    include: os.path.join("rules", "DB_processing", "DB_preprocessing.rules")
 
 else:
 
-    include: "rules/DB_processing/DB_skip_preprocessing.rules"
+    include: os.path.join("rules", "DB_processing", "DB_skip_preprocessing.rules")
 
 
 ## Call default DBPATH
@@ -107,6 +110,6 @@ rule all:
 ## Optional DBPATH for RDP training diagnostics
 rule RDP_validation:
     input:
-        os.path.join(OUTPUT, "RDP/RDP_leave_seq_out_accuracy.txt"),
-        os.path.join(OUTPUT, "RDP/RDP_leave_tax_out_accuracy.txt"),
-        os.path.join(OUTPUT, "RDP/RDP_cross_validate.txt"),
+        os.path.join(OUTPUT, "RDP", "RDP_leave_seq_out_accuracy.txt"),
+        os.path.join(OUTPUT, "RDP", "RDP_leave_tax_out_accuracy.txt"),
+        os.path.join(OUTPUT, "RDP", "RDP_cross_validate.txt"),
