@@ -66,18 +66,23 @@ MAG = config.args.mag
 RANK = config.args.rank
 NRANK = config.args.nrank
 
-## Simulate_PCR args
+## In-silico PCR tools
+PCR_TOOL = config.args.pcr_tool
+### In-silico PCR
+
+### Simulate_PCR args
 MISMATCH = config.args.mismatch
 THREEPRIME = config.args.threeprime
 
 ## Cutadapt args
-ERRORS = config.args.max_mismatch
+ERRORS = config.args.errors
 FW_PRIMER = config.args.fw_primer
 RV_PRIMER = config.args.rv_primer
 COV = config.args.ampcov
 MAXLEN = config.args.maxlen
 MINLEN = config.args.minlen
 
+AMPLICON = config.args.amplicon
 ADAPTER = ""
 if FW_PRIMER and RV_PRIMER:
     FW_PRIMER_COMPL = Seq.reverse_complement(Seq(FW_PRIMER))
@@ -86,9 +91,14 @@ if FW_PRIMER and RV_PRIMER:
     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
     FW_COV = round(FW_LEN * COV)
     RV_COV = round(RV_LEN * COV)
-    ADAPTER = (
-        f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
-    )
+    if AMPLICON == "16S":
+        ADAPTER = (
+            f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+        )
+    else:
+        ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};optional...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+
+## Replace empty tax
 REPL_EMPTY = config.args.replace_empty
 
 ## Tax assign
