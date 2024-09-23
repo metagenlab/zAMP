@@ -16,3 +16,4 @@ simulatePCR: docker://metagenlab/amplicons_simulatepcr:v.1.0
 TreeShrink: docker://metagenlab/amplicons_treeshrink:v.1.0
 pandas: docker://quay.io/biocontainers/pandas:2.2.1
 assembly_finder: docker://ghcr.io/metagenlab/assembly_finder:v0.7.7
+perl: docker://docker.io/perl:5.32.1-buster
