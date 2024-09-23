@@ -2,12 +2,32 @@ import pandas as pd
 import re
 
 
-def get_fasta(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    df["sample"] = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
-    df.set_index("sample", inplace=True)
-    return df.loc[wildcards.sample].path
+checkpoint download_assemblies:
+    conda:
+        os.path.join(dir.envs, "assembly_finder.yml")
+    container:
+        singularity_envs["assembly_finder"]
+    input:
+        INSILICO_TAX,
+    output:
+        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+        seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
+        tax=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+    params:
+        args=AF_ARGS,
+        out=os.path.join(dir.out.base, "assembly_finder"),
+    log:
+        os.path.join(dir.logs, "assembly_finder.log"),
+    threads: 3
+    shell:
+        """
+        assembly_finder \\
+        --no-use-conda \\
+        -i {input} \\
+        --threads {threads} \\
+        {params.args} \\
+        -o {params.out} 2> {log}
+        """
 
 
 if PCR_TOOL == "simulate":
@@ -158,9 +178,7 @@ elif PCR_TOOL == "in-silico":
         input:
             fa=get_fasta,
         output:
-            os.path.join(
-                dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"
-            ),
+            os.path.join(dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"),
         log:
             os.path.join(dir.logs, "InSilico", "PCR", "{sample}.log"),
         params:
@@ -172,8 +190,12 @@ elif PCR_TOOL == "in-silico":
             ),
         shell:
             """
-            perl {params.script} -s {input.fa} -a {params.fw} \\
-            -b {params.rv} -m -r -l {params.maxlen} 1> {log} 2> {output}
+            LC_ALL=C perl {params.script} \\
+            -s {input.fa} \\
+            -a {params.fw} \\
+            -b {params.rv} \\
+            -m -r -l {params.maxlen} \\
+            2> {output} > {log}
             """
 
 
@@ -206,7 +228,6 @@ rule cutadapt_trim_in_silico:
         errors=ERRORS,
         minlen=MINLEN,
         maxlen=MAXLEN,
-        coverage=COV,
     threads: 1
     shell:
         """
@@ -221,18 +242,6 @@ rule cutadapt_trim_in_silico:
         --maximum-length {params.maxlen} \
         {input} > {log}
         """
-
-
-def list_amplicons(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
-    return expand(
-        os.path.join(
-            dir.out.base, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.fasta"
-        ),
-        sample=genomes,
-    )
 
 
 ### Combine all extracted sequences in one big fasta
@@ -312,7 +321,7 @@ rule InSilico_count_occurences:
                 -otutabout {output} \
                 -id 1 \
                 -strand plus \
-                --db {input[rep_seq]}
+                --db {input[rep_seq]} 
                 # do something as file has data
         else
             echo "{input[samples]} is empty." && \
@@ -320,22 +329,6 @@ rule InSilico_count_occurences:
             # do something as file is empty
         fi 2> {log}        
         """
-
-
-def list_samples_counts(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
-    return expand(
-        os.path.join(
-            dir.out.base,
-            "InSilico",
-            "2_denoised",
-            "countSeqs",
-            "{sample}_count_table.tsv",
-        ),
-        sample=genomes,
-    )
 
 
 ### Format count table from InSilico
@@ -363,6 +356,7 @@ rule In_silico_tax_compare:
     container:
         singularity_envs["r_utils"]
     input:
+        db_tax=os.path.join(DBPATH, "{tax_DB}", "RDP", "formatted_tax_table.tsv"),
         count_table=os.path.join(
             dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
         ),
