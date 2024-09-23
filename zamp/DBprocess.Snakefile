@@ -33,8 +33,8 @@ OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
 # Config args 
-DB_NAME = config.args.name
-DBPATH = os.path.join(OUTPUT, DB_NAME)
+DBNAME = config.args.name.split(",")
+DBPATH = os.path.join(OUTPUT)
 FASTA = config.args.fasta
 TAXONOMY = config.args.taxonomy
 CLASSIFIERS = config.args.classifier
