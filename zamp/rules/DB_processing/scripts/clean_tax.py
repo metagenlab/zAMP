@@ -24,11 +24,11 @@ placeholder = {}
 for rank in ranks:
     placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
 
-if snakemake.params.db_name == "unite10":
+if "unite" in snakemake.params.db_name:
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
     df.tax = df.tax.replace(to_replace=r"_", value=" ", regex=True)
 
-if snakemake.params.db_name == "greengenes2":
+if "greengenes" in snakemake.params.db_name:
     df.tax = df.tax.str.replace("; ", ";")
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
@@ -37,7 +37,7 @@ lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
 lintax_df.columns = ranks
 lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
 
-if snakemake.params.db_name == "silva138.1":
+if "silva" in snakemake.params.db_name:
     ## Replace taxa containing and Unkown or Incertae with NaN
     lintax_df.replace(
         to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
@@ -47,7 +47,7 @@ if snakemake.params.db_name == "silva138.1":
     lintax_df.replace("endosymbionts", np.nan, inplace=True)
 
 
-if snakemake.params.db_name == "greengenes2":
+if "greengenes" in snakemake.params.db_name:
     # In greeengenes2, some sequences have the same taxa name assigned to multiple ranks
     # the code below iterates over ranks and replaces duplicate names with NaN
     # This mitigates convergent taxonomy errors in RDP
@@ -77,7 +77,7 @@ for n, rank in enumerate(ranks):
     else:
         prop_tax_df[f"{rank}"] = filled_df[f"{rank}"]
 
-if snakemake.params.db_name == "silva138.1":
+if "silva" in snakemake.params.db_name:
     ## Get classified species index
     index = ~prop_tax_df["Species"].str.contains(placeholder["Species"])
     ## Add genus name in species for classified species
