@@ -1,0 +1,5 @@
+name: perl
+channels:
+- conda-forge
+dependencies:
+- perl =5.32.1
