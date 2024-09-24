@@ -24,7 +24,7 @@ rule clean_unprocessed_DB_taxonomy:
     output:
         tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
     params:
-        db_name=DB_NAME,
+        db_name=DBNAME,
     threads: 1
     script:
         "scripts/clean_tax.py"
