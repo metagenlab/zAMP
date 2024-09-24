@@ -19,7 +19,6 @@
     output_folder <- (dirname(output_folder)[1])
 
 ## Parameters
-    sample_label <- snakemake@params[["sample"]]
     grouping_column <- snakemake@params[["grouping_column"]]
     grouping_filter_column_value <- snakemake@params[["grouping_col_value"]]
 
@@ -31,7 +30,7 @@ melted_dataframe<- read.csv(file.path(phyloseq_melted_table), header = TRUE, sep
 
 ## Create KRONA
     df <- subset(melted_dataframe, sample_group == grouping_filter_column_value & Abundance !=0)
-    df <- df[, c("Abundance", sample_label, "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU")]
+    df <- df[, c("Abundance", "Sample", "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "OTU")]
     df <- as.data.frame(unclass(df))
     df[, 2] <- gsub(" |\\(|\\)", "", df[, 2])
     df[, 2] <- as.factor(df[, 2])

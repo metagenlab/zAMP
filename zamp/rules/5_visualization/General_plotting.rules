@@ -216,7 +216,6 @@ rule KRONA_plots:
     params:
         grouping_column=lambda wildcards: wildcards.grouping_column,
         grouping_col_value=lambda wildcards: wildcards.grouping_col_value,
-        sample_label="sample",
     log:
         os.path.join(
             dir.logs,
