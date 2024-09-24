@@ -1,3 +1,7 @@
+from humanfriendly import parse_size
+import os
+
+
 # Common functions
 def copy_log_file():
     files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
@@ -5,6 +9,11 @@ def copy_log_file():
         return None
     current_log = max(files, key=os.path.getmtime)
     shell("cat " + current_log + " >> " + LOG)
+
+
+# DB process functions command functions
+def get_mem_mb(mem):
+    return int(parse_size(mem) / 10**6)
 
 
 # Run command functions
