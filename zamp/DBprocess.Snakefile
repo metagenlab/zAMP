@@ -25,15 +25,17 @@ configfile: os.path.join(workflow.basedir, "config", "config.yaml")
 config = AttrMap(config)
 config = au.convert_state(config, read_only=True)
 
+
 # indclude directories
 include: os.path.join("rules", "0_preprocessing", "directories.smk")
+
 
 # Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
-# Config args 
-DBNAME = config.args.name.split(",")
+# Config args
+DBNAME = config.args.name
 DBPATH = os.path.join(OUTPUT)
 FASTA = config.args.fasta
 TAXONOMY = config.args.taxonomy
