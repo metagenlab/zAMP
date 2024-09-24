@@ -1,34 +1,45 @@
 ## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
+scripts = os.path.join(workflow.basedir, "rules", "DB_processing", "scripts")
+
+
 rule DADA2_prep_tax_db:
     conda:
         os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
         singularity_envs["r_utils"]
     input:
-        ref_seqs="{prefix}/QIIME/DB_amp.fasta",
-        ref_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
+        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
     output:
-        King_to_Species="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
-        King_to_Genus="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
-        Genus_species="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt",
+        King_to_Species=os.path.join(
+            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
+        ),
+        King_to_Genus=os.path.join(
+            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"
+        ),
+        Genus_species=os.path.join(
+            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_Genus_species.txt"
+        ),
     log:
-        "{prefix}/logs/dada2rdp/DB_amp_taxonomy_dada2_prep.log",
+        os.path.join("{prefix}", "logs", "dada2rdp", "DB_amp_taxonomy_dada2_prep.log"),
     threads: 1
     script:
-        "scripts/dada2_prep_tax.R"
+        os.path.join(scripts, "dada2_prep_tax.R")
 
 
 rule Hash_DADA2:
     input:
-        King_to_Species="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Species.txt",
-        King_to_Genus="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_King_to_Genus.txt",
-        Genus_species="{prefix}/dada2rdp/DADA2_DB_amp_taxonomy_Genus_species.txt",
+        os.path.join(
+            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
+        ),
+        os.path.join("{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"),
+        os.path.join("{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_Genus_species.txt"),
     output:
-        hash="{prefix}/dada2rdp/DADA2_DB.hash",
+        os.path.join("{prefix}", "dada2rdp", "DADA2_DB.hash"),
     threads: 1
     shell:
         """
-        md5sum {input.King_to_Species} {input.King_to_Genus} {input.Genus_species} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
 
 
@@ -44,15 +55,15 @@ rule Preformat_for_cannonical_rdp:
     container:
         singularity_envs["r_utils"]
     input:
-        ref_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        ref_seqs="{prefix}/QIIME/DB_amp.fasta",
+        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
-        formatted_table="{prefix}/RDP/formatted_tax_table.tsv",
+        formatted_table=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
     log:
-        "{prefix}/logs/RDP/formatted_tax_table.log",
+        os.path.join("{prefix}", "logs", "RDP", "formatted_tax_table.log"),
     threads: 1
     script:
-        "scripts/rdp_prep_tax.R"
+        os.path.join(scripts, "rdp_prep_tax.R")
 
 
 rule Format_rdp_lineages:
@@ -61,14 +72,15 @@ rule Format_rdp_lineages:
     container:
         singularity_envs["python"]
     input:
-        table="{prefix}/RDP/formatted_tax_table.tsv",
-        script=workflow.basedir + "/rules/DB_processing/scripts/lineage2taxTrain.py",
+        table=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
     output:
-        read4train_tax="{prefix}/RDP/ready4train_lineages.txt",
+        read4train_tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
     threads: 1
+    params:
+        script=os.path.join(scripts, "lineage2taxTrain.py"),
     shell:
         """
-        python {input.script} {input.table} > {output[0]}
+        python {params.script} {input.table} > {output[0]}
         """
 
 
@@ -78,23 +90,20 @@ rule Format_rdp_add_lineages:
     container:
         singularity_envs["python"]
     input:
-        taxonomy="{prefix}/RDP/formatted_tax_table.tsv",
-        fasta="{prefix}/QIIME/DB_amp.fasta",
-        script=workflow.basedir + "/rules/DB_processing/scripts/addFullLineage.py",
+        taxonomy=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
+        fasta=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
-        read4train_fasta="{prefix}/RDP/ready4train_seqs.fasta",
+        read4train_fasta=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
     threads: 1
+    params:
+        script=os.path.join(
+            scripts,
+            "addFullLineage.py",
+        ),
     shell:
         """
-        python {input.script} {input.taxonomy} {input.fasta} > {output}       
+        python {params.script} {input.taxonomy} {input.fasta} > {output}       
         """
-
-
-from humanfriendly import parse_size
-
-
-def get_mem_mb(mem):
-    return int(parse_size(mem) / 10**6)
 
 
 rule Train_rdp_classifier:
@@ -103,11 +112,11 @@ rule Train_rdp_classifier:
     container:
         singularity_envs["rdp_classifier"]
     input:
-        read4train_fasta="{prefix}/RDP/ready4train_seqs.fasta",
-        read4train_tax="{prefix}/RDP/ready4train_lineages.txt",
+        read4train_fasta=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
+        read4train_tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
     output:
-        formatted_table="{prefix}/RDP/bergeyTrainingTree.xml",
-        properties="{prefix}/RDP/rRNAClassifier.properties",
+        formatted_table=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
+        properties=os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
     params:
         mem=RDP_MEM,
     threads: 1
@@ -129,16 +138,16 @@ rule Train_rdp_classifier:
 
 rule Hash_RDP:
     input:
-        read4train_fasta="{prefix}/RDP/ready4train_seqs.fasta",
-        read4train_tax="{prefix}/RDP/ready4train_lineages.txt",
-        formatted_table="{prefix}/RDP/bergeyTrainingTree.xml",
-        properties="{prefix}/RDP/rRNAClassifier.properties",
+        os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
+        os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
+        os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
+        os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
     output:
-        hash="{prefix}/RDP/RDP_DB.hash",
+        os.path.join("{prefix}", "RDP", "RDP_DB.hash"),
     threads: 1
     shell:
         """
-        md5sum {input.read4train_fasta} {input.read4train_tax} {input.formatted_table} {input.properties} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
 
 
@@ -149,15 +158,19 @@ rule Decipher_prep_fasta:
     container:
         singularity_envs["r_utils"]
     input:
-        ref_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        ref_seqs="{prefix}/QIIME/DB_amp.fasta",
+        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
-        decipher_seqs="{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
+        decipher_seqs=os.path.join(
+            "{prefix}", "decipher", "Decipher_DB_amp_taxonomy.fasta"
+        ),
     log:
-        "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_fasta.log",
+        os.path.join(
+            "{prefix}", "logs", "decipher", "DB_amp_taxonomy_decipher_fasta.log"
+        ),
     threads: 1
     script:
-        "scripts/decipher_prep_tax.R"
+        os.path.join(scripts, "decipher_prep_tax.R")
 
 
 rule Decipher_train_tax:
@@ -166,24 +179,32 @@ rule Decipher_train_tax:
     container:
         singularity_envs["decipher"]
     input:
-        decipher_seqs="{prefix}/decipher/Decipher_DB_amp_taxonomy.fasta",
+        decipher_seqs=os.path.join(
+            "{prefix}", "decipher", "Decipher_DB_amp_taxonomy.fasta"
+        ),
     output:
-        trained_tax="{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
-        training_plot="{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_plot.pdf",
+        trained_tax=os.path.join(
+            "{prefix}", "decipher", "Decipher_DB_amp_taxonomy_trained_tax.rds"
+        ),
+        training_plot=os.path.join(
+            "{prefix}", "decipher", "Decipher_DB_amp_taxonomy_trained_plot.pdf"
+        ),
     log:
-        "{prefix}/logs/decipher/DB_amp_taxonomy_decipher_tax_tree.log",
+        os.path.join(
+            "{prefix}", "logs", "decipher", "DB_amp_taxonomy_decipher_tax_tree.log"
+        ),
     threads: 1
     script:
-        "scripts/decipher_train_tax.R"
+        os.path.join(scripts, "decipher_train_tax.R")
 
 
 rule Hash_Decipher:
     input:
-        trained_tax="{prefix}/decipher/Decipher_DB_amp_taxonomy_trained_tax.rds",
+        os.path.join("{prefix}", "decipher", "Decipher_DB_amp_taxonomy_trained_tax.rds"),
     output:
-        hash="{prefix}/decipher/decipher_DB.hash",
+        os.path.join("{prefix}", "decipher", "decipher_DB.hash"),
     threads: 1
     shell:
         """
-        md5sum {input.trained_tax} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
