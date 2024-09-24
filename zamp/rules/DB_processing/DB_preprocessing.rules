@@ -14,7 +14,6 @@ rule Extract_amplicons_cutadapt:
     params:
         errors=ERRORS,
         adapter=ADAPTER,
-        coverage=COV,
         minlen=MINLEN,
         maxlen=MAXLEN,
     log:
@@ -73,7 +72,7 @@ rule Derep_and_merge_taxonomy:
     log:
         "{prefix}/logs/QIIME/derep_and_merge.log",
     params:
-        db_name=DB_NAME,
+        db_name=DBNAME,
         tax_collapse=TAX_COLLAPSE,
     threads: 1
     script:
@@ -82,14 +81,14 @@ rule Derep_and_merge_taxonomy:
 
 rule Hash_derep_tax:
     input:
-        formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic="{prefix}/QIIME/problematic_taxa.txt",
-        fasta="{prefix}/QIIME/DB_amp.fasta",
+        "{prefix}/QIIME/DB_amp_taxonomy.txt",
+        "{prefix}/QIIME/DB_amp_all_taxonomy.txt",
+        "{prefix}/QIIME/problematic_taxa.txt",
+        "{prefix}/QIIME/DB_amp.fasta",
     output:
-        hash="{prefix}/QIIME/DB_formatted.hash",
+        "{prefix}/QIIME/DB_formatted.hash",
     threads: 1
     shell:
         """
-        md5sum {input.formatted_tax} {input.all} {input.problematic} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
