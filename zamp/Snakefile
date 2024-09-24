@@ -96,7 +96,7 @@ RV_ERRORS = config.args.rv_errors
 
 ## Database args
 DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = os.listdir(DBPATH)
+DBNAME = config.args.name.split(",")
 
 ## Classifier
 CLASSIFIER = config.args.classifier
@@ -125,7 +125,7 @@ if "--use-singularity" in sys.argv:
     workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
     #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
-    open(os.path.join(workflow.basedir, "envs/singularity/sing_envs.yml"), "r")
+    open(os.path.join(workflow.basedir, dir.envs, "singularity", "sing_envs.yml"), "r")
 )
 
 

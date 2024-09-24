@@ -1,5 +1,5 @@
-name: pandas
+name: perl
 channels:
 - conda-forge
 dependencies:
-- pandas =2.2.2
+- perl =5.32.1

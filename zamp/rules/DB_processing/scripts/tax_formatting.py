@@ -90,11 +90,11 @@ uc_df = pd.read_csv(
 
 
 # Taxonomy table
-if snakemake.params.db_name == "unite10":
+if "unite" in snakemake.params.db_name:
     tax_df.tax = tax_df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
     tax_df.tax = tax_df.tax.replace(to_replace=r"_", value=" ", regex=True)
 
-if snakemake.params.db_name == "greengenes2":
+if "greengenes" in snakemake.params.db_name:
     ## Remove spaces after ";" in GTDB taxonomy
     tax_df.tax = tax_df.tax.str.replace("; ", ";")
     ## Remove leading k__ to s__ in GTDB taxonomy
@@ -107,7 +107,7 @@ lintax_df.columns = ranks
 ## Replace empty values by NaN
 lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
 
-if snakemake.params.db_name == "silva138.1":
+if "silva" in snakemake.params.db_name:
     ## Replace taxa containing and Unkown or Incertae with NaN
     lintax_df.replace(
         to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
@@ -116,7 +116,7 @@ if snakemake.params.db_name == "silva138.1":
     ## Replace endosymbionts by NaN
     lintax_df.replace("endosymbionts", np.nan, inplace=True)
 
-if snakemake.params.db_name == "greengenes2":
+if "greengenes" in snakemake.params.db_name:
     # In greeengenes2, some sequences have the same taxa name assigned to multiple ranks
     # the code below iterates over ranks and replaces duplicate names with NaN
     # This removes convergent taxonomy errors in RDP
@@ -155,7 +155,7 @@ for n, rank in enumerate(ranks):
     else:
         prop_tax_df[f"{rank}"] = filled_df[f"{rank}"]
 
-if snakemake.params.db_name == "silva138.1":
+if "silva" in snakemake.params.db_name:
     ## Get classified species index
     index = ~prop_tax_df["Species"].str.contains(f"{placeholder["Species"]}", regex=False)
     ## Add genus name in species for classified species

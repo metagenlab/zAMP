@@ -10,6 +10,7 @@ from .utils import (
     print_citation,
     common_options,
     db_options,
+    insilico_options,
     run_options,
     run_snakemake,
 )
@@ -69,6 +70,27 @@ def run(**kwargs):
     )
 
 
+@click.command(
+    context_settings=dict(
+        help_option_names=["-h", "--help"], ignore_unknown_options=True
+    ),
+)
+@insilico_options
+@common_options
+def insilico(**kwargs):
+    """
+    Run the in-silico module for zAMP
+    """
+    merge_config = {"args": kwargs}
+
+    run_snakemake(
+        # Full path to Snakefile
+        snakefile_path=snake_base("Insilico_taxa_assign.Snakefile"),
+        merge_config=merge_config,
+        **kwargs,
+    )
+
+
 @click.command()
 def citation(**kwargs):
     """Print zAMP and tools citations"""
@@ -77,6 +99,7 @@ def citation(**kwargs):
 
 cli.add_command(db)
 cli.add_command(run)
+cli.add_command(insilico)
 cli.add_command(citation)
 
 

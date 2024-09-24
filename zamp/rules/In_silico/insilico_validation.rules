@@ -2,86 +2,201 @@ import pandas as pd
 import re
 
 
-rule decompress_assemblies:
-    input:
-        "assembly_gz/genomes/{sample}_genomic.fna.gz",
-    output:
-        temp("assembly_gz/genomes/{sample}.fna"),
-    shell:
-        "zcat {input[0]} > {output[0]}"
-
-
-rule print_primers_to_files:
-    output:
-        "InSilico/PCR/Primers.fasta",
-    params:
-        FW_PRIMER,
-        RV_PRIMER,
-    shell:
-        """
-        printf \
-        ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
-        """
-
-
-rule Extract_amplicon:
-    container:
-        singularity_envs["simulatePCR"]
-    input:
-        "InSilico/PCR/Primers.fasta",
-        "assembly_gz/genomes/{sample}.fna",
-    output:
-        "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
-        temp("InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.blastout"),
-    params:
-        min_length=MINLEN,
-        max_length=MAXLEN,
-        mismatch=config["mismatch"],
-        threeprime=config["threeprime"],
-    log:
-        dir.logs
-        + "/"
-        + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.log",
-    threads: 1
-    shell:
-        """
-        cd $(dirname {output[0]}) && \
-        simulate_PCR \
-            -primers ../../../{input[0]} \
-            -db ../../../{input[1]} \
-            -minlen {params.min_length} \
-            -maxlen {params.max_length} \
-            -mm {params.mismatch} \
-            -3prime {params.threeprime} \
-            -mux 0 \
-            -num_threads {threads} \
-            -max_target_seqs 1000000000 \
-            -word_size 4 \
-            -evalue 100000000 \
-            -genes 1 \
-            -extract_amp 1 \
-            >> ../../../{log}
-
-          """
-
-
-## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
-rule reverse_complement:
+checkpoint download_assemblies:
     conda:
-        os.path.join(dir.envs, "amplicons_r_utils.yml")
+        os.path.join(dir.envs, "assembly_finder.yml")
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["assembly_finder"]
     input:
-        simple_fasta="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+        INSILICO_TAX,
     output:
-        fasta_with_rev="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
+        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+        seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
+        tax=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+    params:
+        args=AF_ARGS,
+        out=os.path.join(dir.out.base, "assembly_finder"),
     log:
-        dir.logs
-        + "/"
-        + "InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.txt",
-    threads: 1
-    script:
-        "scripts/reverse_complement.R"
+        os.path.join(dir.logs, "assembly_finder.log"),
+    threads: 3
+    shell:
+        """
+        assembly_finder \\
+        --no-use-conda \\
+        -i {input} \\
+        --threads {threads} \\
+        {params.args} \\
+        -o {params.out} 2> {log}
+        """
+
+
+if PCR_TOOL == "simulate":
+
+    rule decompress_assemblies:
+        input:
+            get_fasta,
+        output:
+            temp(os.path.join(dir.out.base, "InSilico", "fasta", "{sample}.fna")),
+        shell:
+            """
+            zcat {input} > {output}
+            """
+
+    rule print_primers_to_files:
+        output:
+            os.path.join(dir.out.base, "InSilico", "PCR", "Primers.fasta"),
+        params:
+            FW_PRIMER,
+            RV_PRIMER,
+        shell:
+            """
+            printf \
+            ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
+            """
+
+    rule simulate_PCR:
+        container:
+            singularity_envs["simulatePCR"]
+        input:
+            primers=os.path.join(dir.out.base, "InSilico", "PCR", "Primers.fasta"),
+            fasta=os.path.join(dir.out.base, "InSilico", "fasta", "{sample}.fna"),
+        output:
+            os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+            ),
+            temp(
+                os.path.join(
+                    dir.out.base,
+                    "InSilico",
+                    "PCR",
+                    "{sample}",
+                    "Primers.fasta.pair.{sample}.fna.blastout",
+                )
+            ),
+            temp(
+                multiext(
+                    os.path.join(
+                        dir.out.base,
+                        "InSilico",
+                        "fasta",
+                        "{sample}.fna",
+                    ),
+                    ".nhr",
+                    ".nin",
+                    ".nog",
+                    ".nsd",
+                    ".nsi",
+                    ".nsq",
+                ),
+            ),
+        params:
+            min_length=MINLEN,
+            max_length=MAXLEN,
+            mismatch=MISMATCH,
+            threeprime=THREEPRIME,
+            workdir=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+            ),
+        log:
+            os.path.join(
+                dir.logs,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.log",
+            ),
+        threads: 1
+        shell:
+            """
+            simulate_PCR \\
+            -primers {input.primers} \\
+            -db {input.fasta} \\
+            -minlen {params.min_length} \\
+            -maxlen {params.max_length} \\
+            -mm {params.mismatch} \\
+            -3prime {params.threeprime} \\
+            -mux 0 \\
+            -num_threads {threads} \\
+            -max_target_seqs 1000000000 \\
+            -word_size 4 \\
+            -evalue 100000000 \\
+            -genes 1 \\
+            -extract_amp 1 \\
+            >> {log} \\
+            && mv Primers.fasta.pair.{wildcards.sample}* {params.workdir} \\
+            && mv {wildcards.sample}.fna.headers {params.workdir}
+            """
+
+    ## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
+    rule reverse_complement:
+        conda:
+            os.path.join(dir.envs, "amplicons_r_utils.yml")
+        container:
+            singularity_envs["r_utils"]
+        input:
+            simple_fasta=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+            ),
+        output:
+            fasta_with_rev=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "amplicons.fasta",
+            ),
+        log:
+            os.path.join(
+                dir.logs,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "reverse_complement.txt",
+            ),
+        threads: 1
+        script:
+            "scripts/reverse_complement.R"
+
+elif PCR_TOOL == "in-silico":
+
+    rule in_silico_PCR:
+        conda:
+            os.path.join(dir.envs, "perl.yml")
+        container:
+            singularity_envs["perl"]
+        input:
+            fa=get_fasta,
+        output:
+            os.path.join(dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"),
+        log:
+            os.path.join(dir.logs, "InSilico", "PCR", "{sample}.log"),
+        params:
+            fw=FW_PRIMER,
+            rv=RV_PRIMER,
+            maxlen=MAXLEN,
+            script=os.path.join(
+                workflow.basedir, "rules", "In_silico", "scripts", "in_silico_PCR.pl"
+            ),
+        shell:
+            """
+            LC_ALL=C perl {params.script} \\
+            -s {input.fa} \\
+            -a {params.fw} \\
+            -b {params.rv} \\
+            -m -r -l {params.maxlen} \\
+            2> {output} > {log}
+            """
 
 
 rule cutadapt_trim_in_silico:
@@ -90,45 +205,55 @@ rule cutadapt_trim_in_silico:
     container:
         singularity_envs["cutadapt"]
     input:
-        R1_raw_reads="InSilico/PCR/{sample}/Primers.fasta.pair.{sample}.fna.amplicons_complemented.fasta",
+        R1_raw_reads=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "PCR",
+            "{sample}",
+            "amplicons.fasta",
+        ),
     output:
-        R1_trimmed_reads=temp("InSilico/1a_trimmed_primers/{sample}_trimmed.fasta"),
+        R1_trimmed_reads=temp(
+            os.path.join(
+                dir.out.base,
+                "InSilico",
+                "1a_trimmed_primers",
+                "{sample}_trimmed.fasta",
+            )
+        ),
     log:
-        dir.logs + "/" + "InSilico/1a_trimmed_primers/{sample}_trimmed.txt",
+        os.path.join(dir.logs, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.txt"),
     params:
-        forward_primer=FW_PRIMER,
-        reverse_primer=RV_PRIMER,
-        excepted_errors=config["excepted_errors"],
-        min_length=MINLEN,
-        max_length=MAXLEN,
-        coverage=config["amplicon_min_coverage"],
+        adapter=ADAPTER,
+        errors=ERRORS,
+        minlen=MINLEN,
+        maxlen=MAXLEN,
     threads: 1
-    script:
-        "../DB_processing/scripts/cutadapt_DB.py"
-
-
-def list_amplicons(wildcards):
-    checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
-    directory = "/".join((checkpoint_output.split("/")[0:2]))
-    assemblynames = glob_wildcards(os.path.join(directory, "{i}_genomic.fna.gz")).i
-    expd = expand(
-        "InSilico/1a_trimmed_primers/{sample}_trimmed.fasta", sample=assemblynames
-    )
-    return expd
-
-
-# primer enlever
+    shell:
+        """
+        cutadapt \
+        --cores {threads} \
+        --error-rate {params.errors} \
+        --times 1 \
+        -o {output} \
+        -g "{params.adapter}" \
+        --discard-untrimmed \
+        --minimum-length {params.minlen} \
+        --maximum-length {params.maxlen} \
+        {input} > {log}
+        """
 
 
 ### Combine all extracted sequences in one big fasta
 rule Insilico_merge_all_in_one_fasta:
     input:
-        list_amplicons,
+        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+        fasta=list_amplicons,
     output:
-        temp("InSilico/1c_derep/merged_all.fasta"),
+        temp(os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta")),
     shell:
         """
-        cat {input} >> {output}
+        cat {input.fasta} > {output}
         """
 
 
@@ -139,18 +264,21 @@ rule InSilico_derepicate_all:
     container:
         singularity_envs["vsearch"]
     input:
-        "InSilico/1c_derep/merged_all.fasta",
+        os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta"),
     output:
-        "InSilico/2_denoised/dna-sequences.fasta",
+        os.path.join(dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"),
     log:
-        dir.logs + "/" + "InSilico/1c_all_merged_sequences/dereplicate_all.txt",
+        os.path.join(
+            dir.logs, "InSilico", "1c_all_merged_sequences", "dereplicate_all.txt"
+        ),
     shell:
         """
-        vsearch --derep_fulllength {input} \
-                --minuniquesize 1 \
-                --relabel Seq_ \
-                --output {output} \
-                2> {log}
+        vsearch \\
+        --derep_fulllength {input} \\
+        --minuniquesize 1 \\
+        --relabel Seq_ \\
+        --output {output} \\
+        2> {log}
         """
 
 
@@ -163,12 +291,27 @@ rule InSilico_count_occurences:
     container:
         singularity_envs["vsearch"]
     input:
-        samples="InSilico/1a_trimmed_primers/{sample}_trimmed.fasta",
-        rep_seq="InSilico/2_denoised/dna-sequences.fasta",
+        samples=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "1a_trimmed_primers",
+            "{sample}_trimmed.fasta",
+        ),
+        rep_seq=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"
+        ),
     output:
-        "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
+        os.path.join(
+            dir.out.base,
+            "InSilico",
+            "2_denoised",
+            "countSeqs",
+            "{sample}_count_table.tsv",
+        ),
     log:
-        dir.logs + "/" + "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv",
+        os.path.join(
+            dir.logs, "InSilico", "2_denoised", "countSeqs", "{sample}_count_table.tsv"
+        ),
     shell:
         """       
         if [ -s "{input[samples]}" ]
@@ -178,7 +321,7 @@ rule InSilico_count_occurences:
                 -otutabout {output} \
                 -id 1 \
                 -strand plus \
-                --db {input[rep_seq]}
+                --db {input[rep_seq]} 
                 # do something as file has data
         else
             echo "{input[samples]} is empty." && \
@@ -186,16 +329,6 @@ rule InSilico_count_occurences:
             # do something as file is empty
         fi 2> {log}        
         """
-
-
-def list_samples_counts(wildcards):
-    checkpoint_output = checkpoints.download_assemblies.get(**wildcards).output[0]
-    directory = "/".join((checkpoint_output.split("/")[0:2]))
-    assemblynames = glob_wildcards(os.path.join(directory, "{i}_genomic.fna.gz")).i
-    expd = expand(
-        "InSilico/2_denoised/countSeqs/{sample}_count_table.tsv", sample=assemblynames
-    )
-    return expd
 
 
 ### Format count table from InSilico
@@ -207,9 +340,11 @@ rule create_InSilico_count_table:
     input:
         count_table_samples=list_samples_counts,
     output:
-        count_table="InSilico/2_denoised/count_table.tsv",
+        count_table=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+        ),
     log:
-        dir.logs + "/" + "InSilico/2_denoised/count_table.tsv",
+        os.path.join(dir.logs, "InSilico", "2_denoised", "count_table.tsv"),
     script:
         "scripts/create_count_table_from_insilico.R"
 
@@ -221,17 +356,45 @@ rule In_silico_tax_compare:
     container:
         singularity_envs["r_utils"]
     input:
-        count_table="InSilico/2_denoised/count_table.tsv",
-        Metadata_table=community_name + "-assemblies-summary.tsv",
-        taxonomy_table="InSilico/3_classified/{classifier}_{tax_DB}/dna-sequences_tax_assignments.txt",
+        db_tax=os.path.join(DBPATH, "{tax_DB}", "RDP", "formatted_tax_table.tsv"),
+        count_table=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+        ),
+        assembly_summary=os.path.join(
+            dir.out.base, "assembly_finder", "assembly_summary.tsv"
+        ),
+        expected_taxonomy=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+        assigned_taxonomy=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "3_classified",
+            "{classifier}_{tax_DB}",
+            "dna-sequences_tax_assignments.txt",
+        ),
     output:
-        output_table="InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.tsv",
-        output_table_long="InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax_long.tsv",
+        output_table=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "3_classified",
+            "{classifier}_{tax_DB}",
+            "InSilico_compare_tax.tsv",
+        ),
+        output_table_long=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "3_classified",
+            "{classifier}_{tax_DB}",
+            "InSilico_compare_tax_long.tsv",
+        ),
     params:
         viz_replace_empty_tax=REPL_EMPTY,
     log:
-        dir.logs
-        + "/"
-        + "InSilico/3_classified/{classifier}_{tax_DB}/InSilico_compare_tax.log",
+        os.path.join(
+            dir.logs,
+            "InSilico",
+            "3_classified",
+            "{classifier}_{tax_DB}",
+            "InSilico_compare_tax.log",
+        ),
     script:
         "scripts/In_silico_tax_comparison.R"
