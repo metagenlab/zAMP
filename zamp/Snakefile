@@ -1,29 +1,4 @@
-import re
-import yaml
-import os
-from snakemake.utils import min_version
-from attrmap import AttrMap
-import attrmap.utils as au
-import pandas as pd
-import glob
-from metasnek import fastq_finder
-import warnings
-
-min_version("8.10.6")
-
-warnings.filterwarnings(
-    "ignore",
-    category=UserWarning,
-)
-
-
-# Concatenate Snakemake's own log file with the master log file
-def copy_log_file():
-    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
-    if not files:
-        return None
-    current_log = max(files, key=os.path.getmtime)
-    shell("cat " + current_log + " >> " + LOG)
+include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
 onsuccess:
@@ -43,7 +18,6 @@ config = au.convert_state(config, read_only=True)
 
 
 include: os.path.join("rules", "0_preprocessing", "directories.smk")
-include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
 OUTPUT = config.args.output
@@ -96,7 +70,10 @@ RV_ERRORS = config.args.rv_errors
 
 ## Database args
 DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = config.args.name.split(",")
+if config.args.name:
+    DBNAME = config.args.name.split(",")
+else:
+    DBNAME = os.listdir(DBPATH)
 
 ## Classifier
 CLASSIFIER = config.args.classifier
@@ -130,7 +107,7 @@ singularity_envs = yaml.safe_load(
 
 
 ## Include the pipeline rules
-### Sets of script to handle logs, input files and list of output:
+### List of output:
 include: os.path.join("rules", "0_preprocessing", "scripts", "make_output_lists.py")
 ### Snakemake rules to do the job:
 include: os.path.join("rules", "0_preprocessing", "get_inputs.rules")
