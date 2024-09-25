@@ -348,6 +348,12 @@ def run_options(func):
             required=True,
         ),
         click.option(
+            "--local/--sra",
+            default=True,
+            help="Whether reads are local or to be downloaded from NCBI SRA",
+            show_default=True,
+        ),
+        click.option(
             "--metadata",
             "-m",
             type=click.Path(exists=True, file_okay=True, readable=True),
@@ -364,7 +370,6 @@ def run_options(func):
             "--name",
             type=str,
             help="Comma seperated list of database names",
-            required=True,
         ),
         click.option(
             "--denoiser",
