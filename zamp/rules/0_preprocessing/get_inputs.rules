@@ -1,9 +1,50 @@
-## Get local reads.
+if not LOCAL:
+
+    rule prefetch_sra:
+        conda:
+            os.path.join(dir.envs, "sra_tools.yml")
+        container:
+            singularity_envs["sra_tools"]
+        output:
+            temp(os.path.join(dir.out.base, "sra", "{sample}.sra")),
+        log:
+            os.path.join(
+                dir.logs,
+                "prefetch",
+                "{sample}.txt",
+            ),
+        resources:
+            max_copy=1,
+        shell:
+            """
+            prefetch -v {wildcards.sample} -o {output} &> {log}
+            """
+
+    checkpoint fasterq_dump:
+        conda:
+            os.path.join(dir.envs, "sra_tools.yml")
+        container:
+            singularity_envs["sra_tools"]
+        input:
+            os.path.join(dir.out.base, "sra", "{sample}.sra"),
+        output:
+            temp(directory(os.path.join(dir.out.base, "sra", "{sample}"))),
+        log:
+            os.path.join(dir.logs, "fasterq-dump", "{sample}.txt"),
+        params:
+            os.path.join(dir.out.base, "sra", "{sample}", "{sample}*.fastq"),
+        threads: 3
+        shell:
+            """
+            fasterq-dump --threads {threads} \
+            {input} -O {output} &> {log}
+            pigz -p {threads} {params}
+            """
 
 
-rule copy_and_rename_paired_fastq:
+rule copy_and_rename_paired_reads:
     input:
-        get_raw_reads,
+        get_reads,
     output:
         temp(os.path.join(dir.out.fastq, "{sample}_R1.fastq.gz")),
         temp(os.path.join(dir.out.fastq, "{sample}_R2.fastq.gz")),
@@ -16,72 +57,14 @@ rule copy_and_rename_paired_fastq:
         """
 
 
-rule copy_and_rename_single_fastq:
+rule copy_and_rename_single_reads:
     input:
-        get_raw_reads,
+        get_reads,
     output:
         temp(os.path.join(dir.out.fastq, "{sample}_single.fastq.gz")),
     resources:
         max_copy=1,
     shell:
         """
-        cp {input[0]} {output[0]} 
-        """
-
-
-## Alternatively, obtain reads from SRA.
-rule download_sra:
-    conda:
-        os.path.join(dir.envs, "sra-tools.yml")
-    container:
-        singularity_envs["sra-toolkit"]
-    output:
-        # /home/pipeline_user/ncbi/public
-        temp("ncbi/public/sra/{sample}/{sample}.sra"),
-    log:
-        os.path.join(dir.logs, "samples/{sample}/sras/dump.txt"),
-    params:
-        sra_dir="$HOME/ncbi/public",
-    resources:
-        max_copy=1,
-    shell:
-        """
-        #cache_dir=$(vdb-config --cfg -o n | grep "/repository/user/main/public/root" | cut -f2 -d'=' | sed "s/\\"//g")
-        vdb-config --restore-defaults
-        prefetch -v {wildcards.sample} -O "ncbi/public/sra/"  --max-size 100000000 &> {log}
-        """
-
-
-rule sra_convert_to_fastq_paired:
-    conda:
-        os.path.join(dir.envs, "sra-tools.yml")
-    container:
-        singularity_envs["sra-toolkit"]
-    input:
-        "ncbi/public/sra/{sample}/{sample}.sra",
-    output:
-        temp("{sample,[A-Za-z0-9]+}_1.fastq.gz"),
-        temp("{sample,[A-Za-z0-9]+}_2.fastq.gz"),
-    log:
-        os.path.join(dir.logs, "sra_download/{sample}_dump.txt"),
-    shell:
-        """
-        fastq-dump --split-3 --gzip --log-level 1 --disable-multithreading --minReadLen 0 --outdir $(dirname {output[0]}) {input[0]} &> {log}
-        """
-
-
-rule sra_convert_to_fastq_single:
-    conda:
-        os.path.join(dir.envs, "sra-tools.yml")
-    container:
-        singularity_envs["sra-toolkit"]
-    input:
-        "ncbi/public/sra/{sample}/{sample}.sra",
-    output:
-        temp("{sample,[A-Za-z0-9]+}.fastq.gz"),
-    log:
-        dir.logs + "/" + "logs/sra_download/{sample}_dump.txt",
-    shell:
-        """
-        fastq-dump --gzip --outdir $(dirname {output[0]}) --log-level 0 --disable-multithreading --minReadLen 0 {wildcards.sample} &> {log}
+        cp {input} {output} 
         """
