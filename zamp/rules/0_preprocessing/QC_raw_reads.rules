@@ -1,6 +1,4 @@
 ## Generate MultiQC reports
-
-
 rule fastQC_raw_reads:
     conda:
         os.path.join(dir.envs, "FastQC.yml")
@@ -34,28 +32,6 @@ rule fastQC_raw_reads:
         """
 
 
-def sample_list_run_QC(run):
-    file_list = []
-    samples = list(SAMPLES[SAMPLES["run"] == run].index)
-    for sample in samples:
-        if SAMPLES.loc[sample, "paired"]:
-            suffix = ["R1", "R2"]
-        else:
-            suffix = ["single"]
-        combined_values = expand(
-            os.path.join(
-                "{qc}", "FastQC", "raw_reads", "{run}", "{sample}_{suffix}_fastqc.zip"
-            ),
-            qc=dir.out.qc,
-            run=run,
-            sample=sample,
-            suffix=suffix,
-        )
-        file_list = file_list + combined_values
-
-    return file_list
-
-
 rule multiQC_per_run:
     conda:
         os.path.join(dir.envs, "MultiQC.yml")
@@ -82,34 +58,6 @@ rule multiQC_per_run:
         """
         multiqc --interactive -f -n {output[0]} $(dirname {input} | tr "\n" " ") --cl-config "max_table_rows: 100000" 2> {log[0]}
         """
-
-
-def sample_list_overall_QC():
-    file_list = []
-
-    for run in set(SAMPLES["run"]):
-        samples = list(SAMPLES[SAMPLES["run"] == run].index)
-        for sample in samples:
-            if SAMPLES.loc[sample, "paired"]:
-                suffix = ["R1", "R2"]
-            else:
-                suffix = ["single"]
-            combined_values = expand(
-                os.path.join(
-                    "{qc}",
-                    "FastQC",
-                    "raw_reads",
-                    "{run}",
-                    "{sample}_{suffix}_fastqc.zip",
-                ),
-                qc=dir.out.qc,
-                run=run,
-                sample=sample,
-                suffix=suffix,
-            )
-            file_list = file_list + combined_values
-
-    return file_list
 
 
 rule multiQC_all:
