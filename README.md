@@ -22,6 +22,7 @@ pip install -e zAMP
 ### Prepare database
 
 **Greengenes2**
+
 * Download
 
 ```sh
@@ -35,19 +36,13 @@ docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 qiime tools export -
 docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 qiime tools export --input-path 2022.10.backbone.tax.qza --output-path greengenes2
 ```
 
-* Prepare database files
+* Prepare database 
 
 ```sh
-zamp db --threads 12 --fasta greengenes2/dna-sequences.fasta --taxonomy greengenes2/taxonomy.tsv --name greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC --no-processing -o greengenes2/unprocessed
+zamp db --fasta greengenes2/dna-sequences.fasta --taxonomy greengenes2/taxonomy.tsv --name greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC -o greengenes2
 ```
 
-* Prepared database on specific region amplified by primers (Optional)
-
-```sh
-zamp db --threads 12 --fasta greengenes2/dna-sequences.fasta --taxonomy greengenes2/taxonomy.tsv --name greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC -o greengenes2/unprocessed
-```
-
-### Use database
+### Run with prepared database
 ```sh
 zamp run -i samples.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
