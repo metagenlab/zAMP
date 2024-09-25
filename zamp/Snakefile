@@ -1,15 +1,7 @@
+# config file
 include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
-onsuccess:
-    copy_log_file()
-
-
-onerror:
-    copy_log_file()
-
-
-# config file
 configfile: os.path.join(workflow.basedir, "config", "config.yaml")
 
 
@@ -20,6 +12,15 @@ config = au.convert_state(config, read_only=True)
 include: os.path.join("rules", "0_preprocessing", "directories.smk")
 
 
+onsuccess:
+    copy_log_file()
+
+
+onerror:
+    copy_log_file()
+
+
+# Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
@@ -27,6 +28,7 @@ LOG = os.path.join(OUTPUT, "zamp.log")
 # Read run args
 ## Inputs args
 INPUT = config.args.input
+LOCAL = config.args.local
 METADATA = config.args.metadata
 if os.path.isdir(INPUT) and METADATA:
 
@@ -44,7 +46,8 @@ elif os.path.isfile(INPUT) and not METADATA:
 
 
 # Add read pairing
-SAMPLES["paired"] = [True if R2 else False for R2 in SAMPLES.R2]
+if not "paired" in SAMPLES.columns:
+    SAMPLES["paired"] = [True if R2 else False for R2 in SAMPLES.R2]
 PAIRING = {
     sample: ("paired" if SAMPLES.loc[sample, "paired"] else "single")
     for sample in SAMPLES.index
@@ -69,11 +72,13 @@ FW_ERRORS = config.args.fw_errors
 RV_ERRORS = config.args.rv_errors
 
 ## Database args
-DBPATH = os.path.dirname(os.path.abspath(config.args.database))
+DBPATH = os.path.abspath(config.args.database)
 if config.args.name:
     DBNAME = config.args.name.split(",")
+
 else:
-    DBNAME = os.listdir(DBPATH)
+    DBNAME = os.path.basename(os.path.normpath(DBPATH))
+    DBPATH = os.path.dirname(DBPATH)
 
 ## Classifier
 CLASSIFIER = config.args.classifier
