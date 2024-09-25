@@ -1,6 +1,4 @@
 ## Remove primers from sequences
-
-
 rule cutadapt_trim_paired:
     conda:
         os.path.join(dir.envs, "cutadapt.yml")
