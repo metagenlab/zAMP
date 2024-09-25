@@ -44,12 +44,12 @@ zamp db --fasta greengenes2/dna-sequences.fasta --taxonomy greengenes2/taxonomy.
 
 ### Run with prepared database
 ```sh
-zamp run -i samples.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
+zamp run -i zamp/data/sra-samples.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
 
 ### Evaluate database
 ```sh
-zamp run -i samples.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
+zamp insilico -i zamp/data/insilico.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
 
 ## Help
