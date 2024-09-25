@@ -106,33 +106,54 @@ rule Format_rdp_add_lineages:
         """
 
 
-rule Train_rdp_classifier:
+rule RDP_train:
     conda:
         os.path.join(dir.envs, "rdp_classifier.yml")
     container:
         singularity_envs["rdp_classifier"]
     input:
-        read4train_fasta=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
-        read4train_tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
+        fa=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
+        tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
     output:
-        formatted_table=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
-        properties=os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
+        xml=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
+        lst=os.path.join("{prefix}", "RDP", "genus_wordConditionalProbList.txt"),
+        idx=os.path.join("{prefix}", "RDP", "wordConditionalProbIndexArr.txt"),
+        wrd=os.path.join("{prefix}", "RDP", "logWordPrior.txt"),
     params:
         mem=RDP_MEM,
+        out=os.path.join("{prefix}", "RDP"),
     threads: 1
     resources:
         mem_mb=get_mem_mb(RDP_MEM),
     shell:
         """
-        rdp_classifier -Xmx{params.mem} -XX:ConcGCThreads={threads} train \
-        -o $(dirname {output[0]}) \
-        -s {input[0]} \
-        -t {input[1]} && \
-        echo "bergeyTree=bergeyTrainingTree.xml
-        probabilityList=genus_wordConditionalProbList.txt
-        probabilityIndex=wordConditionalProbIndexArr.txt
-        wordPrior=logWordPrior.txt
-        classifierVersion=RDP Naive Bayesian rRNA Classifier Version 2.14, August 2023" > {output[1]}
+        rdp_classifier \
+        -Xmx{params.mem} -XX:ConcGCThreads={threads} \
+        train -o {params.out} -s {input.fa} -t {input.tax} 
+        """
+
+
+rule get_RDP_properties:
+    input:
+        xml=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
+        lst=os.path.join("{prefix}", "RDP", "genus_wordConditionalProbList.txt"),
+        idx=os.path.join("{prefix}", "RDP", "wordConditionalProbIndexArr.txt"),
+        wrd=os.path.join("{prefix}", "RDP", "logWordPrior.txt"),
+    output:
+        os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
+    params:
+        xml=lambda wildcards, input: os.path.basename(input.xml),
+        lst=lambda wildcards, input: os.path.basename(input.lst),
+        idx=lambda wildcards, input: os.path.basename(input.idx),
+        wrd=lambda wildcards, input: os.path.basename(input.wrd),
+        ver="RDP Naive Bayesian rRNA Classifier Version 2.14, August 2023",
+    shell:
+        """
+        echo "bergeyTree={params.xml}
+        probabilityList={params.lst}
+        probabilityIndex={params.idx}
+        wordPrior={params.wrd}
+        classifierVersion={params.ver}" > {output}
         """
 
 
@@ -151,7 +172,6 @@ rule Hash_RDP:
         """
 
 
-## Rules to format the taxonomy into a format for DADA2 implementation of RDP.
 rule Decipher_prep_fasta:
     conda:
         os.path.join(dir.envs, "amplicons_r_utils.yml")
