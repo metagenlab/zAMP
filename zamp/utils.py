@@ -580,7 +580,6 @@ def insilico_options(func):
             "--name",
             type=str,
             help="Comma seperated list of database names",
-            required=True,
         ),
         click.option(
             "--pcr-tool",
@@ -604,14 +603,14 @@ def insilico_options(func):
         ),
         click.option(
             "--mismatch",
-            help="Number of mismatches",
+            help="Number of mismatches for simulate_PCR",
             type=int,
             default=3,
             show_default=True,
         ),
         click.option(
             "--threeprime",
-            help="Number of match at the 3' end for a hit to be considered",
+            help="Number of match at the 3' end for a hit to be considered for simulate_PCR",
             type=int,
             default=2,
             show_default=True,
