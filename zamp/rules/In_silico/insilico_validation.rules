@@ -176,7 +176,7 @@ elif PCR_TOOL == "in-silico":
         container:
             singularity_envs["perl"]
         input:
-            fa=get_fasta,
+            get_fasta,
         output:
             os.path.join(dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"),
         log:
@@ -191,7 +191,7 @@ elif PCR_TOOL == "in-silico":
         shell:
             """
             LC_ALL=C perl {params.script} \\
-            -s {input.fa} \\
+            -s {input} \\
             -a {params.fw} \\
             -b {params.rv} \\
             -m -r -l {params.maxlen} \\
@@ -205,7 +205,7 @@ rule cutadapt_trim_in_silico:
     container:
         singularity_envs["cutadapt"]
     input:
-        R1_raw_reads=os.path.join(
+        os.path.join(
             dir.out.base,
             "InSilico",
             "PCR",
@@ -213,7 +213,7 @@ rule cutadapt_trim_in_silico:
             "amplicons.fasta",
         ),
     output:
-        R1_trimmed_reads=temp(
+        temp(
             os.path.join(
                 dir.out.base,
                 "InSilico",
@@ -247,13 +247,12 @@ rule cutadapt_trim_in_silico:
 ### Combine all extracted sequences in one big fasta
 rule Insilico_merge_all_in_one_fasta:
     input:
-        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
-        fasta=list_amplicons,
+        list_amplicons,
     output:
         temp(os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta")),
     shell:
         """
-        cat {input.fasta} > {output}
+        cat {input} > {output}
         """
 
 
