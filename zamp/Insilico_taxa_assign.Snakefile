@@ -37,8 +37,13 @@ LOG = os.path.join(OUTPUT, "zamp.log")
 INSILICO_TAX = config.args.input_tax
 
 ## Database args
-DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = config.args.name.split(",")
+DBPATH = os.path.abspath(config.args.database)
+if config.args.name:
+    DBNAME = config.args.name.split(",")
+
+else:
+    DBNAME = os.path.basename(os.path.normpath(DBPATH))
+    DBPATH = os.path.dirname(DBPATH)
 
 ## Classifier
 CLASSIFIER = config.args.classifier
