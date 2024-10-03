@@ -59,6 +59,7 @@ setup(
         "snaketool-utils>=0.0.5",
         "metasnek>=0.0.8",
         "biopython>=1.83",
+        "pandas>=2.2.1",
     ],
     entry_points={"console_scripts": ["zamp=zamp.__main__:main"]},
     include_package_data=True,
