@@ -8,17 +8,16 @@ rule Extract_amplicons_cutadapt:
     container:
         singularity_envs["cutadapt"]
     input:
-        "{prefix}/master/original_seqs.fasta",
+        os.path.join("{prefix}", "master", "original_seqs.fasta"),
     output:
-        "{prefix}/QIIME/dna-sequences.fasta",
+        os.path.join("{prefix}", "QIIME", "dna-sequences.fasta"),
     params:
         errors=ERRORS,
         adapter=ADAPTER,
-        coverage=COV,
         minlen=MINLEN,
         maxlen=MAXLEN,
     log:
-        "{prefix}/logs/QIIME/DB_cutadapt.txt",
+        os.path.join("{prefix}", "logs", "QIIME", "DB_cutadapt.txt"),
     threads: 3
     shell:
         """
@@ -41,19 +40,19 @@ rule Dereplicate_amplicons:
     container:
         singularity_envs["vsearch"]
     input:
-        "{prefix}/QIIME/dna-sequences.fasta",
+        os.path.join("{prefix}", "QIIME", "dna-sequences.fasta"),
     output:
-        fasta="{prefix}/QIIME/DB_amp.fasta",
-        uc="{prefix}/QIIME/DB_amp.uc",
+        fa=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
     log:
-        "{prefix}/logs/QIIME/vsearch_dereplicate_ampli.log",
+        os.path.join("{prefix}", "logs", "QIIME", "vsearch_dereplicate_ampli.log"),
     threads: 1
     shell:
         """
         vsearch \
         --derep_fulllength {input} \
-        --output {output[fasta]} \
-        --uc {output[uc]} \
+        --output {output.fa} \
+        --uc {output.uc} \
         2> {log}
         """
 
@@ -64,32 +63,32 @@ rule Derep_and_merge_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        tax="{prefix}/master/original_tax.txt",
-        uc="{prefix}/QIIME/DB_amp.uc",
+        tax=os.path.join("{prefix}", "master", "original_tax.txt"),
+        uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
     output:
-        formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic="{prefix}/QIIME/problematic_taxa.txt",
+        formatted_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        all=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
+        problematic=os.path.join("{prefix}", "QIIME", "problematic_taxa.txt"),
     log:
-        "{prefix}/logs/QIIME/derep_and_merge.log",
+        os.path.join("{prefix}", "logs", "QIIME", "derep_and_merge.log"),
     params:
-        db_name=DB_NAME,
+        db_name=DBNAME,
         tax_collapse=TAX_COLLAPSE,
     threads: 1
     script:
-        "scripts/tax_formatting.py"
+        os.path.join("scripts", "tax_formatting.py")
 
 
 rule Hash_derep_tax:
     input:
-        formatted_tax="{prefix}/QIIME/DB_amp_taxonomy.txt",
-        all="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        problematic="{prefix}/QIIME/problematic_taxa.txt",
-        fasta="{prefix}/QIIME/DB_amp.fasta",
+        os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
+        os.path.join("{prefix}", "QIIME", "problematic_taxa.txt"),
+        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
-        hash="{prefix}/QIIME/DB_formatted.hash",
+        os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
     threads: 1
     shell:
         """
-        md5sum {input.formatted_tax} {input.all} {input.problematic} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """

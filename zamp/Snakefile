@@ -1,29 +1,15 @@
-import re
-import yaml
-import os
-from snakemake.utils import min_version
-from attrmap import AttrMap
-import attrmap.utils as au
-import pandas as pd
-import glob
-from metasnek import fastq_finder
-import warnings
-
-min_version("8.10.6")
-
-warnings.filterwarnings(
-    "ignore",
-    category=UserWarning,
-)
+# config file
+include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
 
-# Concatenate Snakemake's own log file with the master log file
-def copy_log_file():
-    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
-    if not files:
-        return None
-    current_log = max(files, key=os.path.getmtime)
-    shell("cat " + current_log + " >> " + LOG)
+configfile: os.path.join(workflow.basedir, "config", "config.yaml")
+
+
+config = AttrMap(config)
+config = au.convert_state(config, read_only=True)
+
+
+include: os.path.join("rules", "0_preprocessing", "directories.smk")
 
 
 onsuccess:
@@ -34,18 +20,7 @@ onerror:
     copy_log_file()
 
 
-# config file
-configfile: os.path.join(workflow.basedir, "config", "config.yaml")
-
-
-config = AttrMap(config)
-config = au.convert_state(config, read_only=True)
-
-
-include: os.path.join("rules", "0_preprocessing", "directories.smk")
-include: os.path.join("rules", "0_preprocessing", "functions.smk")
-
-
+# Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
@@ -53,6 +28,7 @@ LOG = os.path.join(OUTPUT, "zamp.log")
 # Read run args
 ## Inputs args
 INPUT = config.args.input
+LOCAL = config.args.local
 METADATA = config.args.metadata
 if os.path.isdir(INPUT) and METADATA:
 
@@ -70,7 +46,8 @@ elif os.path.isfile(INPUT) and not METADATA:
 
 
 # Add read pairing
-SAMPLES["paired"] = [True if R2 else False for R2 in SAMPLES.R2]
+if not "paired" in SAMPLES.columns:
+    SAMPLES["paired"] = [True if R2 else False for R2 in SAMPLES.R2]
 PAIRING = {
     sample: ("paired" if SAMPLES.loc[sample, "paired"] else "single")
     for sample in SAMPLES.index
@@ -95,8 +72,13 @@ FW_ERRORS = config.args.fw_errors
 RV_ERRORS = config.args.rv_errors
 
 ## Database args
-DBPATH = os.path.dirname(os.path.abspath(config.args.database))
-DBNAME = config.args.name.split(",")
+DBPATH = os.path.abspath(config.args.database)
+if config.args.name:
+    DBNAME = config.args.name.split(",")
+
+else:
+    DBNAME = os.path.basename(os.path.normpath(DBPATH))
+    DBPATH = os.path.dirname(DBPATH)
 
 ## Classifier
 CLASSIFIER = config.args.classifier
@@ -130,7 +112,7 @@ singularity_envs = yaml.safe_load(
 
 
 ## Include the pipeline rules
-### Sets of script to handle logs, input files and list of output:
+### List of output:
 include: os.path.join("rules", "0_preprocessing", "scripts", "make_output_lists.py")
 ### Snakemake rules to do the job:
 include: os.path.join("rules", "0_preprocessing", "get_inputs.rules")

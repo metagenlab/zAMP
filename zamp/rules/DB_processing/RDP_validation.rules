@@ -11,7 +11,7 @@ rule Visualize_similarity_rdp:  ## Generate a plot for intra taxa similarity. Ve
     input:
         tax="{prefix}/RDP/ready4train_lineages.txt",
         seqs="{prefix}/RDP/ready4train_seqs.fasta",
-        rankfile=workflow.basedir + "/rules/DB_processing/scripts/RDP_rankfile.txt",
+        
     output:
         "{prefix}/RDP/RDP_taxa_sim.fig",
     log:
@@ -19,6 +19,8 @@ rule Visualize_similarity_rdp:  ## Generate a plot for intra taxa similarity. Ve
     threads: 1
     resources:
         mem_mb=30000,
+    params:
+        rankfile=workflow.basedir + "/rules/DB_processing/scripts/RDP_rankfile.txt",
     shell:
         """
         classifier -Djava.awt.headless=true taxa-sim \
@@ -27,7 +29,7 @@ rule Visualize_similarity_rdp:  ## Generate a plot for intra taxa similarity. Ve
         {input.seqs} \
         $(dirname {output[0]}) \
         8 \
-        {input.rankfile} \
+        {params.rankfile} \
         sab 2> {log}
         """
 

@@ -5,7 +5,7 @@ args:
   configfile: 
   fasta: 
   fw_primer: 
-  max_mismatch: 
+  errors:
   maxlen: 
   minlen: 
   name: 

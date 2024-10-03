@@ -4,7 +4,7 @@
 
 
 def DADA2_trim_input_paired(wildcards):
-    if TRIM == True:
+    if TRIM:
         return expand(
             os.path.join(
                 dir.out.cutadapt,
@@ -24,7 +24,7 @@ def DADA2_trim_input_paired(wildcards):
 
 
 def DADA2_trim_input_single():
-    if TRIM == True:
+    if TRIM:
         return os.path.join(
             dir.out.cutadapt,
             "DADA2",

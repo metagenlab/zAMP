@@ -348,6 +348,12 @@ def run_options(func):
             required=True,
         ),
         click.option(
+            "--local/--sra",
+            default=True,
+            help="Whether reads are local or to be downloaded from NCBI SRA",
+            show_default=True,
+        ),
+        click.option(
             "--metadata",
             "-m",
             type=click.Path(exists=True, file_okay=True, readable=True),
@@ -364,7 +370,6 @@ def run_options(func):
             "--name",
             type=str,
             help="Comma seperated list of database names",
-            required=True,
         ),
         click.option(
             "--denoiser",
@@ -575,7 +580,6 @@ def insilico_options(func):
             "--name",
             type=str,
             help="Comma seperated list of database names",
-            required=True,
         ),
         click.option(
             "--pcr-tool",
@@ -599,14 +603,14 @@ def insilico_options(func):
         ),
         click.option(
             "--mismatch",
-            help="Number of mismatches",
+            help="Number of mismatches for simulate_PCR",
             type=int,
             default=3,
             show_default=True,
         ),
         click.option(
             "--threeprime",
-            help="Number of match at the 3' end for a hit to be considered",
+            help="Number of match at the 3' end for a hit to be considered for simulate_PCR",
             type=int,
             default=2,
             show_default=True,

@@ -25,16 +25,18 @@ configfile: os.path.join(workflow.basedir, "config", "config.yaml")
 config = AttrMap(config)
 config = au.convert_state(config, read_only=True)
 
+
 # indclude directories
 include: os.path.join("rules", "0_preprocessing", "directories.smk")
+
 
 # Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
-# Config args 
-DBNAME = config.args.name.split(",")
-DBPATH = os.path.join(OUTPUT)
+# Config args
+DBNAME = config.args.name
+DBPATH = OUTPUT
 FASTA = config.args.fasta
 TAXONOMY = config.args.taxonomy
 CLASSIFIERS = config.args.classifier
@@ -75,6 +77,7 @@ if "--use-singularity" in sys.argv:
     workflow.deployment_settings.apptainer_args += (
         f" -B {workflow.basedir}:{workflow.basedir}"
     )
+    workflow.deployment_settings.apptainer_args += f" -B {DBPATH}:{DBPATH}"
 #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
     open(os.path.join(workflow.basedir, "envs", "singularity", "sing_envs.yml"), "r")
