@@ -32,24 +32,36 @@ wget http://ftp.microbio.me/greengenes_release/current/2022.10.backbone.tax.qza
 
 * Export qza with [qiime2 export](https://docs.qiime2.org/2024.5/tutorials/exporting/)
 ```sh
-docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 qiime tools export --input-path 2022.10.backbone.full-length.fna.qza --output-path greengenes2
-docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 qiime tools export --input-path 2022.10.backbone.tax.qza --output-path greengenes2
+docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 \
+qiime tools export \
+--input-path 2022.10.backbone.full-length.fna.qza \
+--output-path greengenes2
+docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 \
+qiime tools export \
+--input-path 2022.10.backbone.tax.qza --output-path greengenes2
 ```
 
 * Prepare database 
 
 ```sh
-zamp db --fasta greengenes2/dna-sequences.fasta --taxonomy greengenes2/taxonomy.tsv --name greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC -o greengenes2
+zamp db --fasta greengenes2/dna-sequences.fasta \
+--taxonomy greengenes2/taxonomy.tsv --name greengenes2 \
+--fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
+-o greengenes2
 ```
 
 ### Run with prepared database
 ```sh
-zamp run -i zamp/data/sra-samples.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
+zamp run -i zamp/data/sra-samples.tsv \
+-db greengenes2 \
+--fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
 
 ### Evaluate database
 ```sh
-zamp insilico -i zamp/data/insilico.tsv -db greengenes2 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
+zamp insilico -i zamp/data/insilico.tsv \
+-db greengenes2 \
+--fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
 
 ## Help
