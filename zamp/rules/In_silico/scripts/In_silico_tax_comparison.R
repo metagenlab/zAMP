@@ -197,11 +197,12 @@ for (assembly_ID in comparison$accession){
 }
 
 # If the species was not in your pre-processed DB, an agreement cannot be found
-comparison[comparison$in_DB == FALSE,]$Genus_agreement <- 'Species_not_in_your_DB'
-comparison[comparison$in_DB == FALSE,]$Species_agreement <- 'Species_not_in_your_DB'
+comparison <- comparison %>% mutate(Genus_agreement = replace(Genus_agreement, in_DB == FALSE, 'Species_not_in_your_DB'),
+                                    Species_agreement = replace(Species_agreement, in_DB == FALSE, 'Species_not_in_your_DB'))
+
 # If there was no amplification product:
-comparison[comparison$Number_of_variants == 0,]$Genus_agreement <- 'No_PCR_amplification'
-comparison[comparison$Number_of_variants == 0,]$Species_agreement <- 'No_PCR_amplification'
+comparison <- comparison %>% mutate(Genus_agreement = replace(Genus_agreement, Number_of_variants == 0, 'No_PCR_amplification'),
+                                    Species_agreement = replace(Species_agreement, Number_of_variants == 0, 'No_PCR_amplification'))
 
 # relocate some columns
 #(seems we are using old version of dplyr, this doesn't work)
