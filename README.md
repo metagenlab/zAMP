@@ -60,7 +60,7 @@ zamp run -i zamp/data/sra-samples.tsv \
 ### Evaluate database
 ```sh
 zamp insilico -i zamp/data/insilico.tsv \
--db greengenes2 \
+-db greengenes2 --af-args "--accession" \
 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
 ```
 
