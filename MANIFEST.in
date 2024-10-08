@@ -1,0 +1,4 @@
+include zamp/zamp.LICENSE
+include zamp/zamp.CITATION
+include zamp/zamp.VERSION
+recursive-include zamp *
