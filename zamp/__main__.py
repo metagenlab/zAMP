@@ -5,8 +5,8 @@ Command line interface for running zAMP
 import click
 from snaketool_utils.cli_utils import OrderedCommands
 from .utils import (
-    get_version,
     snake_base,
+    get_version,
     print_citation,
     common_options,
     db_options,
