@@ -34,7 +34,7 @@ OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
 ## Input
-INSILICO_TAX = config.args.input_tax
+INPUT_TAX = config.args.input_tax
 
 ## Database args
 DBPATH = os.path.abspath(config.args.database)
@@ -50,6 +50,12 @@ CLASSIFIER = config.args.classifier
 
 ## Assembly finder args
 AF_ARGS = config.args.af_args
+TAXON = config.args.taxon
+LIMIT = config.args.limit
+ASM_LEVEL = config.args.assembly
+ONLY_REF = config.args.only_ref
+RANK = config.args.rank
+NRANK = config.args.nrank
 
 ## In-silico PCR tools
 PCR_TOOL = config.args.pcr_tool
