@@ -19,8 +19,7 @@ warnings.filterwarnings(
 
 
 wildcard_constraints:
-    sample="[^/.]+",
-    classifier="[^/.]+",
+    classifier="[^/._]+",
 
 
 # Common functions
