@@ -20,6 +20,10 @@ onerror:
     copy_log_file()
 
 
+wildcard_constraints:
+    sample="[^/.]+",
+
+
 # Common args
 OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
