@@ -2,13 +2,61 @@ import pandas as pd
 import re
 
 
+rule get_assembly_finder_input:
+    output:
+        temp(os.path.join(dir.out.base, "assembly_finder", "input.tsv")),
+    params:
+        queries=INPUT_TAX.split(","),
+        taxon=TAXON,
+    run:
+        if not os.path.isfile(INPUT_TAX):
+            if params.taxon:
+                pd.DataFrame.from_dict({"taxon": params.queries}).to_csv(
+                    output[0],
+                    sep="\t",
+                    index=False,
+                )
+            else:
+                pd.DataFrame.from_dict({"accessions": params.queries}).to_csv(
+                    output[0], sep="\t", index=False, header=False
+                )
+        else:
+            df = pd.read_csv(os.path.abspath(INPUT_TAX), sep="\t", header=None)
+            if params.taxon:
+                df.columns = ["taxon"]
+                df.to_csv(
+                    output[0],
+                    sep="\t",
+                    index=False,
+                )
+
+            else:
+                df.columns = ["accession"]
+                df.to_csv(output[0], sep="\t", index=False, header=False)
+
+
+if not TAXON:
+    AF_ARGS += "--accession "
+if TAXON:
+    if LIMIT != "all":
+        AF_ARGS += f"--limit {LIMIT} "
+    if ASM_LEVEL:
+        AF_ARGS += f"--assembly-level {ASM_LEVEL} "
+    if ONLY_REF:
+        AF_ARGS += f"--reference True "
+    elif not ONLY_REF:
+        AF_ARGS += f"--reference False "
+    if RANK and NRANK:
+        AF_ARGS += f"--rank {RANK} --nrank {NRANK} "
+
+
 checkpoint download_assemblies:
     conda:
         os.path.join(dir.envs, "assembly_finder.yml")
     container:
         singularity_envs["assembly_finder"]
     input:
-        INSILICO_TAX,
+        os.path.join(dir.out.base, "assembly_finder", "input.tsv"),
     output:
         asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
         seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
