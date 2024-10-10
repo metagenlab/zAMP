@@ -1,5 +1,3 @@
-sample	samplename	run	paired	replicate	sample_group
-SRR2081037	MIX7A	UNIVERSITY_OF_ALBERTA	True	A	MIX7
-SRR2081059	MIX7B	UNIVERSITY_OF_ALBERTA	True	B	MIX7
-SRR2081060	MIX8A	UNIVERSITY_OF_ALBERTA	True	A	MIX8
-SRR2081061	MIX8B	UNIVERSITY_OF_ALBERTA	True	B	MIX8
+sample	sample_label	sample_group	sample_source	run	study_name	paired
+SRR9067116	Vaginal-16s-V3V4-Library42	Genital_tract	Genital_tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	True
+SRR9067115	Vaginal-16s-V3V4-Library41	Genital_tract	Genital_tract	UNIVERSITY_OF_CAPE_TOWN	pipeline_validation	True
