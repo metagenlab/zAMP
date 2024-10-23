@@ -47,7 +47,6 @@ print("reading metadata")
 asm_df <- read.delim(file = asm_summary, sep = "\t", header = TRUE, na.strings = "NA", stringsAsFactors = FALSE)
 asm_df$path <- as.character(asm_df$path)
 asm_df$assembly_name = sub("_genomic\\.fna\\.gz$","", basename(asm_df$path)) #add column with assembly prefix name
-colnames(asm_df)
 subset_asm_df <- asm_df %>% select("accession", "assembly_name", "assembly_level")
 tax_df <- read.delim(file = expected_taxonomy, sep = "\t", header = TRUE)
 metadata <- merge(subset_asm_df, tax_df, by="accession")
@@ -119,7 +118,7 @@ comparison <- metadata
 
     for (j in 1:length(names(transposed_counts_i_f))){
       ## Create columns for each variants, count it, and give the corresponding taxonomy
-      if('No_amp' %in% names(transposed_counts_i_f)){
+      if(names(transposed_counts_i_f)[j] == 'No_amp'){
         comparison[[paste0("Amplicon_", j)]][comparison$assembly_name==i] <- 'No_amp'
         comparison[[paste0("Count_", j)]][comparison$assembly_name==i] <- 0
         comparison[[paste0("Tax_", j)]][comparison$assembly_name==i] <- "No_amplification_products"
