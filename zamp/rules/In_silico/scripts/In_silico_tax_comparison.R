@@ -47,7 +47,7 @@ print("reading metadata")
 asm_df <- read.delim(file = asm_summary, sep = "\t", header = TRUE, na.strings = "NA", stringsAsFactors = FALSE)
 asm_df$path <- as.character(asm_df$path)
 asm_df$assembly_name = sub("_genomic\\.fna\\.gz$","", basename(asm_df$path)) #add column with assembly prefix name
-subset_asm_df <- asm_df %>% select("accession", "assembly_name")
+subset_asm_df <- asm_df %>% select("accession", "assembly_name", "assembly_level")
 tax_df <- read.delim(file = expected_taxonomy, sep = "\t", header = TRUE)
 metadata <- merge(subset_asm_df, tax_df, by="accession")
 head(metadata)
@@ -165,7 +165,6 @@ for (assembly_ID in comparison$accession){
   
   observed_taxa <- filter(compare_long, accession == assembly_ID ) %>%
     tidyr::separate(Taxonomy, sep = ";", into = c("Assigned_Kingdom","Assigned_Phylum","Assigned_Class","Assigned_Order","Assigned_Family","Assigned_Genus","Assigned_Species"))
-  
   if(!(unique(observed_taxa$genus) %in% gsub("^.*__", "", observed_taxa$Assigned_Genus))){
     comparison$Genus_agreement[comparison$accession == assembly_ID] <- "Discrepant"
     comparison$Species_agreement[comparison$accession == assembly_ID] <- "Discrepant_Genus" 
@@ -208,8 +207,13 @@ comparison <- comparison %>% mutate(Genus_agreement = replace(Genus_agreement, N
 #(seems we are using old version of dplyr, this doesn't work)
 # comparison <- comparison %>% 
 #   dplyr::relocate(c("Sum_of_copies", "Genus_agreement", "Species_agreement", "Matching_amplicons", "Discrepant_amplicons"), .after = "Number_of_variants")
-comparison <- comparison[,c(1:25, (ncol(comparison)-4):ncol(comparison), 26:(ncol(comparison)-5))]
-
+# comparison <- comparison[,c(1:25, (ncol(comparison)-4):ncol(comparison), 26:(ncol(comparison)-5))]
+first_cols <- c("accession", "assembly_name", "assembly_level", "tax_id",
+  "name", "rank", "kingdom", "phylum", "class", "order", "family", "genus", "species",
+  "in_DB", "Number_of_variants", "Sum_of_copies", "Genus_agreement", "Species_agreement", 
+  "Matching_amplicons", "Discrepant_amplicons")
+other_cols <- setdiff(colnames(comparison), first_cols)
+comparison <- comparison[,c(first_cols, other_cols)]
 
 print('final table head')
 head(comparison)
