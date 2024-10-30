@@ -313,6 +313,18 @@ def db_options(func):
             show_default=True,
         ),
         click.option(
+            "--cutadapt_args_fw",
+            type=str,
+            default="",
+            help="Additional cutadapt arguments for forward primer",
+        ),
+        click.option(
+            "--cutadapt_args_rv",
+            type=str,
+            default="",
+            help="Additional cutadapt arguments for reverse primer",
+        ),
+        click.option(
             "--rdp-mem",
             type=str,
             help="Maximum RAM for RDP training",

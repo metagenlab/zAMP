@@ -51,6 +51,8 @@ RV_PRIMER = config.args.rv_primer
 COV = config.args.ampcov
 MAXLEN = config.args.maxlen
 MINLEN = config.args.minlen
+FW_OTHER = config.args.cutadapt_args_fw
+RV_OTHER = config.args.cutadapt_args_rv
 
 AMPLICON = config.args.amplicon
 ADAPTER = ""
@@ -61,12 +63,7 @@ if FW_PRIMER and RV_PRIMER:
     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
     FW_COV = round(FW_LEN * COV)
     RV_COV = round(RV_LEN * COV)
-    if AMPLICON == "16S":
-        ADAPTER = (
-            f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
-        )
-    else:
-        ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};optional...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+    ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};{FW_OTHER}...{RV_PRIMER_COMPL};min_overlap={RV_COV};{RV_OTHER}"
 
 
 ## When using singularity
