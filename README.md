@@ -42,12 +42,27 @@ qiime tools export \
 ```
 
 * Prepare database 
+Example usage cases:
 
+1. Prepare greengenes database with V3-V4 primers:
 ```sh
 zamp db --fasta greengenes2/dna-sequences.fasta \
 --taxonomy greengenes2/taxonomy.tsv --name greengenes2 \
 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
 -o greengenes2
+```
+
+2. Prepare fungal ITS database: Fungal ITS databases (Unite v10 and Eukaryome have been verified) do not contain the adjacent 18S/28S sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. Extraction of the amplified region from the database would therefore not possible. It is important to adjust the cutadapt parameters so that only the lacking primer is not required. 
+In the following example, we prepare a database for fungal ITS1 from Unite Db. In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer:
+
+```sh
+zamp db \
+--fasta sh_refs_qiime_unite_ver10_dynamic_04.04.2024.fasta \
+--taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
+--name unite \
+--fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
+--minlen 50 --maxlen 900  --amplicon ITS \
+--cutadapt_args_fw "optional"
 ```
 
 ### Run with prepared database
