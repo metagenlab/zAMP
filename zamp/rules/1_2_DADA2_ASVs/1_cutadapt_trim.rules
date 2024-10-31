@@ -29,7 +29,6 @@ rule cutadapt_trim_paired:
             dir.logs, "{denoiser}", "1a_trimmed_primers", "{sample}_trimmed_paired.txt"
         ),
     params:
-        amplicon_type=AMPLICON,
         forward_primer=FW_PRIMER,
         reverse_primer=RV_PRIMER,
     threads: 1
@@ -58,7 +57,6 @@ rule cutadapt_trim_single:
             dir.logs, "{denoiser}", "1a_trimmed_primers", "{sample}_trimmed_single.txt"
         ),
     params:
-        amplicon_type=AMPLICON,
         forward_primer=FW_PRIMER,
         reverse_primer=RV_PRIMER,
     threads: 1

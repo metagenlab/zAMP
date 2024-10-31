@@ -54,7 +54,6 @@ MINLEN = config.args.minlen
 FW_OTHER = config.args.cutadapt_args_fw
 RV_OTHER = config.args.cutadapt_args_rv
 
-AMPLICON = config.args.amplicon
 ADAPTER = ""
 if FW_PRIMER and RV_PRIMER:
     FW_PRIMER_COMPL = Seq.reverse_complement(Seq(FW_PRIMER))
