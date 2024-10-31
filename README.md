@@ -60,7 +60,7 @@ zamp db \
 --taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
 --name unite \
 --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
---minlen 50 --maxlen 900  --amplicon ITS \
+--minlen 50 --maxlen 900 \
 --cutadapt_args_fw "optional"
 ```
 
@@ -93,7 +93,7 @@ zamp insilico -i zamp/data/bacteria-accs.txt \
 zamp insilico -i zamp/data/fungi-taxa.txt \
 -db unite_db_v10 \ 
 --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
---minlen 50 --maxlen 900  --amplicon ITS
+--minlen 50 --maxlen 900
 ```
 
 3. Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
