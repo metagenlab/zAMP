@@ -248,13 +248,6 @@ def db_options(func):
             required=True,
         ),
         click.option(
-            "--amplicon",
-            type=click.Choice(["16S", "ITS"]),
-            default="16S",
-            help="Choose 16S or ITS for primer trimming",
-            show_default=True,
-        ),
-        click.option(
             "--name",
             type=str,
             help="Comma seperated list of database names",
@@ -311,6 +304,18 @@ def db_options(func):
             help="Maximum number of accepted primer mismatches, or float between 0 and 1",
             default=0.1,
             show_default=True,
+        ),
+        click.option(
+            "--cutadapt_args_fw",
+            type=str,
+            default="",
+            help="Additional cutadapt arguments for forward primer",
+        ),
+        click.option(
+            "--cutadapt_args_rv",
+            type=str,
+            default="",
+            help="Additional cutadapt arguments for reverse primer",
         ),
         click.option(
             "--rdp-mem",
@@ -393,13 +398,6 @@ def run_options(func):
             "--trim/--no-trim",
             default=True,
             help="Trim primers or not",
-            show_default=True,
-        ),
-        click.option(
-            "--amplicon",
-            type=click.Choice(["16S", "ITS"]),
-            default="16S",
-            help="Choose 16S or ITS for primer trimming",
             show_default=True,
         ),
         click.option(
@@ -639,13 +637,6 @@ def insilico_options(func):
             type=click.Choice(["simulate", "in-silico"], case_sensitive=False),
             help="Tool for in silico PCR",
             default="in-silico",
-            show_default=True,
-        ),
-        click.option(
-            "--amplicon",
-            type=click.Choice(["16S", "ITS"]),
-            default="16S",
-            help="Choose 16S or ITS for primer trimming",
             show_default=True,
         ),
         click.option(

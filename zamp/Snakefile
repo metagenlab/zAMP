@@ -1,3 +1,4 @@
+from Bio.Seq import Seq
 # config file
 include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
@@ -60,10 +61,10 @@ PAIRING = {
 DENOISER = config.args.denoiser
 ## Primers args
 TRIM = config.args.trim
-AMPLICON = config.args.amplicon
 OVERLAP = config.args.min_overlap
 FW_PRIMER = config.args.fw_primer
 RV_PRIMER = config.args.rv_primer
+RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
 
 ## Merged sequences args
 MINLEN = config.args.minlen
