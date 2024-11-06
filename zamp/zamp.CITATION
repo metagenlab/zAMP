@@ -6,6 +6,12 @@ https://doi.org/10.1371/journal.pcbi.1010705
 and Snakemake:
 https://doi.org/10.12688/f1000research.29032.1
 
+Singularity:
+https://doi.org/10.1371/journal.pone.0177459
+
+Docker:
+
+
 DADA2:
 https://doi.org/10.1038/nmeth.3869
 
@@ -29,3 +35,35 @@ https://doi.org/10.1186/1471-2105-15-237
 
 SRA toolkit:
 https://doi.org/10.3390/foods12112140
+
+FastQC:
+http://www.bioinformatics.babraham.ac.uk/projects/fastqc
+
+MultiQC:
+https://doi.org/10.1093/bioinformatics/btw354
+
+Greengenes2:
+https://doi.org/10.1038/s41587-023-01845-1
+
+SILVA:
+https://doi.org/10.1093/nar/gks1219
+
+EzBioCloud:
+https://doi.org/10.1099/ijsem.0.001755
+
+Cutadapt:
+https://doi.org/10.14806/ej.17.1.200
+
+pandaseq:
+https://doi.org/10.1186/1471-2105-13-31
+
+AssemblyFinder:
+https://github.com/metagenlab/MeSS
+
+TreeShrink:
+https://doi.org/10.1186/s12864-018-4620-2
+
+Krona:
+https://doi.org/10.1007/978-1-4899-7478-5_802
+
+
