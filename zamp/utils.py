@@ -54,6 +54,7 @@ def run_snakemake(
     snakefile_path=None,
     merge_config=None,
     threads=1,
+    use_singularity=True,
     snake_default=None,
     snake_args=[],
     profile=None,
@@ -118,7 +119,8 @@ def run_snakemake(
     # allow double-handling of --profile
     if profile:
         snake_command += ["--profile", profile]
-
+    if use_singularity:
+        snake_command += ["--use-singularity"]
     # allow double-handling of --workflow-profile
     if workflow_profile:
         # copy system default if not present
