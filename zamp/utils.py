@@ -54,10 +54,6 @@ def run_snakemake(
     snakefile_path=None,
     merge_config=None,
     threads=1,
-    use_singularity=False,
-    singularity_prefix=None,
-    use_conda=False,
-    conda_prefix=None,
     snake_default=None,
     snake_args=[],
     profile=None,
@@ -111,15 +107,6 @@ def run_snakemake(
     if "--profile" not in snake_args and profile is None:
         snake_command += ["--cores", threads]
 
-    # add conda args if using conda
-    if use_conda:
-        snake_command += ["--use-conda"]
-        if conda_prefix:
-            snake_command += ["--conda-prefix", conda_prefix]
-    if use_singularity:
-        snake_command += ["--use-singularity"]
-        if singularity_prefix:
-            snake_command += ["--singularity-prefix", singularity_prefix]
     # add snakemake default args
     if snake_default:
         snake_command += snake_default
@@ -180,30 +167,6 @@ def common_options(func):
             help="Number of threads to use",
             default=1,
             show_default=True,
-        ),
-        click.option(
-            "--use-singularity/--no-use-singularity",
-            default=True,
-            help="Use singularity containers for Snakemake rules",
-            show_default=True,
-        ),
-        click.option(
-            "--singularity-prefix",
-            default=os.path.join(os.getcwd(), ".snakemake", "singularity"),
-            help="Custom singularity container directory",
-            type=click.Path(),
-        ),
-        click.option(
-            "--use-conda/--no-use-conda",
-            default=False,
-            help="Use conda for Snakemake rules",
-            show_default=True,
-        ),
-        click.option(
-            "--conda-prefix",
-            default=os.path.join(os.getcwd(), ".snakemake", "conda"),
-            help="Custom conda env directory",
-            type=click.Path(),
         ),
         click.option(
             "--snake-default",
