@@ -19,7 +19,7 @@ This module aims at predicting *in silico* if specific taxa are:
 Working principle
 ************************************************************************
 
-Based on a user-defined list of NCBI tax IDs, assemblies or taxon queries, genome assemblies are downloaded from the NCBI database with `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. Then, PCR primer sequences provided by the user are used to run an *in silico* PCR with `in_silico_pcr <https://github.com/egonozer/in_silico_pcr>` (or alternatively, with `simulate_PCR <https://github.com/metagenlab/updated_simulate_PCR>`. The generated *in silico* amplicons are  treated by the main pipeline as they would if they were the results of sequencing reads (primer trimming, amplicon clustering into representative sequences, taxonomic classification). 
+Based on a user-defined list of NCBI tax IDs, assemblies or taxon queries, genome assemblies are downloaded from the NCBI database with `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. Then, PCR primer sequences provided by the user are used to run an *in silico* PCR with `in_silico_pcr <https://github.com/egonozer/in_silico_pcr>`_ (or alternatively, with `simulate_PCR <https://github.com/metagenlab/updated_simulate_PCR>`_. The generated *in silico* amplicons are  treated by the main pipeline as they would if they were the results of sequencing reads (primer trimming, amplicon clustering into representative sequences, taxonomic classification). 
 
 Finally, for each of the downloaded assembly, this module provides a table with a description of the amplicons predicted to be amplified with the PCR primers (number of sequence variants, number of copies) as well as the expected and obtained taxonomic assignment. 
 
@@ -49,7 +49,7 @@ Example usage cases:
 
 * Using bacteria assembly accession names (note the --accession argument when using accession names instead of tax IDs):
 
-```sh
+```
 zamp insilico -i zamp/data/bacteria-accs.txt \
 -db greengenes2 --accession \
 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
@@ -57,7 +57,7 @@ zamp insilico -i zamp/data/bacteria-accs.txt \
 
 * Using fungi tax IDs (requires additional ITS amplicon-specific parameters to adjust the amplicon size):
 
-```sh
+```
 zamp insilico -i zamp/data/fungi-taxa.txt \
 -db unite_db_v10 \ 
 --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
@@ -66,7 +66,7 @@ zamp insilico -i zamp/data/fungi-taxa.txt \
 
 * Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
 
-```sh
+```
 zamp insilico -i "lactobacillus" \
 -db ezbiocloud \
 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
