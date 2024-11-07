@@ -31,12 +31,12 @@ To execute the pipeline, one needs:
 
 * An input file containing the accession names or the Tax IDs of interest. This is a one-column text file without headers. The identifiers should match NCBI taxonomy. One can skip this text file and use a query term instead, see usage cases below.
 
-* :ref:`A taxonomic database preprocessed with our dedicated pipeline <DB_preprocessing>`
+* :ref:`A taxonomic database preprocessed with our dedicated pipeline<DB_preprocessing>`
 
 
 **Input file example:**
 
-.. literalinclude:: ../zamp/data/bacteria-accs.txt
+:ref:`../zamp/data/bacteria-accs.txt
     :language: csv
 
 .. literalinclude:: ../zamp/data/fungi-taxa.txt
