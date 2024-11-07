@@ -48,14 +48,14 @@ Example usage cases:
 
 * Using bacteria assembly accession names (note the --accession argument when using accession names instead of tax IDs):
 
-.. code-block:: sh
+.. code-block:: console
     zamp insilico -i zamp/data/bacteria-accs.txt \
     -db greengenes2 --accession \
     --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC
 
 * Using fungi tax IDs (requires additional ITS amplicon-specific parameters to adjust the amplicon size):
 
-.. code-block:: sh
+.. code-block:: console
     zamp insilico -i zamp/data/fungi-taxa.txt \
     -db unite_db_v10 \ 
     --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
@@ -64,7 +64,7 @@ Example usage cases:
 
 * Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
 
-.. code-block:: sh
+.. code-block:: console
     zamp insilico -i "lactobacillus" \
     -db ezbiocloud \
     --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
