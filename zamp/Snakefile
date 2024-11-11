@@ -1,4 +1,6 @@
 from Bio.Seq import Seq
+
+
 # config file
 include: os.path.join("rules", "0_preprocessing", "functions.smk")
 

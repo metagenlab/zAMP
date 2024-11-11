@@ -81,7 +81,9 @@ if FW_PRIMER and RV_PRIMER:
     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
     FW_COV = round(FW_LEN * COV)
     RV_COV = round(RV_LEN * COV)
-    ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+    ADAPTER = (
+        f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+    )
 
 ## Replace empty tax
 REPL_EMPTY = config.args.replace_empty
