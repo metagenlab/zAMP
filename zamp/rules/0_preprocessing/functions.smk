@@ -22,6 +22,10 @@ wildcard_constraints:
     classifier="[^/._]+",
 
 
+os.environ["LC_ALL"] = "C.UTF-8"
+os.environ["LANG"] = "C.UTF-8"
+
+
 # Common functions
 def copy_log_file():
     files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
