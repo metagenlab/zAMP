@@ -238,7 +238,7 @@ elif PCR_TOOL == "in-silico":
             ),
         shell:
             """
-            LC_ALL=C perl {params.script} \\
+            perl {params.script} \\
             -s {input} \\
             -a {params.fw} \\
             -b {params.rv} \\
@@ -399,9 +399,9 @@ rule create_InSilico_count_table:
 ### Create a table to compare tax assignment
 rule In_silico_tax_compare:
     conda:
-        os.path.join(dir.envs, "amplicons_r_utils.yml")
+        os.path.join(dir.envs, "pandas.yml")
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["pandas"]
     input:
         db_tax=os.path.join(DBPATH, "{tax_DB}", "RDP", "formatted_tax_table.tsv"),
         count_table=os.path.join(
@@ -419,22 +419,20 @@ rule In_silico_tax_compare:
             "dna-sequences_tax_assignments.txt",
         ),
     output:
-        output_table=os.path.join(
+        amplicons=os.path.join(
             dir.out.base,
             "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "InSilico_compare_tax.tsv",
+            "amplicons_tax_compare.tsv",
         ),
-        output_table_long=os.path.join(
+        assemblies=os.path.join(
             dir.out.base,
             "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "InSilico_compare_tax_long.tsv",
+            "assemblie_tax_compare.tsv",
         ),
-    params:
-        viz_replace_empty_tax=REPL_EMPTY,
     log:
         os.path.join(
             dir.logs,
@@ -444,4 +442,4 @@ rule In_silico_tax_compare:
             "InSilico_compare_tax.log",
         ),
     script:
-        "scripts/In_silico_tax_comparison.R"
+        "scripts/tax_compare.py"
