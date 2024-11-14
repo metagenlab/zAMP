@@ -1,0 +1,78 @@
+name: Publish Docker image
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "env.yaml"
+      - ".github/workflows/docker-publish.yml"
+      - "zamp/**"
+      - "setup.py"
+      - "!docs/**"
+      - "!*.md"
+      - "!LICENSE"
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "env.yaml"
+      - ".github/workflows/docker-publish.yml"
+      - "zamp/**"
+      - "setup.py"
+      - "!docs/**"
+      - "!*.md"
+      - "!LICENSE"
+
+  release:
+    types: [published]
+
+jobs:
+  push_to_registry:
+    if: github.repository == 'metagenlab/zAMP'
+    name: Build + Push Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push dev image
+        uses: docker/build-push-action@v6
+        if: github.event_name == 'push'
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/metagenlab/zamp:dev
+            metagenlab/zamp:dev
+
+      - name: Push release image
+        uses: docker/build-push-action@v6
+        if: github.event_name == 'release'
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/metagenlab/zamp:${{ github.event.release.tag_name }}
+            ghcr.io/metagenlab/zamp:latest
+            metagenlab/zamp:${{ github.event.release.tag_name }}
+            metagenlab/zamp:latest
