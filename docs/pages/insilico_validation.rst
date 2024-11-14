@@ -19,20 +19,9 @@ This module aims at predicting *in silico* if specific taxa are:
 Working principle
 ************************************************************************
 
-Based on a user-defined list of tax IDs or species names, genome assemblies are downloaded from the NCBI database with `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. Then, PCR primer sequences provided by the user are used to run an *in silico* PCR with `dicey <https://github.com/gear-genomics/dicey/>`. The generated *in silico* amplicons are  treated by the pipeline as they would if they were the results of sequencing reads (primer trimming, amplicon clustering into representative sequences, taxonomic classification). 
+Based on a user-defined list of NCBI tax IDs, assemblies or taxon queries, genome assemblies are downloaded from the NCBI database with `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. Then, PCR primer sequences provided by the user are used to run an *in silico* PCR with `in_silico_pcr <https://github.com/egonozer/in_silico_pcr>`_ (or alternatively, with `simulate_PCR <https://github.com/metagenlab/updated_simulate_PCR>`_). The generated *in silico* amplicons are  treated by the main pipeline as they would if they were the results of sequencing reads (primer trimming, amplicon clustering into representative sequences, taxonomic classification). 
 
 Finally, for each of the downloaded assembly, this module provides a table with a description of the amplicons predicted to be amplified with the PCR primers (number of sequence variants, number of copies) as well as the expected and obtained taxonomic assignment. 
-
-
-************************************************************************
-Requirements
-************************************************************************
-This tools shares :ref:`requirements with the zAMP main pipeline <_setup>`. Thus, it requires: 
-
-- a local copy of zAMP (:ref:`(cloned with git) <git>`) (with the --recursive flag to obtain Assembly Finder at the same time)
-- :ref:`Snakemake <snakemake>`
-- :ref:`Singularity <singularity>` (here required and not only optional)
-- :ref:`A taxonomic database preprocessed with our dedicated pipeline <DB_preprocessing>`
 
 
 ************************************************************************
@@ -40,59 +29,56 @@ Inputs
 ************************************************************************
 To execute the pipeline, one needs:
 
+* An input file containing the accession names or the Tax IDs of interest. This is a one-column text file without headers. The identifiers should match NCBI taxonomy. One can skip this text file and use a query term instead, see usage cases below.
 
-1. Input table
-=======================================================================
+* :ref:`A taxonomic database preprocessed with our dedicated pipeline <Taxonomic reference database preprocessing>`
 
-.. Note:: It is recommended to generate a new folder (outside of the pipeline itself) where these files are created and the pipeline executed. 
-
-This table contains a list of taxa to be tested. This is a one-column table named "UserInputNames" and contains taxonomic identifiers (taxID) matching the `identifiers from the NCBI taxonomy database <https://www.ncbi.nlm.nih.gov/taxonomy/>`_. Alternatively, taxa can also be indentified by their names.  
 
 **Input file example:**
 
-.. literalinclude:: ../../ressources/template_files/insilico_ITS_input_taxID.tsv
+.. literalinclude:: ../zamp/data/bacteria-accs.txt
     :language: csv
 
-
-2. Config file
-=======================================================================
-
-The config files specifies the different parameters of the pipeline as well as parameters for `Assembly Finder <https://github.com/metagenlab/assembly_finder>`_. 
-
-**Config file example:**
-
-.. literalinclude:: ../../ressources/template_files/config_in_silico_validation.yaml
-    :language: yaml
-
-
+.. literalinclude:: ../zamp/data/fungi-taxa.txt
+    :language: csv
 
 ************************************************************************
 Execution
 ************************************************************************
+Example usage cases:
 
-Once all the requirements installed and the input files ready, one can exectute the pipeline. In an environment where :ref:`Snakemake <snakemake>` is available, it can be run as follows: 
+* Using bacteria assembly accession names (note the --accession argument when using accession names instead of tax IDs):
 
-.. code-block:: console
+::
+    zamp insilico -i zamp/data/bacteria-accs.txt \
+    -db greengenes2 --accession \
+    --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC
 
-    snakemake --snakefile {path_to_pipeline}/Insilico_taxa_assign.Snakefile  --use-singularity --singularity-prefix {path_to_singularity_images} --cores {number of cores} --configfile {path_to_config} --resources ncbi_requests={number of request to NCBI} -k
+* Using fungi tax IDs (requires additional ITS amplicon-specific parameters to adjust the amplicon size):
+
+::
+    zamp insilico -i zamp/data/fungi-taxa.txt \
+    -db unite_db_v10 \ 
+    --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
+    --minlen 50 --maxlen 900
 
 
-Alternatively, using conda:
+* Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
 
-.. code-block:: console
-
-    snakemake --snakefile {path_to_pipeline}/Insilico_taxa_assign.Snakefile  --use-conda --cores {number of cores} --configfile {path_to_config} --resources ncbi_requests={number of request to NCBI} -k
+::
+    zamp insilico -i "lactobacillus" \
+    -db ezbiocloud \
+    --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
+    --replace-empty -nb 100 --not-only-ref
 
 
 ************************************************************************
 Output
 ************************************************************************
-The pipeline gathers information on available assemblies for the requested taxIDs in "tables" folder, and the downloaded assemblies in "assemblies_gz".
+The pipeline gathers information on available assemblies for the requested taxIDs in the `assembly_finder` folder.
 
-The output of the in-silico amplification is in Insilico folder, and contains the following subfolders:
+The output of the in-silico amplification is in `Insilico` folder, and contains the following subfolders:
 
 - PCR: contains the output of in-silico PCR amplification
-- 1a_trimmed_primers: contains output of primer trimming with cutadapt
-- 1c_derep: all amplified products combined into one fasta file (similar to the input that would be used in the main pipeline)
 - 2_denoised: output of clustering and denoising into representative sequences, and count tables
-- 3_classified: output of taxonomic classification and tables comparing expected and obtained taxonomic assignations (InSilico_compare_tax.tsv and InSilico_compare_tax_long.tsv)
+- 3_classified: output of taxonomic classification and tables comparing expected and obtained taxonomic assignations (`InSilico_compare_tax.tsv` and `InSilico_compare_tax_long.tsv`.)

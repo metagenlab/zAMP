@@ -49,59 +49,12 @@ zamp db --fasta greengenes2/dna-sequences.fasta \
 -o greengenes2
 ```
 
-**Fungal ITS databases**
-
-Fungal ITS databases (Unite v10 and Eukaryome have been verified) do not contain the adjacent 18S/28S sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. Extraction of the amplified region from the database would therefore not possible. It is important to adjust the cutadapt parameters so that only the lacking primer is not required. 
-In the following example, we prepare a database for fungal ITS1 from Unite Db. In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer:
-
-```sh
-zamp db \
---fasta sh_refs_qiime_unite_ver10_dynamic_04.04.2024.fasta \
---taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
---name unite \
---fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
---minlen 50 --maxlen 900 \
---cutadapt_args_fw "optional"
-```
 
 ### Run with prepared database
 ```sh
 zamp run -i zamp/data/sra-samples.tsv \
 -db greengenes2 \
 --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
-```
-
-### Evaluate database
-The module `zamp insilico` allows you to insilico test a pair of PCR primers and evaluate their suitability to correctly amplify and classify taxons of interest. It also allows you  to assess if your database is able to correctly determine the taxonomy of your species of interest, based on the expected amplicon.
-
-To do so, the module performs an insilico PCR with your primer pair on a collection of publicly available assemblies (NCBI). The extracted amplicons are processed and classified by the main zAMP module and compared to the expected NCBI taxonomy. 
-The output is a summary table indicating whether amplification occurs on the species of interest with the specified primer pair, how many amplicons are extracted from your query assemblies, and whether the taxonomy obtained with your database corresponds to the expected.
-As input, you need to provide the taxons to investigate as assembly accession names, tax IDs or queries, as well as the PCR primer pair and your database to evaluate (prepared by `zamp db`).
-
-
-Example usage cases:
-
-1. Using bacteria assembly accession names:
-```sh
-zamp insilico -i zamp/data/bacteria-accs.txt \
--db greengenes2 --accession \
---fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC 
-```
-
-2. Using fungi tax IDs (requires additional ITS amplicon-specific parameters):
-```sh
-zamp insilico -i zamp/data/fungi-taxa.txt \
--db unite_db_v10 \ 
---fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
---minlen 50 --maxlen 900
-```
-
-3. Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
-```sh
-zamp insilico -i "lactobacillus" \
--db ezbiocloud \
---fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
---replace-empty -nb 100 --not-only-ref
 ```
 
 
