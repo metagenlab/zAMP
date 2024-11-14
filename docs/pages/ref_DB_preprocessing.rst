@@ -119,7 +119,7 @@ Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAM
 Pipeline execution
 =======================================================================
 
-The module is execute as `zamp db` and has the following arguments:
+The module is executed as `zamp db` and has the following arguments:
 
 ::
     Usage: zamp db [OPTIONS] [SNAKE_ARGS]...
@@ -187,7 +187,7 @@ Fungal ITS databases (Unite v10 and Eukaryome have been verified) do not contain
 It is important to adjust the cutadapt parameters so that only the absent primer is optional.
 In the following example, we prepare a database for fungal ITS1 from Unite Db. In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer:
 
-.. code-block:: console
+::
     zamp db \
     --fasta sh_refs_qiime_unite_ver10_dynamic_04.04.2024.fasta \
     --taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
@@ -200,7 +200,7 @@ In the following example, we prepare a database for fungal ITS1 from Unite Db. I
 *Eukaryome ITS2 database*
 Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences:
 
-.. code-block:: console
+::
     zamp db \
     --fasta QIIME2_EUK_ITS_v1.8.fasta \
     --taxonomy QIIME2_EUK_ITS_v1.8.txt \
@@ -216,7 +216,7 @@ Generated output
 =======================================================================
 
 ::
-├── config.yaml
+    ├── config.yaml
 ├── dada2rdp
 │   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
 │   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
@@ -260,6 +260,7 @@ Generated output
 │   ├── rRNAClassifier.properties
 │   └── wordConditionalProbIndexArr.txt
 └── zamp.log
+
 
 
 .. attention:: Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
