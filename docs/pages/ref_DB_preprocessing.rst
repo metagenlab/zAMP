@@ -215,57 +215,7 @@ Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse 
 
 Generated output
 =======================================================================
-
-::
-    ├── config.yaml
-    ├── dada2rdp
-    │   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
-    │   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
-    │   ├── DADA2_DB_amp_taxonomy_King_to_Species.txt
-    │   └── DADA2_DB.hash
-    ├── DB.hash
-    ├── logs
-    │   ├── dada2rdp
-    │   │   └── DB_amp_taxonomy_dada2_prep.log
-    │   ├── QIIME
-    │   │   ├── DB_cutadapt.txt
-    │   │   ├── derep_and_merge.log
-    │   │   └── vsearch_dereplicate_ampli.log
-    │   └── RDP
-    │       └── formatted_tax_table.log
-    ├── master
-    │   ├── original.hash
-    │   ├── original_seqs.fasta
-    │   └── original_tax.txt
-    ├── preprocessing_analysis
-    │   ├── cutadapt_trimmedOut_length_distribution.pdf
-    │   ├── DB_insert_size_distribution.pdf
-    │   ├── QIIME_dna-sequences_lengths.tsv
-    │   └── RDP_ready4train_sequences_lengths.tsv
-    ├── QIIME
-    │   ├── DB_amp_all_taxonomy.txt
-    │   ├── DB_amp.fasta
-    │   ├── DB_amp_taxonomy.txt
-    │   ├── DB_amp.uc
-    │   ├── DB_formatted.hash
-    │   ├── dna-sequences.fasta
-    │   └── problematic_taxa.txt
-    ├── RDP
-    │   ├── bergeyTrainingTree.xml
-    │   ├── formatted_tax_table.tsv
-    │   ├── genus_wordConditionalProbList.txt
-    │   ├── logWordPrior.txt
-    │   ├── RDP_DB.hash
-    │   ├── ready4train_lineages.txt
-    │   ├── ready4train_seqs.fasta
-    │   ├── rRNAClassifier.properties
-    │   └── wordConditionalProbIndexArr.txt
-    └── zamp.log
-
-
-
-
-.. attention:: Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
+Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
 
 
 ************************************************************************
