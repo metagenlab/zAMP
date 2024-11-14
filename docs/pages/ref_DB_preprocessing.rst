@@ -43,9 +43,9 @@ Finally, the  pipeline will make a copy of the original database as well as comp
 Execution:
 ************************************************************************
 
-A dedicated workflow is embedded in zAMP for database preprocessing. This workflow must be run only one time for each set of PCR primers and reference database. 
+A dedicated workflow is embedded in zAMP for database preprocessing. This workflow must be run only once for each set of PCR primers and reference database. 
 
-First, the user must retrieve a database in the right format and a *config* file must be defined. After that, with providing proper set up for the pipeline, (*see* :ref:`setup`), the dedicated workflow can be executed. 
+First, the user must retrieve a database in the right format.
 
 
 Taxonomy database
@@ -107,126 +107,162 @@ We do not provide a taxonomic reference database. However, here is a short, non-
 
     `Website <https://unite.ut.ee/repository.php>`_ 
 
+Unite proposes a release conveniently in QIIME format, ready to use for `zAMP db`.
 
-Working directory
-=======================================================================
+*Eukaryome (ITS - Eukarya)*
 
-To execute the pipeline place yourself in any directory called DB_processing that in the end contains config_DB.yaml and the original database to be processed.
-Path to this directory will be defined in the pipeline's `config file`_.) 
+    `Website <https://eukaryome.org/download/>`_
 
-*for instance*::
-
-    # create a directory to run the database preprocessing workflow
-    $ mkdir DB_processing
-    # Change into this new directory
-    $ cd DB_processing
-
-.. Hint:: For traceability and reproducibility, create this working directory and place your processed taxonomy database in a location where it will not be erased by error.
-
-config_DB file
-=======================================================================
-
-For the database processing execution, parameters must be provided in a *config file* with the *.yaml* format. Please adapt the following template to your situation.
-
-
-*for instance*::
-
-    # Open a graphic text editor and create a config file. Once opened, copy and paste the example below and adapt it. 
-    $ gedit config_DB.yaml
-
-    # Or use a command-line text editor, e.g. 
-    # $ nano config_DB.yaml 
-
-
-
-.. literalinclude:: ../../ressources/template_files/config_DB.yaml
-    :language: yaml
-
-
-.. Hint:: The "extract_and_merge" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
-
-.. Hint:: "forward_primer" and "reverse_primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract V1V2 amplicons: the 5' primer can be located before the 16S rRNA sequence provided in reference database. In this case, providing "FPRIMERSEQUENCE;optional" to the "forward_primer" enables to make it optional. 
-
-.. Hint:: "excepted_errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. The "amplicon_min_coverage" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. Emprically, 4 for the "excepted_errors" and 0.9 for the "amplicon_min_coverage" seems to be good values, not to loose to much sequences. Yet that may be something to play with. 
-
+Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAMP db`.
 
 
 Pipeline execution
 =======================================================================
 
-Once the reference database in the right format downloaded and the *config_DB file* prepared, the pipeline can be executed for processing the database of interest. 
+The module is execute as `zamp db` and has the following arguments:
+
+::
+    Usage: zamp db [OPTIONS] [SNAKE_ARGS]...
+
+  Prepare database files for zAMP
+
+Options:
+  --fasta PATH                    Path to database fasta file  [required]
+  --taxonomy PATH                 Path to tab seperated taxonomy file in QIIME
+                                  format  [required]
+  --name TEXT                     Comma seperated list of database names
+                                  [required]
+  --processing / --no-processing  Extract amplicon regions and merge taxonomy
+                                  [default: processing]
+  --tax-collapse TEXT             Dictionary of number of ranks to print limit
+                                  when collapsing names   [default:
+                                  {"Species": 5, "Genus": 6}]
+  --fw-primer TEXT                Forward primer sequence to extract amplicon
+                                  [required]
+  --rv-primer TEXT                Reverse primer sequence to extract amplicon
+                                  [required]
+  --minlen INTEGER                Minimum amplicon length  [default: 300]
+  --maxlen INTEGER                Maximum amplicon length  [default: 500]
+  --ampcov FLOAT                  Minimum amplicon coverage  [default: 0.9]
+  --errors FLOAT                  Maximum number of accepted primer
+                                  mismatches, or float between 0 and 1
+                                  [default: 0.1]
+  --cutadapt_args_fw TEXT         Additional cutadapt arguments for forward
+                                  primer
+  --cutadapt_args_rv TEXT         Additional cutadapt arguments for reverse
+                                  primer
+  --rdp-mem TEXT                  Maximum RAM for RDP training  [default: 30g]
+  --classifier [rdp|qiimerdp|dada2rdp|decipher]
+                                  Which classifiers to train on the database
+                                  [default: rdp, qiimerdp, dada2rdp]
+  -o, --output PATH               Output directory  [default: zamp_out]
+  --configfile TEXT               Custom config file [default:
+                                  (outputDir)/config.yaml]
+  -t, --threads INTEGER           Number of threads to use  [default: 1]
+  --use-singularity / --no-use-singularity
+                                  Use singularity containers for Snakemake
+                                  rules  [default: use-singularity]
+  --singularity-prefix PATH       Custom singularity container directory
+  --use-conda / --no-use-conda    Use conda for Snakemake rules  [default: no-
+                                  use-conda]
+  --conda-prefix PATH             Custom conda env directory
+  --snake-default TEXT            Customise Snakemake runtime args
+  -h, --help                      Show this message and exit.
 
 
-.. literalinclude:: ../../ressources/template_files/DB_snakemake_bash_command.sh 
-    :language: bash
+* The "processing / --no-processing" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
+* "fw-primer" and "rv-primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. 
+* "--cutadapt_args_fw" and "--cutadapt_args_rv" allow to pass additional arguments to cutadapt, affecting the forward and reverse primer, respectively. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract ITS1 amplicons: the 5' universal primer is located on the SSU rRNA preceding the ITS region and thus is absent in ITS reference database. In this case, providing "--cutadapt_args_fw optional" enables to make it optional. 
+* "errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. 
+* "ampcov" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_.
 
 
-
-Observe output
+Usage cases
 =======================================================================
-Based on what was indicated in the *config file*, the preprocessed database will be located in::
 
-    <tax_DB_path>/<tax_DB_name>/
 
-.. attention:: Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
+*Unite ITS1 database*
+
+Fungal ITS databases (Unite v10 and Eukaryome have been verified) do not contain the adjacent SSU/LSU sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. 
+It is important to adjust the cutadapt parameters so that only the absent primer is optional.
+In the following example, we prepare a database for fungal ITS1 from Unite Db. In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer:
+
+.. code-block:: console
+    zamp db \
+    --fasta sh_refs_qiime_unite_ver10_dynamic_04.04.2024.fasta \
+    --taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
+    --name unite \
+    --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
+    --minlen 50 --maxlen 900 \
+    --cutadapt_args_fw "optional" \
+    -o unite_ITS1
+
+*Eukaryome ITS2 database*
+Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences:
+
+.. code-block:: console
+    zamp db \
+    --fasta QIIME2_EUK_ITS_v1.8.fasta \
+    --taxonomy QIIME2_EUK_ITS_v1.8.txt \
+    --name eukaryome \
+    --fw-primer GCATCGATGAAGAACGCAGC --rv-primer TCCTCCGCTTATTGATATGC \
+    --minlen 50 --maxlen 900 \
+    --cutadapt_args_rv "optional" \
+    -o eukaryome_ITS2
+
 
 
 Generated output
 =======================================================================
 
 ::
+├── config.yaml
+├── dada2rdp
+│   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
+│   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
+│   ├── DADA2_DB_amp_taxonomy_King_to_Species.txt
+│   └── DADA2_DB.hash
+├── DB.hash
+├── logs
+│   ├── dada2rdp
+│   │   └── DB_amp_taxonomy_dada2_prep.log
+│   ├── QIIME
+│   │   ├── DB_cutadapt.txt
+│   │   ├── derep_and_merge.log
+│   │   └── vsearch_dereplicate_ampli.log
+│   └── RDP
+│       └── formatted_tax_table.log
+├── master
+│   ├── original.hash
+│   ├── original_seqs.fasta
+│   └── original_tax.txt
+├── preprocessing_analysis
+│   ├── cutadapt_trimmedOut_length_distribution.pdf
+│   ├── DB_insert_size_distribution.pdf
+│   ├── QIIME_dna-sequences_lengths.tsv
+│   └── RDP_ready4train_sequences_lengths.tsv
+├── QIIME
+│   ├── DB_amp_all_taxonomy.txt
+│   ├── DB_amp.fasta
+│   ├── DB_amp_taxonomy.txt
+│   ├── DB_amp.uc
+│   ├── DB_formatted.hash
+│   ├── dna-sequences.fasta
+│   └── problematic_taxa.txt
+├── RDP
+│   ├── bergeyTrainingTree.xml
+│   ├── formatted_tax_table.tsv
+│   ├── genus_wordConditionalProbList.txt
+│   ├── logWordPrior.txt
+│   ├── RDP_DB.hash
+│   ├── ready4train_lineages.txt
+│   ├── ready4train_seqs.fasta
+│   ├── rRNAClassifier.properties
+│   └── wordConditionalProbIndexArr.txt
+└── zamp.log
 
-    ├── dada2rdp # DB formatted for RDP implemented in DADA2
-    │   ├── DADA2_DB_amp_taxonomy_Genus_species.txt
-    │   ├── DADA2_DB_amp_taxonomy_King_to_Genus.txt
-    │   ├── DADA2_DB_amp_taxonomy_King_to_Species.txt
-    │   └── DADA2_DB.hash
-    ├── decipher # DB formatted for IDTAXA (decipher)
-    │   └── Decipher_DB_amp_taxonomy.fasta
-    ├── logs # Logs of the DB preprocessing 
-    │   ├── 2020
-    │   │   └── 11
-    │   │       └── 19
-    │   │           └── 14_15_15_98
-    │   │               ├── cmd.txt
-    │   │               ├── config.yaml       
-    │   │               ├── git.txt
-    │   │               └── user.txt
-    │   ├── dada2rdp
-    │   │   └── DB_amp_taxonomy_dada2_prep.log
-    │   ├── decipher
-    │   │   ├── DB_amp_taxonomy_decipher_fasta.log
-    │   │   └── DB_amp_taxonomy_decipher_tax_tree.log
-    │   ├── QIIME
-    │   │   ├── DB_cutadapt.txt
-    │   │   ├── derep_and_merge.log
-    │   │   └── vsearch_dereplicate_ampli.log
-    │   └── RDP
-    │       ├── formatted_tax_table.log
-    │       └── RDP_train.log
-    ├── master # Copies of original DB for traceability
-    │   ├── original.hash
-    │   ├── original_seqs.fasta
-    │   └── original_tax.txt
-    ├── QIIME # Processed DB in original QIIME format
-    │   ├── DB_amp_all_taxonomy.txt # All identifiers collapsed, without placeholders
-    │   ├── DB_amp.fasta # deplicated sequences after amplicon extraction
-    │   ├── DB_amp_taxonomy.txt # final taxonomy after collapsing 
-    │   ├── DB_amp.uc # vsearch based clustering of identical sequences
-    │   ├── DB_formatted.hash 
-    │   ├── dna-sequences.fasta # extracted amplicons
-    │   └── problematic_taxa.txt # sequences with collapsed taxa above the genus rank
-    └── RDP # DB formatted for the original RDP
-        ├── bergeyTrainingTree.xml
-        ├── formatted_tax_table.tsv
-        ├── genus_wordConditionalProbList.txt
-        ├── logWordPrior.txt
-        ├── RDP_DB.hash
-        ├── ready4train_lineages.txt
-        ├── ready4train_seqs.fasta
-        ├── rRNAClassifier.properties
-        └── wordConditionalProbIndexArr.txt
 
+.. attention:: Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
 
 
 ************************************************************************

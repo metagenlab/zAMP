@@ -36,7 +36,8 @@ To execute the pipeline, one needs:
 
 **Input file example:**
 
-`Example 1: <../zamp/data/bacteria-accs.txt>`_
+.. literalinclude:: ../zamp/data/bacteria-accs.txt
+    :language: csv
 
 .. literalinclude:: ../zamp/data/fungi-taxa.txt
     :language: csv
