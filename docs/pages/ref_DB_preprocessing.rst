@@ -119,55 +119,53 @@ Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAM
 Pipeline execution
 =======================================================================
 
-The module is executed as `zamp db` and has the following arguments:
-
-::
+The module is executed as `zamp db` and has the following arguments::
     Usage: zamp db [OPTIONS] [SNAKE_ARGS]...
 
-  Prepare database files for zAMP
+        Prepare database files for zAMP
 
-Options:
-  --fasta PATH                    Path to database fasta file  [required]
-  --taxonomy PATH                 Path to tab seperated taxonomy file in QIIME
-                                  format  [required]
-  --name TEXT                     Comma seperated list of database names
-                                  [required]
-  --processing / --no-processing  Extract amplicon regions and merge taxonomy
-                                  [default: processing]
-  --tax-collapse TEXT             Dictionary of number of ranks to print limit
-                                  when collapsing names   [default:
-                                  {"Species": 5, "Genus": 6}]
-  --fw-primer TEXT                Forward primer sequence to extract amplicon
-                                  [required]
-  --rv-primer TEXT                Reverse primer sequence to extract amplicon
-                                  [required]
-  --minlen INTEGER                Minimum amplicon length  [default: 300]
-  --maxlen INTEGER                Maximum amplicon length  [default: 500]
-  --ampcov FLOAT                  Minimum amplicon coverage  [default: 0.9]
-  --errors FLOAT                  Maximum number of accepted primer
-                                  mismatches, or float between 0 and 1
-                                  [default: 0.1]
-  --cutadapt_args_fw TEXT         Additional cutadapt arguments for forward
-                                  primer
-  --cutadapt_args_rv TEXT         Additional cutadapt arguments for reverse
-                                  primer
-  --rdp-mem TEXT                  Maximum RAM for RDP training  [default: 30g]
-  --classifier [rdp|qiimerdp|dada2rdp|decipher]
-                                  Which classifiers to train on the database
-                                  [default: rdp, qiimerdp, dada2rdp]
-  -o, --output PATH               Output directory  [default: zamp_out]
-  --configfile TEXT               Custom config file [default:
-                                  (outputDir)/config.yaml]
-  -t, --threads INTEGER           Number of threads to use  [default: 1]
-  --use-singularity / --no-use-singularity
-                                  Use singularity containers for Snakemake
-                                  rules  [default: use-singularity]
-  --singularity-prefix PATH       Custom singularity container directory
-  --use-conda / --no-use-conda    Use conda for Snakemake rules  [default: no-
-                                  use-conda]
-  --conda-prefix PATH             Custom conda env directory
-  --snake-default TEXT            Customise Snakemake runtime args
-  -h, --help                      Show this message and exit.
+        Options:
+        --fasta PATH                    Path to database fasta file  [required]
+        --taxonomy PATH                 Path to tab seperated taxonomy file in QIIME
+                                        format  [required]
+        --name TEXT                     Comma seperated list of database names
+                                        [required]
+        --processing / --no-processing  Extract amplicon regions and merge taxonomy
+                                        [default: processing]
+        --tax-collapse TEXT             Dictionary of number of ranks to print limit
+                                        when collapsing names   [default:
+                                        {"Species": 5, "Genus": 6}]
+        --fw-primer TEXT                Forward primer sequence to extract amplicon
+                                        [required]
+        --rv-primer TEXT                Reverse primer sequence to extract amplicon
+                                        [required]
+        --minlen INTEGER                Minimum amplicon length  [default: 300]
+        --maxlen INTEGER                Maximum amplicon length  [default: 500]
+        --ampcov FLOAT                  Minimum amplicon coverage  [default: 0.9]
+        --errors FLOAT                  Maximum number of accepted primer
+                                        mismatches, or float between 0 and 1
+                                        [default: 0.1]
+        --cutadapt_args_fw TEXT         Additional cutadapt arguments for forward
+                                        primer
+        --cutadapt_args_rv TEXT         Additional cutadapt arguments for reverse
+                                        primer
+        --rdp-mem TEXT                  Maximum RAM for RDP training  [default: 30g]
+        --classifier [rdp|qiimerdp|dada2rdp|decipher]
+                                        Which classifiers to train on the database
+                                        [default: rdp, qiimerdp, dada2rdp]
+        -o, --output PATH               Output directory  [default: zamp_out]
+        --configfile TEXT               Custom config file [default:
+                                        (outputDir)/config.yaml]
+        -t, --threads INTEGER           Number of threads to use  [default: 1]
+        --use-singularity / --no-use-singularity
+                                        Use singularity containers for Snakemake
+                                        rules  [default: use-singularity]
+        --singularity-prefix PATH       Custom singularity container directory
+        --use-conda / --no-use-conda    Use conda for Snakemake rules  [default: no-
+                                        use-conda]
+        --conda-prefix PATH             Custom conda env directory
+        --snake-default TEXT            Customise Snakemake runtime args
+        -h, --help                      Show this message and exit.
 
 
 * The "processing / --no-processing" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
@@ -180,14 +178,15 @@ Options:
 Usage cases
 =======================================================================
 
+bacteria usage cases...
 
 **Unite ITS1 database**
 
-Fungal ITS databases (Unite v10 and Eukaryome have been verified) do not contain the adjacent SSU/LSU sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. 
+Fungal ITS databases Unite v10 and Eukaryome v1.8 do not contain the adjacent SSU/LSU sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. 
 It is important to adjust the cutadapt parameters so that only the absent primer is optional.
-In the following example, we prepare a database for fungal ITS1 from Unite Db. In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer:
+In the following example, we prepare a database for fungal ITS1 from Unite Db. 
+In this case, the forward primer (lying of the 18S) will not be present in most sequences of Unite/Eukaryome (but the reverse primer lying on the 5.8S is present); therefore we set the forward primer as optional; the extracted sequences will start at the available 5' of the database and end at the reverse primer::
 
-::
     zamp db \
     --fasta sh_refs_qiime_unite_ver10_dynamic_04.04.2024.fasta \
     --taxonomy sh_taxonomy_qiime_unite_ver10_dynamic_04.04.2024.txt \
@@ -199,9 +198,7 @@ In the following example, we prepare a database for fungal ITS1 from Unite Db. I
 
 **Eukaryome ITS2 database**
 
-Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences:
-
-::
+Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences::
     zamp db \
     --fasta QIIME2_EUK_ITS_v1.8.fasta \
     --taxonomy QIIME2_EUK_ITS_v1.8.txt \
