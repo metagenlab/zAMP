@@ -36,10 +36,10 @@ To execute the pipeline, one needs:
 
 **Input file example:**
 
-.. literalinclude:: ../zamp/data/bacteria-accs.txt
+.. literalinclude:: ../../zamp/data/bacteria-accs.txt
     :language: csv
 
-.. literalinclude:: ../zamp/data/fungi-taxa.txt
+.. literalinclude:: ../../zamp/data/fungi-taxa.txt
     :language: csv
 
 ************************************************************************
@@ -49,23 +49,23 @@ Example usage cases:
 
 * Using bacteria assembly accession names (note the --accession argument when using accession names instead of tax IDs):
 
-::
+Example::
     zamp insilico -i zamp/data/bacteria-accs.txt \
     -db greengenes2 --accession \
     --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC
 
 * Using fungi tax IDs (requires additional ITS amplicon-specific parameters to adjust the amplicon size):
 
-::
+Example::
     zamp insilico -i zamp/data/fungi-taxa.txt \
     -db unite_db_v10 \ 
     --fw-primer CYHRGYYATTTAGAGGWMSTAA --rv-primer RCKDYSTTCWTCRWYGHTGB \
     --minlen 50 --maxlen 900
 
 
-* Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`):
+* Using a query term. In this example, 100 assemblies will be downloaded per taxon (`nb 100`) including non-reference assemblies (`not-only-ref`)
 
-::
+Example::
     zamp insilico -i "lactobacillus" \
     -db ezbiocloud \
     --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
