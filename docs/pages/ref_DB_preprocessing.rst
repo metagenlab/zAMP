@@ -168,7 +168,7 @@ The module is executed as `zamp db` and has the following arguments::
         -h, --help                      Show this message and exit.
 
 
-* The "processing / --no-processing" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
+* The "--processing / --no-processing" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
 * "fw-primer" and "rv-primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. 
 * "--cutadapt_args_fw" and "--cutadapt_args_rv" allow to pass additional arguments to cutadapt, affecting the forward and reverse primer, respectively. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract ITS1 amplicons: the 5' universal primer is located on the SSU rRNA preceding the ITS region and thus is absent in ITS reference database. In this case, providing "--cutadapt_args_fw optional" enables to make it optional. 
 * "errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. 
@@ -199,6 +199,7 @@ In this case, the forward primer (lying of the 18S) will not be present in most 
 **Eukaryome ITS2 database**
 
 Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences::
+
     zamp db \
     --fasta QIIME2_EUK_ITS_v1.8.fasta \
     --taxonomy QIIME2_EUK_ITS_v1.8.txt \
