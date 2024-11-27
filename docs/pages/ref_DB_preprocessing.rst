@@ -106,69 +106,27 @@ We do not provide a taxonomic reference database. However, here is a short, non-
 *UNITE (ITS - Eukarya)* 
 
     `Website <https://unite.ut.ee/repository.php>`_ 
+    `Publication <https://doi.org/10.1093/nar/gkad1039>`_ 
 
 Unite proposes a release conveniently in QIIME format, ready to use for `zAMP db`.
 
 *Eukaryome (ITS - Eukarya)*
 
     `Website <https://eukaryome.org/download/>`_
+    `Publication <https://doi.org/10.1093/database/baae043>`_ 
 
-Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAMP db`.
+Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAMP db`. Additional steps might be needed to filter a kingdom of interest (e.g. Fungi), or remove entries with incomplete taxonomy.
 
 
 Pipeline execution
 =======================================================================
 
-The module is executed as `zamp db` and has the following arguments::
-    Usage: zamp db [OPTIONS] [SNAKE_ARGS]...
+The module is executed with `zamp db`. 
+You can see all required and optional arguments with::
 
-        Prepare database files for zAMP
+    zamp db -h
 
-        Options:
-        --fasta PATH                    Path to database fasta file  [required]
-        --taxonomy PATH                 Path to tab seperated taxonomy file in QIIME
-                                        format  [required]
-        --name TEXT                     Comma seperated list of database names
-                                        [required]
-        --processing / --no-processing  Extract amplicon regions and merge taxonomy
-                                        [default: processing]
-        --tax-collapse TEXT             Dictionary of number of ranks to print limit
-                                        when collapsing names   [default:
-                                        {"Species": 5, "Genus": 6}]
-        --fw-primer TEXT                Forward primer sequence to extract amplicon
-                                        [required]
-        --rv-primer TEXT                Reverse primer sequence to extract amplicon
-                                        [required]
-        --minlen INTEGER                Minimum amplicon length  [default: 300]
-        --maxlen INTEGER                Maximum amplicon length  [default: 500]
-        --ampcov FLOAT                  Minimum amplicon coverage  [default: 0.9]
-        --errors FLOAT                  Maximum number of accepted primer
-                                        mismatches, or float between 0 and 1
-                                        [default: 0.1]
-        --cutadapt_args_fw TEXT         Additional cutadapt arguments for forward
-                                        primer
-        --cutadapt_args_rv TEXT         Additional cutadapt arguments for reverse
-                                        primer
-        --rdp-mem TEXT                  Maximum RAM for RDP training  [default: 30g]
-        --classifier [rdp|qiimerdp|dada2rdp|decipher]
-                                        Which classifiers to train on the database
-                                        [default: rdp, qiimerdp, dada2rdp]
-        -o, --output PATH               Output directory  [default: zamp_out]
-        --configfile TEXT               Custom config file [default:
-                                        (outputDir)/config.yaml]
-        -t, --threads INTEGER           Number of threads to use  [default: 1]
-        --use-singularity / --no-use-singularity
-                                        Use singularity containers for Snakemake
-                                        rules  [default: use-singularity]
-        --singularity-prefix PATH       Custom singularity container directory
-        --use-conda / --no-use-conda    Use conda for Snakemake rules  [default: no-
-                                        use-conda]
-        --conda-prefix PATH             Custom conda env directory
-        --snake-default TEXT            Customise Snakemake runtime args
-        -h, --help                      Show this message and exit.
-
-
-* The "--processing / --no-processing" parameter in config enables to skip the preprocessing and only format the provided database and train the classifiers. 
+* The "--no-processing" parameter enables to skip the preprocessing and only format the provided database and train the classifiers. 
 * "fw-primer" and "rv-primer" are fed to `cutadapt linked adapter argument <https://cutadapt.readthedocs.io/en/v3.0/guide.html#linked-adapters-combined-5-and-3-adapter>`_. 
 * "--cutadapt_args_fw" and "--cutadapt_args_rv" allow to pass additional arguments to cutadapt, affecting the forward and reverse primer, respectively. It for instance allows to indicate which primer is optional <https://cutadapt.readthedocs.io/en/v3.0/guide.html#changing-which-adapters-are-required>`_. It is particularly useful when trying to extract ITS1 amplicons: the 5' universal primer is located on the SSU rRNA preceding the ITS region and thus is absent in ITS reference database. In this case, providing "--cutadapt_args_fw optional" enables to make it optional. 
 * "errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. 

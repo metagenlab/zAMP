@@ -49,6 +49,12 @@ To execute the pipeline, one needs:
 ************************************************************************
 Execution
 ************************************************************************
+The module is executed with `zamp insilico`. 
+You can see all required and optional arguments with::
+
+    zamp insilico -h
+
+
 Example usage cases:
 
 - Using bacteria assembly accession names (note the --accession argument when using accession names instead of tax IDs)::
