@@ -13,12 +13,11 @@ Operating system
 -----------------------------------------------------------------------
 zAMP was designed on *Ubuntu 18.04* (Linux) but should be compatible with all systems capable of installing the dependencies listed on this page.
 
-
-# 🚀 RAM Memory Requirements
+🚀 RAM Memory Requirements
 
 Some tools embedded in **zAMP** can be demanding on RAM, depending on your dataset size and configuration. The most resource-intensive step is usually **taxonomic assignment**.
 
- 📊 Factors Affecting RAM Usage:
+📊 Factors Affecting RAM Usage:
 
 - **Number of samples**: More samples require more memory.
 - **Bacterial diversity**: Highly diverse datasets need additional resources.
