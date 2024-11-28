@@ -26,10 +26,6 @@ Ensure the metadata file adheres to the required format:
 
 You can use the `zamp -h` command to see the general options and a list of available commands:
 
-```bash
-$ zamp -h
-Usage: zamp [OPTIONS] COMMAND [ARGS]...
-
 
 ### What parameters must I modify in the command line before running zAMP?
 
@@ -63,7 +59,9 @@ Incorrect primers may cause failure during the trimming step or incorrect mergin
 zAMP supports multiple databases, including:
 
 - SILVA
+
 - Greengenes2
+
 - EzBioCloud
 
 
