@@ -33,7 +33,7 @@ Software dependencies
 *Git*
 -----------------------------------------------------------------------
 
-  *Git* is required to download (clone) zAMP. 
+ *Git* is required to download (clone) zAMP. 
 
 
 Install
