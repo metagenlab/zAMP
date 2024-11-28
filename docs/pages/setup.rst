@@ -39,7 +39,7 @@ Software dependencies
 Install
 _______________________________________________________________________
 
-    *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
+   *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
     
 Test
@@ -56,8 +56,7 @@ _______________________________________________________________________
 -----------------------------------------------------------------------
 
 
-    `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
+`Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_ It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
 
 
 Install
