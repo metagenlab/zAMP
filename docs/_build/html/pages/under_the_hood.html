@@ -1,268 +1,88 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Under the hood &mdash; RSP4ABM v.0.9.15 documentation</title>
-  
 
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
-  
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <title>Under the hood &#8212; zAMP v.1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=6c7b0eaa"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="output.html" />
-    <link rel="prev" title="Pipeline execution" href="execution.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
+    <link rel="next" title="&lt;no title&gt;" href="downstream_analysis.html" />
+    <link rel="prev" title="Pipeline execution" href="execution.html" />
    
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> RSP4ABM
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#snakemake">Snakemake</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#conda-environments">Conda environments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#singularity-containers">Singularity containers</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#input-output-definition">Input output definition</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#input">Input</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#local-reads">Local reads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sra-reads">SRA reads</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#logging-and-traceability">Logging and traceability</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#snakemake-logs">Snakemake logs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rsp4abm-logs">RSP4ABM logs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#sequencing-reads-qc">Sequencing reads QC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#denoising">Denoising</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#vsearch-otu-clustering">Vsearch (OTU clustering)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pandaseq">PANDAseq</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vsearch">Vsearch</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#dada2-asv-denoising">DADA2 (ASV denoising)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#cutadapt">cutadapt</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dada2">DADA2</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#taxonomic-assignment">Taxonomic assignment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reference-database">reference database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#classifiers">classifiers</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#post-processing">Post-processing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#taxonomic-filtering">Taxonomic filtering</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rarefaction">Rarefaction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phylogenetic-tree-generation">Phylogenetic tree generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#taxonomic-collapsing">Taxonomic collapsing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#normalization-and-abundance-based-filtering">Normalization and abundance-based filtering</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#exports">Exports</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fromatting">Fromatting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#wide-to-long-melting">Wide to long melting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#transpose-and-meta-count-table">transpose_and_meta_count_table</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#qiime2-formats">Qiime2 formats</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#picrust2">Picrust2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">RSP4ABM</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Under the hood</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/pages/under_the_hood.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
             
-  <div class="section" id="id1">
-<h1>Under the hood<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="snakemake-environments-and-containers">
-<h2>Snakemake, environments and containers<a class="headerlink" href="#snakemake-environments-and-containers" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="snakemake">
-<h3>Snakemake<a class="headerlink" href="#snakemake" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="conda-environments">
-<h3>Conda environments<a class="headerlink" href="#conda-environments" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="singularity-containers">
-<h3>Singularity containers<a class="headerlink" href="#singularity-containers" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="input-output-definition">
-<h2>Input output definition<a class="headerlink" href="#input-output-definition" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="input">
-<h3>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_lists.py">A Python script</a> is run at each execution of the RSP4ABM to match sequencing read files to each sample.</p>
-<p>As exposed in <a class="reference internal" href="execution.html#sample-selection"><span class="std std-ref">the sample selection section of the Pipeline execution page</span></a>, this function can accept either local or SRA-hosted read files.</p>
-<div class="section" id="local-reads">
-<h4>Local reads<a class="headerlink" href="#local-reads" title="Permalink to this headline">¶</a></h4>
-<p>Reads are considered to be located locally <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_list.py">by the script pointing toward the input read files</a> in presence of the “local_samples:” argument in <em>the config file</em>. This parameters must point to a <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/ressources/template_files/example_local_samples.tsv">sample sheet</a>, which is a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the files in the analysis. The script matches by default the values found in the leftmost “Sample” column of the <em>sample sheet</em> with the filenames of the “.fastq.gz” locales in a directory defined by the “link_directory” parameter of the <em>config file</em>. This default behavior can be altered by two conditions encoded in the <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_list.py">Python script</a> :</p>
+  <section id="under-the-hood">
+<span id="id1"></span><h1>Under the hood<a class="headerlink" href="#under-the-hood" title="Link to this heading">¶</a></h1>
+<section id="snakemake-environments-and-containers">
+<h2>Snakemake, environments and containers<a class="headerlink" href="#snakemake-environments-and-containers" title="Link to this heading">¶</a></h2>
+<p>[Snakemake](<a class="reference external" href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a>)</p>
+<p>[Snakemake](<a class="reference external" href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a>) is the center-piece of this pipeline. Snakemake is a Python-based workflow-manager that enables the processing of a large set of amplicon-based metagenomics sequencing reads into actionable outputs. It relies on a system of [rules](<a class="reference external" href="https://github.com/metagenlab/zAMP/tree/master/rules">https://github.com/metagenlab/zAMP/tree/master/rules</a>) which are the many required processing steps. Each rule specifies input files, a Conda environment (or, as an alternative, a Singularity container) that includes all required software, and the command line or a script to be executed for the expected output files.</p>
+<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/envs">Conda environments</a></p>
+<p>[Conda](<a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html">https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html</a>) is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
+Switching between environments is simple because they can be easily activated or deactivated.</p>
+<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/envs/singularity">Singularity containers</a></p>
+<p>The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access.</p>
+</section>
+<section id="input-output-definition">
+<h2><strong>Input output definition</strong><a class="headerlink" href="#input-output-definition" title="Link to this heading">¶</a></h2>
+<section id="input">
+<h3><strong>Input</strong><a class="headerlink" href="#input" title="Link to this heading">¶</a></h3>
+<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_lists.py">A Python script</a> is run at each execution of the [zAMP](<a class="reference external" href="https://github.com/metagenlab/zAMP">https://github.com/metagenlab/zAMP</a>) to match sequencing read files to each sample.</p>
+<p>As exposed in <a class="reference internal" href="execution.html#sample-selection"><span class="std std-ref">the **sample selection** section of the **pipeline execution** page</span></a>, this function can accept either local or [SRA-hosted read files](<a class="reference external" href="https://www.ncbi.nlm.nih.gov/sra/docs/">https://www.ncbi.nlm.nih.gov/sra/docs/</a>).</p>
+<section id="local-reads">
+<h4>Local reads<a class="headerlink" href="#local-reads" title="Link to this heading">¶</a></h4>
+<p>Reads are considered to be located locally <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_list.py">by the script pointing toward the input read files</a> in presence of the “local_samples:” argument in <em>the config file</em>. This parameters must point to a <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/ressources/template_files/example_local_samples.tsv">sample sheet</a>, which is a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the files in the analysis. The script matches by default the values found in the leftmost “Sample” column of the <em>sample sheet</em> with the filenames of the “.fastq.gz” locales in a directory defined by the “link_directory” parameter of the <em>config file</em>. This default behavior can be altered by two conditions encoded in the <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_list.py">Python script</a> :</p>
 <ul class="simple">
 <li><p>In presence of a column named “OldSampleName”, the match with the filenames of the sequencing read files is done with this column, instead of the leftmost “Sample” column.</p></li>
 <li><p>In presence of a “R1” column, the absolute path to the forward reads in considered instead of a name-based matching of the sequencing read files. In this case, and for paired-end reads, a “R2” column must point to the reverse read files.</p></li>
 </ul>
-<p>In all cases (i.e. <em>Sample column match</em>, <em>OldSampleName column match</em> or <em>absolute paths indicated by R1 and R2 columns</em>), <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will temporarily copy the read files into a <em>raw_reads</em> directory.</p>
-</div>
-<div class="section" id="sra-reads">
-<h4>SRA reads<a class="headerlink" href="#sra-reads" title="Permalink to this headline">¶</a></h4>
-<p>Reads are considered by <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_input_lists.py">the Python scripts</a> to be located on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>) in presence of the “sra_samples:” argument in the <em>config file</em>.</p>
-<p>In this case <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will use <a class="reference external" href="https://github.com/ncbi/sra-tools">SRA Toolkit</a> to download the reads and convert them to “.fastq.gz” format into the <em>raw_reads</em> directory.</p>
-</div>
-</div>
-<div class="section" id="output">
-<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
-<p>Upon each execution of the pipeline, <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/scripts/make_output_lists.py">Python scripts</a> will parse the <em>config file</em> and the <em>sample sheet</em> to generate lists of outputs. These lists are then fed to the <a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/Snakefile">pipeline Snakefile</a> which instructs the pipeline the output to generate.</p>
-</div>
-</div>
-<div class="section" id="logging-and-traceability">
-<h2>Logging and traceability<a class="headerlink" href="#logging-and-traceability" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="snakemake-logs">
-<h3>Snakemake logs<a class="headerlink" href="#snakemake-logs" title="Permalink to this headline">¶</a></h3>
+<p>In all cases (i.e. <em>Sample column match</em>, <em>OldSampleName column match</em> or <em>absolute paths indicated by R1 and R2 columns</em>), <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will temporarily copy the read files into a <em>raw_reads</em> directory.</p>
+</section>
+<section id="sra-reads">
+<h4>SRA reads<a class="headerlink" href="#sra-reads" title="Link to this heading">¶</a></h4>
+<p>Reads are considered by <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_lists.py">the Python scripts</a> to be located on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>) in presence of the “sra_samples:” argument in the <em>config file</em>.</p>
+<p>In this case <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will use <a class="reference external" href="https://github.com/ncbi/sra-tools">SRA Toolkit</a> to download the reads and convert them to “.fastq.gz” format into the <em>raw_reads</em> directory.</p>
+</section>
+</section>
+<section id="output">
+<h3>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h3>
+<p>Upon each execution of the pipeline, <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_output_lists.py">Python scripts</a> will parse the <em>config file</em> and the <em>sample sheet</em> to generate lists of outputs. These lists are then fed to the <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/Snakefile">pipeline Snakefile</a> which instructs the pipeline the output to generate.</p>
+</section>
+</section>
+<section id="logging-and-traceability">
+<h2>Logging and traceability<a class="headerlink" href="#logging-and-traceability" title="Link to this heading">¶</a></h2>
+<section id="snakemake-logs">
+<h3>Snakemake logs<a class="headerlink" href="#snakemake-logs" title="Link to this heading">¶</a></h3>
 <p>Upon each execution, <em>Snakemake</em> automatically creates a log file where all the standard output is recorded. These can be found from the <em>working directory</em> into:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">snakemake</span><span class="o">/</span><span class="n">log</span><span class="o">/</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rsp4abm-logs">
-<h3>RSP4ABM logs<a class="headerlink" href="#rsp4abm-logs" title="Permalink to this headline">¶</a></h3>
-<p>In addition to the default <em>Snakemake</em>’s logs, <em>RSP4ABM</em> create a log directory upon each execution in</p>
+</section>
+<section id="zamp-logs">
+<h3>zAMP logs<a class="headerlink" href="#zamp-logs" title="Link to this heading">¶</a></h3>
+<p>In addition to the default <em>Snakemake</em>’s logs, <em>zAMP</em> create a log directory upon each execution in</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="o">/&lt;</span><span class="n">year</span><span class="o">&gt;/&lt;</span><span class="n">months</span><span class="o">&gt;/&lt;</span><span class="n">day</span><span class="o">&gt;/&lt;</span><span class="n">time</span><span class="o">&gt;/</span>
 </pre></div>
 </div>
@@ -274,148 +94,177 @@
 <li><p>a copy of the sample sheet (<em>local_samples.tsv</em> or <em>sra_samples.tsv</em>)</p></li>
 <li><p>a copy of the <em>config file</em> (<em>config.yaml</em>)</p></li>
 </ul>
-<p>In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subfolders of the log directory, mirroring the structure of the main pipeline.</p>
-</div>
-</div>
-<div class="section" id="sequencing-reads-qc">
-<h2>Sequencing reads QC<a class="headerlink" href="#sequencing-reads-qc" title="Permalink to this headline">¶</a></h2>
+<p>In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subdirectories of the log directory, mirroring the structure of the main pipeline.</p>
+</section>
+</section>
+<section id="sequencing-reads-qc">
+<h2>Sequencing reads QC<a class="headerlink" href="#sequencing-reads-qc" title="Link to this heading">¶</a></h2>
 <blockquote>
-<div><p><a class="reference external" href="https://github.com/metagenlab/microbiome16S_pipeline/rules/0_preprocessing/QC_raw_reads.rules">QC rules</a> assess the sequencing quality of all each sample with FastQC <a class="footnote-reference brackets" href="#id4" id="id2">1</a>. Then, a MultiQC <a class="footnote-reference brackets" href="#id5" id="id3">2</a> report is generated for each sequencing run (based on values of the <em>sample sheet</em> column indicated by the “run_column” parameter of the <em>config file</em>)</p>
+<div><p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/QC_raw_reads.rules">QC rules</a> assess the sequencing quality of all each sample with FastQC <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Then, a MultiQC <a class="footnote-reference brackets" href="#id5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> report generates a report for each sequencing run (based on values of the <em>sample sheet</em> column indicated by the “run_column” parameter of the <em>config file</em>). A global MultiQC report is generated as well, but without interactive features to deal with the high number of samples</p>
 </div></blockquote>
-</div>
-<div class="section" id="denoising">
-<h2>Denoising<a class="headerlink" href="#denoising" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="vsearch-otu-clustering">
-<h3>Vsearch (OTU clustering)<a class="headerlink" href="#vsearch-otu-clustering" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="pandaseq">
-<h4>PANDAseq<a class="headerlink" href="#pandaseq" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="vsearch">
-<h4>Vsearch<a class="headerlink" href="#vsearch" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
-<div class="section" id="dada2-asv-denoising">
-<h3>DADA2 (ASV denoising)<a class="headerlink" href="#dada2-asv-denoising" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="cutadapt">
-<h4>cutadapt<a class="headerlink" href="#cutadapt" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="dada2">
-<h4>DADA2<a class="headerlink" href="#dada2" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
-</div>
-<div class="section" id="taxonomic-assignment">
-<h2>Taxonomic assignment<a class="headerlink" href="#taxonomic-assignment" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="reference-database">
-<h3>reference database<a class="headerlink" href="#reference-database" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="classifiers">
-<h3>classifiers<a class="headerlink" href="#classifiers" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="post-processing">
-<h2>Post-processing<a class="headerlink" href="#post-processing" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="taxonomic-filtering">
-<h3>Taxonomic filtering<a class="headerlink" href="#taxonomic-filtering" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="rarefaction">
-<h3>Rarefaction<a class="headerlink" href="#rarefaction" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="phylogenetic-tree-generation">
-<h3>Phylogenetic tree generation<a class="headerlink" href="#phylogenetic-tree-generation" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="taxonomic-collapsing">
-<h3>Taxonomic collapsing<a class="headerlink" href="#taxonomic-collapsing" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="normalization-and-abundance-based-filtering">
-<h3>Normalization and abundance-based filtering<a class="headerlink" href="#normalization-and-abundance-based-filtering" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="exports">
-<h3>Exports<a class="headerlink" href="#exports" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="fromatting">
-<h3>Fromatting<a class="headerlink" href="#fromatting" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="wide-to-long-melting">
-<h4>Wide to long melting<a class="headerlink" href="#wide-to-long-melting" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="transpose-and-meta-count-table">
-<h4>transpose_and_meta_count_table<a class="headerlink" href="#transpose-and-meta-count-table" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="qiime2-formats">
-<h4>Qiime2 formats<a class="headerlink" href="#qiime2-formats" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
-</div>
-<div class="section" id="picrust2">
-<h2>Picrust2<a class="headerlink" href="#picrust2" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
-<dd><p>Andrews S, Krueger F, Seconds-Pichon A, Biggins F, Wingett S. FastQC. A quality control tool for high throughput sequence data. Babraham Bioinformatics. Babraham Institute. 2015.</p>
-</dd>
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
-<dd><p>Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016;</p>
-</dd>
-</dl>
-</div>
-</div>
+</section>
+<section id="denoising">
+<h2>Denoising<a class="headerlink" href="#denoising" title="Link to this heading">¶</a></h2>
+<section id="vsearch-otu-clustering">
+<h3>Vsearch (OTU clustering)<a class="headerlink" href="#vsearch-otu-clustering" title="Link to this heading">¶</a></h3>
+<section id="pandaseq">
+<h4>PANDAseq<a class="headerlink" href="#pandaseq" title="Link to this heading">¶</a></h4>
+</section>
+<section id="vsearch">
+<h4>Vsearch<a class="headerlink" href="#vsearch" title="Link to this heading">¶</a></h4>
+</section>
+</section>
+<section id="dada2-asv-denoising">
+<h3>DADA2 (ASV denoising)<a class="headerlink" href="#dada2-asv-denoising" title="Link to this heading">¶</a></h3>
+<section id="cutadapt">
+<h4>cutadapt<a class="headerlink" href="#cutadapt" title="Link to this heading">¶</a></h4>
+</section>
+<section id="dada2">
+<h4>DADA2<a class="headerlink" href="#dada2" title="Link to this heading">¶</a></h4>
+</section>
+</section>
+</section>
+<section id="taxonomic-assignment">
+<h2>Taxonomic assignment<a class="headerlink" href="#taxonomic-assignment" title="Link to this heading">¶</a></h2>
+<section id="reference-database">
+<h3>reference database<a class="headerlink" href="#reference-database" title="Link to this heading">¶</a></h3>
+</section>
+<section id="classifiers">
+<h3>classifiers<a class="headerlink" href="#classifiers" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="post-processing">
+<h2>Post-processing<a class="headerlink" href="#post-processing" title="Link to this heading">¶</a></h2>
+<section id="taxonomic-filtering">
+<h3>Taxonomic filtering<a class="headerlink" href="#taxonomic-filtering" title="Link to this heading">¶</a></h3>
+</section>
+<section id="rarefaction">
+<h3>Rarefaction<a class="headerlink" href="#rarefaction" title="Link to this heading">¶</a></h3>
+</section>
+<section id="phylogenetic-tree-generation">
+<h3>Phylogenetic tree generation<a class="headerlink" href="#phylogenetic-tree-generation" title="Link to this heading">¶</a></h3>
+</section>
+<section id="taxonomic-collapsing">
+<h3>Taxonomic collapsing<a class="headerlink" href="#taxonomic-collapsing" title="Link to this heading">¶</a></h3>
+</section>
+<section id="normalization-and-abundance-based-filtering">
+<h3>Normalization and abundance-based filtering<a class="headerlink" href="#normalization-and-abundance-based-filtering" title="Link to this heading">¶</a></h3>
+</section>
+<section id="exports">
+<h3>Exports<a class="headerlink" href="#exports" title="Link to this heading">¶</a></h3>
+</section>
+<section id="fromatting">
+<h3>Fromatting<a class="headerlink" href="#fromatting" title="Link to this heading">¶</a></h3>
+<section id="wide-to-long-melting">
+<h4>Wide to long melting<a class="headerlink" href="#wide-to-long-melting" title="Link to this heading">¶</a></h4>
+</section>
+<section id="transpose-and-meta-count-table">
+<h4>transpose_and_meta_count_table<a class="headerlink" href="#transpose-and-meta-count-table" title="Link to this heading">¶</a></h4>
+</section>
+<section id="qiime2-formats">
+<h4>Qiime2 formats<a class="headerlink" href="#qiime2-formats" title="Link to this heading">¶</a></h4>
+</section>
+</section>
+</section>
+<section id="picrust2">
+<h2>Picrust2<a class="headerlink" href="#picrust2" title="Link to this heading">¶</a></h2>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Andrews S, Krueger F, Seconds-Pichon A, Biggins F, Wingett S. FastQC. A quality control tool for high throughput sequence data. Babraham Bioinformatics. Babraham Institute. 2015.</p>
+</aside>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016;</p>
+</aside>
+</aside>
+</section>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="output.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="execution.html" class="btn btn-neutral float-left" title="Pipeline execution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">zAMP</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Installation and resource requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-output-definition"><strong>Input output definition</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-and-traceability">Logging and traceability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequencing-reads-qc">Sequencing reads QC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#denoising">Denoising</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#taxonomic-assignment">Taxonomic assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processing">Post-processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#picrust2">Picrust2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insilico_validation.html"><em>In silico</em> validation tool</a></li>
+</ul>
 
-  <hr/>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="execution.html" title="previous chapter">Pipeline execution</a></li>
+      <li>Next: <a href="downstream_analysis.html" title="next chapter">&lt;no title&gt;</a></li>
+  </ul></li>
+</ul>
+</div>
 
-  <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, MetaGenLab
 
-    </p>
-  </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-</footer>
+
+
+
+
 
         </div>
       </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2020, MetaGenLab.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/pages/under_the_hood.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
     
-   
 
-</body>
+    
+  </body>
 </html>

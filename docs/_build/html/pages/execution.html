@@ -1,191 +1,56 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Pipeline execution &mdash; RSP4ABM v.0.9.15 documentation</title>
-  
 
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
-  
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <title>Pipeline execution &#8212; zAMP v.1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=6c7b0eaa"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Under the hood" href="under_the_hood.html" />
-    <link rel="prev" title="Taxonomic reference database preprocessing" href="ref_DB_preprocessing.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
+    <link rel="prev" title="Taxonomic reference databases" href="ref_DB_preprocessing.html" />
    
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> RSP4ABM
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and system requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference database preprocessing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a-sample-column">A. Sample column</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#c-absolute-path">C. Absolute path</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#d-sample-read-archive-sra">D. Sample Read Archive (SRA)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#create-a-working-directory">2. Create a working directory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input">3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#write-a-config-file">4. Write a <em>config file</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#write-a-sample-sheet-aka-metadata-table">5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#make-sure-snakemake-is-available">6. Make sure Snakemake is available</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">7. Run the pipeline</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">RSP4ABM</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Pipeline execution</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/pages/execution.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
             
-  <div class="section" id="pipeline-execution">
-<span id="pipeline-selection"></span><h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Permalink to this headline">¶</a></h1>
+  <section id="pipeline-execution">
+<span id="pipeline-selection"></span><h1>Pipeline execution<a class="headerlink" href="#pipeline-execution" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Provided command-line examples are given as examples and are valid for a standard unix bash terminal.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The instructions hereunder assume that the pipeline setup was completed (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>), including the preprocessing of the taxonomy reference database (see <a class="reference internal" href="ref_DB_preprocessing.html#db-preprocessing"><span class="std std-ref">Taxonomic reference database preprocessing</span></a>).</p>
+<p>The instructions hereunder assume that the pipeline setup was completed (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Installation and resource requirements</span></a>), including the preprocessing of the taxonomy reference database (see <a class="reference internal" href="ref_DB_preprocessing.html#tax-db"><span class="std std-ref">Taxonomic reference databases</span></a>).</p>
 </div>
-<div class="section" id="select-a-method-to-define-sequencing-read-files-as-input">
-<span id="sample-selection"></span><h2>1. Select a method to define sequencing read files as input<a class="headerlink" href="#select-a-method-to-define-sequencing-read-files-as-input" title="Permalink to this headline">¶</a></h2>
-<p>Before executing RSP4ABM, you need to define how you provide the sequencing read files (in <em>.fastq.gz</em> format) to the pipeline. The pipeline accepts four methods to define the input read files, with different requirements. Please read hereunder to define the methods best fitting your needs.</p>
-<div class="section" id="a-sample-column">
-<h3>A. Sample column<a class="headerlink" href="#a-sample-column" title="Permalink to this headline">¶</a></h3>
+<section id="select-a-method-to-define-sequencing-read-files-as-input">
+<span id="sample-selection"></span><h2>1. Select a method to define sequencing read files as input<a class="headerlink" href="#select-a-method-to-define-sequencing-read-files-as-input" title="Link to this heading">¶</a></h2>
+<p>Before executing zAMP, you need to define how you provide the sequencing read files (in <em>.fastq.gz</em> format) to the pipeline. The pipeline accepts 4 different methods to define the input read files, with different requirements. Please first read hereunder to define the method of input definition that bests fits to your needs.</p>
+<section id="a-sample-column">
+<h3>A. Sample column<a class="headerlink" href="#a-sample-column" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><p>The easy, but not completely foolproof, way to run the pipeline.</p>
-<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script automatically matches the sample names with the sequencing read files format located in a directory.</p>
+<div><p>The easy, but not completely foolproof, way to run the pipeline. The one to favor when you have <em>.fastq</em> reads all stored in a folder, with simples identifers matching your sample names.</p>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based script automatically matches the sample names with the names of te sequencing read files found in a directory.</p>
 <ul>
 <li><p>The leftmost column of the <em>sample sheet</em> is named “<em>Sample</em>” and contains the sample identifiers.</p></li>
 <li><p>All samples have unique, simple names starting by a letter (and not a number).</p>
@@ -200,31 +65,31 @@
 </li>
 <li><p>All reads are located in one single directory.</p>
 <blockquote>
-<div><p><em>reads can be actually stored in the directory or be represented by symbolic links (recommended)</em></p>
+<div><p><em>reads can be actually stored in the directory or be represented by symbolic links</em></p>
 </div></blockquote>
 </li>
-<li><p>The path of the directory containing the reads is designated by the “<em>link_directory</em>” parameter in the <em>config file</em> (“<em>links/</em>” by default).</p></li>
+<li><p>The path of the directory containing the reads is designated by the “<em>link_directory</em>” parameter in the <em>config file</em> (”<em>links/</em>” by default).</p></li>
 <li><p>Reads are considered to be paired-end (the pipeline looks for “<em>R1</em>” and “<em>R2</em>” <em>.fastq.gz</em> files) by default. For single-end or mixed reads, the <em>sample sheet</em> must contain a “<em>LibraryLayout</em>” column indicating “<em>single</em>” (or “<em>paired</em>”).</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>local_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="b-oldsamplename-column">
-<h3>B. OldSampleName column<a class="headerlink" href="#b-oldsamplename-column" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="b-oldsamplename-column">
+<h3>B. OldSampleName column<a class="headerlink" href="#b-oldsamplename-column" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can be impractical or incompatible to be used as sample identifier (e.g. stars with a number). In this case, match can be done with an “<em>OldSampleName</em>” column instead of the default “<em>Sample</em>” column.</p>
-<p>Same than for <a class="reference internal" href="#a-sample-column">A. Sample column</a> matching except that the presence of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> forces the pipeline to run the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching on this column instead of the leftmost “<em>Sample</em>” column.</p>
+<div><p>The sample names used for sequencing and contained in the <em>.fastq.gz</em> read filenames can be impractical or incompatible to be used as sample identifier (e.g. starts with a number). In this case, match can be done with an “<em>OldSampleName</em>” column instead of the default “<em>Sample</em>” column.</p>
+<p>Same as <a class="reference internal" href="#a-sample-column">A. Sample column</a> matching the presence of a column named “<em>OldSampleName</em>” in the <em>sample sheet</em> forces the pipeline to run the <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regex</a>-based matching on this column instead of the leftmost “<em>Sample</em>” column.</p>
 <p>This method implies that sample are given a “new” identifier from the <em>Sample</em> leftmost column of the <em>sample sheet</em>, instead of their “old” identifier (the one in the <em>fastq.gz</em> filename and in the <em>OldSampleName</em> column).</p>
 <ul class="simple">
-<li><p>A column named “<em>OldSampleName</em>” where all samples have a unique name contained without ambiguity within their <em>.fastq.gz</em> filename.</p></li>
+<li><p>A column named “<em>OldSampleName</em>” where all samples have a unique name without ambiguity within their <em>.fastq.gz</em> filename.</p></li>
 <li><p>Similar to the <em>Sample column matching</em> method for the rest.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="c-absolute-path">
-<h3>C. Absolute path<a class="headerlink" href="#c-absolute-path" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="c-absolute-path">
+<h3>C. Absolute path<a class="headerlink" href="#c-absolute-path" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><p>The foolproof approach, pointing by their absolute path the sequencing read files of each sample.</p>
+<div><p>As the foolproof approach, sequencing read files for each sample will be pointed by their absolute path.</p>
 <p>In presence of a “<em>R1</em>” column in the <em>sample sheet</em> (+/- a “<em>R2</em>” column for paired-end reads), the pipeline considers the path indicated in this/these column(s) as the input file(s) for each sample.</p>
 <ul class="simple">
 <li><p>A column named “<em>R1</em>” (and a “<em>R2</em>” for paired-end reads) with the path to the <em>.fastq.gz</em> read files for each sample.</p></li>
@@ -232,22 +97,22 @@
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>local_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="d-sample-read-archive-sra">
-<h3>D. Sample Read Archive (SRA)<a class="headerlink" href="#d-sample-read-archive-sra" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="d-sample-read-archive-sra">
+<h3>D. Sample Read Archive (SRA)<a class="headerlink" href="#d-sample-read-archive-sra" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><p>RSP4ABM is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
-<p>Reads stored on the SRA are designated by their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data are automatically downloaded and then processed by the pipeline.</p>
+<div><p>zAMP is capable to automatically download and process reads stored on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>).</p>
+<p>Reads stored on the SRA are designated by their <em>Run</em> identifier in the <em>sample sheet</em>. The sequencing data will be automatically downloaded and then processed by the pipeline.</p>
 <ul class="simple">
-<li><p>The leftmost column of the <em>sample sheet</em>  is named “<em>Run</em>” and matches “<em>Run</em>” identifiers from SRA.</p></li>
-<li><p>A “<em>LibraryLayout</em>” column in the <em>sample sheet</em> indicates the sequencing layout (“<em>single</em>” or “<em>paired</em>”).</p></li>
+<li><p>In this case, the leftmost column of the <em>sample sheet</em>  is named “<em>Run</em>” and matches “<em>Run</em>” identifiers from SRA.</p></li>
+<li><p>A “<em>LibraryLayout</em>” column in the <em>sample sheet</em> indicates the sequencing layout (”<em>single</em>” or “<em>paired</em>”).</p></li>
 <li><p>The path to the <em>sample sheet</em> describing your samples is indicated by the “<em>sra_samples</em>” parameter in the <em>config file</em>.</p></li>
 </ul>
 </div></blockquote>
-</div>
-</div>
-<div class="section" id="create-a-working-directory">
-<h2>2. Create a working directory<a class="headerlink" href="#create-a-working-directory" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="create-a-working-directory">
+<h2>2. Create a working directory<a class="headerlink" href="#create-a-working-directory" title="Link to this heading">¶</a></h2>
 <p>Before the execution of the pipeline, prepare a new dedicated directory somewhere on the system where you have sufficient space (NOT within the pipeline directory).</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;new_analysis&quot;
@@ -258,9 +123,9 @@ $ cd new_analysis
 </pre></div>
 </div>
 <p>The <em>config file</em>, <em>the sample sheet</em> and eventually the <em>links/</em> directory (see below) must be created within this working directory</p>
-</div>
-<div class="section" id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
-<h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-a-links-directory-for-sample-and-oldsamplename-column-as-input">
+<h2>3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)<a class="headerlink" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input" title="Link to this heading">¶</a></h2>
 <p>When using the method <a class="reference internal" href="#a-sample-column">A. Sample column</a> or the method <a class="reference internal" href="#b-oldsamplename-column">B. OldSampleName column</a> for the definition of the sequencing read files used as input, all the <em>.fastq.gz</em> files must be located within one single directory. By default, this directory is named “<em>links/</em>” and is found in the working directory, but another path can be defined by the “<em>link_directory</em>” parameter of the <em>config file</em>. It is recommended to create symbolic links of the original reads into this <em>links/</em> directory.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#make a new directory named &quot;links&quot;
@@ -270,94 +135,14 @@ $ mkdir links
 $ ln -s path/to/a/distant/directory/containing/some/reads/*.fastq.gz links/
 </pre></div>
 </div>
-</div>
-<div class="section" id="write-a-config-file">
-<h2>4. Write a <em>config file</em><a class="headerlink" href="#write-a-config-file" title="Permalink to this headline">¶</a></h2>
-<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a <em>config file</em> in the <cite>yaml &lt;https://en.wikipedia.org/wiki/YAML&gt;</cite> format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <span class="xref std std-ref">under_the_hood</span> page.</p>
-<p><em>for instance</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
-$ gedit config.yaml
-
-# Or use a command-line text editor, e.g.
-# $ nano config.yaml
-</pre></div>
-</div>
-<p><strong>Config file example:</strong></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Dataset ############################################################################################################</span>
-<span class="c1">### Set input samples list. (Mandatory, one of them or both)</span>
-<span class="nt">link_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">links</span> <span class="c1"># links by default.</span>
-<span class="nt">sra_samples</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example_sra_samples.tsv</span> <span class="c1">## To access to Sequences Read Archive</span>
-<span class="nt">local_samples</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example_local_samples.tsv</span> <span class="c1">## Local analysis</span>
-
-<span class="c1">### Sample processing metadata definition</span>
-<span class="nt">run_column</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">seq_run</span> <span class="c1"># Column identifying the sequencing run (sequencing error are learned for each run with DADA2)</span>
-
-<span class="c1">### Choose the denoising approach, either the &quot;vsearch&quot; to generate classical 97% identity OTUs or the &quot;DADA2&quot; for errors corrected 100% ASVs</span>
-<span class="nt">denoiser</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;DADA2&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;vsearch&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># &quot;vsearch&quot;, &quot;DADA2&quot; or both. For ITS (see below) only DADA2 has been tested.</span>
-
-<span class="c1">### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)</span>
-<span class="nt">Trim_primers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)</span>
-<span class="nt">ITS_or_16S</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16S</span> <span class="c1"># ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.</span>
-<span class="nt">min_overlap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span> <span class="c1"># Min overlap of the reads for paired-end reads merging</span>
-<span class="nt">forward_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CCTACGGGNGGCWGCAG</span> <span class="c1"># CCTACGGGNGGCWGCAG for Illumina V3V4</span>
-<span class="nt">reverse_primer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GACTACHVGGGTATCTAATCC</span> <span class="c1"># GACTACHVGGGTATCTAATCC for Illumina V3V4</span>
-
-<span class="c1">### Merged sequences length-based filtering</span>
-<span class="nt">merged_min_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">390</span> <span class="c1"># from 390 to 400 for V3V4</span>
-<span class="nt">merged_max_length</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">480</span> <span class="c1"># from 450 to 500 for V3V4</span>
-
-<span class="c1">### DADA2 specific settings ###########################################################################################</span>
-<span class="c1">#### Trim reads based on length. Reads shorter than this length are trimmed.</span>
-<span class="nt">DADA2_F_reads_length_trim</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">280</span> <span class="c1"># 280 recommended to remove low quality ends of R1. Must be &lt; than read_length - trimmed_primer_length</span>
-<span class="nt">DADA2_R_reads_length_trim</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">255</span> <span class="c1"># 255 recommended to remove low quality ends of R2. Must be &lt; than read_length - trimmed_primer_length</span>
-
-<span class="c1">### Filter reads based on number of expected errors after trimming</span>
-<span class="nt">F_extected_error</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span> <span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
-<span class="nt">R_extected_error</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span> <span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
-
-<span class="c1">### Taxonomic assignment ##############################################################################################</span>
-<span class="c1">### Reference database</span>
-<span class="nt">tax_DB_path</span><span class="p">:</span>  <span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span> <span class="c1"># The path to the reference databases</span>
-<span class="nt">tax_DB_name</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;ezbiocloud201805.201909&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;ezbiocloud201805.202005&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># The names of the databases. Must be the &quot;tax_DB_name&quot; provided when preprocessing the reference database.</span>
-
-<span class="c1">### Taxonimc classifier.</span>
-<span class="nt">classifier</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;RDP&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;qiimerdp&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;dada2rdp&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;decipher&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># one or more from :&quot;qiimerdp&quot;, &quot;dada2rdp&quot;,&quot;decipher&quot;</span>
-
-
-<span class="c1">## Reads post-processing ##############################################################################################</span>
-<span class="nt">rarefaction_value</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">20000</span><span class="p p-Indicator">]</span> <span class="c1"># value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.</span>
-<span class="nt">min_prevalence</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">10</span><span class="p p-Indicator">]</span> <span class="c1"># proporition (in %) of samples in which the feature has to be found to be kept</span>
-<span class="nt">min_abundance</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">100</span><span class="p p-Indicator">]</span> <span class="c1"># minimal count to be kept</span>
-<span class="nt">normalization</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;CLR&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;CSS&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;TMM&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;NONE&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># value for counts normalization. Using script form https://github.com/biobakery/Maaslin2</span>
-<span class="nt">viz_replace_empty_tax</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TRUE</span> <span class="c1"># &quot;TRUE&quot; is recommended to replace empty taxonomic levels by &quot;_sp&quot; for species, &quot;_g&quot; for the genus etc.... Otherwise they are left empty</span>
-<span class="nt">filter_tax_rank</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Kingdom&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># At which taxonomic rank we filter in. (Usually &quot;Kingdom&quot;)</span>
-<span class="nt">filter_lineage</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Bacteria&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># What value of filter_tax_rank we keep. (Usually &quot;Bacteria&quot;)</span>
-<span class="nt">filter_out_tax_rank</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Phylum&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># At which taxonomic rank we filter out. (Usually &quot;Phylum&quot;)</span>
-<span class="nt">filter_out_lineage</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Bacteria_phy&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Which value of filter_out_tax_rank we filter out. (Usually &quot;Bacteria_phy&quot; to remove suspicious sequences assigned as Bacteria but which are probably not.</span>
-
-<span class="c1">## Visualization ######################################################################################################</span>
-<span class="nt">grouping_column</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;sample_group&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Column for which a plot will be generated for each value of. Rarefaction curve will be only generated with colors from the first value in the list</span>
-<span class="nt">sample_label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sample_label</span> <span class="c1"># Column in &quot;local_samples&quot; used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)</span>
-
-
-<span class="c1">## Special outputs ##############################################################################################################</span>
-<span class="c1">### Phyloseq output for external plitting and analysis</span>
-<span class="nt">melted_phyloseq</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># Generate melted phyloseq table (voluminous)</span>
-<span class="nt">phyloseq_tax_ranks</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;OTU&quot;</span><span class="p p-Indicator">]</span> <span class="c1"># Which collapse level for phyloseq output</span>
-<span class="nt">transposed_tables</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># True to have transposed count table</span>
-
-<span class="c1">### Qiime2 Visualization information</span>
-<span class="nt">Qiime2_basic_output_visualization</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># or False</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="write-a-sample-sheet-aka-metadata-table">
-<h2>5. Write a <em>sample sheet</em> (aka <em>metadata table</em>):<a class="headerlink" href="#write-a-sample-sheet-aka-metadata-table" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="write-a-sample-sheet-aka-metadata-table">
+<h2>4. Write a <em>sample sheet</em> (aka <em>metadata table</em>):<a class="headerlink" href="#write-a-sample-sheet-aka-metadata-table" title="Link to this heading">¶</a></h2>
 <p>The pipeline requires a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the samples in the analysis and where:</p>
 <ul>
-<li><p>The leftmost column (“<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
+<li><p>The leftmost column (”<em>Sample</em>” or “<em>Run</em>”) is the sample identifier.</p>
 <blockquote>
-<div><p><em>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-“. “_” are OK.</em></p>
+<div><p><em>This identifier must be unique, start with a letter and not a number and cannot contain spaces or “-”. “_” are OK.</em></p>
 </div></blockquote>
 </li>
 <li><p>A “<em>run_column</em>” describes the sequencing run of each sample.</p>
@@ -386,7 +171,7 @@ $ gedit config.yaml
 </div></blockquote>
 </li>
 </ul>
-<p><em>For instance:</em></p>
+<p><em>sample sheet example:</em></p>
 <div class="highlight-tsv notranslate"><div class="highlight"><pre><span></span>Sample  sample_label    sample_group    seq_run
 S1111   sample_1    patient1   run1
 MIX9B   sample_2	patient1   run1
@@ -395,10 +180,90 @@ MIX10B  sample_4    patient2   run1
 MIX7A   QC_1    QC  run1
 </pre></div>
 </div>
+</section>
+<section id="write-a-config-file">
+<h2>5. Write a <em>config file</em><a class="headerlink" href="#write-a-config-file" title="Link to this heading">¶</a></h2>
+<p>Parameters must be provided to adapt the pipeline to the specificities of the analysis. This is done through a <em>config file</em> in the <cite>yaml &lt;https://en.wikipedia.org/wiki/YAML&gt;</cite> format. Create this file in the working directory, copy the content of the example below and adapt it to the analysis. The three first parameters (<em>“link_directory”, *”sra_samples”</em> and <em>“local_samples”</em>) are associated to the definition of input files. For the meaning of the other parameters, please refer to the short comment next by each parameter and the detailed description of the pipeline on the <a class="reference internal" href="under_the_hood.html#under-the-hood"><span class="std std-ref">Under the hood</span></a> page.</p>
+<p><em>for instance</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Open a graphic text editor and create a config file. Once opened, copy the example below and adapt it.
+$ gedit config.yaml
+
+# Or use a command-line text editor, e.g.
+# $ nano config.yaml
+</pre></div>
 </div>
-<div class="section" id="make-sure-snakemake-is-available">
-<h2>6. Make sure Snakemake is available<a class="headerlink" href="#make-sure-snakemake-is-available" title="Permalink to this headline">¶</a></h2>
-<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">Conda environment</a>. (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup and system requirements</span></a>). Thus, make sure to activate this environment.</p>
+<p><strong>Config file example:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">## Dataset ############################################################################################################</span>
+<span class="c1">### Set input samples list. (Mandatory, one of them or both)</span>
+<span class="nt">link_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">links</span><span class="w"> </span><span class="c1"># links by default.</span>
+<span class="nt">sra_samples</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example_sra_samples.tsv</span><span class="w"> </span><span class="c1">## To access to Sequences Read Archive</span>
+<span class="nt">local_samples</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example_local_samples.tsv</span><span class="w"> </span><span class="c1">## Local analysis</span>
+
+<span class="c1">### Sample processing metadata definition</span>
+<span class="nt">run_column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">seq_run</span><span class="w"> </span><span class="c1"># Column identifying the sequencing run (sequencing error are learned for each run with DADA2)</span>
+
+<span class="c1">### Choose the denoising approach, either the &quot;vsearch&quot; to generate classical 97% identity OTUs or the &quot;DADA2&quot; for errors corrected 100% ASVs</span>
+<span class="nt">denoiser</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;DADA2&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;vsearch&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># &quot;vsearch&quot;, &quot;DADA2&quot; or both. For ITS (see below) only DADA2 has been tested.</span>
+
+<span class="c1">### PCR primers trimming sequences (with PANDAseq for vsearch approach and Cutadapt for DADA2)</span>
+<span class="nt">Trim_primers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># False to skip primers trimming (usefull if unkown primers or already trimmed in the input reads, for instance for SRA deposited reads)</span>
+<span class="nt">ITS_or_16S</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16S</span><span class="w"> </span><span class="c1"># ITS or 16S, affects the primers trimming. With ITS, reverse occurence of the primer is allowed in the opposed read.</span>
+<span class="nt">min_overlap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"> </span><span class="c1"># Min overlap of the reads for paired-end reads merging</span>
+<span class="nt">forward_primer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CCTACGGGNGGCWGCAG</span><span class="w"> </span><span class="c1"># CCTACGGGNGGCWGCAG for Illumina V3V4</span>
+<span class="nt">reverse_primer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GACTACHVGGGTATCTAATCC</span><span class="w"> </span><span class="c1"># GACTACHVGGGTATCTAATCC for Illumina V3V4</span>
+
+<span class="c1">### Merged sequences length-based filtering</span>
+<span class="nt">merged_min_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">390</span><span class="w"> </span><span class="c1"># from 390 to 400 for V3V4</span>
+<span class="nt">merged_max_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">480</span><span class="w"> </span><span class="c1"># from 450 to 500 for V3V4</span>
+
+<span class="c1">### DADA2 specific settings ###########################################################################################</span>
+<span class="c1">#### Trim reads based on length. Reads shorter than this length are trimmed.</span>
+<span class="nt">DADA2_F_reads_length_trim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">280</span><span class="w"> </span><span class="c1"># 280 recommended to remove low quality ends of R1. Must be &lt; than read_length - trimmed_primer_length</span>
+<span class="nt">DADA2_R_reads_length_trim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">255</span><span class="w"> </span><span class="c1"># 255 recommended to remove low quality ends of R2. Must be &lt; than read_length - trimmed_primer_length</span>
+
+<span class="c1">### Filter reads based on number of expected errors after trimming</span>
+<span class="nt">F_extected_error</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"> </span><span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
+<span class="nt">R_extected_error</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"> </span><span class="c1"># 8 recommended, increase if too much reads are filtered out. Apply to DADA2 approach only</span>
+
+<span class="c1">### Taxonomic assignment ##############################################################################################</span>
+<span class="c1">### Reference database</span>
+<span class="nt">tax_DB_path</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;/data/databases/amplicon_based_metagenomics/16S/&quot;</span><span class="w"> </span><span class="c1"># The path to the reference databases</span>
+<span class="nt">tax_DB_name</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;ezbiocloud201805.201909&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ezbiocloud201805.202005&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># The names of the databases. Must be the &quot;tax_DB_name&quot; provided when preprocessing the reference database.</span>
+
+<span class="c1">### Taxonimc classifier.</span>
+<span class="nt">classifier</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;RDP&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;qiimerdp&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;dada2rdp&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;decipher&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># one or more from :&quot;qiimerdp&quot;, &quot;dada2rdp&quot;,&quot;decipher&quot;</span>
+
+
+<span class="c1">## Reads post-processing ##############################################################################################</span>
+<span class="nt">rarefaction_value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">20000</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># value for rarefaction. 20000 is generally enough reads but must be assessed by rarefaction curve.</span>
+<span class="nt">min_prevalence</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">10</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># proporition (in %) of samples in which the feature has to be found to be kept</span>
+<span class="nt">min_abundance</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">100</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># minimal count to be kept</span>
+<span class="nt">normalization</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CLR&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;CSS&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;TMM&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;NONE&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># value for counts normalization. Using script form https://github.com/biobakery/Maaslin2</span>
+<span class="nt">viz_replace_empty_tax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRUE</span><span class="w"> </span><span class="c1"># &quot;TRUE&quot; is recommended to replace empty taxonomic levels by &quot;_sp&quot; for species, &quot;_g&quot; for the genus etc.... Otherwise they are left empty</span>
+<span class="nt">filter_tax_rank</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Kingdom&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># At which taxonomic rank we filter in. (Usually &quot;Kingdom&quot;)</span>
+<span class="nt">filter_lineage</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Bacteria&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># What value of filter_tax_rank we keep. (Usually &quot;Bacteria&quot;)</span>
+<span class="nt">filter_out_tax_rank</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Phylum&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># At which taxonomic rank we filter out. (Usually &quot;Phylum&quot;)</span>
+<span class="nt">filter_out_lineage</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Bacteria_phy&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Which value of filter_out_tax_rank we filter out. (Usually &quot;Bacteria_phy&quot; to remove suspicious sequences assigned as Bacteria but which are probably not.</span>
+
+<span class="c1">## Visualization ######################################################################################################</span>
+<span class="nt">grouping_column</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;sample_group&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Column for which a plot will be generated for each value of. Rarefaction curve will be only generated with colors from the first value in the list</span>
+<span class="nt">sample_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sample_label</span><span class="w"> </span><span class="c1"># Column in &quot;local_samples&quot; used to label samples in output. Cannot be the first column and must be unique. (KRONA, heatmaps, barplots)</span>
+
+
+<span class="c1">## Special outputs ##############################################################################################################</span>
+<span class="c1">### Phyloseq output for external plitting and analysis</span>
+<span class="nt">melted_phyloseq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># Generate melted phyloseq table (voluminous)</span>
+<span class="nt">phyloseq_tax_ranks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;OTU&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Which collapse level for phyloseq output</span>
+<span class="nt">transposed_tables</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># True to have transposed count table</span>
+
+<span class="c1">### Qiime2 Visualization information</span>
+<span class="nt">Qiime2_basic_output_visualization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># or False</span>
+</pre></div>
+</div>
+</section>
+<section id="make-sure-snakemake-is-available">
+<h2>6. Make sure Snakemake is available<a class="headerlink" href="#make-sure-snakemake-is-available" title="Link to this heading">¶</a></h2>
+<p>The recommended way to install <em>Snakemake</em> is to create a dedicated <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">Conda environment</a>. (see <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Installation and resource requirements</span></a>). Thus, make sure to activate this environment.</p>
 <p><em>for instance</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Activate your conda environment
 $ conda activate snakemake
@@ -407,9 +272,9 @@ $ conda activate snakemake
 $ snakemake --version
 </pre></div>
 </div>
-</div>
-<div class="section" id="run-the-pipeline">
-<h2>7. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="run-the-pipeline">
+<h2>7. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Link to this heading">¶</a></h2>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>At this stage, the content of your working directory depends upon what was selected in <a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a>.</p>
@@ -422,63 +287,88 @@ config.yaml  links  local_sample.tsv
 </div>
 <p>Then, the execution of the pipeline follows the principles of any <a class="reference external" href="https://snakemake.readthedocs.io/en/v5.14.0/executing/cli.html">*Snakemake pipeline execution*</a>.</p>
 <p>But to make it short, here are the requirement arguments.</p>
-</div>
-</div>
+</section>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="under_the_hood.html" class="btn btn-neutral float-right" title="Under the hood" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="ref_DB_preprocessing.html" class="btn btn-neutral float-left" title="Taxonomic reference database preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">zAMP</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Installation and resource requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference databases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-working-directory">2. Create a working directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-links-directory-for-sample-and-oldsamplename-column-as-input">3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-a-sample-sheet-aka-metadata-table">4. Write a <em>sample sheet</em> (aka <em>metadata table</em>):</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-a-config-file">5. Write a <em>config file</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#make-sure-snakemake-is-available">6. Make sure Snakemake is available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">7. Run the pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insilico_validation.html"><em>In silico</em> validation tool</a></li>
+</ul>
 
-  <hr/>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="ref_DB_preprocessing.html" title="previous chapter">Taxonomic reference databases</a></li>
+      <li>Next: <a href="under_the_hood.html" title="next chapter">Under the hood</a></li>
+  </ul></li>
+</ul>
+</div>
 
-  <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, MetaGenLab
 
-    </p>
-  </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-</footer>
+
+
+
+
 
         </div>
       </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2020, MetaGenLab.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/pages/execution.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
     
-   
 
-</body>
+    
+  </body>
 </html>

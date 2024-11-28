@@ -2,210 +2,98 @@
 .. _setup:
 
 ########################################################################
-System requirements and setup
+Installation and resource requirements
 ########################################################################
 
 ************************************************************************
-Short description 
-************************************************************************
-
-**TO BE WRITTEN**
-
-
-
-************************************************************************
-Detailed description 
+Quick start
 ************************************************************************
 
 
-.. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
+* Install with conda via `Miniforge  <https://github.com/conda-forge/miniforge>`_::
+
+    conda install zamp
 
 
-Operating system and system resource 
-=======================================================================
+* Install with docker from `Dockerhub <https://hub.docker.com/r/metagenlab/zamp/>`_::
+    
+    docker pull metagenlab/zamp:latest
+
+
+
+************************************************************************
+Details
+************************************************************************
+
 
 Operating system
 -----------------------------------------------------------------------
-zAMP was designed on *Ubuntu 18.04* (Linux) but should be compatible with all systems capable of installing the dependencies listed on this page.
+zAMP is available on `Bioconda <https://bioconda.github.io/>`_ which only support Linux and macOS. 
 
-RAM memory
+If you use windows, you can still run zAMP via `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`_.
+
+
+
+Installation methods
 -----------------------------------------------------------------------
-Some tools embedded in zAMP can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced by parameters set in the *config file*. The bottleneck usually is the taxonomic assignment. Factors which can increase the RAM requirement are:
 
-- the number of samples
-- the bacterial diversity within your samples
-- the number of cores
-
-.. Hint:: In practice, 16 to 32 GB are usually required. 
-
-
-
-Software dependencies
+*From source*
 =======================================================================
-
-.. _git:
-
-*Git*
------------------------------------------------------------------------
-
-What for?
-_______________________________________________________________________
-
-    *Git* is required to download (clone) zAMP. 
-
-
-Install
-_______________________________________________________________________
-
-    *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
-
+You can install zAMP from source, by cloning the `repository <https://github.com/metagenlab/zAMP>`_::
     
-Test
-_______________________________________________________________________
+    git clone https://github.com/metagenlab/zAMP
+    pip install -e zAMP/
 
-*To test if git is installed*::
-
-    # To test if git is installed, make it print its version. It will fail if it is not installed
-    $ git --version
-
+Dependencies:
+    * python >=3.11
+    * apptainer
+    * conda
 
 
 *Conda*
------------------------------------------------------------------------
-
-What for?
-_______________________________________________________________________
-
-    `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
-
-
-Install
-_______________________________________________________________________
-    `Follow the Miniconda3 installation recommendation <https://docs.conda.io/en/latest/miniconda.html>`_.
-
-
-Test
-_______________________________________________________________________
-
-*To test if Conda is installed*::
-
-    # To test if Conda is installed, make it print its version. It will fail if it is not installed
-    conda --version
-
-
-
-*Mamba*
------------------------------------------------------------------------
-
-What for?
-_______________________________________________________________________
-
-    `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
-
-
-Install
-_______________________________________________________________________
-    `Follow the Mamba installation recommendation <https://github.com/mamba-org/mamba>`_.
-
-
-*Installed Mamba with Conda*::
-    
-    mamba install xtensor-r -c conda-forge
-
-
-
-Test
-_______________________________________________________________________
-
-*To test if Mamba is installed*::
-
-    # To test if Mamba is installed, make it print its version. It will fail if it is not installed
-    mamba --version
-
-
-
-
-
-.. _snakemake:    
- 
-*Snakemake*
------------------------------------------------------------------------
-
-What for?
------------------------------------------------------------------------
-    *zAMP* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
-
-
-Install
-_______________________________________________________________________
-    Follow indications on the *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
-    
-
-*To install Snakemake in a dedicated "Snakemake" environment*::
-
-    # Install Snakemake version 5.26.1 in a environment named "snakemake5261"
-    mamba create -c bioconda -n snakemake5261  snakemake=5.26.1
-
-
-Test
-_______________________________________________________________________
-
-*To test if Snakemake is installed*::
-
-    # To test if Snakmeake is installed, make it print its version. It will fail if it is not installed
-    snakemake --version
-
-
-.. _singularity:   
-
-*Singularity* 
------------------------------------------------------------------------
-
-What for?
------------------------------------------------------------------------
-
-    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in zAMP except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running zAMP with *Singularity* containers since it enables the best level of reproducibility [2]_. 
-
-    
-Install
-_______________________________________________________________________
-    Follow indications on *Singularity* `installation page <https://sylabs.io/guides/3.6/user-guide/quick_start.html#quick-installation-steps>`_
-
-
-Test
-_______________________________________________________________________
-
-*To test if Singularity is installed*::
-
-    # To test if Singularity is installed, make it print its version. It will fail if it is not installed
-    singularity --version
-
-
-
-
-Clone zAMP
 =======================================================================
 
-Once all dependencies are installed and working, zAMP can be cloned with git::
+You can install zAMP from `Bioconda <https://bioconda.github.io/>`_ with conda installed from `Miniforge  <https://github.com/conda-forge/miniforge>`_::
 
-    git clone https://github.com/metagenlab/microbiome16S_pipeline.git --recursive
+    # Install conda from Miniforge
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    bash Miniforge3-$(uname)-$(uname -m).sh
 
+    # Install zamp
+    conda install zamp
 
-.. Hint:: Please note the path of the directory in which you cloned zAMP since you will need it to execute the pipeline. 
-
-
-
-Reference database
+*Containers*
 =======================================================================
 
-In the very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing` page. 
+You can install zAMP by pulling a container image for maximum reproducibility and no extra dependency installation.
+
+We recommend installing zAMP containers via docker or apptainer from any of the container registries below:
+
+* `Dockerhub <https://hub.docker.com/r/metagenlab/zamp/>`_::
+
+    docker pull metagenlab/zamp:latest
+
+* `ghcr <https://github.com/metagenlab/zAMP/pkgs/container/zamp>`_::
+
+    docker pull ghcr.io/metagenlab/zamp:latest
+
+* `biocontainers <https://quay.io/repository/biocontainers/zamp>`_::
+
+    docker pull quay.io/biocontainers/zamp:1.0.0--pyhdfd78af_1
 
 
+Resource usage
+-----------------------------------------------------------------------
+Some steps in zAMP can be quite resource-intensive, requiring more RAM. 
 
-References
-=======================================================================
+For example, if you want to re-train the RDP classifier on SILVA138.1, you might need around 100GB of RAM. 
 
-.. [1] Köster J, Rahmann S. Snakemake-a scalable bioinformatics workflow engine. Bioinformatics. 2012. 
-.. [2] Grüning B, Chilton J, Köster J, Dale R, Soranzo N, van den Beek M, et al. Practical Computational Reproducibility in the Life Sciences. Cell Systems. 2018. 
+In terms of duration, and when using the default zAMP module, the bottleneck is usually the DADA2 denoising step, which can take some time with lots of samples.
+
+Actual resource usage like RAM and CPU-time depends on:
+
+- Number of samples
+- Sequencing depth of each sample
+- Threads set by the user
+
+.. Note:: Usually, a zAMP run duration is less than 1h and does not require more than 32 GB of RAM.

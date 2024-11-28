@@ -1,5 +1,4 @@
 
-
 .. _under_the_hood:
 ########################################################################
 Under the hood
@@ -9,27 +8,34 @@ Under the hood
 Snakemake, environments and containers
 ************************************************************************
 
-Snakemake
-=======================================================================
+[Snakemake](https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html)
 
 
-Conda environments
-=======================================================================
+[Snakemake](https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html) is the center-piece of this pipeline. Snakemake is a Python-based workflow-manager that enables the processing of a large set of amplicon-based metagenomics sequencing reads into actionable outputs. It relies on a system of [rules](https://github.com/metagenlab/zAMP/tree/master/rules) which are the many required processing steps. Each rule specifies input files, a Conda environment (or, as an alternative, a Singularity container) that includes all required software, and the command line or a script to be executed for the expected output files.
 
 
-Singularity containers
-=======================================================================
+
+:github:`Conda environments <envs>` 
+
+[Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html) is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
+Switching between environments is simple because they can be easily activated or deactivated. 
+
+
+:github:`Singularity containers <envs/singularity>` 
+
+The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access. 
+
 
 ************************************************************************
-Input output definition 
+**Input output definition**
 ************************************************************************
 
-Input
+**Input**
 =======================================================================
 
-:github:`A Python script <rules/0_preprocessing/scripts/make_input_lists.py>` is run at each execution of the RSP4ABM to match sequencing read files to each sample. 
+:github:`A Python script <rules/0_preprocessing/scripts/make_input_lists.py>` is run at each execution of the [zAMP](https://github.com/metagenlab/zAMP) to match sequencing read files to each sample. 
 
-As exposed in :ref:`the sample selection section of the Pipeline execution page <sample_selection>`, this function can accept either local or SRA-hosted read files. 
+As exposed in :ref:`the **sample selection** section of the **pipeline execution** page <sample_selection>`, this function can accept either local or [SRA-hosted read files](https://www.ncbi.nlm.nih.gov/sra/docs/). 
 
 Local reads
 -----------------------------------------------------------------------
@@ -64,9 +70,9 @@ Upon each execution, *Snakemake* automatically creates a log file where all the 
 
     .snakemake/log/
 
-RSP4ABM logs
+zAMP logs
 =======================================================================
-In addition to the default *Snakemake*'s logs, *RSP4ABM* create a log directory upon each execution in ::
+In addition to the default *Snakemake*'s logs, *zAMP* create a log directory upon each execution in ::
 
     logs/<year>/<months>/<day>/<time>/
 
@@ -78,18 +84,21 @@ This directory contains:
 - a copy of the sample sheet (*local_samples.tsv* or *sra_samples.tsv*)
 - a copy of the *config file* (*config.yaml*)
 
-In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subfolders of the log directory, mirroring the structure of the main pipeline.  
+In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subdirectories of the log directory, mirroring the structure of the main pipeline.  
+
 
 ************************************************************************
 Sequencing reads QC
 ************************************************************************
- :github:`QC rules <rules/0_preprocessing/QC_raw_reads.rules>` assess the sequencing quality of all each sample with FastQC [1]_. Then, a MultiQC [2]_ report is generated for each sequencing run (based on values of the *sample sheet* column indicated by the "run_column" parameter of the *config file*) 
 
+ :github:`QC rules <rules/0_preprocessing/QC_raw_reads.rules>` assess the sequencing quality of all each sample with FastQC [1]_. Then, a MultiQC [2]_ report generates a report for each sequencing run (based on values of the *sample sheet* column indicated by the "run_column" parameter of the *config file*). A global MultiQC report is generated as well, but without interactive features to deal with the high number of samples  
 
 
 ************************************************************************
 Denoising
 ************************************************************************
+
+
 
 Vsearch (OTU clustering)
 =======================================================================
@@ -179,3 +188,12 @@ References
 ************************************************************************
 .. [1] Andrews S, Krueger F, Seconds-Pichon A, Biggins F, Wingett S. FastQC. A quality control tool for high throughput sequence data. Babraham Bioinformatics. Babraham Institute. 2015. 
 .. [2] Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016; 
+
+
+
+
+
+.. _`Snakemake`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/rules
+.. _`Conda environments`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs
+.. _`Singularity containers`: https://github.com/metagenlab/microbiome16S_pipeline/tree/master/envs/singularity
+.. _`VSEARCH`: https://github.com/torognes/vsearch/releases 
