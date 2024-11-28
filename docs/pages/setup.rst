@@ -33,13 +33,13 @@ Software dependencies
 *Git*
 -----------------------------------------------------------------------
 
-    *Git* is required to download (clone) zAMP. 
+   *Git* is required to download (clone) zAMP. 
 
 
 Install
 _______________________________________________________________________
 
-   *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
+*Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
 
     
 Test
