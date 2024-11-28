@@ -77,13 +77,12 @@ _______________________________________________________________________
 *Mamba*
 -----------------------------------------------------------------------
 
-    `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
-    It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
+`Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_ It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
 
 
 Install
 _______________________________________________________________________
-    `Follow the Mamba installation recommendation <https://github.com/mamba-org/mamba>`_.
+`Follow the Mamba installation recommendation <https://github.com/mamba-org/mamba>`_.
 
 
 *Installed Mamba with Conda*::
