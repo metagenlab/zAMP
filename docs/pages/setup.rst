@@ -108,12 +108,12 @@ _______________________________________________________________________
 *Snakemake*
 -----------------------------------------------------------------------
 
-    *zAMP* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
+*zAMP* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
 
 
 Install
 _______________________________________________________________________
-    Follow indications on the *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
+Follow indications on the *Snakemake* `installation page <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_. It is good practice to create a dedicated *Conda* environment for *Snakemake*. Even if the pipeline should work with newer versions, it was fully tested with Snakemake version 5.26.1. 
     
 
 *To install Snakemake in a dedicated "Snakemake" environment*::
