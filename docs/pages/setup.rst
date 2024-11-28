@@ -185,8 +185,7 @@ Once all dependencies are installed and working, zAMP can be cloned with git::
 Reference database
 =======================================================================
 
-In the very last step of setup and before the first execution of the pipeline, a dedicated workflow must be executed to prepare and format the reference taxonomy database. For this, refer to :ref:`DB_preprocessing` page. 
-
+zAMP can be run with Silva, Greengenes2, and EzBioCloud databases for taxonomy assignment. However, if the user wishes to preprocess the database before running the pipeline's main workflow for raw reads' processing, a dedicated workflow must be executed to prepare and format the reference taxonomy database. To do so, refer to the :ref:`DB_preprocessing` page.
 
 
 References
