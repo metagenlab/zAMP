@@ -4,6 +4,7 @@ Frequently asked questions (FAQ)
 ##1.General Questions
 
 ###Who should use zAMP?
+
 Researchers working on microbiota profiling using 16S or ITS amplicon sequencing can use zAMP to process, analyze, and visualize their data efficiently.
 
 ##2.Metadata Issues
