@@ -13,17 +13,17 @@ Operating system
 -----------------------------------------------------------------------
 zAMP was designed on *Ubuntu 18.04* (Linux) but should be compatible with all systems capable of installing the dependencies listed on this page.
 
-RAM memory
------------------------------------------------------------------------
-Some tools embedded in zAMP can be quite demanding on RAM memory. The actual requirement depends on your dataset and is influenced by parameters set in the *config file*. The bottleneck usually is the taxonomic assignment. Factors which can increase the RAM requirement are:
 
-- the number of samples
-- the bacterial diversity within your samples
-- the number of cores
+# 🚀 RAM Memory Requirements
 
-.. Hint:: In practice, 16 to 32 GB are usually required. 
+Some tools embedded in **zAMP** can be demanding on RAM, depending on your dataset size and configuration. The most resource-intensive step is usually **taxonomic assignment**.
 
+### 📊 Factors Affecting RAM Usage:
+- **Number of samples**: More samples require more memory.
+- **Bacterial diversity**: Highly diverse datasets need additional resources.
+- **Number of cores**: Parallel processing increases memory demand.
 
+> 💡 **Tip**: For most workflows, **16 to 32 GB** of RAM is sufficient.
 
 Software dependencies
 =======================================================================
