@@ -25,23 +25,31 @@ Some tools embedded in **zAMP** can be demanding on RAM, depending on your datas
 
 💡 **Tip**: For most workflows, **16 to 32 GB** of RAM is sufficient.
 
-# Software Dependencies
+Software dependencies
+=======================================================================
 
-## Git
+.. _git:
 
-### What is Git?
-Git is required to download (clone) zAMP.
+*Git*
+-----------------------------------------------------------------------
 
-### Install Git
-Git is available by default on most operating systems. If it is not installed, [follow the indications on the Git installation page](https://git-scm.com/downloads).
+    *Git* is required to download (clone) zAMP. 
 
-### Test if Git is Installed
-To check if Git is installed, run the following command in your terminal:
 
-```bash
-# This command prints the Git version if it is installed. If not, it will fail.
-$ git --version
-```
+Install
+_______________________________________________________________________
+
+    *Git* is available by default in operating systems. If not, `follow the indications on the git installation page. <https://git-scm.com/downloads>`_.
+
+    
+Test
+_______________________________________________________________________
+
+*To test if git is installed*::
+
+    # To test if git is installed, make it print its version. It will fail if it is not installed
+    $ git --version
+
 
 
 *Conda*
