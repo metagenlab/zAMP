@@ -55,8 +55,6 @@ _______________________________________________________________________
 *Conda*
 -----------------------------------------------------------------------
 
-What for?
-_______________________________________________________________________
 
     `Conda is a convenient python-based package and environment manager. <https://docs.conda.io/en/latest>`_
     It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
@@ -79,9 +77,6 @@ _______________________________________________________________________
 
 *Mamba*
 -----------------------------------------------------------------------
-
-What for?
-_______________________________________________________________________
 
     `Mamba is an alternative to standard conda managers which  <https://docs.conda.io/en/latest>`_
     It enables the easy installation of *Snakemake*. Furthermore, it can be used (as an alternative to *Singularity containers*) by *Snakemake* to retrieve all the packages required for the execution of the zAMP.
@@ -115,8 +110,6 @@ _______________________________________________________________________
 *Snakemake*
 -----------------------------------------------------------------------
 
-What for?
------------------------------------------------------------------------
     *zAMP* is a *Snakemake* [1]_ pipeline. Therefore, it must be installed and available for execution of the pipeline. 
 
 
@@ -143,9 +136,6 @@ _______________________________________________________________________
 .. _singularity:   
 
 *Singularity* 
------------------------------------------------------------------------
-
-What for?
 -----------------------------------------------------------------------
 
     *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in zAMP except for the :ref:`*in silicod* prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running zAMP with *Singularity* containers since it enables the best level of reproducibility [2]_. 
