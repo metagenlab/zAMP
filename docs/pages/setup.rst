@@ -185,7 +185,7 @@ Once all dependencies are installed and working, zAMP can be cloned with git::
 Reference database
 =======================================================================
 
-zAMP can be run with Silva, Greengenes2, and EzBioCloud databases for taxonomy assignment. However, if the user wishes to preprocess the database before running the pipeline's main workflow for raw reads' processing, a dedicated workflow must be executed to prepare and format the reference taxonomy database. To do so, refer to the :ref:`DB_preprocessing` page.
+zAMP can be run with Silva, Greengenes2, and EzBioCloud databases for taxonomy assignment. However, if the user wishes to preprocess the database before running the pipeline's main workflow for raw reads' processing, a dedicated workflow must be executed to prepare and format the reference taxonomy database. To do so, refer to the `DB_preprocessing page <https://zamp.readthedocs.io/en/latest/pages/ref_DB_preprocessing.html>`_
 
 
 References
