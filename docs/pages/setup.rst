@@ -138,7 +138,7 @@ _______________________________________________________________________
 *Singularity* 
 -----------------------------------------------------------------------
 
-    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in zAMP except for the `*in silicod* <https://zamp.readthedocs.io/en/latest/pages/insilico_validation.html>`prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running zAMP with *Singularity* containers since it enables the best level of reproducibility [2]_. 
+    *Singularity* is a container plateform. It enables to create, retrieve and install containers, which are predefined transposable sets of software. The installation of *Singularity* is optional for most of the functions in zAMP except for the *in silico* `in silico page <https://zamp.readthedocs.io/en/latest/pages/insilico_validation.html>`prediction pipeline for which it is a requirement <insilico>`. Indeed, the user can choose either Conda_ or Singularity_ to retrieve all the required tools. Yet, it is recommended running zAMP with *Singularity* containers since it enables the best level of reproducibility [2]_. 
 
     
 Install
