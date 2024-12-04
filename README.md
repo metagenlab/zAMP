@@ -26,8 +26,8 @@ pip install -e zAMP
 * Download
 
 ```sh
-wget http://ftp.microbio.me/greengenes_release/current/2022.10.backbone.full-length.fna.qza
-wget http://ftp.microbio.me/greengenes_release/current/2022.10.backbone.tax.qza
+wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.full-length.fna.qza
+wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.tax.qza
 ```
 
 * Export qza with [qiime2 export](https://docs.qiime2.org/2024.5/tutorials/exporting/)

@@ -1,128 +1,109 @@
 
-.. _DB_preprocessing:
+.. _tax_DB:
 
 ########################################################################
-Taxonomic reference database preprocessing
+Taxonomic reference databases
 ########################################################################
 
-.. Note:: Provided command-line examples are given as examples and are valid for a standard unix bash terminal.
 
-.. Hint:: In principle, the preprocessing of the reference database exposed here will have to be conducted only once. 
+Database processing principle
+---------------------------------
 
-************************************************************************
-Rational:    
-************************************************************************
-After processing sequencing reads by a metagenomic pipeline, we expect amplicon sequences (OTUs or ASVs) to be assigned to the lowest possible taxonomic level (species). However, it is expected that different species might have close to the exact same sequence on the gene used as a marker. Thus, all species cannot be differentiated without ambiguities based on marker genes, and that is even more on the short fragment amplified and sequenced in amplicon-based metagenomics. 
+zAMP offers the possibility to train classifiers like *RDP* [1]_, *QIIME* [2]_ and *Decipher* [3]_ on full length sequences or subdomains like the V3-V4 region in the 16S rRNA gene.
 
-The classifiers integrated into zAMP (original *RDP* [1]_, *RDP* integrated into *QIIME* [2]_ and, *Decipher IDTAXA* [3]_) all have specific formatting requirements and the two last require initial training. 
+Classification accuracy depends on classifiers parameters and the region on which they were trained on [4]_. In fact, Bokulich et al. [4]_ demonstrated that training classifiers on specific regions leads to enhanced accuracy compared to using the full length sequences (for short reads).
 
-Thus, to improve the taxonomic classification and to provide the end-user an information regarding the risk of confusion of certain taxa, a dedicated workflow of the pipeline will fuse taxa represented by identical sequences. This workflow also adapts the format of the database to make it compatible with multiple classifiers and conducts the training required by some of them. 
+Therefore, by default, zAMP extracts primer amplified regions with cutadapt [5]_, dereplicates and clusters sequences with vseach [6]_, and adapts taxonomy according to these clusters.
 
-************************************************************************
-Working principle:
-************************************************************************
+Database processing flowchart:
 
-The user indicates to the pipeline: 
+.. mermaid::
+    :align: center
 
-- the sequences of the used PCR primers and the path to the input reference database `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file and taxonomy annotation file to be formatted.
+    flowchart TD
+    A["dna-sequences.fasta"]
+    taxonomy["taxonomy.tsv"]
+    taxonomy --> clean("Clean taxonomy")
+    clean --> B
+    A --> B{Extract region ?}
+    B --> |Yes| C("Extract regions 
+    (cutadapt)")
+    B --> |No| D(Copy files)
+    C --> E("Cluster
+    (vsearch)")
+    E --> F("Derep and merge taxonomy")
+    F --> G("Train classifiers
+    (RDP, Decipher...) ")
 
-Based on this information and using tools from *Cutadapt* [4]_ and *VSEARCH* [5]_, as well as homemade R [6]_ scripts, the pipeline first extracts the amplicon matching the used primes. Then, it unifies the taxonomy: in cases where the exact same amplicon is predicted for multiple taxa, it collapses together their identifiers at the genus/species. Above a certain number of genus/species (defined by the user when preprocessing the database), the taxonomic identifier will be replaced by a `placeholder <https://en.wikipedia.org/wiki/Placeholder_name>`_ ("gen."/"sp."). In all cases, the number of taxonomic identifiers is indicated as well between parentheses. 
+Custom database
+------------
 
+Taxonomy table in QIIME format::
+    
+        1   Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Rhodospirillaceae;Magnetospirillum;Magnetospirillum magnetotacticum
+        2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatum
+    
+Fasta file::
 
-Cases, where identical sequences belong to different families or above after collapsing of identifiers, are written in a dedicated file. Furthermore, all ranks below the rank of disagreement are replaced by an indicator of the disagreement. For instance::
+        >1
+        CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA
+        >2
+        AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG
 
-    # An example of a sequence found in two distinct families (Sphingomonadaceae/Erythrobacteraceae). "Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)" at the genus and species levels indicate this discrepancy.
+Default command::
 
-    Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae/Erythrobacteraceae;Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2);Disc.Fam_Sphingomonadaceae/Erythrobacteraceae(2)
+    zamp db --taxonomy taxonomy.tsv \
+            --fasta sequences.fasta \
+            --fw-primer CCTACGGGNGGCWGCAG \
+            --rv-primer GACTACHVGGGTATCTAATCC \
+            -o processed-db
 
-In addition, the pipeline formats the database and executes the pre-training required for the original *RDP* classier as well as *Decipher IDTAXA*.
+Skip primer amplified region extraction::
 
-Finally, the  pipeline will make a copy of the original database as well as compute hashes of all files for traceability purposes. 
+    zamp db --taxonomy taxonomy.tsv \
+        --fasta sequences.fasta \
+        --no-processing \
+        -o unprocessed-db
 
-************************************************************************
-Execution:
-************************************************************************
+Available databases
+-------------------
 
-A dedicated workflow is embedded in zAMP for database preprocessing. This workflow must be run only once for each set of PCR primers and reference database. 
+.. Note:: Processed and unprocessed SILVA, Greengenes2 and UNITE will be made available soon
 
-First, the user must retrieve a database in the right format.
+Here is a short, non-exhaustive, list of databases from which we could successfully prepare a database:
 
-
-Taxonomy database
-=======================================================================
-
-zAMP requires a reference taxonomic database for classification. The database provided to zAMP must be organized into two files, following the original *QIIME* format: 
-
-- a `Reference sequences`_ `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_ file.
-- a `Reference taxonomy`_ text file describing the taxonomic classification of these sequences.  
-
-
-Reference sequences
------------------------------------------------------------------------
-
-The first file must be a `fasta file <https://en.wikipedia.org/wiki/FASTA_format>`_ with reference genomic sequences. The description of each sequence must be an unique sequence identifier.
-
-
-*For instance*::
-
-    >1
-    CTGNCGGCGTGCCTAACACATNCAAGTCGAGCGGTGCTACGGAGGTCTTCGGACTGAAGTAGCATAGCGGCGGACGGGTGAGTAATACACAGGAACGTGCCCCTTGGAGGCGGATAGCTGTGGGAAACTGCAGGTAATCCGCCGTAAGCTCGGGAGAGGAAAGCCGGAAGGCGCCGAGGGAGCGGCCTGTGGCCCATCAGGTAGTTGGTAGGGTAAGAGCCTACCAAGCCGACGACGGGTAGCCGGTCTGAGAGGATGGACGGCCACAAGGGCACTGAGACACGGGCCCTACTCCTACGGGAGGCAGCAGTGGGGGATATTGGACAATGGGCGAAAGCCTGATCCAGCGACGCCGCGTGAGGGACGAAGTCCTTCGGGACGTAAACCTCTGTTGTAGGGGAAGAAGACAGTGACGGTACCCTACGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGNCGAGCGTTACCCGGAATCACTGGGCGTAAAGGGTGCGTA
-    >2
-    AACGAACGCTGGCGGCAGGCTTAACACATGCAAGTCGAACGAAGTCTTCGGACTTAGTGGCGCACGGGTGAGTAACACGTGGGAATATACCTCTTGGTGGGGAATAACGTCGGGAAACTGACGCTAATACCGCATACGCCCTTCGGGGGAAAGATTTATCGCCGAGAGATTAGCCCGCGTCCGATTAGCTAGTTGGTGAGGTAATGGCTCACCAAGGCGACGATCGGTAGCTGGTCTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGCGAAAGCCTGATCCAGCCATGCCGCGTGAGTGATGAAGGCCTTAGGGTTGTAAAGCTCTTTCACCCACGACGATGATGACGGTAGTGGGAGAAGAAGCCCCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGGGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCACGCAGGCGGTGGTCATAGTCAGAAGTGAAAGCCCTGGGCTCAACCCGGGAATTGCTTTTGATACTGGACCGCTAGAATCACGGAGAGGGTAGTGGAATTCCGAGTGTAGAGGTGAAATTCGTAGATATTCGGAAGAACACCAGTGGCGAAGG
-
-
-
-Reference taxonomy
------------------------------------------------------------------------
-
-The second file must be a text file where the first column is the sequence identifier and the second represents its 7 levels of taxonomy separated by ";" (Kingdom;Phylum;Class;Order;Family;Genus;Genus Species). Both columns must be separated by a tabulation.
-
-*For instance*::
-
-    1   Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Rhodospirillaceae;Magnetospirillum;Magnetospirillum magnetotacticum
-    2   Bacteria;Fusobacteria;Fusobacteria_c;Fusobacteriales;Fusobacteriaceae;Fusobacterium;Fusobacterium nucleatum
-
-
-
-Find your own reference database
------------------------------------------------------------------------
-We do not provide a taxonomic reference database. However, here is a short, non-exhaustive, list of databases from which we could successfully prepare a database with our pipeline. 
-
-
-*EzBioCloud (16S rRNA  - Bacteria)*
+* EzBioCloud (16S rRNA  - Bacteria)
 
     `Website <https://www.ezbiocloud.net/resources/16s_download>`_ 
 
     `Publication <https://doi.org/10.1099/ijsem.0.001755>`_ 
 
 
-*Silvia (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )*
+* SILVA (16/18S rRNA, 23/28S rRNA - Bacteria and Eukarya )
 
     `Website <https://www.arb-silva.de/download/arb-files/>`_ 
 
     `Publication <https://doi.org/10.1093/nar/gks1219>`_ 
 
 
-*UNITE (ITS - Eukarya)* 
+* UNITE (ITS - Eukarya)
 
     `Website <https://unite.ut.ee/repository.php>`_ 
     `Publication <https://doi.org/10.1093/nar/gkad1039>`_ 
 
-Unite proposes a release conveniently in QIIME format, ready to use for `zAMP db`.
 
-*Eukaryome (ITS - Eukarya)*
+
+* Eukaryome (ITS - Eukarya)
 
     `Website <https://eukaryome.org/download/>`_
     `Publication <https://doi.org/10.1093/database/baae043>`_ 
 
-Eukaryome proposes a release conveniently in QIIME format, ready to use for `zAMP db`. Additional steps might be needed to filter a kingdom of interest (e.g. Fungi), or remove entries with incomplete taxonomy.
+.. Note:: For Eukaryome, additional steps might be needed to filter a kingdom of interest (e.g. Fungi), or remove entries with incomplete taxonomy.
 
+Parameters
+---------------------------------
 
-Pipeline execution
-=======================================================================
-
-The module is executed with `zamp db`. 
-You can see all required and optional arguments with::
+Command::
 
     zamp db -h
 
@@ -132,13 +113,42 @@ You can see all required and optional arguments with::
 * "errors" is fed to `cutadapt to define the number of accepted mismatches per primer <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_. 
 * "ampcov" is used with the length of the provided primers to feed `cutadapt with a minimal overlap <https://cutadapt.readthedocs.io/en/v3.0/guide.html#minimum-overlap-reducing-random-matches>`_.
 
+Examples
+---------
 
-Usage cases
-=======================================================================
+Bacteria
+~~~~~~~~
 
-bacteria usage cases...
+**Greengenes2**
 
-**Unite ITS1 database**
+* Download::
+
+    wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.full-length.fna.qza && \
+    wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.tax.qza
+
+
+* Decompress qza with `qiime2 export <https://docs.qiime2.org/2024.5/tutorials/exporting/)>`_::
+
+    docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 \
+    qiime tools export \
+    --input-path 2022.10.backbone.full-length.fna.qza \
+    --output-path greengenes2 && \
+    docker run -t -i -v $(pwd):/data quay.io/qiime2/tiny:2024.5 \
+    qiime tools export \
+    --input-path 2022.10.backbone.tax.qza --output-path greengenes2
+
+
+* Prepare database::
+
+    zamp db --fasta greengenes2/dna-sequences.fasta \
+    --taxonomy greengenes2/taxonomy.tsv --name greengenes2 \
+    --fw-primer CCTACGGGNGGCWGCAG --rv-primer GACTACHVGGGTATCTAATCC \
+    -o greengenes2
+
+Fungi
+~~~~~~~~
+
+**Unite ITS1**
 
 Fungal ITS databases Unite v10 and Eukaryome v1.8 do not contain the adjacent SSU/LSU sequences (they contain 5.8S), where some of the commonly used PCR primers lie on. 
 It is important to adjust the cutadapt parameters so that only the absent primer is optional.
@@ -154,7 +164,7 @@ In this case, the forward primer (lying of the 18S) will not be present in most 
     --cutadapt_args_fw "optional" \
     -o unite_ITS1
 
-**Eukaryome ITS2 database**
+**Eukaryome ITS2**
 
 Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse primer needs to be set as optional, because it is located on the LSU, which is absent in the database sequences::
 
@@ -168,19 +178,18 @@ Similarly, to extract ITS2 from fungal databases such as Eukaryome, the reverse 
     -o eukaryome_ITS2
 
 
+Output
+------------------
+Please, see <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
 
-Generated output
-=======================================================================
-Please, observe the <tax_DB_path>/<tax_DB_name>/QIIME/problematic_taxa.txt file for identical sequences that had taxonomic disagreeing identifiers above the genus rank. 
 
-
-************************************************************************
-References:
-************************************************************************
+References
+------------------
 
 .. [1] Wang Q, Garrity GM, Tiedje JM, Cole JR. Naïve Bayesian classifier for rapid assignment of rRNA sequences into the new bacterial taxonomy. Appl Environ Microbiol. 2007. 
 .. [2] Caporaso JG, Kuczynski J, Stombaugh J, Bittinger K, Bushman FD, Costello EK, et al. QIIME allows analysis of high-throughput community sequencing data. Nature Methods. 2010. 
 .. [3] Murali A, Bhargava A, Wright ES. IDTAXA: A novel approach for accurate taxonomic classification of microbiome sequences. Microbiome. 2018.
-.. [4] Compeau PEC, Pevzner PA, Tesler G, Papoutsoglou G, Roscito JG, Dahl A, et al. Cutadapt removes adapter sequences from high-throughput sequencing reads kenkyuhi hojokin gan rinsho kenkyu jigyo. EMBnet.journal. 2013.  
-.. [5] Rognes T, Flouri T, Nichols B, Quince C, Mahé F. VSEARCH: A versatile open source tool for metagenomics. PeerJ. 2016
-.. [6] R Core Development Team. R: A language and environment for statistical computing. Vienna, Austria. 2019. 
+.. [4] Bokulich, N. A., Kaehler, B. D., Rideout, J. R., Dillon, M., Bolyen, E., Knight, R., Huttley, G. A., & Gregory Caporaso, J. (2018). Optimizing taxonomic classification of marker-gene amplicon sequences with QIIME 2’s q2-feature-classifier plugin. In Microbiome (Vol. 6, Issue 1). Springer Science and Business Media LLC. https://doi.org/10.1186/s40168-018-0470-z 
+.. [5] Compeau PEC, Pevzner PA, Tesler G, Papoutsoglou G, Roscito JG, Dahl A, et al. Cutadapt removes adapter sequences from high-throughput sequencing reads kenkyuhi hojokin gan rinsho kenkyu jigyo. EMBnet.journal. 2013.  
+.. [6] Rognes T, Flouri T, Nichols B, Quince C, Mahé F. VSEARCH: A versatile open source tool for metagenomics. PeerJ. 2016
+
