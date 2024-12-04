@@ -50,17 +50,15 @@
 </li>
 </ul>
 </section>
-<section id="details">
-<h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
 <section id="operating-system">
-<h3>Operating system<a class="headerlink" href="#operating-system" title="Link to this heading">¶</a></h3>
+<h2>Operating system<a class="headerlink" href="#operating-system" title="Link to this heading">¶</a></h2>
 <p>zAMP is available on <a class="reference external" href="https://bioconda.github.io/">Bioconda</a> which only support Linux and macOS.</p>
 <p>If you use windows, you can still run zAMP via <a class="reference external" href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a>.</p>
 </section>
 <section id="installation-methods">
-<h3>Installation methods<a class="headerlink" href="#installation-methods" title="Link to this heading">¶</a></h3>
+<h2>Installation methods<a class="headerlink" href="#installation-methods" title="Link to this heading">¶</a></h2>
 <section id="from-source">
-<h4><em>From source</em><a class="headerlink" href="#from-source" title="Link to this heading">¶</a></h4>
+<h3><em>From source</em><a class="headerlink" href="#from-source" title="Link to this heading">¶</a></h3>
 <p>You can install zAMP from source, by cloning the <a class="reference external" href="https://github.com/metagenlab/zAMP">repository</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">metagenlab</span><span class="o">/</span><span class="n">zAMP</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">zAMP</span><span class="o">/</span>
@@ -76,7 +74,7 @@
 </dl>
 </section>
 <section id="conda">
-<h4><em>Conda</em><a class="headerlink" href="#conda" title="Link to this heading">¶</a></h4>
+<h3><em>Conda</em><a class="headerlink" href="#conda" title="Link to this heading">¶</a></h3>
 <p>You can install zAMP from <a class="reference external" href="https://bioconda.github.io/">Bioconda</a> with conda installed from <a class="reference external" href="https://github.com/conda-forge/miniforge">Miniforge</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Install conda from Miniforge
 curl -L -O &quot;https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh&quot;
@@ -88,7 +86,7 @@ conda install zamp
 </div>
 </section>
 <section id="containers">
-<h4><em>Containers</em><a class="headerlink" href="#containers" title="Link to this heading">¶</a></h4>
+<h3><em>Containers</em><a class="headerlink" href="#containers" title="Link to this heading">¶</a></h3>
 <p>You can install zAMP by pulling a container image for maximum reproducibility and no extra dependency installation.</p>
 <p>We recommend installing zAMP containers via docker or apptainer from any of the container registries below:</p>
 <ul>
@@ -111,7 +109,7 @@ conda install zamp
 </section>
 </section>
 <section id="resource-usage">
-<h3>Resource usage<a class="headerlink" href="#resource-usage" title="Link to this heading">¶</a></h3>
+<h2>Resource usage<a class="headerlink" href="#resource-usage" title="Link to this heading">¶</a></h2>
 <p>Some steps in zAMP can be quite resource-intensive, requiring more RAM.</p>
 <p>For example, if you want to re-train the RDP classifier on SILVA138.1, you might need around 100GB of RAM.</p>
 <p>In terms of duration, and when using the default zAMP module, the bottleneck is usually the DADA2 denoising step, which can take some time with lots of samples.</p>
@@ -125,7 +123,6 @@ conda install zamp
 <p class="admonition-title">Note</p>
 <p>Usually, a zAMP run duration is less than 1h and does not require more than 32 GB of RAM.</p>
 </div>
-</section>
 </section>
 </section>
 
@@ -158,12 +155,15 @@ conda install zamp
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and resource requirements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#details">Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-system">Operating system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-methods">Installation methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resource-usage">Resource usage</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Running zAMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="under_the_hood.html">Under the hood</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downstream_analysis.html">Downstream Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="insilico_validation.html"><em>In silico</em> validation tool</a></li>
 </ul>

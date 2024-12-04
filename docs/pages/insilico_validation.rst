@@ -13,7 +13,7 @@ This module aims at predicting *in silico* if specific taxa are:
     
     1. amplified by a set of PCR primers used for amplicon-based metagenomics
     2. accurately classified taxonomically based on the generated amplicon
-   
+
 
 ************************************************************************
 Working principle

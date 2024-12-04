@@ -14,8 +14,8 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="downstream_analysis.html" />
-    <link rel="prev" title="Pipeline execution" href="execution.html" />
+    <link rel="next" title="Downstream Analysis" href="downstream_analysis.html" />
+    <link rel="prev" title="Running zAMP" href="execution.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -37,71 +37,38 @@
 <span id="id1"></span><h1>Under the hood<a class="headerlink" href="#under-the-hood" title="Link to this heading">¶</a></h1>
 <section id="snakemake-environments-and-containers">
 <h2>Snakemake, environments and containers<a class="headerlink" href="#snakemake-environments-and-containers" title="Link to this heading">¶</a></h2>
-<p>[Snakemake](<a class="reference external" href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a>)</p>
-<p>[Snakemake](<a class="reference external" href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a>) is the center-piece of this pipeline. Snakemake is a Python-based workflow-manager that enables the processing of a large set of amplicon-based metagenomics sequencing reads into actionable outputs. It relies on a system of [rules](<a class="reference external" href="https://github.com/metagenlab/zAMP/tree/master/rules">https://github.com/metagenlab/zAMP/tree/master/rules</a>) which are the many required processing steps. Each rule specifies input files, a Conda environment (or, as an alternative, a Singularity container) that includes all required software, and the command line or a script to be executed for the expected output files.</p>
-<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/envs">Conda environments</a></p>
-<p>[Conda](<a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html">https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html</a>) is a language-independent package and environment management tool. The Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
+<p><a class="reference external" href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html">Snakemake</a> is the center-piece of this pipeline.
+Snakemake is a Python-based workflow-manager that enables the processing of a large set of amplicon-based metagenomics sequencing reads into actionable outputs.
+Each step is defined as a rule in which input/output files, software dependencies (Conda or containers), scripts and command-lines are specified (See <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html">snakemake’s docs</a> for more details).</p>
+<p><a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html">Conda environments</a></p>
+<p>Conda is a language-independent package and environment management tool. A Conda environment is a collection of installed Conda packages. For example, a research project might require VSEARCH 2.20.0 and its dependencies, whereas another environment associated with a completed project might necessitate the use of VSEARCH 2.15. Changing the environment, has no effect on the others.
 Switching between environments is simple because they can be easily activated or deactivated.</p>
-<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/envs/singularity">Singularity containers</a></p>
-<p>The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings. Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity. By using singularity, users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access.</p>
-</section>
-<section id="input-output-definition">
-<h2><strong>Input output definition</strong><a class="headerlink" href="#input-output-definition" title="Link to this heading">¶</a></h2>
-<section id="input">
-<h3><strong>Input</strong><a class="headerlink" href="#input" title="Link to this heading">¶</a></h3>
-<p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_lists.py">A Python script</a> is run at each execution of the [zAMP](<a class="reference external" href="https://github.com/metagenlab/zAMP">https://github.com/metagenlab/zAMP</a>) to match sequencing read files to each sample.</p>
-<p>As exposed in <a class="reference internal" href="execution.html#sample-selection"><span class="std std-ref">the **sample selection** section of the **pipeline execution** page</span></a>, this function can accept either local or [SRA-hosted read files](<a class="reference external" href="https://www.ncbi.nlm.nih.gov/sra/docs/">https://www.ncbi.nlm.nih.gov/sra/docs/</a>).</p>
-<section id="local-reads">
-<h4>Local reads<a class="headerlink" href="#local-reads" title="Link to this heading">¶</a></h4>
-<p>Reads are considered to be located locally <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_list.py">by the script pointing toward the input read files</a> in presence of the “local_samples:” argument in <em>the config file</em>. This parameters must point to a <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/ressources/template_files/example_local_samples.tsv">sample sheet</a>, which is a spreadsheet in <a class="reference external" href="https://en.wikipedia.org/wiki/Tab-separated_values">tabulation-separated values (tsv) format</a> listing all the files in the analysis. The script matches by default the values found in the leftmost “Sample” column of the <em>sample sheet</em> with the filenames of the “.fastq.gz” locales in a directory defined by the “link_directory” parameter of the <em>config file</em>. This default behavior can be altered by two conditions encoded in the <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_list.py">Python script</a> :</p>
-<ul class="simple">
-<li><p>In presence of a column named “OldSampleName”, the match with the filenames of the sequencing read files is done with this column, instead of the leftmost “Sample” column.</p></li>
-<li><p>In presence of a “R1” column, the absolute path to the forward reads in considered instead of a name-based matching of the sequencing read files. In this case, and for paired-end reads, a “R2” column must point to the reverse read files.</p></li>
-</ul>
-<p>In all cases (i.e. <em>Sample column match</em>, <em>OldSampleName column match</em> or <em>absolute paths indicated by R1 and R2 columns</em>), <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will temporarily copy the read files into a <em>raw_reads</em> directory.</p>
-</section>
-<section id="sra-reads">
-<h4>SRA reads<a class="headerlink" href="#sra-reads" title="Link to this heading">¶</a></h4>
-<p>Reads are considered by <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_input_lists.py">the Python scripts</a> to be located on the Sequence Read Archive (<a class="reference external" href="https://en.wikipedia.org/wiki/Sequence_Read_Archive">SRA</a>) in presence of the “sra_samples:” argument in the <em>config file</em>.</p>
-<p>In this case <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/get_inputs.rules">Snakemake rules</a> will use <a class="reference external" href="https://github.com/ncbi/sra-tools">SRA Toolkit</a> to download the reads and convert them to “.fastq.gz” format into the <em>raw_reads</em> directory.</p>
-</section>
-</section>
-<section id="output">
-<h3>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h3>
-<p>Upon each execution of the pipeline, <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/scripts/make_output_lists.py">Python scripts</a> will parse the <em>config file</em> and the <em>sample sheet</em> to generate lists of outputs. These lists are then fed to the <a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/Snakefile">pipeline Snakefile</a> which instructs the pipeline the output to generate.</p>
-</section>
+<p><a class="reference external" href="https://apptainer.org/docs/user/latest/">Apptainer containers</a></p>
+<p>The concept of reproducible analysis in bioinformatics extends beyond good documentation and code sharing. Analyses typically depend on an entire environment with numerous tools, libraries, and settings.
+Storage, reuse, and sharing environments via container software such as Docker and Singularity could improve reproducibility and productivity.
+By using containers (apptainer, docker, podman …), users can create a single executable file that contains all aspects of their environment and allows to safely run environments from a variety of resources without requiring privileged access.</p>
 </section>
 <section id="logging-and-traceability">
 <h2>Logging and traceability<a class="headerlink" href="#logging-and-traceability" title="Link to this heading">¶</a></h2>
-<section id="snakemake-logs">
-<h3>Snakemake logs<a class="headerlink" href="#snakemake-logs" title="Link to this heading">¶</a></h3>
-<p>Upon each execution, <em>Snakemake</em> automatically creates a log file where all the standard output is recorded. These can be found from the <em>working directory</em> into:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">snakemake</span><span class="o">/</span><span class="n">log</span><span class="o">/</span>
+<section id="logs">
+<h3>logs<a class="headerlink" href="#logs" title="Link to this heading">¶</a></h3>
+<p>Upon each execution, <em>zAMP</em> automatically creates a log file where all the standard output is recorded:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">zamp_out</span><span class="o">/</span><span class="n">zamp</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
 </section>
-<section id="zamp-logs">
-<h3>zAMP logs<a class="headerlink" href="#zamp-logs" title="Link to this heading">¶</a></h3>
-<p>In addition to the default <em>Snakemake</em>’s logs, <em>zAMP</em> create a log directory upon each execution in</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="o">/&lt;</span><span class="n">year</span><span class="o">&gt;/&lt;</span><span class="n">months</span><span class="o">&gt;/&lt;</span><span class="n">day</span><span class="o">&gt;/&lt;</span><span class="n">time</span><span class="o">&gt;/</span>
+<section id="config-file">
+<h3>config file<a class="headerlink" href="#config-file" title="Link to this heading">¶</a></h3>
+<p>In addition to logs, <em>zAMP</em> copies a config file listing all the parameters used in the run unde</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">zamp_out</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">yaml</span>
 </pre></div>
 </div>
-<p>This directory contains:</p>
-<ul class="simple">
-<li><p>a copy of the executed <em>Snakemake</em> command (<em>cmd.txt</em>)</p></li>
-<li><p>the git commit hash which indicates the version of the RST4ABM (<em>git.txt</em>)</p></li>
-<li><p>the ID of the user who run the pipeline (<em>user.txt</em>)</p></li>
-<li><p>a copy of the sample sheet (<em>local_samples.tsv</em> or <em>sra_samples.tsv</em>)</p></li>
-<li><p>a copy of the <em>config file</em> (<em>config.yaml</em>)</p></li>
-</ul>
-<p>In addition, almost all rules of RST4ABM generate a log file upon execution which records the output of the executed tools or script. These log files are organized in subdirectories of the log directory, mirroring the structure of the main pipeline.</p>
 </section>
 </section>
 <section id="sequencing-reads-qc">
 <h2>Sequencing reads QC<a class="headerlink" href="#sequencing-reads-qc" title="Link to this heading">¶</a></h2>
-<blockquote>
-<div><p><a class="extlink-github reference external" href="https://github.com/metagenlab/zAMP/rules/0_preprocessing/QC_raw_reads.rules">QC rules</a> assess the sequencing quality of all each sample with FastQC <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Then, a MultiQC <a class="footnote-reference brackets" href="#id5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> report generates a report for each sequencing run (based on values of the <em>sample sheet</em> column indicated by the “run_column” parameter of the <em>config file</em>). A global MultiQC report is generated as well, but without interactive features to deal with the high number of samples</p>
-</div></blockquote>
+<p>QC rules assess the sequencing quality of all each sample with FastQC <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Then, a MultiQC <a class="footnote-reference brackets" href="#id5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> report generates a report for each sequencing run (based on “run” column indicated  in <em>sample sheet</em> ).
+A global MultiQC report is generated as well, but without interactive features to deal with the high number of samples</p>
 </section>
 <section id="denoising">
 <h2>Denoising<a class="headerlink" href="#denoising" title="Link to this heading">¶</a></h2>
@@ -213,10 +180,9 @@ Switching between environments is simple because they can be easily activated or
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Installation and resource requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ref_DB_preprocessing.html">Taxonomic reference databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Pipeline execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Running zAMP</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Under the hood</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#snakemake-environments-and-containers">Snakemake, environments and containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#input-output-definition"><strong>Input output definition</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging-and-traceability">Logging and traceability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sequencing-reads-qc">Sequencing reads QC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#denoising">Denoising</a></li>
@@ -226,6 +192,7 @@ Switching between environments is simple because they can be easily activated or
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="downstream_analysis.html">Downstream Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently asked questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="insilico_validation.html"><em>In silico</em> validation tool</a></li>
 </ul>
@@ -234,8 +201,8 @@ Switching between environments is simple because they can be easily activated or
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="execution.html" title="previous chapter">Pipeline execution</a></li>
-      <li>Next: <a href="downstream_analysis.html" title="next chapter">&lt;no title&gt;</a></li>
+      <li>Previous: <a href="execution.html" title="previous chapter">Running zAMP</a></li>
+      <li>Next: <a href="downstream_analysis.html" title="next chapter">Downstream Analysis</a></li>
   </ul></li>
 </ul>
 </div>

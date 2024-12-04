@@ -40,7 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Installation and resource requirements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/setup.html#quick-start">Quick start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#details">Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#operating-system">Operating system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#installation-methods">Installation methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/setup.html#resource-usage">Resource usage</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/ref_DB_preprocessing.html">Taxonomic reference databases</a><ul>
@@ -53,19 +55,13 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/ref_DB_preprocessing.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Pipeline execution</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#select-a-method-to-define-sequencing-read-files-as-input">1. Select a method to define sequencing read files as input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#create-a-working-directory">2. Create a working directory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#create-a-links-directory-for-sample-and-oldsamplename-column-as-input">3. Create a <em>links</em> directory (<em>for Sample and OldSampleName column as input</em>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#write-a-sample-sheet-aka-metadata-table">4. Write a <em>sample sheet</em> (aka <em>metadata table</em>):</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#write-a-config-file">5. Write a <em>config file</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#make-sure-snakemake-is-available">6. Make sure Snakemake is available</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#run-the-pipeline">7. Run the pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Running zAMP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#local-reads">Local reads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/execution.html#sra-reads">SRA reads</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#snakemake-environments-and-containers">Snakemake, environments and containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#input-output-definition"><strong>Input output definition</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#logging-and-traceability">Logging and traceability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#sequencing-reads-qc">Sequencing reads QC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#denoising">Denoising</a></li>
@@ -75,7 +71,21 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/under_the_hood.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/downstream_analysis.html">Downstream Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/downstream_analysis.html#basic-plots">Basic plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/downstream_analysis.html#advanced-downstream-analysis-with-zampexplorer">Advanced Downstream Analysis with zAMPExplorer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#who-should-use-zamp">Who should use zAMP?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#why-does-zamp-fail-to-read-my-metadata-file">Why does zAMP fail to read my metadata file?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#how-do-i-check-the-available-commands-and-options-in-zamp">How do I check the available commands and options in zAMP?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#what-parameters-must-i-modify-in-the-command-line-before-running-zamp">What parameters must I modify in the command line before running zAMP?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#what-happens-if-i-set-incorrect-primer-sequences">What happens if I set incorrect primer sequences?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#what-should-i-do-if-zamp-crashes-midway">What should I do if zAMP crashes midway?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/FAQ.html#what-reference-databases-are-supported-by-zamp">What reference databases are supported by zAMP?</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pages/insilico_validation.html"><em>In silico</em> validation tool</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/insilico_validation.html#aim">Aim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/insilico_validation.html#working-principle">Working principle</a></li>
@@ -117,8 +127,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pages/setup.html">Installation and resource requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/ref_DB_preprocessing.html">Taxonomic reference databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Pipeline execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/execution.html">Running zAMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/under_the_hood.html">Under the hood</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/downstream_analysis.html">Downstream Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/FAQ.html">Frequently asked questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/insilico_validation.html"><em>In silico</em> validation tool</a></li>
 </ul>

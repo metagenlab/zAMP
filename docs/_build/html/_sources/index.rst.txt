@@ -20,7 +20,6 @@ Please note that zAMP is a compilation of a number of published tools. We would 
    pages/ref_DB_preprocessing.rst
    pages/execution.rst
    pages/under_the_hood.rst
-   pages/output.rst
    pages/downstream_analysis.rst
    pages/FAQ.rst
    pages/insilico_validation.rst
