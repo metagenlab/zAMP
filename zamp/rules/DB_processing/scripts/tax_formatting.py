@@ -49,7 +49,7 @@ def format_taxa(tax, rank, collapse=False, n=4):
 
 def find_convergent_taxa(df):
     """
-    Identifies rows where a taxa is duplicated but has a different origin (Same species but two different genera for example)
+    Identifies rows where a taxon is duplicated but has a different origin (Same species but two different genera for example)
     """
     inconsistent_rows = []
 
