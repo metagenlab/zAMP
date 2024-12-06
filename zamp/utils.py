@@ -3,8 +3,7 @@ import click
 import yaml
 import sys
 import subprocess
-import yaml
-import json
+
 
 from snaketool_utils.cli_utils import (
     msg,
@@ -14,15 +13,6 @@ from snaketool_utils.cli_utils import (
     echo_click,
     msg_box,
 )
-
-
-def validate_dict(ctx, param, value):
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        raise click.BadParameter(
-            "Input should be a valid JSON string representing a dictionary."
-        )
 
 
 def snake_base(rel_path):
