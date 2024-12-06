@@ -3,8 +3,7 @@ import click
 import yaml
 import sys
 import subprocess
-import yaml
-import json
+
 
 from snaketool_utils.cli_utils import (
     msg,
@@ -14,15 +13,6 @@ from snaketool_utils.cli_utils import (
     echo_click,
     msg_box,
 )
-
-
-def validate_dict(ctx, param, value):
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        raise click.BadParameter(
-            "Input should be a valid JSON string representing a dictionary."
-        )
 
 
 def snake_base(rel_path):
@@ -222,13 +212,6 @@ def db_options(func):
             "--processing/--no-processing",
             default=True,
             help="Extract amplicon regions and merge taxonomy",
-            show_default=True,
-        ),
-        click.option(
-            "--tax-collapse",
-            help="Dictionary of number of ranks to print limit when collapsing names ",
-            default='{"Species": 5, "Genus": 6}',
-            callback=validate_dict,
             show_default=True,
         ),
         click.option(

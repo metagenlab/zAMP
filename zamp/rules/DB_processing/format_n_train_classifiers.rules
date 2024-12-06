@@ -127,9 +127,12 @@ rule RDP_train:
         mem_mb=get_mem_mb(RDP_MEM),
     shell:
         """
-        rdp_classifier \
-        -Xmx{params.mem} -XX:ConcGCThreads={threads} \
-        train -o {params.out} -s {input.fa} -t {input.tax} 
+        rdp_classifier \\
+        -Xmx{params.mem} -XX:ConcGCThreads={threads} \\
+        train \\
+        -o {params.out} \\
+        -s {input.fa} \\
+        -t {input.tax} 
         """
 
 
