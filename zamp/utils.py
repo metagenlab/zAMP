@@ -225,13 +225,6 @@ def db_options(func):
             show_default=True,
         ),
         click.option(
-            "--tax-collapse",
-            help="Dictionary of number of ranks to print limit when collapsing names ",
-            default='{"Species": 5, "Genus": 6}',
-            callback=validate_dict,
-            show_default=True,
-        ),
-        click.option(
             "--fw-primer",
             type=str,
             help="Forward primer sequence to extract amplicon",
