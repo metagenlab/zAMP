@@ -1,17 +1,8 @@
-PR for version
+## Summary 
+Describe the PR's purpose
 
-# Summary
+## Additions
 
-# Details
+## Changes
 
-## `Additions`
-
-* [commit hash] commit summary
-
-## `Changes`
-
-* [commit hash] commit summary
-
-## `Fixes`
-
-* [commit hash] commit summary
+## Fixes
