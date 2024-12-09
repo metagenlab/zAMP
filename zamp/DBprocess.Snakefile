@@ -42,7 +42,6 @@ TAXONOMY = config.args.taxonomy
 CLASSIFIERS = config.args.classifier
 RDP_MEM = config.args.rdp_mem
 PROCESS = config.args.processing
-TAX_COLLAPSE = dict(config.args.tax_collapse)
 
 ## Cutadapt args
 ERRORS = config.args.errors
@@ -72,7 +71,9 @@ if "--use-singularity" in sys.argv:
     workflow.deployment_settings.apptainer_args += (
         f" -B {workflow.basedir}:{workflow.basedir}"
     )
-    workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(DBPATH)}:{os.path.abspath(DBPATH)}"
+    workflow.deployment_settings.apptainer_args += (
+        f" -B {os.path.abspath(DBPATH)}:{os.path.abspath(DBPATH)}"
+    )
 #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
     open(os.path.join(workflow.basedir, "envs", "singularity", "sing_envs.yml"), "r")

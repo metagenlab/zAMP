@@ -21,15 +21,15 @@ rule Extract_amplicons_cutadapt:
     threads: 3
     shell:
         """
-        cutadapt \
-        --cores {threads} \
-        --error-rate {params.errors} \
-        --times 1 \
-        -o {output} \
-        -g "{params.adapter}" \
-        --discard-untrimmed \
-        --minimum-length {params.minlen} \
-        --maximum-length {params.maxlen} \
+        cutadapt \\
+        --cores {threads} \\
+        --error-rate {params.errors} \\
+        --times 1 \\
+        -o {output} \\
+        -g "{params.adapter}" \\
+        --discard-untrimmed \\
+        --minimum-length {params.minlen} \\
+        --maximum-length {params.maxlen} \\
         {input} > {log}
         """
 
@@ -49,10 +49,10 @@ rule Dereplicate_amplicons:
     threads: 1
     shell:
         """
-        vsearch \
-        --derep_fulllength {input} \
-        --output {output.fa} \
-        --uc {output.uc} \
+        vsearch \\
+        --derep_fulllength {input} \\
+        --output {output.fa} \\
+        --uc {output.uc} \\
         2> {log}
         """
 
@@ -66,14 +66,13 @@ rule Derep_and_merge_taxonomy:
         tax=os.path.join("{prefix}", "master", "original_tax.txt"),
         uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
     output:
-        formatted_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        collapsed=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
         all=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        problematic=os.path.join("{prefix}", "QIIME", "problematic_taxa.txt"),
+        ambiguous=os.path.join("{prefix}", "QIIME", "ambiguous_taxa.txt"),
     log:
         os.path.join("{prefix}", "logs", "QIIME", "derep_and_merge.log"),
     params:
         db_name=DBNAME,
-        tax_collapse=TAX_COLLAPSE,
     threads: 1
     script:
         os.path.join("scripts", "tax_formatting.py")
@@ -83,7 +82,7 @@ rule Hash_derep_tax:
     input:
         os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
         os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "problematic_taxa.txt"),
+        os.path.join("{prefix}", "QIIME", "ambiguous_taxa.txt"),
         os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
         os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
