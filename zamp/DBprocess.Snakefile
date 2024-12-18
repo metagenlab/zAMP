@@ -42,7 +42,6 @@ TAXONOMY = config.args.taxonomy
 CLASSIFIERS = config.args.classifier
 RDP_MEM = config.args.rdp_mem
 PROCESS = config.args.processing
-TAX_COLLAPSE = dict(config.args.tax_collapse)
 
 ## Cutadapt args
 ERRORS = config.args.errors
