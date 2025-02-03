@@ -510,11 +510,16 @@ def insilico_options(func):
     """
     options = [
         click.option(
-            "--input-tax",
+            "--input",
             "-i",
             type=str,
-            help="Input taxa/accessions for in-silico validation",
+            help="Input fasta directory or taxa/accessions",
             required=True,
+        ),
+        click.option(
+            "--tax",
+            type=click.Path(file_okay=True, exists=True),
+            help="Input taxonomic table when using local fasta",
         ),
         click.option(
             "--taxon/--accession",

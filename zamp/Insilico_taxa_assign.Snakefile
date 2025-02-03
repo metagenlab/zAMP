@@ -34,7 +34,11 @@ OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
 ## Input
-INPUT_TAX = config.args.input_tax
+INPUT = config.args.input
+TAX = config.args.tax
+LOCAL = False
+if os.path.isdir(INPUT) and TAX:
+    LOCAL = True
 
 ## Database args
 DBPATH = os.path.abspath(config.args.database)
@@ -125,6 +129,10 @@ rule insilico_validation:
             ),
             classifier=CLASSIFIER,
             tax_DB=DBNAME,
-            files=["dna-sequences_tax_assignments.txt", "InSilico_compare_tax.tsv"],
+            files=[
+                "dna-sequences_tax_assignments.txt",
+                "amplicons_tax_compare.tsv",
+                "assemblies_tax_compare.tsv",
+            ],
         ),
         os.path.join(dir.out.base, "InSilico", "2_denoised", "count_table.tsv"),

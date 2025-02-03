@@ -109,30 +109,54 @@ def sample_list_overall_QC():
 
 
 # Insilico command functions
+def get_samples(wildcards):
+    if LOCAL:
+        SAMPLES = [
+            os.path.basename(path).split(f".{suffix}")[0]
+            for path in glob.glob(
+                os.path.join(os.path.abspath(config.args.input), f"*.{suffix}")
+            )
+        ]
+    else:
+        checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
+        df = pd.read_csv(checkout, sep="\t")
+        SAMPLES = [os.path.basename(path).split(".fna")[0] for path in df.path]
+    return SAMPLES
+
+
+def get_tax_table(wildcards):
+    if LOCAL:
+        return os.path.abspath(TAX)
+    else:
+        return [
+            os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+            os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+        ]
+
+
 def get_fasta(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    df["sample"] = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
-    df.set_index("sample", inplace=True)
-    return df.loc[wildcards.sample].path
+    if LOCAL:
+        return os.path.join(
+            os.path.abspath(config.args.input), f"{wildcards.sample}.{suffix}"
+        )
+    else:
+        checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
+        df = pd.read_csv(checkout, sep="\t")
+        df["sample"] = [os.path.basename(path).split(".fna")[0] for path in df.path]
+        df.set_index("sample", inplace=True)
+        return df.loc[wildcards.sample].path
 
 
 def list_amplicons(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
     return expand(
         os.path.join(
             dir.out.base, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.fasta"
         ),
-        sample=genomes,
+        sample=get_samples,
     )
 
 
 def list_samples_counts(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
     return expand(
         os.path.join(
             dir.out.base,
@@ -141,5 +165,5 @@ def list_samples_counts(wildcards):
             "countSeqs",
             "{sample}_count_table.tsv",
         ),
-        sample=genomes,
+        sample=get_samples,
     )
