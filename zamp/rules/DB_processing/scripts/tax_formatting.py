@@ -17,10 +17,6 @@ def propagate_nan(df):
     return df
 
 
-def dedup_set(s):
-    return list(set(s))[0]
-
-
 def sorted_set(s):
     return sorted(set(s))
 
@@ -47,9 +43,31 @@ def format_taxa(tax, rank, collapse=False, n=4):
         return "/".join(list(tax))
 
 
+def rreplace(s, old, new, occurrence):
+    li = s.rsplit(old, occurrence)
+    return new.join(li)
+
+
+def format_species(species):
+    species = species.replace("_placeholder", "")
+    unique_genera = list(
+        set([name.split(" ")[0].split("_s")[0] for name in species.split("/")])
+    )
+    if len(unique_genera) == 1:
+        genus = unique_genera[0]
+        return (
+            rreplace(species, genus, "", species.count(genus) - 1)
+            .replace("/ ", "/")
+            .replace("_s", "s")
+        )
+    else:
+        return species
+
+
 def find_convergent_taxa(df):
     """
-    Identifies rows where a taxon is duplicated but has a different origin (Same species but two different genera for example)
+    Identifies rows where a taxon is duplicated but has a different origin
+    (Same species but two different genera for example)
     """
     inconsistent_rows = []
 
@@ -88,7 +106,9 @@ ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 
 
 # Read tables
-tax_df = pd.read_csv(snakemake.input.tax, sep="\t")
+tax_df = pd.read_csv(snakemake.input[0], sep="\t")
+if any(tax_df.columns.str.contains(";")):
+    tax_df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
 tax_df.columns = ["seq_id", "tax"]
 
 uc_df = pd.read_csv(
@@ -178,7 +198,7 @@ for n, rank in enumerate(ranks):
 if "silva" in snakemake.params.db_name:
     ## Get classified species index
     index = ~prop_tax_df["Species"].str.contains(
-        f"{placeholder["Species"]}", regex=False
+        f"{placeholder['Species']}", regex=False
     )
     ## Add parent name in species for classified species
     prop_tax_df.loc[index, "Species"] = (
@@ -226,22 +246,17 @@ for rank in ranks:
 ## Count sequences in each cluster
 clust_df["seq_counts"] = clust_df.groupby("clust_id")["seq_id"].transform("count")
 
-# Split table into single and multiple hits
+# Split table into single and multiple sequence clusters
 single_df = clust_df[clust_df.seq_counts == 1]
 multi_df = clust_df[clust_df.seq_counts > 1]
 
-
-# Deal with discrepant clusters (contain multiple taxonomies)
-## List unique taxa by cluster for all ranks
+# Group multi-seq clusters taxonomy
 multi_df = multi_df.groupby("clust_id", as_index=False)[ranks].aggregate(sorted_set)
 
-
-# Flag clusters with multiple taxa as descrepent for all ranks
-## print only 2 species and 4 parent (by default) in formatted_rank
 ## print all ranks in raw_rank
 for rank in ranks:
     multi_df.loc[:, f"all_{rank}"] = multi_df.loc[:, f"{rank}"].apply(
-        lambda x: format_taxa(x, rank)
+        lambda x: "/".join(x)
     )
     multi_df.loc[:, f"formatted_{rank}"] = multi_df.loc[:, f"{rank}"].apply(
         lambda x: format_taxa(x, rank, collapse=True)
@@ -259,6 +274,13 @@ if not conv_df.empty:
         multi_df.loc[:, f"formatted_{rank}"] = multi_df.loc[:, f"{rank}"].apply(
             lambda x: format_taxa(x, rank, collapse=True, n=new_collapse_threshold)
         )
+
+# Format ambiguous species to short format
+# Example:
+# Leptospira kirschneri/Leptospira noguchii --> Leptospira kirschneri/noguchii
+multi_df.formatted_Species = multi_df.formatted_Species.apply(format_species)
+multi_df.all_Species = multi_df.all_Species.apply(format_species)
+
 
 ## Add seq_id, clust_id, clust_rep and seq_counts to dataframe
 multi_df = multi_df.merge(
@@ -295,7 +317,6 @@ all_df.loc[:, "ambiguous_taxa"] = all_df.apply(ambiguous_taxa, axis=1)
 
 
 # Save tables
-
 all_df[all_df.ambiguous_taxa].to_csv(snakemake.output.ambiguous, sep="\t", index=False)
 
 collapsed_df[["seq_id", "taxpath"]].to_csv(
