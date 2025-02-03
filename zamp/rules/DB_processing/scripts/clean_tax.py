@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from snakemake.script import snakemake
 
 
 def propagate_nan(df):
@@ -16,6 +17,9 @@ def propagate_nan(df):
 
 
 df = pd.read_csv(snakemake.input[0], sep="\t")
+if any(df.columns.str.contains(";")):
+    df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
+
 df.columns = ["seq_id", "tax"]
 
 ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
