@@ -55,7 +55,7 @@ head(metadata)
 ### Read pre processed DB used for zamp 
 print('reading RDP taxonomy')
 db <- read.table(db_tax, header=TRUE, sep = '\t', stringsAsFactors=FALSE)
-in_db <- data.frame(species = metadata$species, in_DB = sapply(metadata$species, function(x) x %in% db$Species)) 
+in_db <- data.frame(species = metadata$species, in_DB = sapply(metadata$species, function(x) any(grepl(x, db$Species, fixed = TRUE)))) 
 metadata <-  left_join(metadata, in_db, by="species")
 head(metadata)
 
@@ -176,13 +176,23 @@ for (assembly_ID in comparison$accession){
     species <- unique(str_trim(str_remove(string = as.character(observed_taxa$species), as.character(unique(observed_taxa$genus)))))
     assigned_species <- gsub("[[:punct:]]","",str_remove(string = gsub("^.*__","",as.character(observed_taxa$Assigned_Species)), gsub("^.*__","",as.character(unique(observed_taxa$Assigned_Genus)))))
 
+# all amplicons are the same and match the expected > MATCH
     if(all(grepl(pattern = species ,  x = assigned_species))) {
-      comparison$Species_agreement[comparison$accession == assembly_ID] <- "Matching"
+      if(str_count(unique(assigned_species), "\\S+") == 1) { # amplicon is non ambiguous in db
+         comparison$Species_agreement[comparison$accession == assembly_ID] <- "Matching"
+        } else {
+          comparison$Species_agreement[comparison$accession == assembly_ID] <- "Ambiguous_Matching"
+        }
       comparison$Matching_amplicons[comparison$accession == assembly_ID] <- comparison$Number_of_variants[comparison$accession == assembly_ID]
       comparison$Discrepant_amplicons[comparison$accession == assembly_ID] <- 0
 
-    }else  if (any(grepl(pattern = species ,  x = assigned_species))) {
-      comparison$Species_agreement[comparison$accession == assembly_ID] <- "Partial_match"
+# some amplicons are a match and some are not > PARTIAL 
+    } else  if (any(grepl(pattern = species ,  x = assigned_species))) {
+      if(str_count(unique(assigned_species[grep(species, assigned_species)]), "\\S+") == 1) { # match amplicon is non ambiguous in db
+        comparison$Species_agreement[comparison$accession == assembly_ID] <- "Partial_match"
+      } else {
+        comparison$Species_agreement[comparison$accession == assembly_ID] <- "Ambiguous_Partial_match"
+      }
       comparison$Matching_amplicons[comparison$accession == assembly_ID] <- length(grep(pattern = species ,  x = assigned_species))
       comparison$Discrepant_amplicons[comparison$accession == assembly_ID] <- comparison$Number_of_variants[comparison$accession == assembly_ID] - length(grep(pattern = species ,  x = assigned_species))
     }else{
