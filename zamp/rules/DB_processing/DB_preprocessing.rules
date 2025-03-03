@@ -13,9 +13,8 @@ rule Extract_amplicons_cutadapt:
         os.path.join("{prefix}", "QIIME", "dna-sequences.fasta"),
     params:
         errors=ERRORS,
-        adapter=ADAPTER,
-        minlen=MINLEN,
-        maxlen=MAXLEN,
+        fw=FW_PRIMER,
+        rv=Seq.reverse_complement(Seq(RV_PRIMER)),
     log:
         os.path.join("{prefix}", "logs", "QIIME", "DB_cutadapt.txt"),
     threads: 3
@@ -24,17 +23,77 @@ rule Extract_amplicons_cutadapt:
         cutadapt \\
         --cores {threads} \\
         --error-rate {params.errors} \\
-        --times 1 \\
         -o {output} \\
-        -g "{params.adapter}" \\
+        -g {params.fw}...{params.rv} \\
         --discard-untrimmed \\
-        --minimum-length {params.minlen} \\
-        --maximum-length {params.maxlen} \\
         {input} > {log}
         """
 
 
-rule Dereplicate_amplicons:
+# rule qiime2_import_fasta:
+#     container:
+#         singularity_envs["qiime2"]
+#     input:
+#         os.path.join("{prefix}", "master", "original_seqs.fasta"),
+#     output:
+#         temp(os.path.join("{prefix}", "QIIME", "original_seqs.qza")),
+#     log:
+#         os.path.join("{prefix}", "logs", "QIIME", "import_fasta.txt"),
+#     threads: 3
+#     shell:
+#         """
+#         qiime tools import \\
+#         --input-path {input} \\
+#         --output-path {output} \\
+#         --type 'FeatureData[Sequence]' &> {log}
+#         """
+
+
+# rule qiime2_import_taxonomy:
+#     container:
+#         singularity_envs["qiime2"]
+#     input:
+#         os.path.join("{prefix}", "QIIME", "clean_tax.tsv"),
+#     output:
+#         temp(os.path.join("{prefix}", "QIIME", "clean_tax.qza")),
+#     log:
+#         os.path.join("{prefix}", "logs", "QIIME", "import_tax.txt"),
+#     shell:
+#         """
+#         qiime tools import \\
+#         --input-path {input} \\
+#         --output-path {output} \\
+#         --type 'FeatureData[Taxonomy]' \\
+#         --input-format HeaderlessTSVTaxonomyFormat &> {log}
+#         """
+
+
+# rule extract_amplicons_qiime2:
+#     container:
+#         singularity_envs["qiime2"]
+#     input:
+#         os.path.join("{prefix}", "QIIME", "original_seqs.qza"),
+#     output:
+#         qza=os.path.join("{prefix}", "QIIME", "dna-sequences.qza"),
+#     params:
+#         errors=ERRORS,
+#         fw=FW_PRIMER,
+#         rv=RV_PRIMER,
+#         outdir=os.path.join("{prefix}", "QIIME"),
+#     log:
+#         os.path.join("{prefix}", "logs", "QIIME", "extract_amplicons.txt"),
+#     threads: 3
+#     shell:
+#         """
+#         qiime feature-classifier extract-reads \\
+#         --i-sequences {input} \\
+#         --p-f-primer {params.fw} --p-r-primer {params.rv} \\
+#         --p-n-jobs {threads} \\
+#         --o-reads {output.qza} &>> {log}
+#         """
+
+
+rule vsearch_derep:
     conda:
         os.path.join(dir.envs, "vsearch.yml")
     container:
@@ -45,8 +104,7 @@ rule Dereplicate_amplicons:
         fa=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
         uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
     log:
-        os.path.join("{prefix}", "logs", "QIIME", "vsearch_dereplicate_ampli.log"),
-    threads: 1
+        os.path.join("{prefix}", "logs", "QIIME", "vsearch_dereplicate.log"),
     shell:
         """
         vsearch \\
@@ -55,6 +113,29 @@ rule Dereplicate_amplicons:
         --uc {output.uc} \\
         2> {log}
         """
+
+
+# rule rescript_derep:
+#     container:
+#         singularity_envs["qiime2"]
+#     input:
+#         fa=os.path.join("{prefix}", "QIIME", "dna-sequences.qza"),
+#         tax=os.path.join("{prefix}", "QIIME", "clean_tax.qza"),
+#     output:
+#         fa=os.path.join("{prefix}", "QIIME", "derep-seq.qza"),
+#         tax=os.path.join("{prefix}", "QIIME", "derep-tax.qza"),
+#     log:
+#         os.path.join("{prefix}", "logs", "QIIME", "rescript-derep.log"),
+#     threads: 3
+#     shell:
+#         """
+#         qiime rescript dereplicate \\
+#         --p-threads {threads} \\
+#         --i-sequences {input.fa} \\
+#         --i-taxa {input.tax} --p-mode 'uniq' \\
+#         --o-dereplicated-sequences {output.fa} \\
+#         --o-dereplicated-taxa {output.tax}
+#         """
 
 
 rule Derep_and_merge_taxonomy:
@@ -73,20 +154,45 @@ rule Derep_and_merge_taxonomy:
         os.path.join("{prefix}", "logs", "QIIME", "derep_and_merge.log"),
     params:
         db_name=DBNAME,
-    threads: 1
     script:
         os.path.join("scripts", "tax_formatting.py")
+
+
+# rule export_rescript:
+#     container:
+#         singularity_envs["qiime2"]
+#     input:
+#         fa=os.path.join("{prefix}", "QIIME", "derep-seq.qza"),
+#         tax=os.path.join("{prefix}", "QIIME", "derep-tax.qza"),
+#     output:
+#         all_tax=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
+#         tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+#         fa=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+#     params:
+#         os.path.join("{prefix}", "QIIME", "export"),
+#     shell:
+#         """
+#         qiime tools export \\
+#         --input-path {input.fa} \\
+#         --output-path {params}
+
+#         qiime tools export \\
+#         --input-path {input.tax} \\
+#         --output-path {params}
+
+#         awk 'BEGIN{{OFS=FS="\\t"}} NR==1{{$1="seq_id"; $2="all_tax"}} 1' {params}/taxonomy.tsv > {output.all_tax}
+#         tail -n +2 {params}/taxonomy.tsv > {output.tax}
+#         mv {params}/dna-sequences.fasta {output.fa}
+#         """
 
 
 rule Hash_derep_tax:
     input:
         os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
         os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "ambiguous_taxa.txt"),
         os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
         os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
-    threads: 1
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
