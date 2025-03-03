@@ -1,14 +1,9 @@
 import pandas as pd
 import os
-import numpy as np
 from snakemake.script import snakemake
 
 # Variables
 ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
-# Make plaheloder name dict
-placeholder = {}
-for rank in ranks:
-    placeholder[f"{rank}"] = "_" + rank[0].lower()
 
 
 # Functions
@@ -16,38 +11,15 @@ def get_basename(path, suffix):
     return os.path.basename(path).split(suffix)[0].rstrip(".")
 
 
-def propagate_nan(df):
-    nan_mask = df.isna()
-    nan_cumsum = nan_mask.cumsum(axis=1)
-    df[nan_cumsum > 0] = np.nan
-    return df
+def get_match(expected, assigned):
+    return all(word in str(assigned) for word in str(expected).split())
 
 
-def get_full_species_names(species):
-    if "(" in species:
-        species = species.split("(")[0]
-    if "/" in species:
-        species_list = species.split("/")
-        newnames = []
-        for sp in species_list:
-            if (" " not in sp) and ("_s" not in sp):
-                sp = species_list[0].split(" ")[0] + " " + sp
-                newnames.append(sp)
-            else:
-                newnames.append(sp)
-        return "/".join(newnames)
-    else:
-        return species
-
-
-def get_match(expected, assigned, rank):
-    if "/" in assigned:
-        return expected in assigned
-    else:
-        if f"_{rank[0]}" in assigned:
-            return False
-        else:
-            return expected == assigned
+def get_inconsitent_duplicates(df):
+    duplicates = df[df.duplicated("formatted_tax", keep=False)]
+    return duplicates.groupby("formatted_tax").filter(
+        lambda x: x["all_tax"].nunique() > 1
+    )
 
 
 ## Read count table
@@ -68,24 +40,42 @@ if snakemake.params.local:
 else:
     asm_df = pd.read_csv(snakemake.input.expected_taxonomy[0], sep="\t")
     asm_df.fasta = asm_df.path.apply(lambda x: get_basename(x, snakemake.params.suffix))
-    # asm_df.fasta = asm_df.accession + "_" + asm_df.fasta
     asm_df = asm_df[["accession", "fasta", "assembly_level"]].merge(
         pd.read_csv(snakemake.input.expected_taxonomy[1], sep="\t"), on="accession"
     )
 
 ## Read database taxonomy
-db_tax_df = pd.read_csv(snakemake.input.db_tax, sep="\t", names=["seq_id", "tax"])
-db_tax_df[ranks] = db_tax_df.tax.str.split(";", expand=True).loc[:, 0:6]
-db_tax_df["full_species_names"] = db_tax_df.species.apply(get_full_species_names)
-asm_df["genus_in_DB"] = asm_df.genus.isin(db_tax_df.genus)
+db_tax_df = pd.read_csv(snakemake.input.db_tax, sep="\t")
+db_tax_df[ranks] = db_tax_df.all_tax.str.split(";", expand=True).loc[:, 0:6]
+asm_df["genus_in_DB"] = asm_df["genus"].apply(
+    lambda x: any(x in match for match in db_tax_df["genus"])
+)
 asm_df["species_in_DB"] = asm_df["species"].apply(
-    lambda x: any(x in match for match in db_tax_df["full_species_names"])
+    lambda x: any(x in match for match in db_tax_df["species"])
 )
 
 ## Read assigned taxonomy
 assigned_tax_df = pd.read_csv(snakemake.input.assigned_taxonomy, sep="\t", header=None)
-assigned_tax_df.columns = ["seq_id", "tax", "confidence"]
-assigned_tax_df[ranks] = assigned_tax_df.tax.str.split(";", expand=True)
+if "formatted_tax" in db_tax_df.columns:
+    assigned_tax_df.columns = ["seq_id", "formatted_tax", "confidence"]
+    # Get formatted to full taxonomy dictionary
+    tax2all = dict(zip(db_tax_df.formatted_tax, db_tax_df.all_tax))
+    # Get all_tax column
+    all_tax = []
+    for tax in assigned_tax_df.formatted_tax:
+        try:
+            all_tax.append(tax2all[tax])
+        except KeyError:
+            all_tax.append(None)
+    assigned_tax_df["all_tax"] = all_tax
+    assigned_tax_df["all_tax"] = assigned_tax_df["all_tax"].fillna(
+        assigned_tax_df["formatted_tax"]
+    )
+
+else:
+    assigned_tax_df.columns = ["seq_id", "all_tax", "confidence"]
+
+assigned_tax_df[ranks] = assigned_tax_df.all_tax.str.split(";", expand=True)
 
 ## Add taxonomy to sequences in count table
 amp_df = (
@@ -98,18 +88,18 @@ amp_df.loc[amp_df["seq_id"] == "No_amp", "seq_count"] = 0
 amp_df["amplified"] = amp_df.seq_id.apply(lambda x: False if x == "No_amp" else True)
 amp_df = amp_df.merge(asm_df, on="fasta", suffixes=("_assigned", "_expected"))
 
-amp_df["assigned_species_full"] = amp_df.species_assigned.apply(
-    lambda x: get_full_species_names(x) if pd.notna(x) else x
-)
+
 amp_df["genus_match"] = amp_df.apply(
     lambda row: get_match(
-        str(row["genus_expected"]), str(row["genus_assigned"]), rank="genus"
+        row["genus_expected"],
+        row["genus_assigned"],
     ),
     axis=1,
 )
 amp_df["species_match"] = amp_df.apply(
     lambda row: get_match(
-        str(row["species_expected"]), str(row["assigned_species_full"]), rank="species"
+        row["species_expected"],
+        row["species_assigned"],
     ),
     axis=1,
 )
@@ -120,8 +110,6 @@ asm_df = asm_df.merge(
     ),
     on="fasta",
 )
-# asm_df["expected_tax"] = asm_df[ranks].apply(lambda x: ";".join(x), axis=1)
-# asm_df.drop(ranks, axis=1, inplace=True)
 
 # Save tables
 amp_df.to_csv(snakemake.output.amplicons, sep="\t", index=False)
