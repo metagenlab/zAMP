@@ -7,7 +7,7 @@ vsearch: docker://quay.io/biocontainers/vsearch:2.9.1--h96824bc_0
 dada2: docker://metagenlab/amplicons_dada2:v.2.1
 r_utils: docker://metagenlab/amplicons_r_utils:v.1.0
 qiimerdp: docker://metagenlab/amplicons_qiime1_rdp:v.1.0
-qiime2: docker://qiime2/core:2020.2
+qiime2: docker://quay.io/qiime2/amplicon:2024.10
 decipher: docker://metagenlab/amplicons_decipher:v.1.0
 rdp_classifier: docker://quay.io/biocontainers/rdp_classifier:2.14--hdfd78af_0
 python: docker://python:3.12.3-slim-bullseye
