@@ -42,15 +42,15 @@ rule QIIME1_assign_taxonomy_rdp:
         """
         export RDP_JAR_PATH=$(command -v rdp_classifier-2.2.jar);
         assign_path=$(which assign_taxonomy.py)
-        python $assign_path \
-          -i {input[0]} \
-          -r {input[1]} \
-          -t {input[2]} \
-          -m rdp \
-          -o $(dirname {output[0]}) \
-          -c 0.5 \
-          --rdp_max_memory {resources[mem_mb]}
-           2> {log[0]}
+        python $assign_path \\
+        -i {input[0]} \\
+        -r {input[1]} \\
+        -t {input[2]} \\
+        -m rdp \\
+        -o $(dirname {output[0]}) \\
+        -c 0.5 \\
+        --rdp_max_memory {resources[mem_mb]} \\
+        2> {log[0]}
         """
 
 
@@ -126,24 +126,23 @@ rule rdp_classify:
             "RDP_{tax_DB}",
             "RDP_tax_assignments.log",
         ),
-    threads: 10
+    threads: 1
     resources:
         mem_mb=30000,
     shell:
         """
-        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 classify \
-        -c 0.5 \
-        -f allrank \
-        -t {input[0]} \
-        -o {output[0]} {input[1]}  2> {log[0]}
+        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 classify \\
+        -t {input[0]} \\
+        -o {output[0]} {input[1]} \\
+        2> {log[0]}
         """
 
 
 rule rdp_format_output:
     conda:
-        os.path.join(dir.envs, "amplicons_r_utils.yml")
+        os.path.join(dir.envs, "pandas.yml")
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["pandas"]
     input:
         RDP_output=os.path.join(
             dir.out.base,
@@ -165,19 +164,18 @@ rule rdp_format_output:
             category="Taxonomic classification",
             subcategory="Orig_rdp_{tax_DB}",
         ),
-    log:
-        os.path.join(
-            dir.logs,
-            "{denoiser}",
-            "3_classified",
-            "RDP_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+    params:
+        script=os.path.join(
+            workflow.basedir,
+            "rules",
+            "3_tax_assignment",
+            "scripts",
+            "format_RDP_output.py",
         ),
-    threads: 10
-    resources:
-        mem_mb=30000,
-    script:
-        "scripts/format_RDP_output.R"
+    shell:
+        """
+        python {params.script} {input} {output}
+        """
 
 
 rule decipher_tax_assign:
