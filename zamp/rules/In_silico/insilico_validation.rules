@@ -93,13 +93,12 @@ rule in_silico_PCR:
     input:
         get_fasta,
     output:
-        os.path.join(dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"),
+        os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
     log:
-        os.path.join(dir.logs, "InSilico", "PCR", "{sample}.log"),
+        os.path.join(dir.logs, "in_silico_pcr", "{sample}.log"),
     params:
         fw=FW_PRIMER,
         rv=RV_PRIMER,
-        maxlen=MAXLEN,
         script=os.path.join(
             workflow.basedir, "rules", "In_silico", "scripts", "in_silico_PCR.pl"
         ),
@@ -109,53 +108,8 @@ rule in_silico_PCR:
         -s {input} \\
         -a {params.fw} \\
         -b {params.rv} \\
-        -m -r -l {params.maxlen} \\
+        -m -r -e \\
         2> {output} > {log}
-        """
-
-
-rule cutadapt_trim_in_silico:
-    conda:
-        os.path.join(dir.envs, "cutadapt.yml")
-    container:
-        singularity_envs["cutadapt"]
-    input:
-        os.path.join(
-            dir.out.base,
-            "InSilico",
-            "PCR",
-            "{sample}",
-            "amplicons.fasta",
-        ),
-    output:
-        temp(
-            os.path.join(
-                dir.out.base,
-                "InSilico",
-                "1a_trimmed_primers",
-                "{sample}_trimmed.fasta",
-            )
-        ),
-    log:
-        os.path.join(dir.logs, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.txt"),
-    params:
-        adapter=ADAPTER,
-        errors=ERRORS,
-        minlen=MINLEN,
-        maxlen=MAXLEN,
-    threads: 1
-    shell:
-        """
-        cutadapt \\
-        --cores {threads} \\
-        --error-rate {params.errors} \\
-        --times 1 \\
-        -o {output} \\
-        -g "{params.adapter}" \\
-        --discard-untrimmed \\
-        --minimum-length {params.minlen} \\
-        --maximum-length {params.maxlen} \\
-        {input} > {log}
         """
 
 
@@ -164,7 +118,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons,
     output:
-        temp(os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta")),
+        temp(os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna")),
     shell:
         """
         cat {input} > {output}
@@ -172,19 +126,17 @@ rule Insilico_merge_all_in_one_fasta:
 
 
 ### Again, dereplicate all identical sequences after merging.
-rule InSilico_derepicate_all:
+rule vsearch_derepicate_amplicons:
     conda:
         os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta"),
+        os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna"),
     output:
-        os.path.join(dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"),
+        os.path.join(dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"),
     log:
-        os.path.join(
-            dir.logs, "InSilico", "1c_all_merged_sequences", "dereplicate_all.txt"
-        ),
+        os.path.join(dir.logs, "vsearch", "in_silico.log"),
     shell:
         """
         vsearch \\
@@ -205,26 +157,21 @@ rule InSilico_count_occurences:
     container:
         singularity_envs["vsearch"]
     input:
-        samples=os.path.join(
-            dir.out.base,
-            "InSilico",
-            "1a_trimmed_primers",
-            "{sample}_trimmed.fasta",
-        ),
+        samples=os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
         rep_seq=os.path.join(
-            dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"
+            dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"
         ),
     output:
         os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "2_denoised",
             "countSeqs",
             "{sample}_count_table.tsv",
         ),
     log:
         os.path.join(
-            dir.logs, "InSilico", "2_denoised", "countSeqs", "{sample}_count_table.tsv"
+            dir.logs, "vsearch", "2_denoised", "countSeqs", "{sample}_count_table.tsv"
         ),
     shell:
         """       
@@ -255,12 +202,12 @@ rule create_InSilico_count_table:
         count_table_samples=list_samples_counts,
     output:
         count_table=os.path.join(
-            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+            dir.out.base, "vsearch", "2_denoised", "count_table.tsv"
         ),
     log:
-        os.path.join(dir.logs, "InSilico", "2_denoised", "count_table.tsv"),
+        os.path.join(dir.logs, "vsearch", "2_denoised", "count_table.tsv"),
     script:
-        "scripts/create_count_table_from_insilico.R"
+        os.path.join("scripts", "create_count_table_from_insilico.R")
 
 
 ### Create a table to compare tax assignment
@@ -272,12 +219,12 @@ rule In_silico_tax_compare:
     input:
         db_tax=os.path.join(DBPATH, "{tax_DB}", "QIIME", "DB_amp_all_taxonomy.txt"),
         count_table=os.path.join(
-            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+            dir.out.base, "vsearch", "2_denoised", "count_table.tsv"
         ),
         expected_taxonomy=get_tax_table,
         assigned_taxonomy=os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
             "dna-sequences_tax_assignments.txt",
@@ -285,14 +232,14 @@ rule In_silico_tax_compare:
     output:
         amplicons=os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
             "amplicons_tax_compare.tsv",
         ),
         assemblies=os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
             "assemblies_tax_compare.tsv",
@@ -300,7 +247,7 @@ rule In_silico_tax_compare:
     log:
         os.path.join(
             dir.logs,
-            "InSilico",
+            "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
             "InSilico_compare_tax.log",
@@ -309,7 +256,7 @@ rule In_silico_tax_compare:
         local=LOCAL,
         suffix=suffix,
     script:
-        "scripts/tax_compare.py"
+        os.path.join("scripts", "tax_compare.py")
 
 
 rule get_classification_metrics:
@@ -320,7 +267,7 @@ rule get_classification_metrics:
     input:
         os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
             "amplicons_tax_compare.tsv",
