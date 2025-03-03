@@ -146,15 +146,15 @@ rule cutadapt_trim_in_silico:
     threads: 1
     shell:
         """
-        cutadapt \
-        --cores {threads} \
-        --error-rate {params.errors} \
-        --times 1 \
-        -o {output} \
-        -g "{params.adapter}" \
-        --discard-untrimmed \
-        --minimum-length {params.minlen} \
-        --maximum-length {params.maxlen} \
+        cutadapt \\
+        --cores {threads} \\
+        --error-rate {params.errors} \\
+        --times 1 \\
+        -o {output} \\
+        -g "{params.adapter}" \\
+        --discard-untrimmed \\
+        --minimum-length {params.minlen} \\
+        --maximum-length {params.maxlen} \\
         {input} > {log}
         """
 
@@ -310,3 +310,79 @@ rule In_silico_tax_compare:
         suffix=suffix,
     script:
         "scripts/tax_compare.py"
+
+
+rule get_classification_metrics:
+    conda:
+        os.path.join(dir.envs, "pandas.yml")
+    container:
+        singularity_envs["pandas"]
+    input:
+        os.path.join(
+            dir.out.base,
+            "InSilico",
+            "3_classified",
+            "{classifier}_{tax_DB}",
+            "amplicons_tax_compare.tsv",
+        ),
+    output:
+        os.path.join(
+            dir.out.base,
+            "metrics",
+            "{classifier}_{tax_DB}_all_scores.tsv",
+        ),
+        os.path.join(
+            dir.out.base,
+            "metrics",
+            "{classifier}_{tax_DB}_mean_scores.tsv",
+        ),
+    params:
+        script=os.path.join(
+            workflow.basedir, "rules", "In_silico", "scripts", "get_f1_scores.py"
+        ),
+        prefix=os.path.join(
+            dir.out.base,
+            "metrics",
+            "{classifier}_{tax_DB}",
+        ),
+    shell:
+        """
+        python {params.script} {input} {params.prefix}
+        """
+
+
+rule merge_classification_metrics:
+    input:
+        expand(
+            os.path.join(
+                dir.out.base,
+                "metrics",
+                "{classifier}_{tax_DB}_mean_scores.tsv",
+            ),
+            classifier=CLASSIFIER,
+            tax_DB=DBNAME,
+        ),
+    output:
+        os.path.join(
+            dir.out.base,
+            "all_scores.tsv",
+        ),
+    run:
+        dfs = []
+        ranks = list(pd.read_csv(input[0], sep="\t")["rank"].drop_duplicates())
+        for tsv in input:
+            meta = os.path.basename(tsv).split("_mean_scores.tsv")[0]
+            df = pd.read_csv(tsv, sep="\t")
+            classifier = meta.split("_")[0]
+            df["classifier"] = [classifier] * len(df)
+            df["database"] = [meta.split(f"{classifier}_")[1]] * len(df)
+            dfs.append(df)
+        dfs = pd.concat(dfs)
+        dfs["rank"] = pd.Categorical(
+            dfs["rank"],
+            categories=ranks,
+            ordered=True,
+        )
+        dfs.sort_values(["rank", "f1_score"], ascending=[True, False]).to_csv(
+            output[0], sep="\t", index=False
+        )
