@@ -5,39 +5,36 @@
 
 rule copy_fasta:
     input:
-        "{prefix}/master/original_seqs.fasta",
+        os.path.join("{prefix}", "master", "original_seqs.fasta"),
     output:
-        "{prefix}/QIIME/DB_amp.fasta",
+        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     shell:
         """
         cp {input} {output}
         """
 
 
-rule clean_unprocessed_DB_taxonomy:
-    conda:
-        os.path.join(dir.envs, "pandas.yml")
-    container:
-        singularity_envs["pandas"]
+rule copy_taxonomy:
     input:
-        tax="{prefix}/master/original_tax.txt",
+        os.path.join("{prefix}", "QIIME", "clean_tax.tsv"),
     output:
-        tax="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-    params:
-        db_name=DBNAME,
-    threads: 1
-    script:
-        "scripts/clean_tax.py"
-
-
-rule Hash_untreated_tax:
-    input:
-        tax="{prefix}/QIIME/DB_amp_all_taxonomy.txt",
-        fasta="{prefix}/QIIME/DB_amp.fasta",
-    output:
-        hash="{prefix}/QIIME/DB_formatted.hash",
-    threads: 1
+        tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        all_tax=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
     shell:
         """
-        md5sum {input.tax} {input.fasta} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        cp {input} {output.tax}
+        awk 'BEGIN{{OFS=FS="\\t"}} NR==1{{$1="seq_id"; $2="all_tax"}} 1' {input} > {output.all_tax}
+        """
+
+
+rule Hash_unprocessed_tax:
+    input:
+        os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
+        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+    output:
+        os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
