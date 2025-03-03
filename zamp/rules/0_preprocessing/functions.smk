@@ -9,6 +9,7 @@ import pandas as pd
 import glob
 from metasnek import fastq_finder
 import warnings
+import itertools
 
 min_version("8.10.6")
 
@@ -33,6 +34,15 @@ def copy_log_file():
         return None
     current_log = max(files, key=os.path.getmtime)
     shell("cat " + current_log + " >> " + LOG)
+
+
+def list_match_dir(path, pattern):
+    search_pattern = os.path.join(path, f"*{pattern}*")
+    return [
+        os.path.basename(d)
+        for d in glob.glob(search_pattern)
+        if os.path.isdir(d) and not d.startswith(".")
+    ]
 
 
 # DB process functions command functions
@@ -149,9 +159,7 @@ def get_fasta(wildcards):
 
 def list_amplicons(wildcards):
     return expand(
-        os.path.join(
-            dir.out.base, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.fasta"
-        ),
+        os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
         sample=get_samples,
     )
 
@@ -160,7 +168,7 @@ def list_samples_counts(wildcards):
     return expand(
         os.path.join(
             dir.out.base,
-            "InSilico",
+            "vsearch",
             "2_denoised",
             "countSeqs",
             "{sample}_count_table.tsv",

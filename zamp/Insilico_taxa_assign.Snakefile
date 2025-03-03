@@ -45,10 +45,8 @@ DBPATH = os.path.abspath(config.args.database)
 
 
 if config.args.name:
-    if config.args.name == "*":
-        DBNAME = [d for d in os.listdir(DBPATH) if not d.startswith(".")]
-    else:
-        DBNAME = config.args.name.split(",")
+    names = config.args.name.split(",")
+    DBNAME = list(itertools.chain(*[list_match_dir(DBPATH, name) for name in names]))
 
 else:
     DBNAME = os.path.basename(os.path.normpath(DBPATH))
