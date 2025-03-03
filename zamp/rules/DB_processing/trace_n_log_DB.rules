@@ -3,17 +3,32 @@
 
 rule Back_up_master:
     input:
-        seqs=FASTA,
+        fa=FASTA,
         tax=TAXONOMY,
     output:
-        seqs=os.path.join("{prefix}", "master", "original_seqs.fasta"),
+        fa=os.path.join("{prefix}", "master", "original_seqs.fasta"),
         tax=os.path.join("{prefix}", "master", "original_tax.txt"),
     threads: 1
     shell:
         """
-        cp {input.seqs} {output.seqs} && \
+        cp {input.fa} {output.fa}
         cp {input.tax} {output.tax}
         """
+
+
+rule clean_taxonomy:
+    conda:
+        os.path.join(dir.envs, "pandas.yml")
+    container:
+        singularity_envs["pandas"]
+    input:
+        os.path.join("{prefix}", "master", "original_tax.txt"),
+    output:
+        temp(os.path.join("{prefix}", "QIIME", "clean_tax.tsv")),
+    params:
+        db_name=DBNAME,
+    script:
+        os.path.join("scripts", "clean_tax.py")
 
 
 rule Hash_master_files:
