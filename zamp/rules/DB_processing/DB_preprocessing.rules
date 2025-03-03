@@ -144,7 +144,7 @@ rule Derep_and_merge_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        tax=os.path.join("{prefix}", "master", "original_tax.txt"),
+        tax=os.path.join("{prefix}", "QIIME", "clean_tax.tsv"),
         uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
     output:
         collapsed=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
