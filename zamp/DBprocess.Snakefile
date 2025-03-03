@@ -68,11 +68,9 @@ if FW_PRIMER and RV_PRIMER:
 if "--use-singularity" in sys.argv:
     ### Bind the directory of the database to the singularity containers.
     ### Bind the workflow directory to the singularity containers.
+    workflow.deployment_settings.apptainer_args += f" -B {workflow.basedir}:{workflow.basedir},{os.path.abspath(DBPATH)}:{os.path.abspath(DBPATH)}"
     workflow.deployment_settings.apptainer_args += (
-        f" -B {workflow.basedir}:{workflow.basedir}"
-    )
-    workflow.deployment_settings.apptainer_args += (
-        f" -B {os.path.abspath(DBPATH)}:{os.path.abspath(DBPATH)}"
+        f" -B /tmp:/home/qiime2/q2cli,/tmp:/home/qiime2/matplotlib"
     )
 #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
