@@ -42,8 +42,13 @@ if os.path.isdir(INPUT) and TAX:
 
 ## Database args
 DBPATH = os.path.abspath(config.args.database)
+
+
 if config.args.name:
-    DBNAME = config.args.name.split(",")
+    if config.args.name == "*":
+        DBNAME = [d for d in os.listdir(DBPATH) if not d.startswith(".")]
+    else:
+        DBNAME = config.args.name.split(",")
 
 else:
     DBNAME = os.path.basename(os.path.normpath(DBPATH))
@@ -119,20 +124,7 @@ include: os.path.join("rules", "In_silico", "insilico_validation.rules")
 
 rule insilico_validation:
     input:
-        expand(
-            os.path.join(
-                dir.out.base,
-                "InSilico",
-                "3_classified",
-                "{classifier}_{tax_DB}",
-                "{files}",
-            ),
-            classifier=CLASSIFIER,
-            tax_DB=DBNAME,
-            files=[
-                "dna-sequences_tax_assignments.txt",
-                "amplicons_tax_compare.tsv",
-                "assemblies_tax_compare.tsv",
-            ],
+        os.path.join(
+            dir.out.base,
+            "all_scores.tsv",
         ),
-        os.path.join(dir.out.base, "InSilico", "2_denoised", "count_table.tsv"),
