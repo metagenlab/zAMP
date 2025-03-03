@@ -48,11 +48,6 @@ rule Hash_DADA2:
 ### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d
 ### See 'RDP_validations.rules' for more validation based on RDP authors' recommendations
 
-if PROCESS:
-    ref_tax = os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt")
-else:
-    ref_tax = os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt")
-
 
 rule Preformat_for_cannonical_rdp:
     conda:
@@ -60,7 +55,7 @@ rule Preformat_for_cannonical_rdp:
     container:
         singularity_envs["r_utils"]
     input:
-        ref_tax=ref_tax,
+        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
         ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
     output:
         formatted_table=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
