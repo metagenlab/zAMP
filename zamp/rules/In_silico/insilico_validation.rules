@@ -217,7 +217,7 @@ rule In_silico_tax_compare:
     container:
         singularity_envs["pandas"]
     input:
-        db_tax=os.path.join(DBPATH, "{tax_DB}", "QIIME", "DB_amp_all_taxonomy.txt"),
+        db_tax=os.path.join(DBPATH, "{tax_DB}", "database", "amplicons_all_tax.tsv"),
         count_table=os.path.join(
             dir.out.base, "vsearch", "2_denoised", "count_table.tsv"
         ),
