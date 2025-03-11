@@ -276,9 +276,9 @@ def db_options(func):
             "--classifier",
             multiple=True,
             type=click.Choice(
-                ["rdp", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+                ["rdp", "qiime2", "dada2", "decipher"], case_sensitive=False
             ),
-            default=["rdp", "qiimerdp", "dada2rdp"],
+            default=["rdp", "qiime2", "dada2"],
             help="Which classifiers to train on the database",
             show_default=True,
         ),
@@ -655,9 +655,9 @@ def insilico_options(func):
             "--classifier",
             multiple=True,
             type=click.Choice(
-                ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+                ["rdp", "qiime2", "dada2", "decipher"], case_sensitive=False
             ),
-            default=["RDP"],
+            default=["rdp"],
             help="Which classifiers to use for taxonomic assignment",
             show_default=True,
         ),
