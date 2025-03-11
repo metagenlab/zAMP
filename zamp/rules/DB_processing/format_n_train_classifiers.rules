@@ -2,41 +2,126 @@
 scripts = os.path.join(workflow.basedir, "rules", "DB_processing", "scripts")
 
 
-rule DADA2_prep_tax_db:
+rule qiime2_import_fasta:
     conda:
-        os.path.join(dir.envs, "amplicons_r_utils.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
-        singularity_envs["r_utils"]
+        singularity_envs["qiime2"]
     input:
-        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
-        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
+        os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
-        King_to_Species=os.path.join(
-            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
-        ),
-        King_to_Genus=os.path.join(
-            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"
-        ),
-        Genus_species=os.path.join(
-            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_Genus_species.txt"
-        ),
+        os.path.join("{prefix}", "qiime2", "amplicons.qza"),
     log:
-        os.path.join("{prefix}", "logs", "dada2rdp", "DB_amp_taxonomy_dada2_prep.log"),
-    threads: 1
-    script:
-        os.path.join(scripts, "dada2_prep_tax.R")
+        os.path.join("{prefix}", "logs", "qiime2", "import_fasta.txt"),
+    shell:
+        """
+        qiime tools import \\
+        --input-path {input} \\
+        --output-path {output} \\
+        --type 'FeatureData[Sequence]' &> {log}
+        """
+
+
+rule qiime2_import_taxonomy:
+    conda:
+        os.path.join(dir.envs, "qiime2.yml")
+    container:
+        singularity_envs["qiime2"]
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        os.path.join("{prefix}", "qiime2", "amplicons_tax.qza"),
+    log:
+        os.path.join("{prefix}", "logs", "QIIME", "import_tax.txt"),
+    shell:
+        """
+        qiime tools import \\
+        --input-path {input} \\
+        --output-path {output} \\
+        --type 'FeatureData[Taxonomy]' \\
+        --input-format HeaderlessTSVTaxonomyFormat &> {log}
+        """
+
+
+rule qiime2_train_classifier:
+    conda:
+        os.path.join(dir.envs, "qiime2.yml")
+    container:
+        singularity_envs["qiime2"]
+    input:
+        fa=os.path.join("{prefix}", "qiime2", "amplicons.qza"),
+        tax=os.path.join("{prefix}", "qiime2", "amplicons_tax.qza"),
+    output:
+        os.path.join("{prefix}", "qiime2", "rdp_classifier.qza"),
+    log:
+        os.path.join("{prefix}", "logs", "qiime2", "rdp_train.txt"),
+    shell:
+        """
+        qiime feature-classifier fit-classifier-naive-bayes \\
+        --i-reference-reads {input.fa} \\
+        --i-reference-taxonomy {input.tax} \\
+        --o-classifier {output}
+        """
+
+
+rule Hash_qiime2:
+    input:
+        os.path.join("{prefix}", "qiime2", "amplicons.qza"),
+        os.path.join("{prefix}", "qiime2", "amplicons_tax.qza"),
+        os.path.join("{prefix}", "qiime2", "rdp_classifier.qza"),
+    output:
+        os.path.join("{prefix}", "qiime2", "qiime2.md5"),
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
+
+
+rule get_genus_tax:
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "database", "amplicons_genus_tax.tsv")),
+    shell:
+        """
+        sed -E 's/(.*);[^;]*$/\\1/' {input} > {output}
+        """
+
+
+rule get_dada2_trainset_fastas:
+    conda:
+        os.path.join(dir.envs, "seqkit.yml")
+    container:
+        singularity_envs["seqkit"]
+    input:
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+        gen=os.path.join("{prefix}", "database", "amplicons_genus_tax.tsv"),
+        sp=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        gen=os.path.join("{prefix}", "dada2", "toGenus_trainset.fa.gz"),
+        sp=os.path.join("{prefix}", "dada2", "toSpecies_trainset.fa.gz"),
+    shell:
+        """
+        seqkit replace \\
+        -p "^(.+)$" -r "{kv}" \\
+        -k {input.gen} \\
+        {input.fa} \\
+        -o {output.gen}
+
+        seqkit replace \\
+        -p "^(.+)$" -r "{kv}" \\
+        -k {input.sp} \\
+        {input.fa} \\
+        -o {output.sp}
+        """
 
 
 rule Hash_DADA2:
     input:
-        os.path.join(
-            "{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
-        ),
-        os.path.join("{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"),
-        os.path.join("{prefix}", "dada2rdp", "DADA2_DB_amp_taxonomy_Genus_species.txt"),
+        os.path.join("{prefix}", "dada2", "toGenus_trainset.fa.gz"),
+        os.path.join("{prefix}", "dada2", "toSpecies_trainset.fa.gz"),
     output:
-        os.path.join("{prefix}", "dada2rdp", "DADA2_DB.hash"),
-    threads: 1
+        os.path.join("{prefix}", "dada2", "dada2.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
@@ -55,12 +140,12 @@ rule Preformat_for_cannonical_rdp:
     container:
         singularity_envs["r_utils"]
     input:
-        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        ref_tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        ref_seqs=os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
-        formatted_table=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
+        formatted_table=os.path.join("{prefix}", "rdp", "formatted_tax_table.tsv"),
     log:
-        os.path.join("{prefix}", "logs", "RDP", "formatted_tax_table.log"),
+        os.path.join("{prefix}", "logs", "rdp_formatted_tax_table.log"),
     threads: 1
     script:
         os.path.join(scripts, "rdp_prep_tax.R")
@@ -72,15 +157,15 @@ rule Format_rdp_lineages:
     container:
         singularity_envs["python"]
     input:
-        table=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
+        os.path.join("{prefix}", "rdp", "formatted_tax_table.tsv"),
     output:
-        read4train_tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
+        os.path.join("{prefix}", "rdp", "ready4train_lineages.txt"),
     threads: 1
     params:
         script=os.path.join(scripts, "lineage2taxTrain.py"),
     shell:
         """
-        python {params.script} {input.table} > {output[0]}
+        python {params.script} {input} > {output}
         """
 
 
@@ -90,11 +175,10 @@ rule Format_rdp_add_lineages:
     container:
         singularity_envs["python"]
     input:
-        taxonomy=os.path.join("{prefix}", "RDP", "formatted_tax_table.tsv"),
-        fasta=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        tax=os.path.join("{prefix}", "rdp", "formatted_tax_table.tsv"),
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
-        read4train_fasta=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
-    threads: 1
+        read4train_fasta=os.path.join("{prefix}", "rdp", "ready4train_seqs.fasta"),
     params:
         script=os.path.join(
             scripts,
@@ -102,7 +186,7 @@ rule Format_rdp_add_lineages:
         ),
     shell:
         """
-        python {params.script} {input.taxonomy} {input.fasta} > {output}       
+        python {params.script} {input.tax} {input.fa} > {output}       
         """
 
 
@@ -112,16 +196,16 @@ rule RDP_train:
     container:
         singularity_envs["rdp_classifier"]
     input:
-        fa=os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
-        tax=os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
+        fa=os.path.join("{prefix}", "rdp", "ready4train_seqs.fasta"),
+        tax=os.path.join("{prefix}", "rdp", "ready4train_lineages.txt"),
     output:
-        xml=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
-        lst=os.path.join("{prefix}", "RDP", "genus_wordConditionalProbList.txt"),
-        idx=os.path.join("{prefix}", "RDP", "wordConditionalProbIndexArr.txt"),
-        wrd=os.path.join("{prefix}", "RDP", "logWordPrior.txt"),
+        xml=os.path.join("{prefix}", "rdp", "bergeyTrainingTree.xml"),
+        lst=os.path.join("{prefix}", "rdp", "genus_wordConditionalProbList.txt"),
+        idx=os.path.join("{prefix}", "rdp", "wordConditionalProbIndexArr.txt"),
+        wrd=os.path.join("{prefix}", "rdp", "logWordPrior.txt"),
     params:
         mem=RDP_MEM,
-        out=os.path.join("{prefix}", "RDP"),
+        out=os.path.join("{prefix}", "rdp"),
     threads: 1
     resources:
         mem_mb=get_mem_mb(RDP_MEM),
@@ -138,12 +222,12 @@ rule RDP_train:
 
 rule get_RDP_properties:
     input:
-        xml=os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
-        lst=os.path.join("{prefix}", "RDP", "genus_wordConditionalProbList.txt"),
-        idx=os.path.join("{prefix}", "RDP", "wordConditionalProbIndexArr.txt"),
-        wrd=os.path.join("{prefix}", "RDP", "logWordPrior.txt"),
+        xml=os.path.join("{prefix}", "rdp", "bergeyTrainingTree.xml"),
+        lst=os.path.join("{prefix}", "rdp", "genus_wordConditionalProbList.txt"),
+        idx=os.path.join("{prefix}", "rdp", "wordConditionalProbIndexArr.txt"),
+        wrd=os.path.join("{prefix}", "rdp", "logWordPrior.txt"),
     output:
-        os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
+        os.path.join("{prefix}", "rdp", "rRNAClassifier.properties"),
     params:
         xml=lambda wildcards, input: os.path.basename(input.xml),
         lst=lambda wildcards, input: os.path.basename(input.lst),
@@ -162,13 +246,12 @@ rule get_RDP_properties:
 
 rule Hash_RDP:
     input:
-        os.path.join("{prefix}", "RDP", "ready4train_seqs.fasta"),
-        os.path.join("{prefix}", "RDP", "ready4train_lineages.txt"),
-        os.path.join("{prefix}", "RDP", "bergeyTrainingTree.xml"),
-        os.path.join("{prefix}", "RDP", "rRNAClassifier.properties"),
+        os.path.join("{prefix}", "rdp", "ready4train_seqs.fasta"),
+        os.path.join("{prefix}", "rdp", "ready4train_lineages.txt"),
+        os.path.join("{prefix}", "rdp", "bergeyTrainingTree.xml"),
+        os.path.join("{prefix}", "rdp", "rRNAClassifier.properties"),
     output:
-        os.path.join("{prefix}", "RDP", "RDP_DB.hash"),
-    threads: 1
+        os.path.join("{prefix}", "rdp", "rdp.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
@@ -181,8 +264,8 @@ rule Decipher_prep_fasta:
     container:
         singularity_envs["r_utils"]
     input:
-        ref_tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        ref_seqs=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        ref_tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        ref_seqs=os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
         decipher_seqs=os.path.join(
             "{prefix}", "decipher", "Decipher_DB_amp_taxonomy.fasta"
@@ -225,8 +308,7 @@ rule Hash_Decipher:
     input:
         os.path.join("{prefix}", "decipher", "Decipher_DB_amp_taxonomy_trained_tax.rds"),
     output:
-        os.path.join("{prefix}", "decipher", "decipher_DB.hash"),
-    threads: 1
+        os.path.join("{prefix}", "decipher", "decipher.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
