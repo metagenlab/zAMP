@@ -1,13 +1,11 @@
 ## We recommend to format the taxonomy database to extract the region of gene of interest and merge the taxonomy of taxa that have
 # identical sequences on this shorter gene region. However, in case where "extract_and_merge" is set to False in config file, these
 # set of rules will be used to bypass the preprocessing of the database.
-
-
 rule copy_fasta:
     input:
-        os.path.join("{prefix}", "master", "original_seqs.fasta"),
+        os.path.join("{prefix}", "database", "original_seqs.fasta"),
     output:
-        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        os.path.join("{prefix}", "database", "amplicons.fasta"),
     shell:
         """
         cp {input} {output}
@@ -16,10 +14,10 @@ rule copy_fasta:
 
 rule copy_taxonomy:
     input:
-        os.path.join("{prefix}", "QIIME", "clean_tax.tsv"),
+        os.path.join("{prefix}", "database", "clean_tax.tsv"),
     output:
-        tax=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        all_tax=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
+        tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        all_tax=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
     shell:
         """
         cp {input} {output.tax}
@@ -27,13 +25,13 @@ rule copy_taxonomy:
         """
 
 
-rule Hash_unprocessed_tax:
+rule Hash_unprocessed_fasta_tax:
     input:
-        os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        os.path.join("{prefix}", "database", "amplicons_all_tax.txt"),
+        os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
-        os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
+        os.path.join("{prefix}", "database", "fasta_tax.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
