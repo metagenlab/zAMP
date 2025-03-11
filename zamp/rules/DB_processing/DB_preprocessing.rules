@@ -2,21 +2,21 @@
 # used primers. Can be skipped by "extract_and_merge" = False parameters in config file.
 
 
-rule Extract_amplicons_cutadapt:
+rule cutadapt_amplicons:
     conda:
         os.path.join(dir.envs, "cutadapt.yml")
     container:
         singularity_envs["cutadapt"]
     input:
-        os.path.join("{prefix}", "master", "original_seqs.fasta"),
+        os.path.join("{prefix}", "database", "original_seqs.fasta"),
     output:
-        os.path.join("{prefix}", "QIIME", "dna-sequences.fasta"),
+        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
     params:
         errors=ERRORS,
         fw=FW_PRIMER,
         rv=Seq.reverse_complement(Seq(RV_PRIMER)),
     log:
-        os.path.join("{prefix}", "logs", "QIIME", "DB_cutadapt.txt"),
+        os.path.join("{prefix}", "logs", "cutadapt_amplicons_db.txt"),
     threads: 3
     shell:
         """
@@ -26,7 +26,7 @@ rule Extract_amplicons_cutadapt:
         -o {output} \\
         -g {params.fw}...{params.rv} \\
         --discard-untrimmed \\
-        {input} > {log}
+        {input} &> {log}
         """
 
 
@@ -99,12 +99,64 @@ rule vsearch_derep:
     container:
         singularity_envs["vsearch"]
     input:
-        os.path.join("{prefix}", "QIIME", "dna-sequences.fasta"),
+        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
     output:
-        fa=os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
-        uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
+        fa=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.fasta"),
+        uc=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.uc"),
     log:
-        os.path.join("{prefix}", "logs", "QIIME", "vsearch_dereplicate.log"),
+        os.path.join("{prefix}", "logs", "vsearch_derep.log"),
+    shell:
+        """
+        vsearch \\
+        --derep_fulllength {input} \\
+        --output {output.fa} \\
+        --uc {output.uc} \\
+        2> {log}
+        """
+
+
+rule vsearch_align_segments:
+    conda:
+        os.path.join(dir.envs, "vsearch.yml")
+    container:
+        singularity_envs["vsearch"]
+    input:
+        fa=os.path.join("{prefix}", "database", "original_seqs.fasta"),
+        db=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.fasta"),
+    output:
+        match=os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
+        unmatch=os.path.join(
+            "{prefix}", "database", "vsearch", "unmatched_segments.fasta"
+        ),
+    log:
+        os.path.join("{prefix}", "logs", "vsearch_align_segments.log"),
+    threads: 8
+    shell:
+        """
+        vsearch \\
+        --usearch_global \\
+        {input.fa} \\
+        -db {input.db} \\
+        --threads {threads} \\
+        --id 0.7 \\
+        --qmask none \\
+        --qsegout {output.match} \\
+        --notmatched {output.unmatch} &> {log}
+        """
+
+
+rule vsearch_derep_aligned_segments:
+    conda:
+        os.path.join(dir.envs, "vsearch.yml")
+    container:
+        singularity_envs["vsearch"]
+    input:
+        os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
+    output:
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+        uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
+    log:
+        os.path.join("{prefix}", "logs", "vsearch_derep_segments.log"),
     shell:
         """
         vsearch \\
@@ -144,16 +196,14 @@ rule Derep_and_merge_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        tax=os.path.join("{prefix}", "QIIME", "clean_tax.tsv"),
-        uc=os.path.join("{prefix}", "QIIME", "DB_amp.uc"),
+        tax=os.path.join("{prefix}", "database", "clean_tax.tsv"),
+        uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
     output:
-        collapsed=os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        all=os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        ambiguous=os.path.join("{prefix}", "QIIME", "ambiguous_taxa.txt"),
+        collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        all=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
+        ambiguous=os.path.join("{prefix}", "database", "ambiguous_taxa.tsv"),
     log:
-        os.path.join("{prefix}", "logs", "QIIME", "derep_and_merge.log"),
-    params:
-        db_name=DBNAME,
+        os.path.join("{prefix}", "logs", "derep_and_merge_tax.log"),
     script:
         os.path.join("scripts", "tax_formatting.py")
 
@@ -186,13 +236,13 @@ rule Derep_and_merge_taxonomy:
 #         """
 
 
-rule Hash_derep_tax:
+rule Hash_derep_fasta_tax:
     input:
-        os.path.join("{prefix}", "QIIME", "DB_amp_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "DB_amp_all_taxonomy.txt"),
-        os.path.join("{prefix}", "QIIME", "DB_amp.fasta"),
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
+        os.path.join("{prefix}", "database", "amplicons.fasta"),
     output:
-        os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
+        os.path.join("{prefix}", "database", "fasta_tax.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
