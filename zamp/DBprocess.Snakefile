@@ -101,7 +101,7 @@ else:
 ## Call default DBPATH
 rule all:
     input:
-        os.path.join(OUTPUT, "DB.hash"),
+        os.path.join(OUTPUT, "database.md5"),
 
 
 ## Optional DBPATH for RDP training diagnostics
