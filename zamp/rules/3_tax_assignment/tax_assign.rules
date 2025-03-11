@@ -1,56 +1,43 @@
-rule QIIME1_assign_taxonomy_rdp:
+rule qiime2_import_sequences:
     conda:
-        os.path.join(dir.envs, "QIIME1.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
-        singularity_envs["qiimerdp"]
+        singularity_envs["qiime2"]
     input:
         os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"),
-        os.path.join(DBPATH, "{tax_DB}/QIIME/DB_amp.fasta"),
-        os.path.join(DBPATH, "{tax_DB}/QIIME/DB_amp_taxonomy.txt"),
     output:
-        report(
-            os.path.join(
-                dir.out.base,
-                "{denoiser}",
-                "3_classified",
-                "qiimerdp_{tax_DB}",
-                "dna-sequences_tax_assignments.txt",
-            ),
-            caption=os.path.join("report", "tax_assignment.rst"),
-            category="Taxonomic classification",
-            subcategory="Qiime_rdp_{tax_DB}",
-        ),
+        os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.qza"),
+    shell:
+        """
+        qiime tools import \\
+        --input-path {input} \\
+        --output-path {output} \\
+        --type 'FeatureData[Sequence]' &> {log}
+        """
+
+
+rule qiime2_classify:
+    conda:
+        os.path.join(dir.envs, "qiime2.yml")
+    container:
+        singularity_envs["qiime2"]
+    input:
+        cla=os.path.join(DBPATH, "{tax_DB}", "qiime2", "rdp_classifier.qza"),
+        seq=os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.qza"),
+    output:
         os.path.join(
             dir.out.base,
             "{denoiser}",
             "3_classified",
-            "qiimerdp_{tax_DB}",
-            "dna-sequences_tax_assignments.log",
+            "qiime2_{tax_DB}",
+            "taxonomy.qza",
         ),
-    log:
-        os.path.join(
-            dir.logs,
-            "{denoiser}",
-            "3_classified",
-            "qiime_rdp_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
-        ),
-    threads: 1
-    resources:
-        mem_mb=30000,
     shell:
         """
-        export RDP_JAR_PATH=$(command -v rdp_classifier-2.2.jar);
-        assign_path=$(which assign_taxonomy.py)
-        python $assign_path \\
-        -i {input[0]} \\
-        -r {input[1]} \\
-        -t {input[2]} \\
-        -m rdp \\
-        -o $(dirname {output[0]}) \\
-        -c 0.5 \\
-        --rdp_max_memory {resources[mem_mb]} \\
-        2> {log[0]}
+        qiime feature-classifier classify-sklearn \\
+        --i-classifier {input.cla} \\
+        --i-reads {input.seq} \\
+        --o-classification {output}
         """
 
 
@@ -64,13 +51,13 @@ rule dada2_assign_taxonomy_rdp:
             dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"
         ),
         King_to_Species=os.path.join(
-            DBPATH, "{tax_DB}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
+            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
         ),
         King_to_Genus=os.path.join(
-            DBPATH, "{tax_DB}", "dada2rdp", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"
+            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"
         ),
         Genus_species=os.path.join(
-            DBPATH, "{tax_DB}", "dada2rdp", "DADA2_DB_amp_taxonomy_Genus_species.txt"
+            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_Genus_species.txt"
         ),
     output:
         tax=report(
@@ -78,7 +65,7 @@ rule dada2_assign_taxonomy_rdp:
                 dir.out.base,
                 "{denoiser}",
                 "3_classified",
-                "dada2rdp_{tax_DB}",
+                "dada2_{tax_DB}",
                 "dna-sequences_tax_assignments.txt",
             ),
             caption=os.path.join("report", "tax_assignment.rst"),
@@ -90,7 +77,7 @@ rule dada2_assign_taxonomy_rdp:
             dir.logs,
             "{denoiser}",
             "3_classified",
-            "dada2rdp_{tax_DB}",
+            "dada2_{tax_DB}",
             "dna-sequences_tax_assignments.txt",
         ),
     threads: 4
@@ -106,7 +93,7 @@ rule rdp_classify:
     container:
         singularity_envs["rdp_classifier"]
     input:
-        trained_ref=os.path.join(DBPATH, "{tax_DB}", "RDP", "rRNAClassifier.properties"),
+        trained_ref=os.path.join(DBPATH, "{tax_DB}", "rdp", "rRNAClassifier.properties"),
         query_seqs=os.path.join(
             dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"
         ),
@@ -115,16 +102,16 @@ rule rdp_classify:
             dir.out.base,
             "{denoiser}",
             "3_classified",
-            "RDP_{tax_DB}",
-            "RDP_tax_assignments.txt",
+            "rdp_{tax_DB}",
+            "rdp_tax_assignments.txt",
         ),
     log:
         os.path.join(
             dir.logs,
             "{denoiser}",
             "3_classified",
-            "RDP_{tax_DB}",
-            "RDP_tax_assignments.log",
+            "rdp_{tax_DB}",
+            "rdp_tax_assignments.log",
         ),
     threads: 1
     resources:
@@ -148,8 +135,8 @@ rule rdp_format_output:
             dir.out.base,
             "{denoiser}",
             "3_classified",
-            "RDP_{tax_DB}",
-            "RDP_tax_assignments.txt",
+            "rdp_{tax_DB}",
+            "rdp_tax_assignments.txt",
         ),
     output:
         formatted_output=report(
@@ -157,7 +144,7 @@ rule rdp_format_output:
                 dir.out.base,
                 "{denoiser}",
                 "3_classified",
-                "RDP_{tax_DB}",
+                "rdp_{tax_DB}",
                 "dna-sequences_tax_assignments.txt",
             ),
             caption=os.path.join("report", "tax_assignment.rst"),
