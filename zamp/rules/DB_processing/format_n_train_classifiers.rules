@@ -81,10 +81,21 @@ rule get_genus_tax:
     input:
         os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
     output:
-        temp(os.path.join("{prefix}", "database", "amplicons_genus_tax.tsv")),
+        temp(os.path.join("{prefix}", "database", "amplicons_to_genus_tax.tsv")),
     shell:
         """
         sed -E 's/(.*);[^;]*$/\\1/' {input} > {output}
+        """
+
+
+rule get_species_assign_tax:
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "database", "amplicons_sp_assign_tax.tsv")),
+    shell:
+        """
+        sed 's/.*;\\([^;]* [^;]*\\)$/\\1/' {input} > {output}
         """
 
 
@@ -95,24 +106,37 @@ rule get_dada2_trainset_fastas:
         singularity_envs["seqkit"]
     input:
         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
-        gen=os.path.join("{prefix}", "database", "amplicons_genus_tax.tsv"),
-        sp=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        to_gen=os.path.join("{prefix}", "database", "amplicons_to_genus_tax.tsv"),
+        to_sp=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        sp_assign=os.path.join("{prefix}", "database", "amplicons_sp_assign_tax.tsv"),
     output:
-        gen=os.path.join("{prefix}", "dada2", "toGenus_trainset.fa.gz"),
-        sp=os.path.join("{prefix}", "dada2", "toSpecies_trainset.fa.gz"),
+        to_gen=os.path.join("{prefix}", "dada2", "toGenus_trainset.fa.gz"),
+        to_sp=os.path.join("{prefix}", "dada2", "toSpecies_trainset.fa.gz"),
+        sp_assign=os.path.join("{prefix}", "dada2", "assignSpecies.fa.gz"),
+    log:
+        os.path.join("{prefix}", "logs", "dada2", "trainset_fasta.log"),
     shell:
         """
         seqkit replace \\
-        -p "^(.+)$" -r "{kv}" \\
-        -k {input.gen} \\
+        -p "^(.+)$" -r "{{kv}}" \\
+        -k {input.to_gen} \\
         {input.fa} \\
-        -o {output.gen}
+        -o {output.to_gen} \\
+        2>> {log}
 
         seqkit replace \\
-        -p "^(.+)$" -r "{kv}" \\
-        -k {input.sp} \\
+        -p "^(.+)$" -r "{{kv}}" \\
+        -k {input.to_sp} \\
         {input.fa} \\
-        -o {output.sp}
+        -o {output.to_sp} \\
+        2>> {log}
+
+        seqkit replace \\
+        -p '^(.+)$' -r '\\1 {{kv}}' \\
+        -k {input.sp_assign} \\
+        {input.fa} \\
+        -o {output.sp_assign} \\
+        2>> {log}
         """
 
 
@@ -120,6 +144,7 @@ rule Hash_DADA2:
     input:
         os.path.join("{prefix}", "dada2", "toGenus_trainset.fa.gz"),
         os.path.join("{prefix}", "dada2", "toSpecies_trainset.fa.gz"),
+        os.path.join("{prefix}", "dada2", "assignSpecies.fa.gz"),
     output:
         os.path.join("{prefix}", "dada2", "dada2.md5"),
     shell:
