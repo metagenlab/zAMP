@@ -101,7 +101,7 @@ rule vsearch_derep:
     input:
         os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
     output:
-        fa=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.fasta"),
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
         uc=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.uc"),
     log:
         os.path.join("{prefix}", "logs", "vsearch_derep.log"),
@@ -115,56 +115,56 @@ rule vsearch_derep:
         """
 
 
-rule vsearch_align_segments:
-    conda:
-        os.path.join(dir.envs, "vsearch.yml")
-    container:
-        singularity_envs["vsearch"]
-    input:
-        fa=os.path.join("{prefix}", "database", "original_seqs.fasta"),
-        db=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.fasta"),
-    output:
-        match=os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
-        unmatch=os.path.join(
-            "{prefix}", "database", "vsearch", "unmatched_segments.fasta"
-        ),
-    log:
-        os.path.join("{prefix}", "logs", "vsearch_align_segments.log"),
-    threads: 8
-    shell:
-        """
-        vsearch \\
-        --usearch_global \\
-        {input.fa} \\
-        -db {input.db} \\
-        --threads {threads} \\
-        --id 0.7 \\
-        --qmask none \\
-        --qsegout {output.match} \\
-        --notmatched {output.unmatch} &> {log}
-        """
+# rule vsearch_align_segments:
+#     conda:
+#         os.path.join(dir.envs, "vsearch.yml")
+#     container:
+#         singularity_envs["vsearch"]
+#     input:
+#         fa=os.path.join("{prefix}", "database", "original_seqs.fasta"),
+#         db=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.fasta"),
+#     output:
+#         match=os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
+#         unmatch=os.path.join(
+#             "{prefix}", "database", "vsearch", "unmatched_segments.fasta"
+#         ),
+#     log:
+#         os.path.join("{prefix}", "logs", "vsearch_align_segments.log"),
+#     threads: 8
+#     shell:
+#         """
+#         vsearch \\
+#         --usearch_global \\
+#         {input.fa} \\
+#         -db {input.db} \\
+#         --threads {threads} \\
+#         --id 0.7 \\
+#         --qmask none \\
+#         --qsegout {output.match} \\
+#         --notmatched {output.unmatch} &> {log}
+#         """
 
 
-rule vsearch_derep_aligned_segments:
-    conda:
-        os.path.join(dir.envs, "vsearch.yml")
-    container:
-        singularity_envs["vsearch"]
-    input:
-        os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
-    output:
-        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
-        uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
-    log:
-        os.path.join("{prefix}", "logs", "vsearch_derep_segments.log"),
-    shell:
-        """
-        vsearch \\
-        --derep_fulllength {input} \\
-        --output {output.fa} \\
-        --uc {output.uc} \\
-        2> {log}
-        """
+# rule vsearch_derep_aligned_segments:
+#     conda:
+#         os.path.join(dir.envs, "vsearch.yml")
+#     container:
+#         singularity_envs["vsearch"]
+#     input:
+#         os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
+#     output:
+#         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+#         uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
+#     log:
+#         os.path.join("{prefix}", "logs", "vsearch_derep_segments.log"),
+#     shell:
+#         """
+#         vsearch \\
+#         --derep_fulllength {input} \\
+#         --output {output.fa} \\
+#         --uc {output.uc} \\
+#         2> {log}
+#         """
 
 
 # rule rescript_derep:
@@ -197,7 +197,7 @@ rule Derep_and_merge_taxonomy:
         singularity_envs["pandas"]
     input:
         tax=os.path.join("{prefix}", "database", "clean_tax.tsv"),
-        uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
+        uc=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.uc"),
     output:
         collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
         all=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
