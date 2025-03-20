@@ -7,6 +7,8 @@ rule qiime2_import_sequences:
         os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"),
     output:
         os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.qza"),
+    log:
+        os.path.join(dir.logs, "{denoiser}", "qiime2", "fasta_import.log"),
     shell:
         """
         qiime tools import \\
@@ -32,6 +34,8 @@ rule qiime2_classify:
             "qiime2_{tax_DB}",
             "taxonomy.qza",
         ),
+    log:
+        os.path.join(dir.logs, "{denoiser}", "qiime2", "{tax_DB}_classify.log"),
     shell:
         """
         qiime feature-classifier classify-sklearn \\
@@ -41,36 +45,82 @@ rule qiime2_classify:
         """
 
 
-rule dada2_assign_taxonomy_rdp:
+rule qiime2_export_taxonomy:
+    conda:
+        os.path.join(dir.envs, "qiime2.yml")
+    container:
+        singularity_envs["qiime2"]
+    input:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "qiime2_{tax_DB}",
+            "taxonomy.qza",
+        ),
+    output:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "qiime2_{tax_DB}",
+            "taxonomy.tsv",
+        ),
+    params:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "qiime2_{tax_DB}",
+        ),
+    log:
+        os.path.join(dir.logs, "{denoiser}", "qiime2", "{tax_DB}_tax_export.log"),
+    shell:
+        """
+        qiime tools export \\
+        --input-path {input} \\
+        --output-path {params} \\
+        &> {log}
+        """
+
+
+rule seqkit_fasta2tab:
+    conda:
+        os.path.join(dir.envs, "seqkit.yml")
+    container:
+        singularity_envs["seqkit"]
+    input:
+        os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"),
+    output:
+        temp(
+            os.path.join(
+                dir.out.base,
+                "{denoiser}",
+                "2_denoised",
+                "sequences.tsv",
+            )
+        ),
+    shell:
+        """
+        seqkit fx2tab {input} > {output}
+        """
+
+
+rule dada2_assign_taxonomy:
     conda:
         os.path.join(dir.envs, "DADA2_in_R.yml")
     container:
         singularity_envs["dada2"]
     input:
-        seqs=os.path.join(
-            dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"
-        ),
-        King_to_Species=os.path.join(
-            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_King_to_Species.txt"
-        ),
-        King_to_Genus=os.path.join(
-            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_King_to_Genus.txt"
-        ),
-        Genus_species=os.path.join(
-            DBPATH, "{tax_DB}", "dada2", "DADA2_DB_amp_taxonomy_Genus_species.txt"
-        ),
+        seqs=os.path.join(dir.out.base, "{denoiser}", "2_denoised", "sequences.tsv"),
+        trainset=os.path.join(DBPATH, "{tax_DB}", "dada2", "toSpecies_trainset.fa.gz"),
     output:
-        tax=report(
-            os.path.join(
-                dir.out.base,
-                "{denoiser}",
-                "3_classified",
-                "dada2_{tax_DB}",
-                "dna-sequences_tax_assignments.txt",
-            ),
-            caption=os.path.join("report", "tax_assignment.rst"),
-            category="Taxonomic classification",
-            subcategory="DADA2_rdp_{tax_DB}",
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "dada2_{tax_DB}",
+            "taxonomy.tsv",
         ),
     log:
         os.path.join(
@@ -78,13 +128,10 @@ rule dada2_assign_taxonomy_rdp:
             "{denoiser}",
             "3_classified",
             "dada2_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "tax_assignments.log",
         ),
-    threads: 4
-    resources:
-        mem_mb=30000,
     script:
-        "scripts/dada2_rdp_tax_assign.R"
+        os.path.join("scripts", "dada2_tax_assign.R")
 
 
 rule rdp_classify:
@@ -114,11 +161,9 @@ rule rdp_classify:
             "rdp_tax_assignments.log",
         ),
     threads: 1
-    resources:
-        mem_mb=30000,
     shell:
         """
-        rdp_classifier -Xmx30g -XX:ConcGCThreads=1 classify \\
+        rdp_classifier -Xmx30g -XX:ConcGCThreads={threads} classify \\
         -t {input[0]} \\
         -o {output[0]} {input[1]} \\
         2> {log[0]}
@@ -145,7 +190,7 @@ rule rdp_format_output:
                 "{denoiser}",
                 "3_classified",
                 "rdp_{tax_DB}",
-                "dna-sequences_tax_assignments.txt",
+                "taxonomy.tsv",
             ),
             caption=os.path.join("report", "tax_assignment.rst"),
             category="Taxonomic classification",
