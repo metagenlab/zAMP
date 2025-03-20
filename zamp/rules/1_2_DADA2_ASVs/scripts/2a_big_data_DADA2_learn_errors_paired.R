@@ -22,10 +22,12 @@
 ## Load needed libraries
     library(dada2); packageVersion("dada2")
 
-
+## keep only non empty fastq files
+    q_score_filtered_F_non_empty = q_score_filtered_F[file.size(q_score_filtered_F) != 20]
+    q_score_filtered_R_non_empty = q_score_filtered_R[file.size(q_score_filtered_R) != 20]
 ## Learn error rates
-    errF <- learnErrors(q_score_filtered_F, nbases=1e8, multithread = snakemake@threads, verbose = 1)
-    errR <- learnErrors(q_score_filtered_R, nbases=1e8, multithread = snakemake@threads, verbose = 1)
+    errF <- learnErrors(q_score_filtered_F_non_empty, nbases=1e8, multithread = snakemake@threads, verbose = 1)
+    errR <- learnErrors(q_score_filtered_R_non_empty, nbases=1e8, multithread = snakemake@threads, verbose = 1)
 
 ## Write these error profiles
     saveRDS(object = errF, file = error_profile_F)
