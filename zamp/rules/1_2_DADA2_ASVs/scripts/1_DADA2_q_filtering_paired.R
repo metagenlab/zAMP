@@ -35,6 +35,15 @@
 ### Filter and trim. The filtered reads are directly written while the filtering stats are being save for later compilation.
     filtering_stats <- filterAndTrim(fwd = fnFs, filt = q_score_filtered_F, rev = fnRs, filt.rev = q_score_filtered_R, truncLen=c(F_length,R_length), maxN=0, maxEE=c(FW_ERRORS,RV_ERRORS), truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=snakemake@threads, verbose = TRUE)
     filtering_stats <- as.data.frame(filtering_stats)
+    # catch missing output and create empty files if necessary
+    if(!file.exists(q_score_filtered_F)){
+        gzf = gzfile(q_score_filtered_F)
+	cat('', file=gzf, fill=FALSE)
+	close(gzf)
+	gzf2 = gzfile(q_score_filtered_R)
+	cat('', file=gzf2, fill=FALSE)
+	close(gzf2)
+    }
     filtering_stats$sample <- sample_name
 
 ### Save the stats for this sample in a R object
