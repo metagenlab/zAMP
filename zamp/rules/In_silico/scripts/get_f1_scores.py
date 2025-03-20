@@ -25,7 +25,7 @@ def classify_match(row, rank):
 def compute_metrics(group, rank):
     tp = (group[f"{rank}_prediction"] == "tp").sum()
     fp = (group[f"{rank}_prediction"] == "fp").sum()
-    unclassified = (group[f"{rank}_assigned"] == "unclassified").sum()
+    unclassified = (group[f"{rank}_prediction"] == "unclassified").sum()
     if tp == 0:
         fn = 1
     else:
