@@ -23,13 +23,8 @@ def get_inconsitent_duplicates(df):
 
 
 ## Read count table
-count_df = (
-    pd.read_csv(snakemake.input.count_table, sep="\t")
-    .transpose()
-    .melt(var_name="seq_id", value_name="seq_count", ignore_index=False)
-)
-count_df.index.name = "fasta"
-count_df.reset_index(inplace=True)
+count_df = pd.read_csv(snakemake.input.count_table, sep="\t")
+
 
 ## Read genome assembly taxonomy
 if snakemake.params.local:
@@ -78,14 +73,8 @@ else:
 assigned_tax_df[ranks] = assigned_tax_df.all_tax.str.split(";", expand=True)
 
 ## Add taxonomy to sequences in count table
-amp_df = (
-    count_df[count_df.seq_count > 0]
-    .merge(assigned_tax_df, on="seq_id", how="left")
-    .sort_values("fasta")
-)
-## Replace no amp sequence counts by 0
-amp_df.loc[amp_df["seq_id"] == "No_amp", "seq_count"] = 0
-amp_df["amplified"] = amp_df.seq_id.apply(lambda x: False if x == "No_amp" else True)
+amp_df = count_df.merge(assigned_tax_df, on="seq_id", how="left").sort_values("fasta")
+amp_df["amplified"] = amp_df.seq_id.apply(lambda x: False if x == "no_amp" else True)
 amp_df = amp_df.merge(asm_df, on="fasta", suffixes=("_assigned", "_expected"))
 
 
