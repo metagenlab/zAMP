@@ -106,6 +106,9 @@ if "--use-singularity" in sys.argv:
     workflow.deployment_settings.apptainer_args += (
         f" -B {workflow.basedir}:{workflow.basedir}"
     )
+    workflow.deployment_settings.apptainer_args += (
+        f" -B /tmp:/home/qiime2/q2cli,/tmp:/home/qiime2/matplotlib"
+    )
 
     #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
