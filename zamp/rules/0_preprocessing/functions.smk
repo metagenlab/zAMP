@@ -172,7 +172,7 @@ def read_vsearch_outfile(file):
     if not amps:
         amps = ["no_amp"]
     fastas = [sample] * len(amps)
-    return pd.DataFrame({"fasta": fastas, "seq_id": amps})
+    return pd.DataFrame({"fasta": fastas, "asv_id": amps})
 
 
 def list_vsearch_matches(wildcards):

@@ -12,13 +12,25 @@ def get_match(expected, assigned):
 
 
 def classify_match(row, rank):
-    return "tp" if get_match(row[f"{rank}_expected"], row[f"{rank}_assigned"]) else "fp"
+    if pd.isna(row[f"{rank}_assigned"]):
+        return "unclassified"
+    else:
+        return (
+            "tp"
+            if get_match(row[f"{rank}_expected"], row[f"{rank}_assigned"])
+            else "fp"
+        )
 
 
 def compute_metrics(group, rank):
     tp = (group[f"{rank}_prediction"] == "tp").sum()
     fp = (group[f"{rank}_prediction"] == "fp").sum()
-    fn = int(group[f"{rank}_fn"].sum())
+    unclassified = (group[f"{rank}_assigned"] == "unclassified").sum()
+    if tp == 0:
+        fn = 1
+    else:
+        tp = 1
+        fn = 0
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0
     f1_score = (
@@ -32,6 +44,7 @@ def compute_metrics(group, rank):
             "tp": tp,
             "fp": fp,
             "fn": fn,
+            "unclassified": unclassified,
             "precision": precision,
             "recall": recall,
             "f1_score": f1_score,
@@ -49,10 +62,6 @@ for rank in ranks:
         lambda row: classify_match(row, rank=rank),
         axis=1,
     )
-    assigned = df[f"{rank}_assigned"].tolist()
-    df[f"{rank}_fn"] = df[f"{rank}_expected"].apply(
-        lambda x: not any(get_match(x, assigned) for assigned in assigned)
-    )
     scores = df.groupby("fasta", as_index=False).apply(
         compute_metrics, rank, include_groups=False
     )
@@ -68,6 +77,7 @@ mean_scores = all_scores.groupby("rank", as_index=False).agg(
         "tp": "sum",
         "fp": "sum",
         "fn": "sum",
+        "unclassified": "sum",
         "precision": "mean",
         "recall": "mean",
         "f1_score": "mean",
