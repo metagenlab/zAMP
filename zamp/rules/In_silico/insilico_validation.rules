@@ -118,7 +118,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons,
     output:
-        temp(os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna")),
+        os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna"),
     shell:
         """
         cat {input} > {output}
@@ -136,13 +136,13 @@ rule vsearch_derepicate_amplicons:
     output:
         os.path.join(dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"),
     log:
-        os.path.join(dir.logs, "vsearch", "in_silico.log"),
+        os.path.join(dir.logs, "vsearch", "derep_amplicons.log"),
     shell:
         """
         vsearch \\
         --derep_fulllength {input} \\
         --minuniquesize 1 \\
-        --relabel Seq_ \\
+        --relabel ASV_ \\
         --output {output} \\
         2> {log}
         """
@@ -151,63 +151,49 @@ rule vsearch_derepicate_amplicons:
 ### Count the number of occurences of the representative sequences in the samples.
 
 
-rule InSilico_count_occurences:
+rule vsearch_get_exact_match_amplicons:
     conda:
         os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        samples=os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
-        rep_seq=os.path.join(
-            dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"
-        ),
+        fa=os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
+        db=os.path.join(dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"),
     output:
         os.path.join(
             dir.out.base,
             "vsearch",
-            "2_denoised",
-            "countSeqs",
-            "{sample}_count_table.tsv",
+            "matches",
+            "{sample}_matches.txt",
         ),
     log:
-        os.path.join(
-            dir.logs, "vsearch", "2_denoised", "countSeqs", "{sample}_count_table.tsv"
-        ),
+        os.path.join(dir.logs, "vsearch", "{sample}_matches.log"),
     shell:
-        """       
-        if [ -s "{input[samples]}" ]
-        then
-            echo "{input[samples]} has some data." && \
-            vsearch --usearch_global {input[samples]} \
-                -otutabout {output} \
-                -id 1 \
-                -strand plus \
-                --db {input[rep_seq]} 
-                # do something as file has data
-        else
-            echo "{input[samples]} is empty." && \
-            touch {output}
-            # do something as file is empty
-        fi 2> {log}        
+        """
+        vsearch --usearch_global {input.fa} \\
+        -db {input.db} \\
+        -id 1 \\
+        -userout {output} \\
+        -userfields target &> {log} 
         """
 
 
 ### Format count table from InSilico
-rule create_InSilico_count_table:
-    conda:
-        os.path.join(dir.envs, "amplicons_r_utils.yml")
-    container:
-        singularity_envs["r_utils"]
+rule get_amplicon_counts:
     input:
-        count_table_samples=list_samples_counts,
+        list_vsearch_matches,
     output:
-        count_table=os.path.join(
-            dir.out.base, "vsearch", "2_denoised", "count_table.tsv"
-        ),
-    log:
-        os.path.join(dir.logs, "vsearch", "2_denoised", "count_table.tsv"),
-    script:
-        os.path.join("scripts", "create_count_table_from_insilico.R")
+        os.path.join(dir.out.base, "vsearch", "amplicon_counts.tsv"),
+    run:
+        df = pd.concat([read_vsearch_outfile(tsv) for tsv in input])
+        df = (
+            df.groupby(["fasta", "asv_id"], as_index=False)
+            .value_counts()
+            .sort_values("fasta")
+        )
+        df = df.rename(columns={"count": "asv_count"})
+        df.loc[df["asv_id"] == "no_amp", "asv_count"] = 0
+        df.to_csv(output[0], sep="\t", index=False)
 
 
 ### Create a table to compare tax assignment
@@ -218,16 +204,14 @@ rule In_silico_tax_compare:
         singularity_envs["pandas"]
     input:
         db_tax=os.path.join(DBPATH, "{tax_DB}", "database", "amplicons_all_tax.tsv"),
-        count_table=os.path.join(
-            dir.out.base, "vsearch", "2_denoised", "count_table.tsv"
-        ),
+        count_table=os.path.join(dir.out.base, "vsearch", "amplicon_counts.tsv"),
         expected_taxonomy=get_tax_table,
         assigned_taxonomy=os.path.join(
             dir.out.base,
             "vsearch",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "taxonomy.tsv",
         ),
     output:
         amplicons=os.path.join(
