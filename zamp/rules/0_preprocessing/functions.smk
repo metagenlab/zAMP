@@ -6,6 +6,7 @@ from snakemake.utils import min_version
 from attrmap import AttrMap
 import attrmap.utils as au
 import pandas as pd
+import numpy as np
 import glob
 from metasnek import fastq_finder
 import warnings
@@ -164,14 +165,23 @@ def list_amplicons(wildcards):
     )
 
 
-def list_samples_counts(wildcards):
+def read_vsearch_outfile(file):
+    sample = os.path.basename(file).split("_matches.txt")[0]
+    with open(file, "r") as f:
+        amps = [line.strip() for line in f.readlines()]
+    if not amps:
+        amps = ["no_amp"]
+    fastas = [sample] * len(amps)
+    return pd.DataFrame({"fasta": fastas, "seq_id": amps})
+
+
+def list_vsearch_matches(wildcards):
     return expand(
         os.path.join(
             dir.out.base,
             "vsearch",
-            "2_denoised",
-            "countSeqs",
-            "{sample}_count_table.tsv",
+            "matches",
+            "{sample}_matches.txt",
         ),
         sample=get_samples,
     )
