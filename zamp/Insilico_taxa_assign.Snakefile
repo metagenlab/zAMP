@@ -96,7 +96,7 @@ if FW_PRIMER and RV_PRIMER:
 REPL_EMPTY = config.args.replace_empty
 
 ## Tax assign
-CLASSIFIER = config.args.classifier
+CLASSIFIER = config.args.classifier.split(",")
 DENOISER = config.args.denoiser
 
 ## When using singularity
