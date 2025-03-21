@@ -81,6 +81,7 @@ rule qiime2_export_taxonomy:
         --input-path {input} \\
         --output-path {params} \\
         &> {log}
+        sed -i '1d' {output}
         """
 
 
@@ -132,6 +133,82 @@ rule dada2_assign_taxonomy:
         ),
     script:
         os.path.join("scripts", "dada2_tax_assign.R")
+
+
+rule sintax_classify:
+    conda:
+        os.path.join(dir.envs, "vsearch.yml")
+    container:
+        singularity_envs["vsearch"]
+    input:
+        fa=os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "2_denoised",
+            "dna-sequences.fasta",
+        ),
+        db=os.path.join(DBPATH, "{tax_DB}", "sintax", "trainset_sp.fa.gz"),
+    output:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "sintax_{tax_DB}",
+            "sintaxout.tsv",
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "{denoiser}",
+            "3_classified",
+            "sintax_{tax_DB}.log",
+        ),
+    shell:
+        """
+        vsearch \\
+        --sintax {input.fa} \\
+        --db {input.db} \\
+        --tabbedout {output} \\
+        &> {log} 
+        """
+
+
+rule format_sintax_output:
+    input:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "sintax_{tax_DB}",
+            "sintaxout.tsv",
+        ),
+    output:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "sintax_{tax_DB}",
+            "taxonomy.tsv",
+        ),
+    run:
+        ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+        df = pd.read_csv(input[0], sep="\t", header=None)
+        df.columns = ["asv_id", "tax", "strand"]
+        df[ranks] = df.tax.str.split(",", expand=True)
+        for rank in ranks:
+            df[f"{rank}_confidence"] = (
+                df[f"{rank}"].str.split("(", expand=True)[1].str.replace(")", "")
+            )
+            df[rank] = (
+                df[rank].str.replace(f"{rank[0]}:", "").str.split("(", expand=True)[0]
+            )
+        df = df.ffill(
+            axis=1
+        )  # replace empty confindence values with previous rank confidence
+        df["tax"] = df[ranks].T.agg(";".join)
+        df[["asv_id", "tax", f"{ranks[-1]}_confidence"]].to_csv(
+            output[0], sep="\t", index=False, header=False
+        )
 
 
 rule rdp_classify:

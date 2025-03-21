@@ -153,6 +153,56 @@ rule Hash_DADA2:
         """
 
 
+## Rules fo sintax classifier
+
+
+rule get_sintax_formatted_tax:
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "sintax", "sintax_headers.tsv")),
+    run:
+        ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+        df = pd.read_csv(input[0], sep="\t", header=None)
+        df.columns = ["seq_id", "tax"]
+        df["sintax"] = df.apply(lambda row: get_sintax_tax(row, ranks), axis=1)
+        df[["seq_id", "sintax"]].to_csv(output[0], sep="\t", header=False, index=False)
+
+
+rule get_sintax_trainset:
+    conda:
+        os.path.join(dir.envs, "seqkit.yml")
+    container:
+        singularity_envs["seqkit"]
+    input:
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+        tsv=os.path.join("{prefix}", "sintax", "sintax_headers.tsv"),
+    output:
+        os.path.join("{prefix}", "sintax", "trainset_sp.fa.gz"),
+    log:
+        os.path.join("{prefix}", "logs", "sintax", "trainset_fasta.log"),
+    shell:
+        """
+        seqkit replace \\
+        -p "^(.+)$" -r "{{kv}}" \\
+        -k {input.tsv} \\
+        {input.fa} \\
+        -o {output} \\
+        2> {log}
+        """
+
+
+rule Hash_sintax:
+    input:
+        os.path.join("{prefix}", "sintax", "trainset_sp.fa.gz"),
+    output:
+        os.path.join("{prefix}", "sintax", "sintax.md5"),
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
+
+
 ## Rules to format taxonomy to fit the requirements of the original RDP.
 ### Inspired from https://john-quensen.com/tutorials/training-the-rdp-classifier/ and
 ### following RDP authors' recommendations from https://github.com/rdpstaff/classifier/tree/17bf0bd10581f05c268e963e8c4150084d172d7d

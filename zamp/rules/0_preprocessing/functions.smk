@@ -46,9 +46,16 @@ def list_match_dir(path, pattern):
     ]
 
 
-# DB process functions command functions
+# DB process functions
 def get_mem_mb(mem):
     return int(parse_size(mem) / 10**6)
+
+
+def get_sintax_tax(row, ranks):
+    sintax = []
+    for n, tax in enumerate(row["tax"].split(";")):
+        sintax.append(f"{ranks[n][0]}:{tax}")
+    return f"{row['seq_id']};tax={','.join(sintax)};"
 
 
 # Run command functions
