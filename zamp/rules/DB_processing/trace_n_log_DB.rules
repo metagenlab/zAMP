@@ -49,6 +49,7 @@ hashes = {
     "rdp": os.path.join("{prefix}", "rdp", "rdp.md5"),
     "qiime2": os.path.join("{prefix}", "qiime2", "qiime2.md5"),
     "dada2": os.path.join("{prefix}", "dada2", "dada2.md5"),
+    "sintax": os.path.join("{prefix}", "sintax", "sintax.md5"),
 }
 
 hash_out = [os.path.join("{prefix}", "database", "original.md5")]
