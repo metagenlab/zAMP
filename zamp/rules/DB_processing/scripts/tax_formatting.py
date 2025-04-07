@@ -36,8 +36,8 @@ def ambiguous_taxa(row):
 
 
 # Ranks list
-ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 
+ranks = snakemake.params[0].split(",")
 
 # Read tables
 ## Taxonomy table
@@ -94,7 +94,7 @@ multi_df = (
 
 # Sort taxa occurence for each cluster
 multi_df = multi_df.sort_values(
-    ["clust_id", "count", "Species"], ascending=[True, False, True]
+    ["clust_id", "count", "species"], ascending=[True, False, True]
 )
 
 # All taxa names are joined in "/" seperated name
@@ -105,7 +105,7 @@ multi_df = (
     .reset_index()
 )
 
-multi_df["formatted_Species"] = multi_df.Species.apply(lambda x: format_species(x))
+multi_df["formatted_Species"] = multi_df.species.apply(lambda x: format_species(x))
 multi_df["short_format_Species"] = multi_df.formatted_Species.apply(
     lambda x: shorten_taxa(x)
 )
@@ -120,7 +120,7 @@ all_tax_df["all_tax"] = all_tax_df[ranks].T.agg(";".join)
 
 multi_form_tax_df = multi_df[["seq_id"] + ranks[:-1] + ["short_format_Species"]]
 multi_form_tax_df = multi_form_tax_df.rename(
-    columns={"short_format_Species": "Species"}
+    columns={"short_format_Species": "species"}
 )
 formatted_tax_df = pd.concat([single_df[["seq_id"] + ranks], multi_form_tax_df])
 formatted_tax_df["formatted_tax"] = formatted_tax_df[ranks].T.agg(";".join)

@@ -203,6 +203,13 @@ def db_options(func):
             required=True,
         ),
         click.option(
+            "--ranks",
+            type=str,
+            help="Comma seperated list of ranks in taxonomy",
+            default="kingdom,phylum,class,order,family,genus,species",
+            show_default=True,
+        ),
+        click.option(
             "--name",
             type=str,
             help="Comma seperated list of database names",
@@ -274,12 +281,9 @@ def db_options(func):
         ),
         click.option(
             "--classifier",
-            multiple=True,
-            type=click.Choice(
-                ["rdp", "qiime2", "dada2", "decipher", "sintax"], case_sensitive=False
-            ),
-            default=["rdp", "qiime2", "dada2", "sintax"],
-            help="Which classifiers to train on the database",
+            type=str,
+            default="rdp,qiime2,dada2,sintax,kraken2",
+            help="classifier for which to build taxonomy [rdp, qiime2, dada2, sintax, kraken2]",
             show_default=True,
         ),
     ]
@@ -334,12 +338,9 @@ def run_options(func):
         ),
         click.option(
             "--classifier",
-            multiple=True,
-            type=click.Choice(
-                ["rdp", "qiime2", "dada2", "decipher", "sintax"], case_sensitive=False
-            ),
-            default=["rdp"],
-            help="Which classifiers to use for taxonomic assignment",
+            type=str,
+            default="rdp",
+            help="classifier choise for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
             show_default=True,
         ),
         click.option(
@@ -522,6 +523,13 @@ def insilico_options(func):
             help="Input taxonomic table when using local fasta",
         ),
         click.option(
+            "--ranks",
+            type=str,
+            help="Comma seperated list of ranks in taxonomy",
+            default="kingdom,phylum,class,order,family,genus,species",
+            show_default=True,
+        ),
+        click.option(
             "--taxon/--accession",
             help="Are queries taxa or accessions",
             type=bool,
@@ -655,7 +663,7 @@ def insilico_options(func):
             "--classifier",
             type=str,
             default="rdp",
-            help="classifier choise for taxonomic assignment [rdp, qiime2, dada2, sintax]",
+            help="classifier choise for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
             show_default=True,
         ),
         click.option(

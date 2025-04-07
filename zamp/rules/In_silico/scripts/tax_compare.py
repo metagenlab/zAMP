@@ -3,7 +3,7 @@ import os
 from snakemake.script import snakemake
 
 # Variables
-ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+ranks = snakemake.params.ranks.split(",")
 
 
 # Functions

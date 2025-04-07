@@ -239,6 +239,7 @@ rule In_silico_tax_compare:
     params:
         local=LOCAL,
         suffix=suffix,
+        ranks=RANKS,
     script:
         os.path.join("scripts", "tax_compare.py")
 
@@ -276,9 +277,10 @@ rule get_classification_metrics:
             "metrics",
             "{classifier}_{tax_DB}",
         ),
+        ranks=config.args.ranks,
     shell:
         """
-        python {params.script} {input} {params.prefix}
+        python {params.script} {params.ranks} {input} {params.prefix}
         """
 
 

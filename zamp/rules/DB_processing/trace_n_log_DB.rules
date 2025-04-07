@@ -27,6 +27,7 @@ rule clean_taxonomy:
         temp(os.path.join("{prefix}", "database", "clean_tax.tsv")),
     params:
         db_name=DBNAME,
+        ranks=RANKS,
     script:
         os.path.join("scripts", "clean_tax.py")
 
@@ -47,9 +48,10 @@ rule Hash_original_files:
 
 hashes = {
     "rdp": os.path.join("{prefix}", "rdp", "rdp.md5"),
-    "qiime2": os.path.join("{prefix}", "qiime2", "qiime2.md5"),
+    "qiime2": os.path.join("{prefix}", "classifiers", "qiime2", "qiime2.md5"),
     "dada2": os.path.join("{prefix}", "dada2", "dada2.md5"),
     "sintax": os.path.join("{prefix}", "sintax", "sintax.md5"),
+    "kraken2": os.path.join("{prefix}", "kraken2", "kraken2.md5"),
 }
 
 hash_out = [os.path.join("{prefix}", "database", "original.md5")]

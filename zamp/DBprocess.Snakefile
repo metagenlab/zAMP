@@ -39,7 +39,8 @@ DBNAME = config.args.name
 DBPATH = OUTPUT
 FASTA = config.args.fasta
 TAXONOMY = config.args.taxonomy
-CLASSIFIERS = config.args.classifier
+RANKS = config.args.ranks
+CLASSIFIERS = config.args.classifier.split(",")
 RDP_MEM = config.args.rdp_mem
 PROCESS = config.args.processing
 

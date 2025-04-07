@@ -161,8 +161,10 @@ rule get_sintax_formatted_tax:
         os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
     output:
         temp(os.path.join("{prefix}", "sintax", "sintax_headers.tsv")),
+    params:
+        RANKS,
     run:
-        ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+        ranks = params[0].split(",")
         df = pd.read_csv(input[0], sep="\t", header=None)
         df.columns = ["seq_id", "tax"]
         df["sintax"] = df.apply(lambda row: get_sintax_tax(row, ranks), axis=1)
@@ -197,6 +199,137 @@ rule Hash_sintax:
         os.path.join("{prefix}", "sintax", "trainset_sp.fa.gz"),
     output:
         os.path.join("{prefix}", "sintax", "sintax.md5"),
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
+
+
+## Rules fo kraken2 classifier
+
+
+rule get_kraken2_taxonomy:
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "kraken2", "seqid2tax.tsv")),
+    params:
+        RANKS,
+    run:
+        ranks = params[0].split(",")
+        df = pd.read_csv(input[0], sep="\t", header=None)
+        df.columns = ["seq_id", "tax"]
+        df[ranks] = df["tax"].str.split(";", expand=True)
+        df[["seq_id"] + ranks].to_csv(output[0], sep="\t", index=False)
+
+
+rule get_kraken2_taxdump:
+    conda:
+        os.path.join(dir.envs, "taxonkit.yml")
+    container:
+        singularity_envs["taxonkit"]
+    input:
+        os.path.join("{prefix}", "kraken2", "seqid2tax.tsv"),
+    output:
+        os.path.join("{prefix}", "kraken2", "taxonomy", "names.dmp"),
+        os.path.join("{prefix}", "kraken2", "taxonomy", "nodes.dmp"),
+        os.path.join("{prefix}", "kraken2", "taxonomy", "taxid.map"),
+    params:
+        outdir=os.path.join("{prefix}", "kraken2", "taxonomy"),
+        ranks=config.args.ranks,
+    log:
+        os.path.join("{prefix}", "logs", "kraken2", "taxdump.log"),
+    shell:
+        """
+        taxonkit create-taxdump -A 1 \\
+        -R {params.ranks} \\
+        {input} \\
+        -O {params.outdir} \\
+        2> {log}
+        """
+
+
+rule get_kraken2_formatted_headers:
+    input:
+        os.path.join("{prefix}", "kraken2", "taxonomy", "taxid.map"),
+        os.path.join("{prefix}", "kraken2", "seqid2tax.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "kraken2", "kraken2_headers.tsv")),
+        os.path.join("{prefix}", "kraken2", "taxonomy.tsv"),
+    params:
+        RANKS,
+    run:
+        ranks = params[0].split(",")
+        df = pd.read_csv(input[0], sep="\t", header=None)
+        df.columns = ["seq_id", "taxid"]
+        df["header"] = df.apply(
+            lambda row: f"{row.seq_id}|kraken:taxid|{row.taxid}", axis=1
+        )
+        df[["seq_id", "header"]].to_csv(output[0], sep="\t", header=False, index=False)
+        seq2tax_df = pd.read_csv(input[1], sep="\t")
+        seq2tax_df.merge(df, on="seq_id")[["seq_id", "taxid"] + ranks].to_csv(
+            output[1], sep="\t", index=False
+        )
+
+
+rule get_kraken2_formatted_fasta:
+    conda:
+        os.path.join(dir.envs, "seqkit.yml")
+    container:
+        singularity_envs["seqkit"]
+    input:
+        fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+        tsv=os.path.join("{prefix}", "kraken2", "kraken2_headers.tsv"),
+    output:
+        temp(os.path.join("{prefix}", "kraken2", "kraken2.fa")),
+    log:
+        os.path.join("{prefix}", "logs", "kraken2", "fasta_headers.log"),
+    shell:
+        """
+        seqkit replace \\
+        -p "^(.+)$" -r "{{kv}}" \\
+        -k {input.tsv} \\
+        {input.fa} \\
+        -o {output} \\
+        2> {log}
+        """
+
+
+rule kraken2_build:
+    conda:
+        os.path.join(dir.envs, "kraken2.yml")
+    container:
+        singularity_envs["kraken2"]
+    input:
+        os.path.join("{prefix}", "kraken2", "kraken2.fa"),
+    output:
+        os.path.join("{prefix}", "kraken2", "hash.k2d"),
+        os.path.join("{prefix}", "kraken2", "opts.k2d"),
+        os.path.join("{prefix}", "kraken2", "taxo.k2d"),
+    params:
+        os.path.join("{prefix}", "kraken2"),
+    log:
+        os.path.join("{prefix}", "logs", "kraken2", "build.log"),
+    shell:
+        """
+        kraken2-build \\
+        --no-masking \\
+        --add-to-library {input} \\
+        --db {params} &>> {log}
+        
+        kraken2-build \\
+        --build \\
+        --db {params} &>> {log}
+        """
+
+
+rule Hash_kraken2:
+    input:
+        os.path.join("{prefix}", "kraken2", "hash.k2d"),
+        os.path.join("{prefix}", "kraken2", "opts.k2d"),
+        os.path.join("{prefix}", "kraken2", "taxo.k2d"),
+    output:
+        os.path.join("{prefix}", "kraken2", "kraken2.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}

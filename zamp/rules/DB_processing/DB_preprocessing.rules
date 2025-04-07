@@ -204,6 +204,8 @@ rule Derep_and_merge_taxonomy:
         ambiguous=os.path.join("{prefix}", "database", "ambiguous_taxa.tsv"),
     log:
         os.path.join("{prefix}", "logs", "derep_and_merge_tax.log"),
+    params:
+        RANKS,
     script:
         os.path.join("scripts", "tax_formatting.py")
 

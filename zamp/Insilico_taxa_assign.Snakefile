@@ -54,7 +54,7 @@ else:
 
 ## Classifier
 CLASSIFIER = config.args.classifier
-
+RANKS = config.args.ranks
 ## Assembly finder args
 AF_ARGS = config.args.af_args
 TAXON = config.args.taxon

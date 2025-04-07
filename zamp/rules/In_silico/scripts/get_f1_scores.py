@@ -3,8 +3,8 @@
 import pandas as pd
 import sys
 
-if len(sys.argv) != 3:
-    exit("Usage: get_f1_scores.py <tsv> <prefix>")
+if len(sys.argv) != 4:
+    exit("Usage: get_f1_scores.py <ranks> <tsv> <prefix>")
 
 
 def get_match(expected, assigned):
@@ -52,10 +52,12 @@ def compute_metrics(group, rank):
     )
 
 
-df = pd.read_csv(sys.argv[1], sep="\t")
+ranks = sys.argv[1].split(",")
+
+df = pd.read_csv(sys.argv[2], sep="\t")
 df = df[df.amplified]
 
-ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+
 all_scores = []
 for rank in ranks:
     df[f"{rank}_prediction"] = df.apply(
@@ -70,7 +72,7 @@ for rank in ranks:
 all_scores = pd.concat(all_scores)
 
 
-all_scores.to_csv(f"{sys.argv[2]}_all_scores.tsv", sep="\t", index=False)
+all_scores.to_csv(f"{sys.argv[3]}_all_scores.tsv", sep="\t", index=False)
 
 mean_scores = all_scores.groupby("rank", as_index=False).agg(
     {
@@ -89,4 +91,4 @@ mean_scores["rank"] = pd.Categorical(
     ordered=True,
 )
 mean_scores = mean_scores.sort_values("rank")
-mean_scores.to_csv(f"{sys.argv[2]}_mean_scores.tsv", sep="\t", index=False)
+mean_scores.to_csv(f"{sys.argv[3]}_mean_scores.tsv", sep="\t", index=False)

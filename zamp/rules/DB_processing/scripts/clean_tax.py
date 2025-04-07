@@ -38,7 +38,7 @@ if any(df.columns.str.contains(";")):
 
 df.columns = ["seq_id", "tax"]
 
-ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+ranks = snakemake.params.ranks.split(",")
 
 
 if "unite" in snakemake.params.db_name:
