@@ -8,9 +8,9 @@ rule cutadapt_amplicons:
     container:
         singularity_envs["cutadapt"]
     input:
-        os.path.join("{prefix}", "database", "original_seqs.fasta"),
+        FASTA,
     output:
-        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
+        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta.gz"),
     params:
         errors=ERRORS,
         fw=FW_PRIMER,
@@ -99,10 +99,10 @@ rule vsearch_derep:
     container:
         singularity_envs["vsearch"]
     input:
-        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
+        os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta.gz"),
     output:
         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
-        uc=os.path.join("{prefix}", "database", "amplicons_derep.uc"),
+        uc=os.path.join("{prefix}", "database", "amplicons_vsearch_derep.uc"),
     log:
         os.path.join("{prefix}", "logs", "vsearch_derep.log"),
     shell:
@@ -197,11 +197,11 @@ rule Derep_and_merge_taxonomy:
         singularity_envs["pandas"]
     input:
         tax=os.path.join("{prefix}", "clean_tax.tsv"),
-        uc=os.path.join("{prefix}", "database", "amplicons_derep.uc"),
+        uc=os.path.join("{prefix}", "database", "amplicons_vsearch_derep.uc"),
     output:
         collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
         all=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
-        ambiguous=os.path.join("{prefix}", "database", "ambiguous_taxa.tsv"),
+        ambiguous=os.path.join("{prefix}", "database", "amplicons_ambiguous_taxa.tsv"),
     log:
         os.path.join("{prefix}", "logs", "derep_and_merge_tax.log"),
     params:
