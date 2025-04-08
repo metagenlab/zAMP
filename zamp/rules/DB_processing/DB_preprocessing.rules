@@ -102,7 +102,7 @@ rule vsearch_derep:
         os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta"),
     output:
         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
-        uc=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.uc"),
+        uc=os.path.join("{prefix}", "database", "amplicons_derep.uc"),
     log:
         os.path.join("{prefix}", "logs", "vsearch_derep.log"),
     shell:
@@ -153,7 +153,7 @@ rule vsearch_derep:
 #     input:
 #         os.path.join("{prefix}", "database", "vsearch", "matched_segments.fasta"),
 #     output:
-#         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
+#         fa=os.path.join("{prefix}", "database","amplicons.fasta"),
 #         uc=os.path.join("{prefix}", "database", "vsearch", "matched_segments_derep.uc"),
 #     log:
 #         os.path.join("{prefix}", "logs", "vsearch_derep_segments.log"),
@@ -196,8 +196,8 @@ rule Derep_and_merge_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        tax=os.path.join("{prefix}", "database", "clean_tax.tsv"),
-        uc=os.path.join("{prefix}", "database", "vsearch", "amplicons_derep.uc"),
+        tax=os.path.join("{prefix}", "clean_tax.tsv"),
+        uc=os.path.join("{prefix}", "database", "amplicons_derep.uc"),
     output:
         collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
         all=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
@@ -227,25 +227,10 @@ rule Derep_and_merge_taxonomy:
 #         qiime tools export \\
 #         --input-path {input.fa} \\
 #         --output-path {params}
-
 #         qiime tools export \\
 #         --input-path {input.tax} \\
 #         --output-path {params}
-
 #         awk 'BEGIN{{OFS=FS="\\t"}} NR==1{{$1="seq_id"; $2="all_tax"}} 1' {params}/taxonomy.tsv > {output.all_tax}
 #         tail -n +2 {params}/taxonomy.tsv > {output.tax}
 #         mv {params}/dna-sequences.fasta {output.fa}
 #         """
-
-
-rule Hash_derep_fasta_tax:
-    input:
-        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-        os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
-        os.path.join("{prefix}", "database", "amplicons.fasta"),
-    output:
-        os.path.join("{prefix}", "database", "fasta_tax.md5"),
-    shell:
-        """
-        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
-        """

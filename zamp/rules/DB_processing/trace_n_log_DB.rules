@@ -8,7 +8,6 @@ rule backup_original_files:
     output:
         fa=os.path.join("{prefix}", "database", "original_seqs.fasta"),
         tax=os.path.join("{prefix}", "database", "original_tax.txt"),
-    threads: 1
     shell:
         """
         cp {input.fa} {output.fa}
@@ -24,7 +23,7 @@ rule clean_taxonomy:
     input:
         os.path.join("{prefix}", "database", "original_tax.txt"),
     output:
-        temp(os.path.join("{prefix}", "database", "clean_tax.tsv")),
+        temp(os.path.join("{prefix}", "clean_tax.tsv")),
     params:
         db_name=DBNAME,
         ranks=RANKS,
@@ -37,7 +36,20 @@ rule Hash_original_files:
         os.path.join("{prefix}", "database", "original_seqs.fasta"),
         os.path.join("{prefix}", "database", "original_tax.txt"),
     output:
-        os.path.join("{prefix}", "database", "original.md5"),
+        os.path.join("{prefix}", "hashes", "original.md5"),
+    shell:
+        """
+        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
+        """
+
+
+rule hash_amplicons_seq_tax:
+    input:
+        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
+        os.path.join("{prefix}", "database", "amplicons.fasta"),
+    output:
+        os.path.join("{prefix}", "hashes", "amplicons.md5"),
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
@@ -47,14 +59,17 @@ rule Hash_original_files:
 ## Generate a hash from all relevant files to insure that we always work with the same reference databases
 
 hashes = {
-    "rdp": os.path.join("{prefix}", "rdp", "rdp.md5"),
-    "qiime2": os.path.join("{prefix}", "qiime2", "qiime2.md5"),
-    "dada2": os.path.join("{prefix}", "dada2", "dada2.md5"),
-    "sintax": os.path.join("{prefix}", "sintax", "sintax.md5"),
-    "kraken2": os.path.join("{prefix}", "kraken2", "kraken2.md5"),
+    "rdp": os.path.join("{prefix}", "hashes", "rdp.md5"),
+    "qiime2": os.path.join("{prefix}", "hashes", "qiime2.md5"),
+    "dada2": os.path.join("{prefix}", "hashes", "dada2.md5"),
+    "sintax": os.path.join("{prefix}", "hashes", "sintax.md5"),
+    "kraken2": os.path.join("{prefix}", "hashes", "kraken2.md5"),
 }
 
-hash_out = [os.path.join("{prefix}", "database", "original.md5")]
+hash_out = [
+    os.path.join("{prefix}", "hashes", "original.md5"),
+    os.path.join("{prefix}", "hashes", "amplicons.md5"),
+]
 for classifier in CLASSIFIERS:
     hash_out.append(hashes[classifier])
 
@@ -64,7 +79,6 @@ rule hash_global_DB:
         hash_out,
     output:
         os.path.join("{prefix}", "database.md5"),
-    threads: 1
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}

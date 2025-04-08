@@ -14,25 +14,12 @@ rule copy_fasta:
 
 rule copy_taxonomy:
     input:
-        os.path.join("{prefix}", "database", "clean_tax.tsv"),
+        os.path.join("{prefix}", "clean_tax.tsv"),
     output:
         tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-        all_tax=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
+        all_tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
     shell:
         """
         cp {input} {output.tax}
         awk 'BEGIN{{OFS=FS="\\t"}} NR==1{{$1="seq_id"; $2="all_tax"}} 1' {input} > {output.all_tax}
-        """
-
-
-rule Hash_unprocessed_fasta_tax:
-    input:
-        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-        os.path.join("{prefix}", "database", "amplicons_all_tax.txt"),
-        os.path.join("{prefix}", "database", "amplicons.fasta"),
-    output:
-        os.path.join("{prefix}", "database", "fasta_tax.md5"),
-    shell:
-        """
-        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
         """
