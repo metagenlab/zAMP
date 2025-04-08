@@ -195,7 +195,7 @@ rule format_sintax_output:
     run:
         ranks = params[0].split(",")
         df = pd.read_csv(input[0], sep="\t", header=None)
-        df.columns = ["asv_id", "tax", "strand"]
+        df.columns = ["seq_id", "tax", "strand"]
         df[ranks] = df.tax.str.split(",", expand=True)
         for rank in ranks:
             df[f"{rank}_confidence"] = (
@@ -208,7 +208,7 @@ rule format_sintax_output:
             axis=1
         )  # replace empty confindence values with previous rank confidence
         df["tax"] = df[ranks].T.agg(";".join)
-        df[["asv_id", "tax", f"{ranks[-1]}_confidence"]].to_csv(
+        df[["seq_id", "tax", f"{ranks[-1]}_confidence"]].to_csv(
             output[0], sep="\t", index=False, header=False
         )
 

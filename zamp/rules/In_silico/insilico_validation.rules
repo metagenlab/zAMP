@@ -187,12 +187,12 @@ rule get_amplicon_counts:
     run:
         df = pd.concat([read_vsearch_outfile(tsv) for tsv in input])
         df = (
-            df.groupby(["fasta", "asv_id"], as_index=False)
+            df.groupby(["fasta", "seq_id"], as_index=False)
             .value_counts()
             .sort_values("fasta")
         )
         df = df.rename(columns={"count": "asv_count"})
-        df.loc[df["asv_id"] == "no_amp", "asv_count"] = 0
+        df.loc[df["seq_id"] == "no_amp", "asv_count"] = 0
         df.to_csv(output[0], sep="\t", index=False)
 
 

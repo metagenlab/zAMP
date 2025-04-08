@@ -52,7 +52,7 @@ asm_df["species_in_DB"] = asm_df["species"].apply(
 ## Read assigned taxonomy
 assigned_tax_df = pd.read_csv(snakemake.input.assigned_taxonomy, sep="\t", header=None)
 if "formatted_tax" in db_tax_df.columns:
-    assigned_tax_df.columns = ["asv_id", "formatted_tax", "confidence"]
+    assigned_tax_df.columns = ["seq_id", "formatted_tax", "confidence"]
     # Get formatted to full taxonomy dictionary
     tax2all = dict(zip(db_tax_df.formatted_tax, db_tax_df.all_tax))
     # Get all_tax column
@@ -68,13 +68,13 @@ if "formatted_tax" in db_tax_df.columns:
     )
 
 else:
-    assigned_tax_df.columns = ["asv_id", "all_tax", "confidence"]
+    assigned_tax_df.columns = ["seq_id", "all_tax", "confidence"]
 
 assigned_tax_df[ranks] = assigned_tax_df.all_tax.str.split(";", expand=True)
 
 ## Add taxonomy to sequences in count table
-amp_df = count_df.merge(assigned_tax_df, on="asv_id", how="left").sort_values("fasta")
-amp_df["amplified"] = amp_df.asv_id.apply(lambda x: False if x == "no_amp" else True)
+amp_df = count_df.merge(assigned_tax_df, on="seq_id", how="left").sort_values("fasta")
+amp_df["amplified"] = amp_df.seq_id.apply(lambda x: False if x == "no_amp" else True)
 amp_df = amp_df.merge(asm_df, on="fasta", suffixes=("_assigned", "_expected"))
 
 
