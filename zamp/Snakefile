@@ -88,7 +88,7 @@ else:
     DBPATH = os.path.dirname(DBPATH)
 
 ## Classifier
-CLASSIFIER = config.args.classifier
+CLASSIFIER = config.args.classifier.split(",")
 
 
 ## Post-processing args
