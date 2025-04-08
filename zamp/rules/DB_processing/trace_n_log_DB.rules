@@ -1,17 +1,15 @@
 ## Set of rules to backup the input database and generate a hash code of these input files and the output files.
 
 
-rule backup_original_files:
+rule archive_original_files:
     input:
         fa=FASTA,
         tax=TAXONOMY,
     output:
-        fa=os.path.join("{prefix}", "database", "original_seqs.fasta"),
-        tax=os.path.join("{prefix}", "database", "original_tax.txt"),
+        os.path.join("{prefix}", "database", "original_files.tar.gz"),
     shell:
         """
-        cp {input.fa} {output.fa}
-        cp {input.tax} {output.tax}
+        tar czf {output} {input}
         """
 
 
@@ -21,7 +19,7 @@ rule clean_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        os.path.join("{prefix}", "database", "original_tax.txt"),
+        TAXONOMY,
     output:
         temp(os.path.join("{prefix}", "clean_tax.tsv")),
     params:
@@ -31,10 +29,9 @@ rule clean_taxonomy:
         os.path.join("scripts", "clean_tax.py")
 
 
-rule Hash_original_files:
+rule hash_original_files_archive:
     input:
-        os.path.join("{prefix}", "database", "original_seqs.fasta"),
-        os.path.join("{prefix}", "database", "original_tax.txt"),
+        os.path.join("{prefix}", "database", "original_files.tar.gz"),
     output:
         os.path.join("{prefix}", "hashes", "original.md5"),
     shell:
