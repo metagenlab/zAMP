@@ -43,7 +43,7 @@ rule qiime2_import_taxonomy:
         """
 
 
-rule qiime2_train_classifier:
+rule qiime2_fit_classifier_naive_bayes:
     conda:
         os.path.join(dir.envs, "qiime2.yml")
     container:
@@ -249,6 +249,24 @@ rule get_kraken2_taxdump:
         """
 
 
+rule get_kraken2_taxid2lineage:
+    conda:
+        os.path.join(dir.envs, "taxonkit.yml")
+    container:
+        singularity_envs["taxonkit"]
+    input:
+        os.path.join("{prefix}", "kraken2", "taxonomy", "names.dmp"),
+    output:
+        os.path.join("{prefix}", "kraken2", "taxid2lineage.tsv"),
+    params:
+        os.path.join("{prefix}", "kraken2", "taxonomy"),
+    shell:
+        """
+        export TAXONKIT_DB={params}
+        taxonkit list --ids 1 | taxonkit lineage -r > {output}
+        """
+
+
 rule get_kraken2_formatted_headers:
     input:
         os.path.join("{prefix}", "kraken2", "taxonomy", "taxid.map"),
@@ -315,16 +333,24 @@ rule kraken2_build:
         kraken2-build \\
         --no-masking \\
         --add-to-library {input} \\
-        --db {params} &>> {log}
+        --db {params} \\
+        &>> {log}
         
         kraken2-build \\
         --build \\
-        --db {params} &>> {log}
+        --db {params} \\
+        &>> {log}
+
+        kraken2-build \\
+        --clean \\
+        --db {params} \\
+        &>> {log}
         """
 
 
 rule Hash_kraken2:
     input:
+        os.path.join("{prefix}", "kraken2", "taxid2lineage.tsv"),
         os.path.join("{prefix}", "kraken2", "hash.k2d"),
         os.path.join("{prefix}", "kraken2", "opts.k2d"),
         os.path.join("{prefix}", "kraken2", "taxo.k2d"),

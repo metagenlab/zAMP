@@ -18,7 +18,7 @@ rule qiime2_import_sequences:
         """
 
 
-rule qiime2_classify:
+rule qiime2_feature_classifier:
     conda:
         os.path.join(dir.envs, "qiime2.yml")
     container:
@@ -190,8 +190,10 @@ rule format_sintax_output:
             "sintax_{tax_DB}",
             "taxonomy.tsv",
         ),
+    params:
+        RANKS,
     run:
-        ranks = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+        ranks = params[0].split(",")
         df = pd.read_csv(input[0], sep="\t", header=None)
         df.columns = ["asv_id", "tax", "strand"]
         df[ranks] = df.tax.str.split(",", expand=True)
@@ -209,6 +211,111 @@ rule format_sintax_output:
         df[["asv_id", "tax", f"{ranks[-1]}_confidence"]].to_csv(
             output[0], sep="\t", index=False, header=False
         )
+
+
+rule kraken2_classify:
+    conda:
+        os.path.join(dir.envs, "kraken2.yml")
+    container:
+        singularity_envs["kraken2"]
+    input:
+        fa=os.path.join(dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"),
+        db=os.path.join(DBPATH, "{tax_DB}", "kraken2"),
+    output:
+        out=temp(
+            os.path.join(
+                dir.out.base,
+                "{denoiser}",
+                "3_classified",
+                "kraken2_{tax_DB}",
+                "kraken2.out",
+            )
+        ),
+        rep=os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "kraken2_{tax_DB}",
+            "kraken2.report.txt",
+        ),
+    log:
+        os.path.join(
+            dir.logs,
+            "{denoiser}",
+            "3_classified",
+            "kraken2_{tax_DB}",
+            "kraken2_tax_assignments.log",
+        ),
+    shell:
+        """
+        kraken2 \\
+        --db {input.db} \\
+        --output {output.out} \\
+        --report {output.rep} \\
+        {input.fa} \\
+        2> {log}
+        """
+
+
+rule add_kraken2_confidence:
+    conda:
+        os.path.join(dir.envs, "conifer.yml")
+    container:
+        singularity_envs["conifer"]
+    input:
+        k2out=os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "kraken2_{tax_DB}",
+            "kraken2.out",
+        ),
+        k2d=os.path.join(DBPATH, "{tax_DB}", "kraken2", "taxo.k2d"),
+    output:
+        temp(
+            os.path.join(
+                dir.out.base,
+                "{denoiser}",
+                "3_classified",
+                "kraken2_{tax_DB}",
+                "kraken2.conifer.out",
+            )
+        ),
+    shell:
+        """
+        conifer \\
+        -i {input.k2out} \\
+        -d {input.k2d} \\
+        > {output}
+        """
+
+
+rule format_kraken2_output:
+    input:
+        k2_out=os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "kraken2_{tax_DB}",
+            "kraken2.conifer.out",
+        ),
+        lineage=os.path.join(DBPATH, "{tax_DB}", "kraken2", "taxid2lineage.tsv"),
+    output:
+        os.path.join(
+            dir.out.base,
+            "{denoiser}",
+            "3_classified",
+            "kraken2_{tax_DB}",
+            "taxonomy.tsv",
+        ),
+    run:
+        df = pd.read_csv(input.k2_out, sep="\t", header=None)
+        df.columns = ["status", "seq_id", "taxid", "length", "lca", "confidence"]
+        lindf = pd.read_csv(input.lineage, sep="\t", header=None)
+        lindf.columns = ["taxid", "lineage", "rank"]
+        df.merge(lindf, on="taxid", how="left")[
+            ["seq_id", "lineage", "confidence"]
+        ].to_csv(output[0], sep="\t", index=False, header=False)
 
 
 rule rdp_classify:
@@ -281,9 +388,10 @@ rule rdp_format_output:
             "scripts",
             "format_RDP_output.py",
         ),
+        ranks=config.args.ranks,
     shell:
         """
-        python {params.script} {input} {output}
+        python {params.script} {params.ranks} {input} {output}
         """
 
 
