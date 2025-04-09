@@ -192,13 +192,13 @@ def db_options(func):
     options = [
         click.option(
             "--fasta",
-            type=click.Path(readable=True),
+            type=click.Path(readable=True, exists=True, file_okay=True),
             help="Path to database fasta file",
             required=True,
         ),
         click.option(
             "--taxonomy",
-            type=click.Path(readable=True),
+            type=click.Path(readable=True, exists=True, file_okay=True),
             help="Path to tab seperated taxonomy file in QIIME format",
             required=True,
         ),
