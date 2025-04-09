@@ -103,6 +103,7 @@ else:
 rule all:
     input:
         os.path.join(OUTPUT, "database.md5"),
+        os.path.join(OUTPUT, "database", "original_files.tar.gz"),
 
 
 ## Optional DBPATH for RDP training diagnostics

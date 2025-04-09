@@ -1,15 +1,17 @@
 ## Set of rules to backup the input database and generate a hash code of these input files and the output files.
 
 
-rule archive_original_files:
+rule copy_original_files:
     input:
         fa=FASTA,
         tax=TAXONOMY,
     output:
-        os.path.join("{prefix}", "database", "original_files.tar.gz"),
+        fa=os.path.join("{prefix}", "database", "original_seq.fasta"),
+        tax=os.path.join("{prefix}", "database", "original_tax.txt"),
     shell:
         """
-        tar czf {output} {input}
+        cp {input.fa} {output.fa} 
+        cp {input.tax} {output.tax}
         """
 
 
@@ -19,9 +21,9 @@ rule clean_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        TAXONOMY,
+        os.path.join("{prefix}", "database", "original_tax.txt"),
     output:
-        temp(os.path.join("{prefix}", "clean_tax.tsv")),
+        temp(os.path.join("{prefix}", "database", "clean_tax.tsv")),
     params:
         db_name=DBNAME,
         ranks=RANKS,
@@ -31,7 +33,8 @@ rule clean_taxonomy:
 
 rule hash_original_files_archive:
     input:
-        os.path.join("{prefix}", "database", "original_files.tar.gz"),
+        os.path.join("{prefix}", "database", "original_seq.fasta"),
+        os.path.join("{prefix}", "database", "original_tax.txt"),
     output:
         os.path.join("{prefix}", "hashes", "original.md5"),
     shell:
@@ -69,6 +72,20 @@ hash_out = [
 ]
 for classifier in CLASSIFIERS:
     hash_out.append(hashes[classifier])
+
+
+rule archive_original_files:
+    input:
+        hashes=hash_out,
+        fa=os.path.join("{prefix}", "database", "original_seq.fasta"),
+        tax=os.path.join("{prefix}", "database", "original_tax.txt"),
+    output:
+        os.path.join("{prefix}", "database", "original_files.tar.gz"),
+    shell:
+        """
+        tar -czf {output} {input.fa} {input.tax}
+        rm {input.fa} {input.tax}
+        """
 
 
 rule hash_global_DB:
