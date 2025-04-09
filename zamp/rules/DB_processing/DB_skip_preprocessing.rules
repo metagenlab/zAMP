@@ -14,7 +14,7 @@ rule copy_fasta:
 
 rule copy_taxonomy:
     input:
-        os.path.join("{prefix}", "clean_tax.tsv"),
+        os.path.join("{prefix}", "database", "clean_tax.tsv"),
     output:
         tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
         all_tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),

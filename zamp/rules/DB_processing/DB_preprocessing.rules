@@ -8,7 +8,7 @@ rule cutadapt_amplicons:
     container:
         singularity_envs["cutadapt"]
     input:
-        FASTA,
+        os.path.join("{prefix}", "database", "original_seq.fasta"),
     output:
         os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta.gz"),
     params:
@@ -26,7 +26,8 @@ rule cutadapt_amplicons:
         -o {output} \\
         -g {params.fw}...{params.rv} \\
         --discard-untrimmed \\
-        {input} &> {log}
+        {input} \\
+        &> {log}
         """
 
 
@@ -196,7 +197,7 @@ rule Derep_and_merge_taxonomy:
     container:
         singularity_envs["pandas"]
     input:
-        tax=os.path.join("{prefix}", "clean_tax.tsv"),
+        tax=os.path.join("{prefix}", "database", "clean_tax.tsv"),
         uc=os.path.join("{prefix}", "database", "amplicons_vsearch_derep.uc"),
     output:
         collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
