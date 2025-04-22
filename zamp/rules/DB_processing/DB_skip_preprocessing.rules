@@ -3,7 +3,7 @@
 # set of rules will be used to bypass the preprocessing of the database.
 rule copy_fasta:
     input:
-        os.path.join("{prefix}", "database", "original_seqs.fasta"),
+        os.path.join("{prefix}", "database", "original_seq.fasta"),
     output:
         os.path.join("{prefix}", "database", "amplicons.fasta"),
     shell:
@@ -17,7 +17,7 @@ rule copy_taxonomy:
         os.path.join("{prefix}", "database", "clean_tax.tsv"),
     output:
         tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-        all_tax=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        all_tax=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
     shell:
         """
         cp {input} {output.tax}
