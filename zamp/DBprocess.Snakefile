@@ -42,7 +42,6 @@ TAXONOMY = config.args.taxonomy
 RANKS = config.args.ranks
 CLASSIFIERS = config.args.classifier.split(",")
 RDP_MEM = config.args.rdp_mem
-PROCESS = config.args.processing
 
 ## Cutadapt args
 ERRORS = config.args.errors
@@ -54,15 +53,15 @@ MINLEN = config.args.minlen
 FW_OTHER = config.args.cutadapt_args_fw
 RV_OTHER = config.args.cutadapt_args_rv
 
-ADAPTER = ""
-if FW_PRIMER and RV_PRIMER:
-    FW_PRIMER_COMPL = Seq.reverse_complement(Seq(FW_PRIMER))
-    FW_LEN = len(FW_PRIMER)
-    RV_LEN = len(RV_PRIMER)
-    RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
-    FW_COV = round(FW_LEN * COV)
-    RV_COV = round(RV_LEN * COV)
-    ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};{FW_OTHER}...{RV_PRIMER_COMPL};min_overlap={RV_COV};{RV_OTHER}"
+# ADAPTER = ""
+# if FW_PRIMER and RV_PRIMER:
+#     FW_PRIMER_COMPL = Seq.reverse_complement(Seq(FW_PRIMER))
+#     FW_LEN = len(FW_PRIMER)
+#     RV_LEN = len(RV_PRIMER)
+#     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
+#     FW_COV = round(FW_LEN * COV)
+#     RV_COV = round(RV_LEN * COV)
+#     ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV};{FW_OTHER}...{RV_PRIMER_COMPL};min_overlap={RV_COV};{RV_OTHER}"
 
 
 ## When using singularity
@@ -90,7 +89,7 @@ include: os.path.join("rules", "DB_processing", "RDP_validation.rules")
 ## Taxonomy database can be skipped by config parameters. Include the right rules based on this parameter.
 
 
-if PROCESS:
+if FW_PRIMER and RV_PRIMER:
 
     include: os.path.join("rules", "DB_processing", "DB_preprocessing.rules")
 
