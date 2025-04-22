@@ -105,8 +105,8 @@ multi_df = (
     .reset_index()
 )
 
-multi_df["formatted_Species"] = multi_df.species.apply(lambda x: format_species(x))
-multi_df["short_format_Species"] = multi_df.formatted_Species.apply(
+multi_df["formatted_species"] = multi_df.species.apply(lambda x: format_species(x))
+multi_df["short_format_species"] = multi_df.formatted_species.apply(
     lambda x: shorten_taxa(x)
 )
 ## Add seq_id to multi_df
@@ -118,9 +118,9 @@ all_tax_df = pd.concat([single_df[["seq_id"] + ranks], multi_df[["seq_id"] + ran
 all_tax_df.loc[:, "ambiguous_taxa"] = all_tax_df.apply(ambiguous_taxa, axis=1)
 all_tax_df["all_tax"] = all_tax_df[ranks].T.agg(";".join)
 
-multi_form_tax_df = multi_df[["seq_id"] + ranks[:-1] + ["short_format_Species"]]
+multi_form_tax_df = multi_df[["seq_id"] + ranks[:-1] + ["short_format_species"]]
 multi_form_tax_df = multi_form_tax_df.rename(
-    columns={"short_format_Species": "species"}
+    columns={"short_format_species": "species"}
 )
 formatted_tax_df = pd.concat([single_df[["seq_id"] + ranks], multi_form_tax_df])
 formatted_tax_df["formatted_tax"] = formatted_tax_df[ranks].T.agg(";".join)

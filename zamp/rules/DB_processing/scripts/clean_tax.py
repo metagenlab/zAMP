@@ -50,7 +50,7 @@ if "greengenes" in snakemake.params.db_name:
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
 
-df[ranks] = df.tax.str.split(";", expand=True).loc[:, 0:6]
+df[ranks] = df.tax.str.split(";", expand=True).loc[:, 0 : len(ranks) - 1]
 
 
 if "silva" in snakemake.params.db_name:
@@ -83,7 +83,7 @@ df = df.replace("", np.nan).fillna(np.nan)
 ## Propagate ranks
 nans = df.isna()
 for n, rank in enumerate(ranks):
-    if rank != "Kingdom":
+    if rank != "kingdom":
         prev = ranks[n - 1]
         df.loc[nans[rank], rank] = (
             df.loc[nans[rank], prev] + "_placeholder_" + rank[0].lower()
@@ -91,9 +91,9 @@ for n, rank in enumerate(ranks):
 
 if "silva" in snakemake.params.db_name:
     ## Get classified species index
-    index = ~df["Species"].str.contains("_placeholder_", na=False)
+    index = ~df["species"].str.contains("_placeholder_", na=False)
     ## Add parent name in species for classified species
-    df.loc[index, "Species"] = df.loc[index, "Genus"] + " " + df.loc[index, "Species"]
+    df.loc[index, "species"] = df.loc[index, "genus"] + " " + df.loc[index, "species"]
 
 conv_df = find_convergent_taxa(df[ranks])
 if not conv_df.empty:
