@@ -31,12 +31,40 @@ def format_species(species):
         return species
 
 
+def find_convergent_taxa(df):
+    """
+    Identifies rows where a taxon is duplicated but has a different origin
+    (Same species but two different genera for example)
+    """
+    inconsistent_rows = []
+
+    # Iterate over columns starting from the second one
+    for i in range(1, len(df.columns)):
+        col = df.columns[i]
+        prev_col = df.columns[i - 1]
+
+        # Group by the current column to find duplicates
+        grouped = df.groupby(col)
+
+        for value, group in grouped:
+            # If there are duplicates in the current column
+            if len(group) > 1:
+                # Check if the previous column values are different
+                if group[prev_col].nunique() > 1:
+                    inconsistent_rows.append(group)
+
+    # Combine all inconsistent groups into a single DataFrame
+    if inconsistent_rows:
+        return pd.concat(inconsistent_rows).drop_duplicates()
+    else:
+        return pd.DataFrame()  # Return empty DataFrame if no inconsistencies are found
+
+
 def ambiguous_taxa(row):
     return any("/" in str(cell) for cell in row)
 
 
 # Ranks list
-
 ranks = snakemake.params[0].split(",")
 
 # Read tables
@@ -46,7 +74,7 @@ if any(tax_df.columns.str.contains(";")):
     tax_df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
 tax_df.columns = ["seq_id", "tax"]
 ## Split taxonomy path into one column per rank
-tax_df[ranks] = tax_df.tax.str.split(";", expand=True).loc[:, 0:6]
+tax_df[ranks] = tax_df.tax.str.split(";", expand=True).loc[:, 0 : len(ranks) - 1]
 
 
 # Vsearch output table
@@ -109,6 +137,16 @@ multi_df["formatted_species"] = multi_df.species.apply(lambda x: format_species(
 multi_df["short_format_species"] = multi_df.formatted_species.apply(
     lambda x: shorten_taxa(x)
 )
+# Check for convergent taxa in shortened names
+cols = ranks[:-1] + ["short_format_species"]
+conv_df = find_convergent_taxa(multi_df[cols])
+# If convergent taxa are found, shorten names by max cluster size
+if not conv_df.empty:
+    n = conv_df["short_format_species"].str.split("/").apply(len).max()
+    multi_df["short_format_species"] = multi_df.formatted_species.apply(
+        lambda x: shorten_taxa(x, n=n + 1)
+    )
+
 ## Add seq_id to multi_df
 multi_df = clust_df[clust_df.record_type == "C"][["clust_id", "seq_id"]].merge(
     multi_df, on="clust_id"
