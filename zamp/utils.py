@@ -228,9 +228,23 @@ def db_options(func):
             default=None,
         ),
         click.option(
+            "--minlen",
+            type=int,
+            help="Minimum amplicon length",
+            default=50,
+            show_default=True,
+        ),
+        click.option(
+            "--maxlen",
+            type=int,
+            help="Maximum amplicon length",
+            default=None,
+            show_default=True,
+        ),
+        click.option(
             "--errors",
             help="Maximum number of accepted primer mismatches, or float between 0 and 1",
-            default=0.1,
+            default=0.2,
             show_default=True,
         ),
         click.option(

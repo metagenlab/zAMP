@@ -12,20 +12,22 @@ rule cutadapt_amplicons:
     output:
         os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta.gz"),
     params:
-        errors=ERRORS,
         fw=FW_PRIMER,
         rv=Seq.reverse_complement(Seq(RV_PRIMER)),
+        errors=ERRORS,
+        minlen=MINLEN,
     log:
         os.path.join("{prefix}", "logs", "cutadapt_amplicons_db.txt"),
     threads: 3
     shell:
         """
         cutadapt \\
-        --cores {threads} \\
-        --error-rate {params.errors} \\
-        -o {output} \\
+        -j {threads} \\
         -g {params.fw}...{params.rv} \\
+        -e {params.errors} \\
+        -m {params.minlen} \\
         --discard-untrimmed \\
+        -o {output} \\
         {input} \\
         &> {log}
         """
@@ -203,8 +205,6 @@ rule Derep_and_merge_taxonomy:
         collapsed=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
         all=os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
         ambiguous=os.path.join("{prefix}", "database", "amplicons_ambiguous_taxa.tsv"),
-    log:
-        os.path.join("{prefix}", "logs", "derep_and_merge_tax.log"),
     params:
         RANKS,
     script:
