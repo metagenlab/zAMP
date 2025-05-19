@@ -1,5 +1,21 @@
 ##  Recommedned rules to preprocess the reference taxonomy database to keep only the region of the gene considered by the
 # used primers. Can be skipped by "extract_and_merge" = False parameters in config file.
+args = ""
+fw = FW_PRIMER
+rv = Seq.reverse_complement(Seq(RV_PRIMER))
+if ERRORS:
+    args += f"-e {ERRORS} "
+if LINKED:
+    args += f"-g {fw}...{rv} "
+else:
+    args += f"-g {fw} -a {rv} "
+
+if MINLEN:
+    args += f"-m {MINLEN} "
+if MAXLEN:
+    args += f"-M {MAXLEN} "
+
+args = args.rstrip()
 
 
 rule cutadapt_amplicons:
@@ -12,10 +28,7 @@ rule cutadapt_amplicons:
     output:
         os.path.join("{prefix}", "database", "cutadapt_amplicons.fasta.gz"),
     params:
-        fw=FW_PRIMER,
-        rv=Seq.reverse_complement(Seq(RV_PRIMER)),
-        errors=ERRORS,
-        minlen=MINLEN,
+        args=args,
     log:
         os.path.join("{prefix}", "logs", "cutadapt_amplicons_db.txt"),
     threads: 3
@@ -23,9 +36,7 @@ rule cutadapt_amplicons:
         """
         cutadapt \\
         -j {threads} \\
-        -g {params.fw}...{params.rv} \\
-        -e {params.errors} \\
-        -m {params.minlen} \\
+        {params.args} \\
         --discard-untrimmed \\
         -o {output} \\
         {input} \\
