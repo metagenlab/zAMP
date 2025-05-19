@@ -228,6 +228,11 @@ def db_options(func):
             default=None,
         ),
         click.option(
+            "--linked/--unlinked",
+            default=True,
+            help="Whether both adapters presence should be required or not",
+        ),
+        click.option(
             "--minlen",
             type=int,
             help="Minimum amplicon length",
@@ -244,7 +249,7 @@ def db_options(func):
         click.option(
             "--errors",
             help="Maximum number of accepted primer mismatches, or float between 0 and 1",
-            default=0.2,
+            default=0.1,
             show_default=True,
         ),
         click.option(

@@ -45,6 +45,7 @@ RDP_MEM = config.args.rdp_mem
 
 ## Cutadapt args
 ERRORS = config.args.errors
+LINKED = config.args.linked
 FW_PRIMER = config.args.fw_primer
 RV_PRIMER = config.args.rv_primer
 COV = config.args.ampcov
