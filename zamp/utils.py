@@ -332,7 +332,7 @@ def run_options(func):
             "--classifier",
             type=str,
             default="rdp",
-            help="classifier choise for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
+            help="classifier choice for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
             show_default=True,
         ),
         click.option(
