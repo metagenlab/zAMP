@@ -15,13 +15,6 @@ def get_match(expected, assigned):
     return all(word in str(assigned) for word in str(expected).split())
 
 
-def get_inconsitent_duplicates(df):
-    duplicates = df[df.duplicated("formatted_tax", keep=False)]
-    return duplicates.groupby("formatted_tax").filter(
-        lambda x: x["all_tax"].nunique() > 1
-    )
-
-
 ## Read count table
 count_df = pd.read_csv(snakemake.input.count_table, sep="\t")
 
