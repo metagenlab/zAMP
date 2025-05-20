@@ -1,6 +1,5 @@
-name: cutadapt
 channels:
+  - conda-forge
   - bioconda
 dependencies:
-  - cutadapt =4.9
-
+  - seqkit = 2.9.0

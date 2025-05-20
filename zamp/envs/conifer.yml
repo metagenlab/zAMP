@@ -1,6 +1,5 @@
-name: cutadapt
+name: conifer
 channels:
   - bioconda
 dependencies:
-  - cutadapt =4.9
-
+  - conifer=1.0.2

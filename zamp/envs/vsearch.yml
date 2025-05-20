@@ -3,4 +3,4 @@ channels:
 - bioconda
 - conda-forge
 dependencies:
-- vsearch = 2.9.1
+- vsearch = 2.30.0

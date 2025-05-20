@@ -6,9 +6,11 @@ from snakemake.utils import min_version
 from attrmap import AttrMap
 import attrmap.utils as au
 import pandas as pd
+import numpy as np
 import glob
 from metasnek import fastq_finder
 import warnings
+import itertools
 
 min_version("8.10.6")
 
@@ -35,9 +37,25 @@ def copy_log_file():
     shell("cat " + current_log + " >> " + LOG)
 
 
-# DB process functions command functions
+def list_match_dir(path, pattern):
+    search_pattern = os.path.join(path, f"*{pattern}*")
+    return [
+        os.path.basename(d)
+        for d in glob.glob(search_pattern)
+        if os.path.isdir(d) and not d.startswith(".")
+    ]
+
+
+# DB process functions
 def get_mem_mb(mem):
     return int(parse_size(mem) / 10**6)
+
+
+def get_sintax_tax(row, ranks):
+    sintax = []
+    for n, tax in enumerate(row["tax"].split(";")):
+        sintax.append(f"{ranks[n][0]}:{tax}")
+    return f"{row['seq_id']};tax={','.join(sintax)};"
 
 
 # Run command functions
@@ -109,37 +127,68 @@ def sample_list_overall_QC():
 
 
 # Insilico command functions
+def get_samples(wildcards):
+    if LOCAL:
+        SAMPLES = [
+            os.path.basename(path).split(f".{suffix}")[0]
+            for path in glob.glob(
+                os.path.join(os.path.abspath(config.args.input), f"*.{suffix}")
+            )
+        ]
+    else:
+        checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
+        df = pd.read_csv(checkout, sep="\t")
+        SAMPLES = [os.path.basename(path).split(".fna")[0] for path in df.path]
+    return SAMPLES
+
+
+def get_tax_table(wildcards):
+    if LOCAL:
+        return os.path.abspath(TAX)
+    else:
+        return [
+            os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+            os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+        ]
+
+
 def get_fasta(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    df["sample"] = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
-    df.set_index("sample", inplace=True)
-    return df.loc[wildcards.sample].path
+    if LOCAL:
+        return os.path.join(
+            os.path.abspath(config.args.input), f"{wildcards.sample}.{suffix}"
+        )
+    else:
+        checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
+        df = pd.read_csv(checkout, sep="\t")
+        df["sample"] = [os.path.basename(path).split(".fna")[0] for path in df.path]
+        df.set_index("sample", inplace=True)
+        return df.loc[wildcards.sample].path
 
 
 def list_amplicons(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
     return expand(
-        os.path.join(
-            dir.out.base, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.fasta"
-        ),
-        sample=genomes,
+        os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
+        sample=get_samples,
     )
 
 
-def list_samples_counts(wildcards):
-    checkout = checkpoints.download_assemblies.get(**wildcards).output[0]
-    df = pd.read_csv(checkout, sep="\t")
-    genomes = [os.path.basename(path).split("_genomic.fna")[0] for path in df.path]
+def read_vsearch_outfile(file):
+    sample = os.path.basename(file).split("_matches.txt")[0]
+    with open(file, "r") as f:
+        amps = [line.strip() for line in f.readlines()]
+    if not amps:
+        amps = ["no_amp"]
+    fastas = [sample] * len(amps)
+    return pd.DataFrame({"fasta": fastas, "seq_id": amps})
+
+
+def list_vsearch_matches(wildcards):
     return expand(
         os.path.join(
             dir.out.base,
-            "InSilico",
-            "2_denoised",
-            "countSeqs",
-            "{sample}_count_table.tsv",
+            "vsearch",
+            "matches",
+            "{sample}_matches.txt",
         ),
-        sample=genomes,
+        sample=get_samples,
     )
