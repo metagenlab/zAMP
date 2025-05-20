@@ -19,6 +19,14 @@
     infer_stats <- snakemake@output[["infer_stats"]]
     sample_seq_tab <- snakemake@output[["sample_seq_tab"]]
 
+## Deal with empty fastq files
+    if (file.size(q_score_filtered_F)==20){
+       file.create(infer_stats)
+       file.create(sample_seq_tab)
+    } else {
+
+
+
 ## Parameters
     sample_name <- snakemake@params[["sample_name"]]
     run <- snakemake@params[["run"]]
@@ -46,6 +54,8 @@
 
 ## sample inference and merger of paired-end reads
     cat("Processing:", sample_name, "\n")
+
+err = tryCatch({
     ## Forward
         derepF <- derepFastq(q_score_filtered_F, verbose = TRUE)
         ddF <- dada(derepF, err=errF, multithread = snakemake@threads, verbose = 1, pool = FALSE, selfConsist = TRUE)
@@ -55,7 +65,8 @@
     ## Merge
         merger <- mergePairs(dadaF = ddF, derepF= derepF, dadaR = ddR, derepR = derepR, verbose = TRUE, minOverlap = min_overlap, maxMismatch = 0)
         mergers[[sample_name]] <- merger
-
+    print("Number of merged pairs:")
+    print(getN(merger))
 ## Save the dereplicated, corrected and merged sequences for this sample
     saveRDS(mergers, file = sample_seq_tab)
 
@@ -71,3 +82,14 @@
     ### Save the sequences stats for this sample
         saveRDS(infer, file = infer_stats)
 
+## catch error due to low read counts (selfConsist step 1 .Error rates could not be estimated (this is usually because of very few reads))
+}, error = function(e) {
+       file.create(infer_stats)
+       file.create(sample_seq_tab)
+}
+
+)
+
+
+
+}
