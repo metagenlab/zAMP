@@ -1,6 +1,5 @@
-name: cutadapt
+name: taxonkit
 channels:
   - bioconda
 dependencies:
-  - cutadapt =4.9
-
+  - taxonkit=0.19.0

@@ -1,6 +1,5 @@
-name: cutadapt
+name: kraken2
 channels:
   - bioconda
 dependencies:
-  - cutadapt =4.9
-
+  - kraken2=2.14
