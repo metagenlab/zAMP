@@ -1,6 +1,4 @@
 from Bio.Seq import Seq
-
-
 # config file
 include: os.path.join("rules", "0_preprocessing", "functions.smk")
 
@@ -88,7 +86,7 @@ else:
     DBPATH = os.path.dirname(DBPATH)
 
 ## Classifier
-CLASSIFIER = config.args.classifier.split(",")
+CLASSIFIER = config.args.classifier
 
 
 ## Post-processing args

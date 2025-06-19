@@ -1,115 +1,294 @@
 import pandas as pd
 import re
-import os
 
 
-if not LOCAL:
-
-    rule get_assembly_finder_input:
-        output:
-            temp(os.path.join(dir.out.base, "assembly_finder", "input.tsv")),
-        params:
-            queries=INPUT.split(","),
-            taxon=TAXON,
-        run:
-            if not os.path.isfile(INPUT):
-                if params.taxon:
-                    pd.DataFrame.from_dict({"taxon": params.queries}).to_csv(
-                        output[0],
-                        sep="\t",
-                        index=False,
-                    )
-                else:
-                    pd.DataFrame.from_dict({"accessions": params.queries}).to_csv(
-                        output[0], sep="\t", index=False, header=False
-                    )
-            else:
-                df = pd.read_csv(os.path.abspath(INPUT), sep="\t", header=None)
-                if params.taxon:
-                    df.columns = ["taxon"]
-                    df.to_csv(
-                        output[0],
-                        sep="\t",
-                        index=False,
-                    )
-
-                else:
-                    df.columns = ["accession"]
-                    df.to_csv(output[0], sep="\t", index=False, header=False)
-
-    if not TAXON:
-        AF_ARGS += "--accession "
-    if TAXON:
-        if LIMIT != "all":
-            AF_ARGS += f"--limit {LIMIT} "
-        if ASM_LEVEL:
-            AF_ARGS += f"--assembly-level {ASM_LEVEL} "
-        if ONLY_REF:
-            AF_ARGS += f"--reference True "
-        elif not ONLY_REF:
-            AF_ARGS += f"--reference False "
-        if RANK and NRANK:
-            AF_ARGS += f"--rank {RANK} --nrank {NRANK} "
-
-    checkpoint download_assemblies:
-        conda:
-            os.path.join(dir.envs, "assembly_finder.yml")
-        container:
-            singularity_envs["assembly_finder"]
-        input:
-            os.path.join(dir.out.base, "assembly_finder", "input.tsv"),
-        output:
-            asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
-            seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
-            tax=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
-        params:
-            args=AF_ARGS,
-            out=os.path.join(dir.out.base, "assembly_finder"),
-        log:
-            os.path.join(dir.logs, "assembly_finder.log"),
-        threads: 3
-        shell:
-            """
-            assembly_finder \\
-            --no-use-conda \\
-            -i {input} \\
-            --threads {threads} \\
-            {params.args} \\
-            -o {params.out} 2> {log}
-            """
-
-else:
-    fastas = []
-    for ext in ["fna", "fasta", "fa"]:
-        fastas.extend(glob.glob(os.path.join(config.args.input, f"*.{ext}*")))
-    suffix = ".".join(fastas[0].split(".")[-2::])
-
-
-rule in_silico_PCR:
-    conda:
-        os.path.join(dir.envs, "perl.yml")
-    container:
-        singularity_envs["perl"]
-    input:
-        get_fasta,
+rule get_assembly_finder_input:
     output:
-        os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
-    log:
-        os.path.join(dir.logs, "in_silico_pcr", "{sample}.log"),
+        temp(os.path.join(dir.out.base, "assembly_finder", "input.tsv")),
     params:
-        fw=FW_PRIMER,
-        rv=RV_PRIMER,
-        script=os.path.join(
-            workflow.basedir, "rules", "In_silico", "scripts", "in_silico_PCR.pl"
-        ),
+        queries=INPUT_TAX.split(","),
+        taxon=TAXON,
+    run:
+        if not os.path.isfile(INPUT_TAX):
+            if params.taxon:
+                pd.DataFrame.from_dict({"taxon": params.queries}).to_csv(
+                    output[0],
+                    sep="\t",
+                    index=False,
+                )
+            else:
+                pd.DataFrame.from_dict({"accessions": params.queries}).to_csv(
+                    output[0], sep="\t", index=False, header=False
+                )
+        else:
+            df = pd.read_csv(os.path.abspath(INPUT_TAX), sep="\t", header=None)
+            if params.taxon:
+                df.columns = ["taxon"]
+                df.to_csv(
+                    output[0],
+                    sep="\t",
+                    index=False,
+                )
+
+            else:
+                df.columns = ["accession"]
+                df.to_csv(output[0], sep="\t", index=False, header=False)
+
+
+if not TAXON:
+    AF_ARGS += "--accession "
+if TAXON:
+    if LIMIT != "all":
+        AF_ARGS += f"--limit {LIMIT} "
+    if ASM_LEVEL:
+        AF_ARGS += f"--assembly-level {ASM_LEVEL} "
+    if ONLY_REF:
+        AF_ARGS += f"--reference True "
+    elif not ONLY_REF:
+        AF_ARGS += f"--reference False "
+    if RANK and NRANK:
+        AF_ARGS += f"--rank {RANK} --nrank {NRANK} "
+
+
+checkpoint download_assemblies:
+    conda:
+        os.path.join(dir.envs, "assembly_finder.yml")
+    container:
+        singularity_envs["assembly_finder"]
+    input:
+        os.path.join(dir.out.base, "assembly_finder", "input.tsv"),
+    output:
+        asm=os.path.join(dir.out.base, "assembly_finder", "assembly_summary.tsv"),
+        seq=os.path.join(dir.out.base, "assembly_finder", "sequence_report.tsv"),
+        tax=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
+    params:
+        args=AF_ARGS,
+        out=os.path.join(dir.out.base, "assembly_finder"),
+    log:
+        os.path.join(dir.logs, "assembly_finder.log"),
+    threads: 3
     shell:
         """
-        perl {params.script} \\
-        -s {input} \\
-        -a {params.fw} \\
-        -b {params.rv} \\
-        -m -r -e \\
-        2> {output} > {log}
+        assembly_finder \\
+        --no-use-conda \\
+        -i {input} \\
+        --threads {threads} \\
+        {params.args} \\
+        -o {params.out} 2> {log}
+        """
+
+
+if PCR_TOOL == "simulate":
+
+    rule decompress_assemblies:
+        input:
+            get_fasta,
+        output:
+            temp(os.path.join(dir.out.base, "InSilico", "fasta", "{sample}.fna")),
+        shell:
+            """
+            zcat {input} > {output}
+            """
+
+    rule print_primers_to_files:
+        output:
+            os.path.join(dir.out.base, "InSilico", "PCR", "Primers.fasta"),
+        params:
+            FW_PRIMER,
+            RV_PRIMER,
+        shell:
+            """
+            printf \
+            ">primer|F \n{params[0]} \n>primer|R \n{params[1]}" >> {output}
+            """
+
+    rule simulate_PCR:
+        container:
+            singularity_envs["simulatePCR"]
+        input:
+            primers=os.path.join(dir.out.base, "InSilico", "PCR", "Primers.fasta"),
+            fasta=os.path.join(dir.out.base, "InSilico", "fasta", "{sample}.fna"),
+        output:
+            os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+            ),
+            temp(
+                os.path.join(
+                    dir.out.base,
+                    "InSilico",
+                    "PCR",
+                    "{sample}",
+                    "Primers.fasta.pair.{sample}.fna.blastout",
+                )
+            ),
+            temp(
+                multiext(
+                    os.path.join(
+                        dir.out.base,
+                        "InSilico",
+                        "fasta",
+                        "{sample}.fna",
+                    ),
+                    ".nhr",
+                    ".nin",
+                    ".nog",
+                    ".nsd",
+                    ".nsi",
+                    ".nsq",
+                ),
+            ),
+        params:
+            min_length=MINLEN,
+            max_length=MAXLEN,
+            mismatch=MISMATCH,
+            threeprime=THREEPRIME,
+            workdir=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+            ),
+        log:
+            os.path.join(
+                dir.logs,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.log",
+            ),
+        threads: 1
+        shell:
+            """
+            simulate_PCR \\
+            -primers {input.primers} \\
+            -db {input.fasta} \\
+            -minlen {params.min_length} \\
+            -maxlen {params.max_length} \\
+            -mm {params.mismatch} \\
+            -3prime {params.threeprime} \\
+            -mux 0 \\
+            -num_threads {threads} \\
+            -max_target_seqs 1000000000 \\
+            -word_size 4 \\
+            -evalue 100000000 \\
+            -genes 1 \\
+            -extract_amp 1 \\
+            >> {log} \\
+            && mv Primers.fasta.pair.{wildcards.sample}* {params.workdir} \\
+            && mv {wildcards.sample}.fna.headers {params.workdir}
+            """
+
+    ## Some sequences are extracted as reverse-complemented. Two be sure to have them in the right direction, we add reverse complemented version to each fasta. Then, the next step with cutadapt w
+    rule reverse_complement:
+        conda:
+            os.path.join(dir.envs, "amplicons_r_utils.yml")
+        container:
+            singularity_envs["r_utils"]
+        input:
+            simple_fasta=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "Primers.fasta.pair.{sample}.fna.amplicons.fasta",
+            ),
+        output:
+            fasta_with_rev=os.path.join(
+                dir.out.base,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "amplicons.fasta",
+            ),
+        log:
+            os.path.join(
+                dir.logs,
+                "InSilico",
+                "PCR",
+                "{sample}",
+                "reverse_complement.txt",
+            ),
+        threads: 1
+        script:
+            "scripts/reverse_complement.R"
+
+elif PCR_TOOL == "in-silico":
+
+    rule in_silico_PCR:
+        conda:
+            os.path.join(dir.envs, "perl.yml")
+        container:
+            singularity_envs["perl"]
+        input:
+            get_fasta,
+        output:
+            os.path.join(dir.out.base, "InSilico", "PCR", "{sample}", "amplicons.fasta"),
+        log:
+            os.path.join(dir.logs, "InSilico", "PCR", "{sample}.log"),
+        params:
+            fw=FW_PRIMER,
+            rv=RV_PRIMER,
+            maxlen=MAXLEN,
+            script=os.path.join(
+                workflow.basedir, "rules", "In_silico", "scripts", "in_silico_PCR.pl"
+            ),
+        shell:
+            """
+            LC_ALL=C perl {params.script} \\
+            -s {input} \\
+            -a {params.fw} \\
+            -b {params.rv} \\
+            -m -r -l {params.maxlen} \\
+            2> {output} > {log}
+            """
+
+
+rule cutadapt_trim_in_silico:
+    conda:
+        os.path.join(dir.envs, "cutadapt.yml")
+    container:
+        singularity_envs["cutadapt"]
+    input:
+        os.path.join(
+            dir.out.base,
+            "InSilico",
+            "PCR",
+            "{sample}",
+            "amplicons.fasta",
+        ),
+    output:
+        temp(
+            os.path.join(
+                dir.out.base,
+                "InSilico",
+                "1a_trimmed_primers",
+                "{sample}_trimmed.fasta",
+            )
+        ),
+    log:
+        os.path.join(dir.logs, "InSilico", "1a_trimmed_primers", "{sample}_trimmed.txt"),
+    params:
+        adapter=ADAPTER,
+        errors=ERRORS,
+        minlen=MINLEN,
+        maxlen=MAXLEN,
+    threads: 1
+    shell:
+        """
+        cutadapt \
+        --cores {threads} \
+        --error-rate {params.errors} \
+        --times 1 \
+        -o {output} \
+        -g "{params.adapter}" \
+        --discard-untrimmed \
+        --minimum-length {params.minlen} \
+        --maximum-length {params.maxlen} \
+        {input} > {log}
         """
 
 
@@ -118,7 +297,7 @@ rule Insilico_merge_all_in_one_fasta:
     input:
         list_amplicons,
     output:
-        os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna"),
+        temp(os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta")),
     shell:
         """
         cat {input} > {output}
@@ -126,23 +305,25 @@ rule Insilico_merge_all_in_one_fasta:
 
 
 ### Again, dereplicate all identical sequences after merging.
-rule vsearch_derepicate_amplicons:
+rule InSilico_derepicate_all:
     conda:
         os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        os.path.join(dir.out.base, "in_silico_pcr", "all_amplicons.fna"),
+        os.path.join(dir.out.base, "InSilico", "1c_derep", "merged_all.fasta"),
     output:
-        os.path.join(dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"),
+        os.path.join(dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"),
     log:
-        os.path.join(dir.logs, "vsearch", "derep_amplicons.log"),
+        os.path.join(
+            dir.logs, "InSilico", "1c_all_merged_sequences", "dereplicate_all.txt"
+        ),
     shell:
         """
         vsearch \\
         --derep_fulllength {input} \\
         --minuniquesize 1 \\
-        --relabel ASV_ \\
+        --relabel Seq_ \\
         --output {output} \\
         2> {log}
         """
@@ -151,171 +332,116 @@ rule vsearch_derepicate_amplicons:
 ### Count the number of occurences of the representative sequences in the samples.
 
 
-rule vsearch_get_exact_match_amplicons:
+rule InSilico_count_occurences:
     conda:
         os.path.join(dir.envs, "vsearch.yml")
     container:
         singularity_envs["vsearch"]
     input:
-        fa=os.path.join(dir.out.base, "in_silico_pcr", "{sample}.fasta"),
-        db=os.path.join(dir.out.base, "vsearch", "2_denoised", "dna-sequences.fasta"),
+        samples=os.path.join(
+            dir.out.base,
+            "InSilico",
+            "1a_trimmed_primers",
+            "{sample}_trimmed.fasta",
+        ),
+        rep_seq=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "dna-sequences.fasta"
+        ),
     output:
         os.path.join(
             dir.out.base,
-            "vsearch",
-            "matches",
-            "{sample}_matches.txt",
+            "InSilico",
+            "2_denoised",
+            "countSeqs",
+            "{sample}_count_table.tsv",
         ),
     log:
-        os.path.join(dir.logs, "vsearch", "{sample}_matches.log"),
+        os.path.join(
+            dir.logs, "InSilico", "2_denoised", "countSeqs", "{sample}_count_table.tsv"
+        ),
     shell:
-        """
-        vsearch --usearch_global {input.fa} \\
-        -db {input.db} \\
-        -id 1 \\
-        -userout {output} \\
-        -userfields target &> {log} 
+        """       
+        if [ -s "{input[samples]}" ]
+        then
+            echo "{input[samples]} has some data." && \
+            vsearch --usearch_global {input[samples]} \
+                -otutabout {output} \
+                -id 1 \
+                -strand plus \
+                --db {input[rep_seq]} 
+                # do something as file has data
+        else
+            echo "{input[samples]} is empty." && \
+            touch {output}
+            # do something as file is empty
+        fi 2> {log}        
         """
 
 
 ### Format count table from InSilico
-rule get_amplicon_counts:
+rule create_InSilico_count_table:
+    conda:
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
+    container:
+        singularity_envs["r_utils"]
     input:
-        list_vsearch_matches,
+        count_table_samples=list_samples_counts,
     output:
-        os.path.join(dir.out.base, "vsearch", "amplicon_counts.tsv"),
-    run:
-        df = pd.concat([read_vsearch_outfile(tsv) for tsv in input])
-        df = (
-            df.groupby(["fasta", "seq_id"], as_index=False)
-            .value_counts()
-            .sort_values("fasta")
-        )
-        df = df.rename(columns={"count": "asv_count"})
-        df.loc[df["seq_id"] == "no_amp", "asv_count"] = 0
-        df.to_csv(output[0], sep="\t", index=False)
+        count_table=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+        ),
+    log:
+        os.path.join(dir.logs, "InSilico", "2_denoised", "count_table.tsv"),
+    script:
+        "scripts/create_count_table_from_insilico.R"
 
 
 ### Create a table to compare tax assignment
 rule In_silico_tax_compare:
     conda:
-        os.path.join(dir.envs, "pandas.yml")
+        os.path.join(dir.envs, "amplicons_r_utils.yml")
     container:
-        singularity_envs["pandas"]
+        singularity_envs["r_utils"]
     input:
-        db_tax=os.path.join(DBPATH, "{tax_DB}", "database", "amplicons_all_tax.tsv"),
-        count_table=os.path.join(dir.out.base, "vsearch", "amplicon_counts.tsv"),
-        expected_taxonomy=get_tax_table,
+        db_tax=os.path.join(DBPATH, "{tax_DB}", "RDP", "formatted_tax_table.tsv"),
+        count_table=os.path.join(
+            dir.out.base, "InSilico", "2_denoised", "count_table.tsv"
+        ),
+        assembly_summary=os.path.join(
+            dir.out.base, "assembly_finder", "assembly_summary.tsv"
+        ),
+        expected_taxonomy=os.path.join(dir.out.base, "assembly_finder", "taxonomy.tsv"),
         assigned_taxonomy=os.path.join(
             dir.out.base,
-            "vsearch",
+            "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "taxonomy.tsv",
+            "dna-sequences_tax_assignments.txt",
         ),
     output:
-        amplicons=os.path.join(
+        output_table=os.path.join(
             dir.out.base,
-            "vsearch",
+            "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "amplicons_tax_compare.tsv",
+            "InSilico_compare_tax.tsv",
         ),
-        assemblies=os.path.join(
+        output_table_long=os.path.join(
             dir.out.base,
-            "vsearch",
+            "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "assemblies_tax_compare.tsv",
+            "InSilico_compare_tax_long.tsv",
         ),
+    params:
+        viz_replace_empty_tax=REPL_EMPTY,
     log:
         os.path.join(
             dir.logs,
-            "vsearch",
+            "InSilico",
             "3_classified",
             "{classifier}_{tax_DB}",
             "InSilico_compare_tax.log",
         ),
-    params:
-        local=LOCAL,
-        suffix=suffix,
-        ranks=RANKS,
     script:
-        os.path.join("scripts", "tax_compare.py")
-
-
-rule get_classification_metrics:
-    conda:
-        os.path.join(dir.envs, "pandas.yml")
-    container:
-        singularity_envs["pandas"]
-    input:
-        os.path.join(
-            dir.out.base,
-            "vsearch",
-            "3_classified",
-            "{classifier}_{tax_DB}",
-            "amplicons_tax_compare.tsv",
-        ),
-    output:
-        os.path.join(
-            dir.out.base,
-            "metrics",
-            "{classifier}_{tax_DB}_all_scores.tsv",
-        ),
-        os.path.join(
-            dir.out.base,
-            "metrics",
-            "{classifier}_{tax_DB}_mean_scores.tsv",
-        ),
-    params:
-        script=os.path.join(
-            workflow.basedir, "rules", "In_silico", "scripts", "get_f1_scores.py"
-        ),
-        prefix=os.path.join(
-            dir.out.base,
-            "metrics",
-            "{classifier}_{tax_DB}",
-        ),
-        ranks=config.args.ranks,
-    shell:
-        """
-        python {params.script} {params.ranks} {input} {params.prefix}
-        """
-
-
-rule merge_classification_metrics:
-    input:
-        expand(
-            os.path.join(
-                dir.out.base,
-                "metrics",
-                "{classifier}_{tax_DB}_mean_scores.tsv",
-            ),
-            classifier=CLASSIFIER,
-            tax_DB=DBNAME,
-        ),
-    output:
-        os.path.join(
-            dir.out.base,
-            "all_scores.tsv",
-        ),
-    run:
-        dfs = []
-        ranks = list(pd.read_csv(input[0], sep="\t")["rank"].drop_duplicates())
-        for tsv in input:
-            meta = os.path.basename(tsv).split("_mean_scores.tsv")[0]
-            df = pd.read_csv(tsv, sep="\t")
-            classifier = meta.split("_")[0]
-            df["classifier"] = [classifier] * len(df)
-            df["database"] = [meta.split(f"{classifier}_")[1]] * len(df)
-            dfs.append(df)
-        dfs = pd.concat(dfs)
-        dfs["rank"] = pd.Categorical(
-            dfs["rank"],
-            categories=ranks,
-            ordered=True,
-        )
-        dfs.sort_values(["rank", "f1_score"], ascending=[True, False]).to_csv(
-            output[0], sep="\t", index=False
-        )
+        "scripts/In_silico_tax_comparison.R"

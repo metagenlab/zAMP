@@ -1,5 +1,0 @@
-name: conifer
-channels:
-  - bioconda
-dependencies:
-  - conifer=1.0.2

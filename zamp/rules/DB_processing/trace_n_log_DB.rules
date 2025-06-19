@@ -1,55 +1,28 @@
 ## Set of rules to backup the input database and generate a hash code of these input files and the output files.
 
 
-rule copy_original_files:
+rule Back_up_master:
     input:
-        fa=FASTA,
+        seqs=FASTA,
         tax=TAXONOMY,
     output:
-        fa=os.path.join("{prefix}", "database", "original_seq.fasta"),
-        tax=os.path.join("{prefix}", "database", "original_tax.txt"),
+        seqs=os.path.join("{prefix}", "master", "original_seqs.fasta"),
+        tax=os.path.join("{prefix}", "master", "original_tax.txt"),
+    threads: 1
     shell:
         """
-        cp {input.fa} {output.fa} 
+        cp {input.seqs} {output.seqs} && \
         cp {input.tax} {output.tax}
         """
 
 
-rule clean_taxonomy:
-    conda:
-        os.path.join(dir.envs, "pandas.yml")
-    container:
-        singularity_envs["pandas"]
+rule Hash_master_files:
     input:
-        os.path.join("{prefix}", "database", "original_tax.txt"),
+        os.path.join("{prefix}", "master", "original_seqs.fasta"),
+        os.path.join("{prefix}", "master", "original_tax.txt"),
     output:
-        temp(os.path.join("{prefix}", "database", "clean_tax.tsv")),
-    params:
-        db_name=DBNAME,
-        ranks=RANKS,
-    script:
-        os.path.join("scripts", "clean_tax.py")
-
-
-rule hash_original_files_archive:
-    input:
-        os.path.join("{prefix}", "database", "original_seq.fasta"),
-        os.path.join("{prefix}", "database", "original_tax.txt"),
-    output:
-        os.path.join("{prefix}", "hashes", "original.md5"),
-    shell:
-        """
-        md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
-        """
-
-
-rule hash_amplicons_seq_tax:
-    input:
-        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-        os.path.join("{prefix}", "database", "amplicons_all_tax.tsv"),
-        os.path.join("{prefix}", "database", "amplicons.fasta"),
-    output:
-        os.path.join("{prefix}", "hashes", "amplicons.md5"),
+        os.path.join("{prefix}", "master", "original.hash"),
+    threads: 1
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}
@@ -59,40 +32,23 @@ rule hash_amplicons_seq_tax:
 ## Generate a hash from all relevant files to insure that we always work with the same reference databases
 
 hashes = {
-    "rdp": os.path.join("{prefix}", "hashes", "rdp.md5"),
-    "qiime2": os.path.join("{prefix}", "hashes", "qiime2.md5"),
-    "dada2": os.path.join("{prefix}", "hashes", "dada2.md5"),
-    "sintax": os.path.join("{prefix}", "hashes", "sintax.md5"),
-    "kraken2": os.path.join("{prefix}", "hashes", "kraken2.md5"),
+    "rdp": os.path.join("{prefix}", "RDP", "RDP_DB.hash"),
+    "qiimerdp": os.path.join("{prefix}", "QIIME", "DB_formatted.hash"),
+    "dada2rdp": os.path.join("{prefix}", "dada2rdp", "DADA2_DB.hash"),
+    "decipher": os.path.join("{prefix}", "RDP", "RDP_DB.hash"),
 }
 
-hash_out = [
-    os.path.join("{prefix}", "hashes", "original.md5"),
-    os.path.join("{prefix}", "hashes", "amplicons.md5"),
-]
+hash_out = [os.path.join("{prefix}", "master", "original.hash")]
 for classifier in CLASSIFIERS:
     hash_out.append(hashes[classifier])
-
-
-rule archive_original_files:
-    input:
-        hashes=hash_out,
-        fa=os.path.join("{prefix}", "database", "original_seq.fasta"),
-        tax=os.path.join("{prefix}", "database", "original_tax.txt"),
-    output:
-        os.path.join("{prefix}", "database", "original_files.tar.gz"),
-    shell:
-        """
-        tar -czf {output} {input.fa} {input.tax}
-        rm {input.fa} {input.tax}
-        """
 
 
 rule hash_global_DB:
     input:
         hash_out,
     output:
-        os.path.join("{prefix}", "database.md5"),
+        os.path.join("{prefix}", "DB.hash"),
+    threads: 1
     shell:
         """
         md5sum {input} | sort -k 2 | md5sum | cut -f 1 -d " " > {output}

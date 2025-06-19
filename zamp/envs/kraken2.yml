@@ -1,5 +1,0 @@
-name: kraken2
-channels:
-  - bioconda
-dependencies:
-  - kraken2=2.14
