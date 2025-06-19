@@ -34,18 +34,18 @@ rule cutadapt_trim_paired:
     threads: 1
     shell:
         """
-        cutadapt \\
-        --cores {threads} \\
-        --error-rate 0.1 \\
-        --times 1 \\
-        --overlap 3 \\
-        -o {output.R1_trimmed_reads} \\
-        -p {output.R2_trimmed_reads} \\
-        -g '{params.forward_primer}' \\
-        -G '{params.reverse_primer}' \\
-        --match-read-wildcards \\
-        --discard-untrimmed \\
-        {input.R1_raw_reads} \\
+        cutadapt \
+        --cores {threads} \
+        --error-rate 0.1 \
+        --times 1 \
+        --overlap 3 \
+        -o {output.R1_trimmed_reads} \
+        -p {output.R2_trimmed_reads} \
+        -g '{params.forward_primer}' \
+        -G '{params.reverse_primer}' \
+        --match-read-wildcards \
+        --discard-untrimmed \
+        {input.R1_raw_reads} \
         {input.R2_raw_reads} > {log}
         """
 
@@ -72,19 +72,21 @@ rule cutadapt_trim_single:
         ),
     params:
         forward_primer=FW_PRIMER,
+        reverse_primer=RV_PRIMER,
         reverse_primer_compl=RV_PRIMER_COMPL,
     threads: 1
     shell:
         """
-        cutadapt \\
-        --cores {threads} \\
-        --error-rate 0.1 \\
-        --times 1 \\
-        --overlap 3 \\
-        -o {output.R1_trimmed_reads} \\
-        -g '{params.forward_primer}' \\
-        -a '{params.reverse_primer_compl}' \\
-        --match-read-wildcards \\
-        --discard-untrimmed \\
+        cutadapt \
+        --cores {threads} \
+        --error-rate 0.1 \
+        --times 1 \
+        --overlap 3 \
+        -o {output.R1_trimmed_reads} \
+        -g '{params.forward_primer}' \
+        -a '{params.reverse_primer_compl}' \
+        --match-read-wildcards \
+        --discard-untrimmed \
         {input[R1_raw_reads]} > {log}
         """
+

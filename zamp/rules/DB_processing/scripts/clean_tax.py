@@ -1,45 +1,28 @@
 import pandas as pd
 import numpy as np
-from snakemake.script import snakemake
 
 
-def find_convergent_taxa(df):
-    """
-    Identifies rows where a taxon is duplicated but has a different origin
-    (Same species but two different genera for example)
-    """
-    inconsistent_rows = []
+def propagate_nan(df):
+    # Identify columns that have NaN values
+    nan_mask = df.isna()
 
-    # Iterate over columns starting from the second one
-    for i in range(1, len(df.columns)):
-        col = df.columns[i]
-        prev_col = df.columns[i - 1]
+    # Create a cumulative sum mask to propagate NaNs
+    nan_cumsum = nan_mask.cumsum(axis=1)
 
-        # Group by the current column to find duplicates
-        grouped = df.groupby(col)
+    # Any value where the cumulative sum is greater than 0 should be NaN
+    df[nan_cumsum > 0] = np.nan
 
-        for value, group in grouped:
-            # If there are duplicates in the current column
-            if len(group) > 1:
-                # Check if the previous column values are different
-                if group[prev_col].nunique() > 1:
-                    inconsistent_rows.append(group)
-
-    # Combine all inconsistent groups into a single DataFrame
-    if inconsistent_rows:
-        return pd.concat(inconsistent_rows).drop_duplicates()
-    else:
-        return pd.DataFrame()  # Return empty DataFrame if no inconsistencies are found
+    return df
 
 
 df = pd.read_csv(snakemake.input[0], sep="\t")
-if any(df.columns.str.contains(";")):
-    df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
-
 df.columns = ["seq_id", "tax"]
 
-ranks = snakemake.params.ranks.split(",")
-
+ranks = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+# Make plaheloder name dict
+placeholder = {}
+for rank in ranks:
+    placeholder[f"{rank}"] = "_placeholder_" + rank[0].lower()
 
 if "unite" in snakemake.params.db_name:
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
@@ -50,24 +33,25 @@ if "greengenes" in snakemake.params.db_name:
     ## Remove leading k__ to s__ in GTDB taxonomy
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
 
-df[ranks] = df.tax.str.split(";", expand=True).loc[:, 0 : len(ranks) - 1]
-
+lintax_df = df.tax.str.split(";", expand=True).loc[:, 0:6]
+lintax_df.columns = ranks
+lintax_df = lintax_df.replace("", np.nan).fillna(np.nan)
 
 if "silva" in snakemake.params.db_name:
     ## Replace taxa containing and Unkown or Incertae with NaN
-    df.replace(
+    lintax_df.replace(
         to_replace=r".*Incertae.*|.*Unknown.*", value=np.nan, regex=True, inplace=True
     )
 
     ## Replace endosymbionts by NaN
-    df.replace("endosymbionts", np.nan, inplace=True)
+    lintax_df.replace("endosymbionts", np.nan, inplace=True)
 
 
 if "greengenes" in snakemake.params.db_name:
     # In greeengenes2, some sequences have the same taxa name assigned to multiple ranks
     # the code below iterates over ranks and replaces duplicate names with NaN
     # This mitigates convergent taxonomy errors in RDP
-    array = df[ranks].to_numpy()
+    array = lintax_df.to_numpy()
 
     # Iterate through the array to replace duplicates with NaN
     for i in range(array.shape[0]):
@@ -77,31 +61,33 @@ if "greengenes" in snakemake.params.db_name:
                 array[i, j] = np.nan
             else:
                 seen.add(array[i, j])
-    df[ranks] = pd.DataFrame(array, columns=ranks)
+    lintax_df = pd.DataFrame(array, columns=lintax_df.columns)
 
-df = df.replace("", np.nan).fillna(np.nan)
-## Propagate ranks
-nans = df.isna()
+
+filled_df = propagate_nan(lintax_df).ffill(axis=1)
+prop_tax_df = pd.DataFrame()
 for n, rank in enumerate(ranks):
-    if rank != "kingdom":
+    if rank != ranks[0]:
         prev = ranks[n - 1]
-        df.loc[nans[rank], rank] = (
-            df.loc[nans[rank], prev] + "_placeholder_" + rank[0].lower()
+        duplicated = (
+            filled_df[filled_df[f"{prev}"] == filled_df[f"{rank}"]][f"{rank}"]
+            + f"{placeholder[rank]}"
         )
+        prop_tax_df[f"{rank}"] = lintax_df[f"{rank}"].combine_first(duplicated)
+    else:
+        prop_tax_df[f"{rank}"] = filled_df[f"{rank}"]
 
 if "silva" in snakemake.params.db_name:
     ## Get classified species index
-    index = ~df["species"].str.contains("_placeholder_", na=False)
-    ## Add parent name in species for classified species
-    df.loc[index, "species"] = df.loc[index, "genus"] + " " + df.loc[index, "species"]
+    index = ~prop_tax_df["Species"].str.contains(placeholder["Species"])
+    ## Add genus name in species for classified species
+    prop_tax_df.loc[index, "Species"] = (
+        prop_tax_df.loc[index, "Genus"] + " " + prop_tax_df.loc[index, "Species"]
+    )
 
-conv_df = find_convergent_taxa(df[ranks])
-if not conv_df.empty:
-    raise ValueError(f"These rows cause convergent evolution:\n{print(conv_df)}")
-
-df["all_tax"] = df[ranks].T.agg(";".join)
-df.all_tax = df.all_tax.str.replace("_placeholder", "")
-
-df[["seq_id", "all_tax"]].to_csv(
+prop_tax_df["taxpath"] = prop_tax_df[ranks].T.agg(";".join)
+prop_tax_df.taxpath = prop_tax_df.taxpath.str.replace("_placeholder", "")
+df = df.join(prop_tax_df)
+df[["seq_id", "taxpath"]].to_csv(
     snakemake.output[0], sep="\t", index=False, header=False
 )

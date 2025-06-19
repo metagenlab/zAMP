@@ -4,15 +4,15 @@
 import sys
 
 if len(sys.argv) != 3:
-    exit("addFullLineage.py taxonomyFile fastaFile")
-
+    print("addFullLineage.py taxonomyFile fastaFile")
+    sys.exit()
 f1 = open(sys.argv[1], "r").readlines()
 hash = {}  # lineage map
 for line in f1[1:]:
     line = line.strip()
     # convert to unicode to avoid trouble from non-unicode source file
     # line = unicode(line, "UTF-8")#strip non-unicode non-breaking space
-    # line = line.strip("\u00a0")
+    # line = line.strip(u"\u00A0")
     cols = line.strip().split("\t")
     lineage = ["Root"]
     for node in cols[1:]:
@@ -36,6 +36,7 @@ for line in f2:
             lineage = hash[ID]
         except KeyError:
             print(ID, "not in taxonomy file")
+            sys.exit()
         print(">" + ID + "\t" + lineage)
     else:
         print(line.strip())

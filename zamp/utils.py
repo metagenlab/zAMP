@@ -192,22 +192,15 @@ def db_options(func):
     options = [
         click.option(
             "--fasta",
-            type=click.Path(readable=True, exists=True, file_okay=True),
+            type=click.Path(readable=True),
             help="Path to database fasta file",
             required=True,
         ),
         click.option(
             "--taxonomy",
-            type=click.Path(readable=True, exists=True, file_okay=True),
+            type=click.Path(readable=True),
             help="Path to tab seperated taxonomy file in QIIME format",
             required=True,
-        ),
-        click.option(
-            "--ranks",
-            type=str,
-            help="Comma seperated list of ranks in taxonomy",
-            default="kingdom,phylum,class,order,family,genus,species",
-            show_default=True,
         ),
         click.option(
             "--name",
@@ -216,34 +209,42 @@ def db_options(func):
             required=True,
         ),
         click.option(
+            "--processing/--no-processing",
+            default=True,
+            help="Extract amplicon regions and merge taxonomy",
+            show_default=True,
+        ),
+        click.option(
             "--fw-primer",
             type=str,
             help="Forward primer sequence to extract amplicon",
-            default=None,
+            required=True,
         ),
         click.option(
             "--rv-primer",
             type=str,
             help="Reverse primer sequence to extract amplicon",
-            default=None,
-        ),
-        click.option(
-            "--linked/--unlinked",
-            default=True,
-            help="Whether both adapters presence should be required or not",
+            required=True,
         ),
         click.option(
             "--minlen",
             type=int,
             help="Minimum amplicon length",
-            default=50,
+            default=300,
             show_default=True,
         ),
         click.option(
             "--maxlen",
             type=int,
             help="Maximum amplicon length",
-            default=None,
+            default=500,
+            show_default=True,
+        ),
+        click.option(
+            "--ampcov",
+            type=float,
+            help="Minimum amplicon coverage",
+            default=0.9,
             show_default=True,
         ),
         click.option(
@@ -273,9 +274,12 @@ def db_options(func):
         ),
         click.option(
             "--classifier",
-            type=str,
-            default="rdp,dada2,sintax,kraken2",
-            help="classifier for which to build taxonomy [rdp, qiime2, dada2, sintax, kraken2]",
+            multiple=True,
+            type=click.Choice(
+                ["rdp", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["rdp", "qiimerdp", "dada2rdp"],
+            help="Which classifiers to train on the database",
             show_default=True,
         ),
     ]
@@ -330,9 +334,12 @@ def run_options(func):
         ),
         click.option(
             "--classifier",
-            type=str,
-            default="rdp",
-            help="classifier choice for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
+            multiple=True,
+            type=click.Choice(
+                ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["RDP"],
+            help="Which classifiers to use for taxonomic assignment",
             show_default=True,
         ),
         click.option(
@@ -503,23 +510,11 @@ def insilico_options(func):
     """
     options = [
         click.option(
-            "--input",
+            "--input-tax",
             "-i",
             type=str,
-            help="Input fasta directory or taxa/accessions",
+            help="Input taxa/accessions for in-silico validation",
             required=True,
-        ),
-        click.option(
-            "--tax",
-            type=click.Path(file_okay=True, exists=True),
-            help="Input taxonomic table when using local fasta",
-        ),
-        click.option(
-            "--ranks",
-            type=str,
-            help="Comma seperated list of ranks in taxonomy",
-            default="kingdom,phylum,class,order,family,genus,species",
-            show_default=True,
         ),
         click.option(
             "--taxon/--accession",
@@ -653,9 +648,12 @@ def insilico_options(func):
         ),
         click.option(
             "--classifier",
-            type=str,
-            default="rdp",
-            help="classifier choise for taxonomic assignment [rdp, qiime2, dada2, sintax, kraken2]",
+            multiple=True,
+            type=click.Choice(
+                ["RDP", "qiimerdp", "dada2rdp", "decipher"], case_sensitive=False
+            ),
+            default=["RDP"],
+            help="Which classifiers to use for taxonomic assignment",
             show_default=True,
         ),
         click.option(
