@@ -41,6 +41,10 @@ df.columns = ["seq_id", "tax"]
 ranks = snakemake.params.ranks.split(",")
 
 
+if "HOMD" in snakemake.params.db_name:
+    df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
+    df = df.dropna()
+
 if "unite" in snakemake.params.db_name:
     df.tax = df.tax.replace(to_replace=r"[a-z]__", value="", regex=True)
     df.tax = df.tax.replace(to_replace=r"_", value=" ", regex=True)
@@ -89,7 +93,7 @@ for n, rank in enumerate(ranks):
             df.loc[nans[rank], prev] + "_placeholder_" + rank[0].lower()
         )
 
-if "silva" in snakemake.params.db_name:
+if ("silva" in snakemake.params.db_name) or ("HOMD" in snakemake.params.db_name):
     ## Get classified species index
     index = ~df["species"].str.contains("_placeholder_", na=False)
     ## Add parent name in species for classified species
