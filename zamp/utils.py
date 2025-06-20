@@ -154,6 +154,13 @@ def common_options(func):
             help="Custom config file [default: (outputDir)/config.yaml]",
         ),
         click.option(
+            "--ranks",
+            type=str,
+            help="Comma seperated list of ranks in taxonomy",
+            default="kingdom,phylum,class,order,family,genus,species",
+            show_default=True,
+        ),
+        click.option(
             "-t",
             "--threads",
             help="Number of threads to use",
@@ -438,9 +445,18 @@ def run_options(func):
         click.option(
             "--keep-rank",
             type=click.Choice(
-                ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+                [
+                    "kingdom",
+                    "phylum",
+                    "class",
+                    "order",
+                    "family",
+                    "genus",
+                    "species",
+                ],
+                case_sensitive=False,
             ),
-            default=["Kingdom"],
+            default=["kingdom"],
             multiple=True,
             help="Rank to keep taxon",
             show_default=True,
@@ -455,7 +471,7 @@ def run_options(func):
         click.option(
             "--exclude-rank",
             type=str,
-            default="Phylum",
+            default="phylum",
             help="Comma seperated list of ranks to exclude",
             show_default=True,
         ),
@@ -513,13 +529,6 @@ def insilico_options(func):
             "--tax",
             type=click.Path(file_okay=True, exists=True),
             help="Input taxonomic table when using local fasta",
-        ),
-        click.option(
-            "--ranks",
-            type=str,
-            help="Comma seperated list of ranks in taxonomy",
-            default="kingdom,phylum,class,order,family,genus,species",
-            show_default=True,
         ),
         click.option(
             "--taxon/--accession",

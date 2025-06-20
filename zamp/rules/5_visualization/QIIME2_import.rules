@@ -15,7 +15,7 @@ rule create_biom_from_count_table:
 
 rule import_count_table_to_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -26,17 +26,17 @@ rule import_count_table_to_QIIME2:
         os.path.join(dir.logs, "{prefix}", "count-table.txt"),
     shell:
         """
-        qiime tools import \
-        --input-path {input[0]} \
-        --type 'FeatureTable[Frequency]' \
-        --input-format BIOMV100Format \
-        --output-path {output[0]}
+        qiime tools import \\
+        --input-path {input} \\
+        --type 'FeatureTable[Frequency]' \\
+        --input-format BIOMV100Format \\
+        --output-path {output}
         """
 
 
 rule create_visualize_count_table_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -47,8 +47,8 @@ rule create_visualize_count_table_QIIME2:
         os.path.join(dir.logs, "{prefix}.txt"),
     shell:
         """
-        qiime feature-table summarize \
-        --i-table {input[0]} \
+        qiime feature-table summarize \\
+        --i-table {input[0]} \\
         --o-visualization {output[0]}
         """
 
@@ -72,7 +72,7 @@ rule force_all_upper_case_rep_seq:
 
 rule import_rep_seq_to_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -85,9 +85,9 @@ rule import_rep_seq_to_QIIME2:
         os.path.join(dir.logs, "{denoiser}", "{prefix}", "rep-seqs.txt"),
     shell:
         """
-        qiime tools import \
-        --input-path {input[0]} \
-        --output-path {output[0]} \
+        qiime tools import \\
+        --input-path {input} \\
+        --output-path {output} \\
         --type 'FeatureData[Sequence]'
         """
 
@@ -95,7 +95,7 @@ rule import_rep_seq_to_QIIME2:
 # Build a new tree based on the filtered sequences
 rule create_tree_in_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -116,19 +116,19 @@ rule create_tree_in_QIIME2:
     threads: 4
     shell:
         """
-        qiime phylogeny align-to-tree-mafft-fasttree \
-          --p-n-threads {threads} \
-          --i-sequences {input[0]} \
-          --o-alignment {output[aligned]} \
-          --o-masked-alignment {output[masked]} \
-          --o-tree {output[unrooted]} \
-          --o-rooted-tree {output[rooted]}
+        qiime phylogeny align-to-tree-mafft-fasttree \\
+        --p-n-threads {threads} \\
+        --i-sequences {input} \\
+        --o-alignment {output.aligned} \\
+        --o-masked-alignment {output.masked} \\
+        --o-tree {output.unrooted} \\
+        --o-rooted-tree {output.rooted}
         """
 
 
 rule export_QIIME2_tree:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -145,7 +145,7 @@ rule export_QIIME2_tree:
 
 rule create_visualize_rep_seq_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -156,15 +156,15 @@ rule create_visualize_rep_seq_QIIME2:
         os.path.join(dir.logs, "{denoiser}", "2_denoised", "rep-seqs_qzv.txt"),
     shell:
         """
-        qiime feature-table tabulate-seqs \
-        --i-data {input[0]} \
-        --o-visualization {output[0]}
+        qiime feature-table tabulate-seqs \\
+        --i-data {input} \\
+        --o-visualization {output}
         """
 
 
 rule import_taxonomy_to_Qiime2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -173,7 +173,7 @@ rule import_taxonomy_to_Qiime2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "taxonomy.tsv",
         ),
     output:
         os.path.join(
@@ -181,7 +181,7 @@ rule import_taxonomy_to_Qiime2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.qza",
+            "taxonomy.qza",
         ),
     log:
         os.path.join(
@@ -189,21 +189,22 @@ rule import_taxonomy_to_Qiime2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "qiime2",
+            "taxonomy_import.log",
         ),
     shell:
         """
-        qiime tools import \
-         --type FeatureData[Taxonomy] \
-         --input-path {input[0]} \
-         --input-format HeaderlessTSVTaxonomyFormat \
-         --output-path {output[0]}
+        qiime tools import \\
+        --type FeatureData[Taxonomy] \\
+        --input-path {input[0]} \\
+        --input-format HeaderlessTSVTaxonomyFormat \\
+        --output-path {output[0]}
         """
 
 
 rule create_visualize_table_QIIME2:
     conda:
-        os.path.join(dir.envs, "QIIME2-2020.02.yml")
+        os.path.join(dir.envs, "qiime2.yml")
     container:
         singularity_envs["qiime2"]
     input:
@@ -212,7 +213,7 @@ rule create_visualize_table_QIIME2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.qza",
+            "taxonomy.qza",
         ),
     output:
         os.path.join(
@@ -220,7 +221,7 @@ rule create_visualize_table_QIIME2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.qzv",
+            "taxonomy.qzv",
         ),
     log:
         os.path.join(
@@ -228,11 +229,12 @@ rule create_visualize_table_QIIME2:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "qiime2",
+            "taxonomy_visualization.log",
         ),
     shell:
         """
-        qiime metadata tabulate \
-            --m-input-file {input} \
-            --o-visualization {output}
+        qiime metadata tabulate \\
+        --m-input-file {input} \\
+        --o-visualization {output}
         """
