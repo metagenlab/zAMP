@@ -89,7 +89,7 @@ else:
 
 ## Classifier
 CLASSIFIER = config.args.classifier.split(",")
-
+RANKS = config.args.ranks
 
 ## Post-processing args
 RAREFACTION = config.args.rarefaction.split(",")
@@ -112,6 +112,12 @@ QIIME_VIZ = config.args.qiime_viz
 if "--use-singularity" in sys.argv:
     ### Mount Database path to singularity containers.
     workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
+    workflow.deployment_settings.apptainer_args += (
+        f" -B {workflow.basedir}:{workflow.basedir}"
+    )
+    workflow.deployment_settings.apptainer_args += (
+        f" -B /tmp:/home/qiime2/q2cli,/tmp:/home/qiime2/matplotlib"
+    )
     #### Load a dictionnary of singularity containers that will be called from each rule
 singularity_envs = yaml.safe_load(
     open(os.path.join(workflow.basedir, dir.envs, "singularity", "sing_envs.yml"), "r")

@@ -16,11 +16,13 @@ taxonomy_table <- snakemake@input[["taxonomy_table"]]
 rep_seqs <- snakemake@input[["rep_seqs"]]
 tax_tree <- snakemake@input[["tax_tree"]]
 
+
 ## Ouput
 phyloseq_object <- snakemake@output[["phyloseq_object"]]
 
 ## Parameters
 replace_empty_tax <- snakemake@params[["viz_replace_empty_tax"]]
+ranks <- unlist(strsplit(snakemake@params[["ranks"]], ","))
 
 
 
@@ -55,32 +57,39 @@ print("reading taxonomy table")
 taxonomy_table<-read.table(file = taxonomy_table, header = FALSE, sep = "\t")
 
     ### Convert the table into a tabular split version
-    taxonomy_table<-taxonomy_table %>% as_tibble() %>% separate(V2, sep=";", c("Kingdom","Phylum","Class","Order","Family","Genus","Species"))
+    taxonomy_table<-taxonomy_table %>% as_tibble() %>% separate(V2, sep=";", ranks)
 
     ### Replace the not properly named headers into proper ones
     colnames(taxonomy_table)[colnames(taxonomy_table)=="V1"] <- "Feature.ID"
     colnames(taxonomy_table)[colnames(taxonomy_table)=="V3"] <- "Confidence"
 
     ### Convert taxonomic levels as character (needed for the next steps)
-    taxonomy_table$Kingdom<-as.character(taxonomy_table$Kingdom)
-    taxonomy_table$Phylum<-as.character(taxonomy_table$Phylum)
-    taxonomy_table$Class<-as.character(taxonomy_table$Class)
-    taxonomy_table$Order<-as.character(taxonomy_table$Order)
-    taxonomy_table$Family<-as.character(taxonomy_table$Family)
-    taxonomy_table$Genus<-as.character(taxonomy_table$Genus)
-    taxonomy_table$Species<-as.character(taxonomy_table$Species)
+    taxonomy_table[ranks] <- lapply(taxonomy_table[ranks], as.character)
 
         print(paste("replace empty taxonomy :", replace_empty_tax))
 
         if(isTRUE(replace_empty_tax)) {
           ### Replace NA by the previous order + a space_holder for each taxonomic level
-          taxonomy_table$Kingdom[is.na(taxonomy_table$Kingdom)] <- (("Unkown_Kingdom")[is.na(taxonomy_table$Kingdom)])
-          taxonomy_table$Phylum[is.na(taxonomy_table$Phylum)] <- ((paste(taxonomy_table$Kingdom,"_phy",sep=""))[is.na(taxonomy_table$Phylum)])
-          taxonomy_table$Class[is.na(taxonomy_table$Class)] <- ((paste(taxonomy_table$Phylum,"_clas",sep=""))[is.na(taxonomy_table$Class)])
-          taxonomy_table$Order[is.na(taxonomy_table$Order)] <- ((paste(taxonomy_table$Class,"_ord",sep=""))[is.na(taxonomy_table$Order)])
-          taxonomy_table$Family[is.na(taxonomy_table$Family)] <- ((paste(taxonomy_table$Order,"_fam",sep=""))[is.na(taxonomy_table$Family)])
-          taxonomy_table$Genus[is.na(taxonomy_table$Genus)] <- ((paste(taxonomy_table$Family,"_gen",sep=""))[is.na(taxonomy_table$Genus)])
-          taxonomy_table$Species[is.na(taxonomy_table$Species)] <- ((paste(taxonomy_table$Genus,"_sp",sep=""))[is.na(taxonomy_table$Species)])
+          for (i in seq_along(ranks)) {
+            current_rank <- ranks[i]
+            
+            if (i == 1) {
+              # First rank: fill with "unknown_kingdom"
+              taxonomy_table[[current_rank]][is.na(taxonomy_table[[current_rank]])] <- paste0("unknown_", current_rank)
+            } else {
+              parent_rank <- ranks[i - 1]
+              
+              # Build default name using parent + suffix
+              suffix <- paste0("_", substr(current_rank, 1, 4))  # e.g., "_clas", "_orde"
+              
+              # Fill NAs in the current rank
+              taxonomy_table[[current_rank]][is.na(taxonomy_table[[current_rank]])] <-
+                paste0(
+                  taxonomy_table[[parent_rank]][is.na(taxonomy_table[[current_rank]])],
+                  suffix
+                )
+            }
+          }
 
           print("table NA remplaced by spaceholders")
 

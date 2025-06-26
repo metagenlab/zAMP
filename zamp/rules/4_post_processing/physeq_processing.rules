@@ -33,7 +33,7 @@ rule physeq_initial_import:
             "{denoiser}",
             "3_classified",
             "{classifier}_{tax_DB}",
-            "dna-sequences_tax_assignments.txt",
+            "taxonomy.tsv",
         ),
         rep_seqs=os.path.join(
             dir.out.base, "{denoiser}", "2_denoised", "dna-sequences.fasta"
@@ -57,6 +57,7 @@ rule physeq_initial_import:
         ),
     params:
         viz_replace_empty_tax=REPL_EMPTY,
+        ranks=RANKS,
     log:
         os.path.join(
             dir.logs,
@@ -69,7 +70,7 @@ rule physeq_initial_import:
             "initial_import.txt",
         ),
     script:
-        "scripts/physeq_initial_import.R"
+        os.path.join("scripts", "physeq_initial_import.R")
 
 
 ### Export the phyloseq objects in individual components
@@ -116,7 +117,7 @@ rule physeq_export_object:
     log:
         os.path.join(dir.logs, "{prefix1}_export", "export.txt"),
     script:
-        "scripts/physeq_export.R"
+        os.path.join("scripts", "physeq_export.R")
 
 
 ### Filter sequences based on taxonomic assignment
@@ -163,7 +164,7 @@ rule physeq_tax_filtering:
             "base.txt",
         ),
     script:
-        "scripts/physeq_filter_taxa.R"
+        os.path.join("scripts", "physeq_filter_taxa.R")
 
 
 ### Rarefy counts
@@ -208,7 +209,7 @@ rule physeq_rarefy:
             "base.txt",
         ),
     script:
-        "scripts/physeq_rarefy.R"
+        os.path.join("scripts", "physeq_rarefy.R")
 
 
 ### Add an updated phylogenetic tree into phyloseq objects

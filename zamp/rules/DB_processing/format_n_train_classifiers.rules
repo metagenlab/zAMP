@@ -77,26 +77,39 @@ rule hash_qiime2:
         """
 
 
-rule get_genus_tax:
+rule get_dada2_trainset_taxonomy:
     input:
         os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
     output:
-        temp(os.path.join("{prefix}", "amplicons_to_genus_tax.tsv")),
-    shell:
-        """
-        sed -E 's/(.*);[^;]*$/\\1/' {input} > {output}
-        """
-
-
-rule get_species_assign_tax:
-    input:
-        os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
-    output:
-        temp(os.path.join("{prefix}", "amplicons_sp_assign_tax.tsv")),
-    shell:
-        """
-        sed 's/.*;\\([^;]* [^;]*\\)$/\\1/' {input} > {output}
-        """
+        sp_assign=temp(os.path.join("{prefix}", "amplicons_sp_assign_tax.tsv")),
+        to_genus=temp(os.path.join("{prefix}", "amplicons_to_genus_tax.tsv")),
+        to_species=temp(os.path.join("{prefix}", "amplicons_to_species_tax.tsv")),
+    params:
+        RANKS,
+    run:
+        df = pd.read_csv(input[0], sep="\t", header=None)
+        df.columns = ["seq_id", "tax"]
+        ranks = params[0].split(",")
+        df[ranks] = df["tax"].str.split(";", expand=True)
+        df["sp_assign"] = df["seq_id"] + " " + df["species"]
+        gen_idx = ranks.index("genus") + 1
+        df["to_genus"] = df[ranks[:gen_idx]].T.agg(";".join)
+        df["only_species"] = df["species"].str.split(" ", expand=True)[1]
+        idx = df["only_species"].isnull()  # find empty species names (e.g. A61579_s)
+        df.loc[idx, "only_species"] = df.loc[
+            idx, "species"
+        ]  # replace empty species names with placeholder
+        to_sp_cols = ranks[:gen_idx] + ["only_species"]
+        df["to_species"] = df[to_sp_cols].T.agg(";".join)
+        df[["seq_id", "sp_assign"]].to_csv(
+            output.sp_assign, sep="\t", header=False, index=False
+        )
+        df[["seq_id", "to_genus"]].to_csv(
+            output.to_genus, sep="\t", header=False, index=False
+        )
+        df[["seq_id", "to_species"]].to_csv(
+            output.to_species, sep="\t", header=False, index=False
+        )
 
 
 rule get_dada2_trainset_fastas:
@@ -107,7 +120,7 @@ rule get_dada2_trainset_fastas:
     input:
         fa=os.path.join("{prefix}", "database", "amplicons.fasta"),
         to_gen=os.path.join("{prefix}", "amplicons_to_genus_tax.tsv"),
-        to_sp=os.path.join("{prefix}", "database", "amplicons_tax.tsv"),
+        to_sp=os.path.join("{prefix}", "amplicons_to_species_tax.tsv"),
         sp_assign=os.path.join("{prefix}", "amplicons_sp_assign_tax.tsv"),
     output:
         to_gen=os.path.join(
@@ -138,7 +151,7 @@ rule get_dada2_trainset_fastas:
         2>> {log}
 
         seqkit replace \\
-        -p '^(.+)$' -r '\\1 {{kv}}' \\
+        -p '^(.+)$' -r "{{kv}}" \\
         -k {input.sp_assign} \\
         {input.fa} \\
         -o {output.sp_assign} \\
