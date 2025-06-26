@@ -34,12 +34,19 @@ OUTPUT = config.args.output
 LOG = os.path.join(OUTPUT, "zamp.log")
 
 ## Input
-INPUT_TAX = config.args.input_tax
+INPUT = config.args.input
+TAX = config.args.tax
+LOCAL = False
+if os.path.isdir(INPUT) and TAX:
+    LOCAL = True
 
 ## Database args
 DBPATH = os.path.abspath(config.args.database)
+
+
 if config.args.name:
-    DBNAME = config.args.name.split(",")
+    names = config.args.name.split(",")
+    DBNAME = list(itertools.chain(*[list_match_dir(DBPATH, name) for name in names]))
 
 else:
     DBNAME = os.path.basename(os.path.normpath(DBPATH))
@@ -47,7 +54,7 @@ else:
 
 ## Classifier
 CLASSIFIER = config.args.classifier
-
+RANKS = config.args.ranks
 ## Assembly finder args
 AF_ARGS = config.args.af_args
 TAXON = config.args.taxon
@@ -81,13 +88,15 @@ if FW_PRIMER and RV_PRIMER:
     RV_PRIMER_COMPL = Seq.reverse_complement(Seq(RV_PRIMER))
     FW_COV = round(FW_LEN * COV)
     RV_COV = round(RV_LEN * COV)
-    ADAPTER = f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+    ADAPTER = (
+        f"{FW_PRIMER};min_overlap={FW_COV}...{RV_PRIMER_COMPL};min_overlap={RV_COV}"
+    )
 
 ## Replace empty tax
 REPL_EMPTY = config.args.replace_empty
 
 ## Tax assign
-CLASSIFIER = config.args.classifier
+CLASSIFIER = config.args.classifier.split(",")
 DENOISER = config.args.denoiser
 
 ## When using singularity
@@ -96,6 +105,9 @@ if "--use-singularity" in sys.argv:
     workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
     workflow.deployment_settings.apptainer_args += (
         f" -B {workflow.basedir}:{workflow.basedir}"
+    )
+    workflow.deployment_settings.apptainer_args += (
+        f" -B /tmp:/home/qiime2/q2cli,/tmp:/home/qiime2/matplotlib"
     )
 
     #### Load a dictionnary of singularity containers that will be called from each rule
@@ -113,16 +125,7 @@ include: os.path.join("rules", "In_silico", "insilico_validation.rules")
 
 rule insilico_validation:
     input:
-        expand(
-            os.path.join(
-                dir.out.base,
-                "InSilico",
-                "3_classified",
-                "{classifier}_{tax_DB}",
-                "{files}",
-            ),
-            classifier=CLASSIFIER,
-            tax_DB=DBNAME,
-            files=["dna-sequences_tax_assignments.txt", "InSilico_compare_tax.tsv"],
+        os.path.join(
+            dir.out.base,
+            "all_scores.tsv",
         ),
-        os.path.join(dir.out.base, "InSilico", "2_denoised", "count_table.tsv"),

@@ -29,10 +29,10 @@ for line in f[1:]:
         name = []
         for node in cols[: i + 1]:
             node = node.strip()
-            if not node in ("-", ""):
+            if node not in ("-", ""):
                 name.append(node)
         pName = ";".join(name[:-1])
-        if not name[0] in lineages:
+        if name[0] not in lineages:
             lineages.add(name[0])
         depth = len(name)
         name = ";".join(name)
