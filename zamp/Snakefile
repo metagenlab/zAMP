@@ -110,11 +110,16 @@ QIIME_VIZ = config.args.qiime_viz
 
 ## When using singularity
 if "--use-singularity" in sys.argv:
-    ### Mount Database path to singularity containers.
-    workflow.deployment_settings.apptainer_args += f" -B {os.path.abspath(config.args.database)}:{os.path.abspath(config.args.database)}"
-    workflow.deployment_settings.apptainer_args += (
-        f" -B {workflow.basedir}:{workflow.basedir}"
-    )
+    ### Mount Database input file directory, database and basedir to containers.
+    paths = [
+        os.path.dirname(os.path.realpath(config.args.input)),
+        os.path.realpath(config.args.database),
+        workflow.basedir,
+    ]
+    for path in paths:
+        workflow.deployment_settings.apptainer_args += f" -B {path}:{path}"
+
+    # Mount qiime2 temp dirs to containers
     workflow.deployment_settings.apptainer_args += (
         f" -B /tmp:/home/qiime2/q2cli,/tmp:/home/qiime2/matplotlib"
     )
