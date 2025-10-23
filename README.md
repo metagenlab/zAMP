@@ -1,6 +1,6 @@
 
 # Overview
-zAMP is a [Snakemake](https://github.com/snakemake/snakemake) cli, written in [Snaketool](https://github.com/beardymcjohnface/Snaketool), for amplicon metagenomics anlysis. It includes [state-of-the-art tools](zamp/zamp.CITATION) for performant and reproducibile analysis of 16S rRNA or ITS Illumina paired-end reads. 
+zAMP is a [Snakemake](https://github.com/snakemake/snakemake) cli, written in [Snaketool](https://github.com/beardymcjohnface/Snaketool), for amplicon metagenomics anlaysis. It includes [state-of-the-art tools](zamp/zamp.CITATION) for performant and reproducibile analysis of 16S rRNA or ITS Illumina paired-end reads. 
 
 Starting from local fastq or SRA reads zAMP performs reads QC, ASV inference, taxonomic assignments and basic visualization plots. In addition, zAMP enables training taxonomic classifiers on specific primer-amplified regions in popular databases like [greengenes2](https://greengenes2.ucsd.edu/), [SILVA](https://www.arb-silva.de/) and [UNITE](https://unite.ut.ee/) to increase sensitivity.
 
