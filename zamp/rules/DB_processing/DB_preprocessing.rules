@@ -5,10 +5,14 @@ fw = FW_PRIMER
 rv = Seq.reverse_complement(Seq(RV_PRIMER))
 if ERRORS:
     args += f"-e {ERRORS} "
+if FW_ARGS:
+    fw += f";{FW_ARGS}"
+if RV_ARGS:
+    rv += f";{RV_ARGS}"
 if LINKED:
-    args += f"-g {fw}...{rv} "
+    args += f'-g "{fw}...{rv}" '
 else:
-    args += f"-g {fw} -a {rv} "
+    args += f'-g "{fw}" -a "{rv}" '
 
 if MINLEN:
     args += f"-m {MINLEN} "

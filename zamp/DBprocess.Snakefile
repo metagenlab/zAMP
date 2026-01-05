@@ -51,8 +51,8 @@ RV_PRIMER = config.args.rv_primer
 COV = config.args.ampcov
 MAXLEN = config.args.maxlen
 MINLEN = config.args.minlen
-FW_OTHER = config.args.cutadapt_args_fw
-RV_OTHER = config.args.cutadapt_args_rv
+FW_ARGS = config.args.cutadapt_args_fw
+RV_ARGS = config.args.cutadapt_args_rv
 
 # ADAPTER = ""
 # if FW_PRIMER and RV_PRIMER:
