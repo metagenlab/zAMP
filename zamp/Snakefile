@@ -51,6 +51,23 @@ elif os.path.isfile(INPUT) and not METADATA:
     SAMPLES = pd.read_csv(INPUT, sep="\t", index_col="sample")
     METADATA = INPUT
 
+# Check duplicated sample names
+if SAMPLES.duplicated().any():
+    dupes = SAMPLES[SAMPLES.duplicated()].index.unique().tolist()
+    dup_df = SAMPLES[SAMPLES.index.isin(dupes)]
+    raise ValueError(f"Duplicated sample names found in sample sheet: \n{repr(dup_df)}")
+
+# Check if read paths are duplicated
+dup_reads = SAMPLES.R1.duplicated().any() 
+mask = SAMPLES.R1.duplicated()
+if "R2" in SAMPLES.columns:
+    dup_reads = dup_reads or SAMPLES.R2.duplicated().any()
+    mask = mask | SAMPLES.R2.duplicated()
+if dup_reads:
+    dupes = SAMPLES[mask].index.unique().tolist()
+    dup_df = SAMPLES[SAMPLES.index.isin(dupes)]
+    raise ValueError(f"Duplicated read paths in the following rows: \n{repr(dup_df)}")
+
 
 # Add read pairing
 if not "paired" in SAMPLES.columns:
