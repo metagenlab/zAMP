@@ -51,14 +51,15 @@ elif os.path.isfile(INPUT) and not METADATA:
     SAMPLES = pd.read_csv(INPUT, sep="\t", index_col="sample")
     METADATA = INPUT
 
+
 # Check duplicated sample names
-if SAMPLES.duplicated().any():
-    dupes = SAMPLES[SAMPLES.duplicated()].index.unique().tolist()
+if SAMPLES.index.duplicated().any():
+    dupes = SAMPLES[SAMPLES.index.duplicated()].index.unique().tolist()
     dup_df = SAMPLES[SAMPLES.index.isin(dupes)]
     raise ValueError(f"Duplicated sample names found in sample sheet: \n{repr(dup_df)}")
 
 # Check if read paths are duplicated
-dup_reads = SAMPLES.R1.duplicated().any() 
+dup_reads = SAMPLES.R1.duplicated().any()
 mask = SAMPLES.R1.duplicated()
 if "R2" in SAMPLES.columns:
     dup_reads = dup_reads or SAMPLES.R2.duplicated().any()
@@ -67,6 +68,26 @@ if dup_reads:
     dupes = SAMPLES[mask].index.unique().tolist()
     dup_df = SAMPLES[SAMPLES.index.isin(dupes)]
     raise ValueError(f"Duplicated read paths in the following rows: \n{repr(dup_df)}")
+
+
+# Check if paths exist
+r1_exist = SAMPLES["R1"].apply(os.path.exists)
+
+
+if SAMPLES[r1_exist].empty:
+    raise FileNotFoundError("None of your forward reads paths were found !")
+if len(SAMPLES[~r1_exist]) > 0:
+    raise FileNotFoundError(
+        f"The following R1 read files were not found: \n{repr(SAMPLES[~ r1_exist])}"
+    )
+if "R2" in SAMPLES.columns:
+    r2_exist = SAMPLES["R2"].apply(os.path.exists)
+    if SAMPLES[r2_exist].empty:
+        raise FileNotFoundError("None of your reverse reads paths were found !")
+    if len(SAMPLES[~r2_exist]) > 0:
+        raise FileNotFoundError(
+            f"The following R2 read files were not found: \n{repr(SAMPLES[~ r2_exist])}"
+        )
 
 
 # Add read pairing
